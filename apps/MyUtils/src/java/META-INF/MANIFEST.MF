@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Class-Path: commons-io-2.4.jar jbm-jboss-as-security.jar jbm-jms.jar n
+ etty.jar jbm-transports.jar jbm-bootstrap.jar jbm-logging.jar jnpserv
+ er.jar jbm-core.jar jboss-mc.jar gson-2.3.1.jar velocity-tools-generi
+ c.jar velocity.jar ini4j.jar ini4j-compat.jar retroweaver-rt-1.2.1.ja
+ r log4j-1.2.13.jar activemq-all-5.12.0.jar activemq-client-5.12.0.jar
+  commons-lang3-3.4.jar opencsv-3.5.jar commons-compress-1.9.jar commo
+ ns-compress-1.9-javadoc.jar
+Main-Class: be.home.main.M3uMaker
+
