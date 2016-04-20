@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
+        <build.number>${maven.build.timestamp}</build.number>
+        <build.install>install</build.install>
+    </properties>
+
+
+    <groupId>be.home</groupId>
+    <artifactId>Home</artifactId>
+    <name>Home Projects</name>
+    <description>Home Projects</description>
+    <packaging>pom</packaging>
+	<version>1.0</version>
+
+    <modules>
+        <module>apps</module>
+    </modules>
+	
+	
+    <build>
+        <!--
+		<sourceDirectory>src/java</sourceDirectory>
+        <resources>
+            <resource>
+                <directory>${basedir}/src/conf</directory>
+                <filtering>true</filtering>
+            </resource>
+            <resource>
+                <directory>${basedir}/src/resources</directory>
+            </resource>
+        </resources>
+		-->
+
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.9</version>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/gen</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>add-test-source</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <!--<directory>src/test-slow/standalone</directory>-->
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Add the classpath to the MANIFEST.MF -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <!--  <version>2.1</version> 
+				if version is added, than classpath is not filled in in the jar
+				-->
+                <version>2.6</version>
+                <configuration>
+                    <outputDirectory>${build.install}</outputDirectory>
+					<archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+							<classpathPrefix>lib/</classpathPrefix>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>2.7</version>
+        <executions>
+          <execution>
+            <id>copy-resources-1</id>
+            <!-- here the phase you need -->
+            <phase>validate</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${build.install}/config</outputDirectory>
+              <resources>          
+                <resource>
+                  <directory>src/config</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>              
+            </configuration>            
+          </execution>
+          <execution>
+            <id>copy-resources-2</id>
+            <!-- here the phase you need -->
+            <phase>validate</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${build.install}</outputDirectory>
+              <resources>          
+                <resource>
+                  <directory>src/resources</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>              
+            </configuration>            
+          </execution>
+        </executions>
+      </plugin>
+
+		<plugin>
+			<groupId>org.codehaus.mojo</groupId>
+			<artifactId>ideauidesigner-maven-plugin</artifactId>
+			<executions>
+				<execution>
+					<goals>
+						<goal>javac2</goal>
+					</goals>
+				</execution>
+			</executions>
+
+			<configuration>
+				<fork>true</fork>
+				<debug>true</debug>
+				<failOnError>true</failOnError>
+			</configuration>
+		</plugin>
+
+
+	  </plugins>
+    </build>	
+
+    <dependencyManagement>
+        <dependencies>
+
+            <!--Other provided dependencies-->
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>1.2.13</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.4</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-collections</groupId>
+                <artifactId>commons-collections</artifactId>
+                <version>3.2.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-compress</artifactId>
+                <version>1.9</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>2.4</version>
+            </dependency>
+			<dependency>
+				<groupId>org.apache.activemq</groupId>
+				<artifactId>activemq-all</artifactId>
+				<version>5.12.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.activemq</groupId>
+				<artifactId>activemq-client</artifactId>
+				<version>5.12.0</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.code.gson</groupId>
+				<artifactId>gson</artifactId>
+				<version>2.3.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.ini4j</groupId>
+				<artifactId>ini4j</artifactId>
+				<version>0.5.1</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.jms</groupId>
+				<artifactId>jms</artifactId>
+				<version>1.1</version>
+			</dependency>
+			<dependency>
+				<groupId>com.opencsv</groupId>
+				<artifactId>opencsv</artifactId>
+				<version>3.5</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.velocity</groupId>
+				<artifactId>velocity</artifactId>
+				<version>1.7</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.velocity</groupId>
+				<artifactId>velocity-tools</artifactId>
+				<version>2.0</version>
+			</dependency>
+			<dependency>
+			  <groupId>org.jboss.messaging</groupId>
+			  <artifactId>jbm-core</artifactId>
+			  <version>2.0.0.BETA4</version>
+			</dependency>
+			 <dependency>
+				<groupId>com.intellij</groupId>
+				<artifactId>forms_rt</artifactId>
+				<version>5.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.xerial</groupId>
+				<artifactId>sqlite-jdbc</artifactId>
+				<version>3.8.11.2</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-csv</artifactId>
+				<version>1.1</version>
+			</dependency>
+			</dependencies>
+    </dependencyManagement>
+
+	
+
+</project>
