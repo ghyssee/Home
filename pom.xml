@@ -15,7 +15,7 @@
     <groupId>be.home</groupId>
     <artifactId>Home</artifactId>
     <name>Home Projects</name>
-    <description>Home Projects</description>
+    <description>Home Projects (TEST)</description>
     <packaging>pom</packaging>
 	<version>1.0</version>
 
