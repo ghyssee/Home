@@ -1,0 +1,20 @@
+Maven:
+
+View > Tool Windows > Maven Project
+
+To configure the Maven Integration settings
+
+    On the toolbar of the Maven Projects tool window, click settings button for the current project.
+    In the Maven page of the Settings dialog, specify the desired options. Refer to the dialog description for details.
+	
+	Maven Home Directory:
+	C:/Post/dev/apache-maven-3.0.5
+	
+    Apply changes and close the dialog.
+	
+Do LifeCycle > Compile to resolve Library problems
+
+Global git exludesfile:
+
+Open Git Shell:
+git config --global core.excludesfile "C:\Projects\GitHub\Home\global.gitignore"

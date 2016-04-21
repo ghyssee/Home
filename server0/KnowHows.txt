@@ -1,0 +1,14 @@
+the files jbm-*.xml should be on the classpath to start the server
+
+The command to start the server:
+java -XX:+UseParallelGC
+     -Xms256M -Xmx256M 
+	 -XX:+AggressiveOpts
+	 -XX:+UseFastAccessorMethods
+	 -Dcom.sun.management.jmxremote
+	 -Djava.util.logging.config.file=config\logging.properties
+	 -Dorg.jboss.logging.Logger.pluginClass=org.jboss.messaging.integration.logging.JBMLoggerPlugin
+	 -Djava.naming.factory.initial=org.jnp.interfaces.NamingContextFactory
+	 -Djava.naming.factory.url.pkgs=org.jboss.naming:org.jnp.interfaces
+	 -cp "C:/Projects/messaging-2.0.0.BETA4/lib/jbm-bootstrap.jar;C:/Projects/messaging-2.0.0.BETA4/lib/jbm-core.jar;C:/Projects/messaging-2.0.0.BETA4/lib/jbm-jboss-as-security.jar;C:/Projects/messaging-2.0.0.BETA4/lib/jbm-jms.jar;C:/Projects/messaging-2.0.0.BETA4/lib/jbm-logging.jar;C:/Projects/messaging-2.0.0.BETA4/lib/jbm-transports.jar;C:/Projects/messaging-2.0.0.BETA4/lib/jboss-jms-api.jar;C:/Projects/messaging-2.0.0.BETA4/lib/jboss-mc.jar;C:/Projects/messaging-2.0.0.BETA4/lib/jnpserver.jar;C:/Projects/messaging-2.0.0.BETA4/lib/netty.jar;C:/Projects/messaging-2.0.0.BETA4/examples/common/config;C:/Projects/messaging-2.0.0.BETA4/examples/jms/queue/config;c:/Projects/Home/target/classes" -Djava.library.path="-Djava.library.path=C:\Post\dev\platform\java\jdk1.6.0_22\bin;.;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;C:\My Programs\Python27\;C:\My Programs\Python27\Scripts;C:\Program Files\Subversion;C:\Oracle\product\11.2.0\client_1\bin;C:\Post\dev\apache-ant-1.7.0\Bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files\Microsoft Application Virtualization Client;C:\Program Files\Aladdin\eToken\PKIClient\x32;C:\Program Files\TortoiseSVN\bin;C:\Post\tools\svnscripts;C:\My Programs\CheckSum;C:\Post\dev\apache-maven-3.0.5\bin"
+	 be.home.jms.SpawnedJBMServer jbm-jboss-beans.xml

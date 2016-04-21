@@ -1,0 +1,48 @@
+{
+   "oneDriveDir": "C:/My Programs/OneDrive",
+  "oneDriveDir2": "C:/My Programs/OneDrive",
+   "configDir": "iMacros/config",
+   "logDir": "logsV3",
+   "logFile": "log/result.log",
+   "log4J": {
+      "config": "data.log4j.xml"
+   },
+   "wiki": {
+      "inputDir": "C:/My Programs/OneDrive/Android/txt/Apps.Done",
+      "outputDir": "c:/My Programs/OneDrive/Wiki/output",
+      "inputFile": "apss.txt",
+      "outputFile": "apps.%counter%.csv",
+      "maxAppsFile": "50",
+      "resultLog": "logs/WikiResult.txt"
+   },
+   "movies": {
+	"importFile":"C:/My Programs/OneDrive/Movies/emdbV2.csv",
+	"outputDir":"C:/temp/movies",
+	"synchronizeDir":"C:/Temp/YAMJ_TEST/My Movies",
+	"stockPlace":"HDD_102",
+	"log":"MovieSynchronization.txt",
+	"excludePaths":[
+		{"path":"VIDEO_TS", "expression":""},
+		{"path":"AUDIO_TS", "expression":""},
+		{"path":"COVERS", "expression":""},
+		{"path":"COVER", "expression":""},
+		{"path":"data", "expression":""},
+		{"path":"Seizoen", "expression":".+"},
+		{"path":"Season", "expression":".+"}
+	]
+   },
+   "parts": [
+      {
+         "id": "1",
+         "name": "Betting Slip"
+      },
+      {
+         "id": "2",
+         "name": "Energy Drink"
+      },
+      {
+         "id": "4",
+         "name": "Condo Keys"
+      }
+   ]
+}
