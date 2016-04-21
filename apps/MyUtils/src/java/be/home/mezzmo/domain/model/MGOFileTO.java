@@ -574,4 +574,5 @@ public class MGOFileTO {
     public void setSortTitle(String sortTitle) {
         this.sortTitle = sortTitle;
     }
+
 }
