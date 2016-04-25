@@ -13,7 +13,7 @@
       "inputFile": "apss.txt",
       "outputFile": "apps.%counter%.csv",
       "maxAppsFile": "50",
-      "resultLog": "logs/WikiResult.txt"
+      "resultLog": "logsV3/WikiResult.txt"
    },
    "movies": {
 	"importFile":"C:/My Programs/OneDrive/Movies/emdbV2.csv",

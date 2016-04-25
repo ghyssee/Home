@@ -1,5 +1,6 @@
 package be.home.main;
 
+import be.home.common.dao.jdbc.SQLiteUtils;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 import be.home.mezzmo.domain.dao.jdbc.MezzmoDAOImpl;
@@ -67,12 +68,12 @@ public class Mezzmo extends BatchJobV2{
         log4GE.printHeaders();
         log.info("test");
 
-        String base = "/My Programs/SkyDrive/Muziek/Database/";
+        String base = "/My Programs/OneDrive/Muziek/Database/";
         //processCSV(base + "test.csv", UPDATE);
         //processCSV(base + "MP3SongsWithPlayCount.V1.csv", UPDATE);
         //processCSV(base + "MP3SongsWithPlayCount_Fixes.V1.csv", UPDATE);
         //processCSV(base + "MP3SongsWithPlayCount.V2.csv", UPDATE);
-        //processCSV(base + "MP3SongsWithPlayCount.V3.csv", NO_UPDATE);
+        processCSV(base + "MP3SongsWithPlayCount.V4_TEST.csv", UPDATE);
         //processCSV(base + "MP3SongsWithPlayCount_Fixes.V2.csv", UPDATE);
         //getFileAlbums();
 
@@ -104,7 +105,7 @@ public class Mezzmo extends BatchJobV2{
                     if (albumStatus == ALBUM_ENABLE){
                         album = csvRecord.get("Album");
                     }
-                    updateList.addAll(getListOfMP3FilesToUpdate(csvRecord.get("FileTitle"), csvRecord.get("PlayCount"), album, errorList));
+                    updateList.addAll(getListOfMP3FilesToUpdate(csvRecord.get("FileTitle"), csvRecord.get("PlayCount"), album, csvRecord.get("DateLastPlayed"), errorList));
                 }
                 System.out.println("Nr Of Records in CSV File: " + counter);
                 listErrors(errorList);
@@ -157,7 +158,7 @@ public class Mezzmo extends BatchJobV2{
         }
     }
 
-    public List<MGOFileAlbumCompositeTO> getListOfMP3FilesToUpdate(String fileID, String playCount, String album, List<MGOFileAlbumCompositeTO> errorList) {
+    public List<MGOFileAlbumCompositeTO> getListOfMP3FilesToUpdate(String fileID, String playCount, String album, String dateLastPlayed, List<MGOFileAlbumCompositeTO> errorList) {
 
         int iPlayCount = Integer.parseInt(playCount);
         MGOFileAlbumCompositeTO compSearchTO = new MGOFileAlbumCompositeTO();
@@ -169,6 +170,12 @@ public class Mezzmo extends BatchJobV2{
         fileAlbumCompositeTO.getFileTO().setFileTitle(fileID);
         fileAlbumCompositeTO.getFileTO().setPlayCount(iPlayCount);
         fileAlbumCompositeTO.getFileAlbumTO().setName(album);
+        Date lastPlayed = SQLiteUtils.convertStringToDate(dateLastPlayed);
+        if (StringUtils.isBlank(dateLastPlayed)){
+            lastPlayed = new Date();
+        }
+        fileAlbumCompositeTO.getFileTO().setDateLastPlayed(lastPlayed);
+
 
         if (list == null || list.size() == 0) {
             System.err.println("ERROR: FileID Not Found: " + fileID + " / Album = " + album);
@@ -202,7 +209,7 @@ public class Mezzmo extends BatchJobV2{
             MGOFileTO fileTo = compositeTO.getFileTO();
             try {
                 System.out.println("UPDATING: " + formatMP3File(compositeTO));
-                int rec = getMezzmoService().updatePlayCount(fileTo.getFileTitle(), compositeTO.getFileAlbumTO().getName(), fileTo.getPlayCount(), new Date());
+                int rec = getMezzmoService().updatePlayCount(fileTo.getFileTitle(), compositeTO.getFileAlbumTO().getName(), fileTo.getPlayCount(), fileTo.getDateLastPlayed());
                 System.out.println("UPDATED: " + formatMP3File(compositeTO));
                 System.out.println("Nr Of Records updated: " + rec);
                 updatedRecords += rec;

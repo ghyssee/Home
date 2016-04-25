@@ -18,3 +18,11 @@ Global git exludesfile:
 
 Open Git Shell:
 git config --global core.excludesfile "C:\Projects\GitHub\Home\global.gitignore"
+
+git config --global http.proxy http://ghyssee:Gizmo201603@proxy.post.bpgnet.net:8080
+
+git config --global --get http.proxy
+
+git config --global --unset http.proxy
+
+git config --global http.proxy http://127.0.0.1:3129
