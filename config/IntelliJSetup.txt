@@ -26,3 +26,25 @@ git config --global --get http.proxy
 git config --global --unset http.proxy
 
 git config --global http.proxy http://127.0.0.1:3129
+
+git config --global http.proxy http://localhost:3128
+
+git remote add Home c:/Projects/GitHub/Home
+
+Aanmaken Remote Branch (1-malige actie):
+git remote add -m Home RemoteHome https://github.com/ghyssee/Home.git
+
+Verwijderen Remote Branch
+git remote delete RemoteHome
+(=> verwijdert niet de source op de remote server)
+
+Check:
+git remote -v
+RemoteHome      https://github.com/ghyssee/Home.git (fetch)
+RemoteHome      https://github.com/ghyssee/Home.git (push)
+
+Get Content Of Remote
+git pull RemoteHome master
+
+Push the local content to the remote server
+git push RemoteHome master
