@@ -31,7 +31,7 @@ git config --global http.proxy http://localhost:3128
 
 git remote add Home c:/Projects/GitHub/Home
 
-Aanmaken Remote Branch (1-malige actie):
+Aanmaken Referentie punt Remote Branch (1-malige actie):
 git remote add -m Home RemoteHome https://github.com/ghyssee/Home.git
 
 Verwijderen Remote Branch
@@ -48,3 +48,10 @@ git pull RemoteHome master
 
 Push the local content to the remote server
 git push RemoteHome master
+
+Set The Default repository for Git Shell:
+    Right click on Git Shell
+    Choose Properties
+    Move to the end of the Target field
+    Change --open-shell to --open-shell=c:\Projects\GitHub\Home
+
