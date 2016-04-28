@@ -47,6 +47,10 @@ Get Content Of Remote
 git pull RemoteHome master
 
 Push the local content to the remote server
+
+git push
+(if not working git push -f)
+
 git push RemoteHome master
 
 Set The Default repository for Git Shell:
