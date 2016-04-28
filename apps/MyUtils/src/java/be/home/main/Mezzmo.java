@@ -3,6 +3,7 @@ package be.home.main;
 import be.home.common.dao.jdbc.SQLiteUtils;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
+import be.home.common.utils.WinUtils;
 import be.home.mezzmo.domain.dao.jdbc.MezzmoDAOImpl;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.MGOFileAlbumTO;
@@ -71,24 +72,30 @@ public class Mezzmo extends BatchJobV2{
         log4GE.printHeaders();
         log.info("test");
 
-        String base = "/My Programs/OneDrive/Muziek/Database/";
         //processCSV(base + "test.csv", UPDATE);
         //processCSV(base + "MP3SongsWithPlayCount.V1.csv", UPDATE);
         //processCSV(base + "MP3SongsWithPlayCount_Fixes.V1.csv", UPDATE);
         //processCSV(base + "MP3SongsWithPlayCount.V2.csv", UPDATE);
-        processCSV(base + "MP3SongsWithPlayCount.V4_TEST.csv", UPDATE);
+        String base = WinUtils.getOneDrivePath();
+        if (base == null){
+            throw new RuntimeException("Problem Getting OneDrive Path");
+        }
+        System.out.println("OneDrive Path: " + base);
+        base += "\\Muziek\\Export\\";
+
+        processCSV(base, "MP3SongsWithPlayCount.V4_TEST.csv", UPDATE);
         //processCSV(base + "MP3SongsWithPlayCount_Fixes.V2.csv", UPDATE);
         //getFileAlbums();
 
     }
 
-    public void processCSV(String fileName, boolean update) {
+    public void processCSV(String base, String fileName, boolean update) {
         System.out.println(StringUtils.repeat('*',100));
         System.out.println("Processing CSV File: " + fileName);
         System.out.println(StringUtils.repeat('*',100));
         FileReader fileReader = null;
         try {
-            File file = new File(fileName);
+            File file = new File(base + fileName);
             FileInputStream stream = new FileInputStream(file);
             final Reader reader = new InputStreamReader(new BOMInputStream(stream), StandardCharsets.UTF_8);
             CSVFormat csvFileFormat = CSVFormat.DEFAULT.withHeader(FILE_HEADER_MAPPING);
@@ -104,13 +111,13 @@ public class Mezzmo extends BatchJobV2{
                     //System.out.println("PlayCount: " + csvRecord.get("PlayCount"));
                     checkAlbumStatus(csvRecord);
                     String album = null;
-                    if (albumStatus == ALBUM_ENABLE){
+                    if (albumStatus.equals( ALBUM_ENABLE)){
                         album = csvRecord.get("Album");
                     }
                     updateList.addAll(getListOfMP3FilesToUpdate(csvRecord.get("FileTitle"), csvRecord.get("File"), csvRecord.get("PlayCount"), album, csvRecord.get("DateLastPlayed"), errorList));
                 }
                 System.out.println("Nr Of Records in CSV File: " + counter);
-                listErrors(errorList, csvFileFormat);
+                listErrors(base, errorList, csvFileFormat);
                 listPlayCounts(updateList);
                 if (update) {
                     updatePlayCounts(updateList);
@@ -230,7 +237,7 @@ public class Mezzmo extends BatchJobV2{
                 albumTO.getName();
     }
 
-    public void listErrors(List<MGOFileAlbumCompositeTO> updateList, CSVFormat csvFileFormat) {
+    public void listErrors(String basePath, List<MGOFileAlbumCompositeTO> updateList, CSVFormat csvFileFormat) {
 
         if (updateList != null && updateList.size() > 0) {
             FileWriter fileWriter = null;
@@ -239,8 +246,7 @@ public class Mezzmo extends BatchJobV2{
             System.out.println("==========================================");
             System.out.println("Total: " + updateList.size());
             try {
-                String filename = "/My Programs/OneDrive/Muziek/Database/MP3Songs.Errors." +
-                        DateFormatUtils.format(new Date(), "yyyyMMdd.HHmm") + ".csv";
+                String filename = basePath + "MP3Songs.Errors." + DateFormatUtils.format(new Date(), "yyyyMMdd.HHmm") + ".csv";
                 fileWriter = new FileWriter(filename);
                 csvFilePrinter = new CSVPrinter(fileWriter, csvFileFormat);
                 for (MGOFileAlbumCompositeTO fileAlbumCompositeTO : updateList) {
