@@ -62,4 +62,5 @@ Set The Default repository for Git Shell:
 Commit changes to the Remote
 * Change to another branch
 git checkout master
+git push
 git push RemoteHome master
