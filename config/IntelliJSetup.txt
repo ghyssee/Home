@@ -48,7 +48,7 @@ git pull RemoteHome master
 
 Push the local content to the remote server
 
-git push
+git push Home master
 (if not working git push -f)
 
 git push RemoteHome master
