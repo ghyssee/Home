@@ -59,3 +59,11 @@ Set The Default repository for Git Shell:
     Move to the end of the Target field
     Change --open-shell to --open-shell=c:\Projects\GitHub\Home
 
+Commit changes to the Remote
+* Change to another branch
+git checkout master
+* merge changes from RemoteHome to the master branch
+git merge RemoteHome/master
+git checkout RemoteHome/master
+git push RemoteHome master
+	
