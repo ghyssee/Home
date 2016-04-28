@@ -67,3 +67,5 @@ git merge RemoteHome/master
 git checkout RemoteHome/master
 git push RemoteHome master
 	
+git push
+	
