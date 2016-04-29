@@ -1,9 +1,12 @@
 package be.home.mezzmo.domain.dao.jdbc;
 
+import be.home.common.dao.jdbc.MezzmoDB;
 import be.home.common.dao.jdbc.SQLiteJDBC;
+import be.home.common.dao.jdbc.SQLiteUtils;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.MGOFileAlbumTO;
 import be.home.mezzmo.domain.model.MGOFileTO;
+import be.home.model.DataBaseConfiguration;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -12,7 +15,7 @@ import java.util.List;
 /**
  * Created by ghyssee on 9/02/2016.
  */
-public class MezzmoDAOImpl extends SQLiteJDBC {
+public class MezzmoDAOImpl extends MezzmoDB {
 
     private static final String FILE_SELECT = "select file from MGOFile where File like '%Boyzone%';";
 
@@ -66,11 +69,11 @@ public class MezzmoDAOImpl extends SQLiteJDBC {
         return col;
     }
 
-    public static void selectFile()
+    public void selectFile()
     {
         Statement stmt = null;
         try {
-            Connection c = SQLiteJDBC.getInstance().getConnection();
+            Connection c = getInstance().getConnection();
 
             stmt = c.createStatement();
             ResultSet rs = stmt.executeQuery( FILE_SELECT );
@@ -88,13 +91,13 @@ public class MezzmoDAOImpl extends SQLiteJDBC {
         System.out.println("Operation done successfully");
     }
 
-    public static List<MGOFileAlbumCompositeTO> getFileAlbum(String album)
+    public List<MGOFileAlbumCompositeTO> getFileAlbum(String album)
     {
         System.out.println("Get List of Mp3's for specific album(s)");
         PreparedStatement stmt = null;
         List<MGOFileAlbumCompositeTO> list = new ArrayList<MGOFileAlbumCompositeTO>();
         try {
-            Connection c = SQLiteJDBC.getInstance().getConnection();
+            Connection c = getInstance().getConnection();
 
             //stmt = c.createStatement();
             stmt = c.prepareStatement(FILEALBUM_SELECT);
@@ -110,9 +113,9 @@ public class MezzmoDAOImpl extends SQLiteJDBC {
                 fileTO.setFileTitle(rs.getString("FILETITLE"));
                 fileTO.setPlayCount(rs.getInt("PLAYCOUNT"));
                 fileTO.setRanking(rs.getInt("RANKING"));
-                fileTO.setDateLastPlayed(convertToDate(rs.getLong("DATELASTPLAYED")));
+                fileTO.setDateLastPlayed(SQLiteUtils.convertToDate(rs.getLong("DATELASTPLAYED")));
                 Long f= rs.getLong("DATELASTPLAYED");
-                convertToDate(f);
+                SQLiteUtils.convertToDate(f);
                 fileAlbumTO.setId(rs.getInt("FILEALBUMID"));
                 fileAlbumTO.setName(rs.getString("ALBUMNAME"));
                 list.add(fileAlbumComposite);
@@ -127,29 +130,13 @@ public class MezzmoDAOImpl extends SQLiteJDBC {
         return list;
     }
 
-    public static java.util.Date convertToDate(Long f){
-        if (f != null && f.longValue() != 0) {
-            java.util.Date date = new java.util.Date(f * 1000);
-            return date;
-        }
-        return null;
-    }
-
-    public static long convertDateToLong(java.util.Date date){
-        if (date != null) {
-            long longDate = date.getTime() / 1000;
-            return longDate;
-        }
-        return 0;
-    }
-
-    public static List<MGOFileTO> getFiles(MGOFileAlbumCompositeTO compSearchTO)
+    public List<MGOFileTO> getFiles(MGOFileAlbumCompositeTO compSearchTO)
     {
         //System.out.println("Get List of Mp3's for specific FileTitle");
         PreparedStatement stmt = null;
         List<MGOFileTO> list = new ArrayList<MGOFileTO>();
         try {
-            Connection c = SQLiteJDBC.getInstance().getConnection();
+            Connection c = getInstance().getConnection();
 
             //stmt = c.createStatement();
             stmt = c.prepareStatement(FILE_SELECT_TITLE);
@@ -180,20 +167,20 @@ public class MezzmoDAOImpl extends SQLiteJDBC {
         return list;
     }
 
-    public static int updatePlayCount(String fileID, String album, int playCount, java.util.Date dateLastPlayed) throws SQLException {
+    public int updatePlayCount(String fileID, String album, int playCount, java.util.Date dateLastPlayed) throws SQLException {
         //System.out.println("Get List of Mp3's for specific FileTitle");
         PreparedStatement stmt = null;
         List<MGOFileTO> list = new ArrayList<MGOFileTO>();
         Connection c = null;
         int rec = 0;
         try {
-            c = SQLiteJDBC.getInstance().getConnection();
+            c = getInstance().getConnection();
 
             //stmt = c.createStatement();
             stmt = c.prepareStatement(FILE_UPDATE_PLAYCOUNT);
             int idx = 1;
             stmt.setInt(idx++, playCount);
-            stmt.setLong(idx++, convertDateToLong(dateLastPlayed));
+            stmt.setLong(idx++, SQLiteUtils.convertDateToLong(dateLastPlayed));
             stmt.setString(idx++, fileID);
             stmt.setInt(idx++, playCount);
             stmt.setString(idx++, album == null ? "%" : album);
@@ -220,4 +207,5 @@ public class MezzmoDAOImpl extends SQLiteJDBC {
         return rec;
         //System.out.println("Number of rows retrieved: " + list.size());
     }
+
 }

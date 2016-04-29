@@ -3,6 +3,7 @@ package be.home.common.utils;
 import org.apache.commons.io.input.BOMInputStream;
 
 import java.io.*;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -36,33 +37,12 @@ public class FileUtils {
 
 	public static String stripIllegalCharsFromFileName(String filename) {
 
-		String newFileName = filename.replace("/", "-");
-		newFileName = newFileName.replace("?", " ");
-		newFileName = newFileName.replace("*", " ");
-		newFileName = newFileName.replace("�", "'");
-		newFileName = newFileName.replace("�", "ae");
-		newFileName = newFileName.replace("�", "AE");
-		newFileName = newFileName.replace("�", "N");
-		newFileName = newFileName.replace("�", "n");
-		newFileName = newFileName.replaceAll("[����????]", "e");
-		newFileName = newFileName.replaceAll("[����]", "u");
-		newFileName = newFileName.replaceAll("[����]", "i");
-		newFileName = newFileName.replaceAll("[�����??�]", "a");
-		newFileName = newFileName.replaceAll("[������]", "o");
-		newFileName = newFileName.replaceAll("[��]", "y");
-		newFileName = newFileName.replaceAll("[�????]", "c");
-
-		newFileName = newFileName.replaceAll("[�]", "E"); // some data was
-		// corrupted with
-		// this character
-		newFileName = newFileName.replaceAll("[����????]", "E");
-		newFileName = newFileName.replaceAll("[����]", "U");
-		newFileName = newFileName.replaceAll("[����]", "I");
-		newFileName = newFileName.replaceAll("[����??]", "A");
-		newFileName = newFileName.replaceAll("[�����]", "O");
-		newFileName = newFileName.replaceAll("[�]", "Y");
-		newFileName = newFileName.replaceAll("[�????]", "C");
-		newFileName = newFileName.replaceAll("[����^]", " ");
+		String newFileName = null;
+		try {
+			newFileName = URLEncoder.encode(filename, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
 
 		return newFileName;
 

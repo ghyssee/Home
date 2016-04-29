@@ -2,10 +2,11 @@ package be.home.common.logging;
 
 import java.io.*;
 import java.util.Date;
+
+import be.home.common.utils.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import be.home.common.exceptions.ApplicationException;
-import be.home.common.utils.FileUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,7 @@ public class Log4GE {
 	}
 
 	public Log4GE(String logPath, String logFile) {
-		this.logFile = new File(FileUtils.joinPathAndFile(logPath, logFile));
+		this.logFile = new File(be.home.common.utils.FileUtils.joinPathAndFile(logPath, logFile));
         System.out.println("LOG File = " + this.logFile.getAbsolutePath());
 		open();
 

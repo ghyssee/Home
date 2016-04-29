@@ -37,6 +37,15 @@ public class ConfigTO {
         }
     }
 
+    public class Mezzmo {
+        public String database;
+        public String toString() {
+            StringBuilder b = new StringBuilder();
+            b.append("Mezzmo Database: " + database + "\n");
+            return b.toString();
+        }
+    }
+
     public class Parts {
         public String id;
         public String name;
@@ -88,6 +97,7 @@ public class ConfigTO {
         public Log4J log4J;
         public Wiki wiki;
         public Movies movies;
+        public Mezzmo mezzmo;
         public List <Parts> parts = new ArrayList <Parts>();
 
         public String getFullPathConfigDir(){
