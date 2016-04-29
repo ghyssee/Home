@@ -25,7 +25,8 @@ public class SQLiteJDBC
         if (database == null){
             throw new RuntimeException("DB Id Not Found: " + db);
         }
-        File file = new File(database.path + database.name);
+        String path = database.path == null ? SQLiteJDBC.config.defaultPath : database.path;
+        File file = new File(path + database.name);
         if (!file.exists()){
             throw new RuntimeException("DB Not Found: " + file.getAbsolutePath());
         }
