@@ -5,9 +5,6 @@
    },
    "logDir" : "logsV3",
    "logFile" : "log/result.log",
-   "mezzmo" : {
-      "database" : "c:/My Data/Mezzmo/Mezzmo.db"
-   },
    "movies" : {
       "excludePaths" : [
          {
