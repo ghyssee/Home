@@ -1,15 +1,18 @@
 package be.home.main;
 
+import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.dao.jdbc.SQLiteUtils;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.WinUtils;
-import be.home.mezzmo.domain.dao.jdbc.MezzmoDAOImpl;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.MGOFileAlbumTO;
 import be.home.mezzmo.domain.model.MGOFileTO;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.model.ConfigTO;
+import be.home.model.DataBaseConfiguration;
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
@@ -50,6 +53,7 @@ public class Mezzmo extends BatchJobV2{
         Mezzmo instance = new Mezzmo();
         try {
             config = instance.init();
+            instance.test();
             instance.run();
         }
         catch (FileNotFoundException e){
@@ -60,16 +64,33 @@ public class Mezzmo extends BatchJobV2{
 
     }
 
+    public void test(){
+        InputStream i = null;
+        try {
+            i = new FileInputStream(workingDir + "/config/databases.json");
+            Reader reader = new InputStreamReader(i, "UTF-8");
+            JsonReader r = new JsonReader(reader);
+            Gson gson = new Gson();
+            DataBaseConfiguration config = gson.fromJson(r, DataBaseConfiguration.class);
+            SQLiteJDBC.config = config;
+            r.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
     @Override
     public void run() {
         final String batchJob = "Mezzmo Synchronisation";
-        log4GE = new Log4GE(config.logDir, config.movies.log);
-        log4GE.start(batchJob);
-        log4GE.info("test");
-        log4GE.addColumn("Status", 20);
-        //log4GE.addColumn("Movie", 100);
-        //log4GE.addColumn("Description", 200);
-        log4GE.printHeaders();
+        //log4GE = new Log4GE(config.logDir, config.movies.log);
+        //log4GE.start(batchJob);
+        //log4GE.info("test");
+        //log4GE.addColumn("Status", 20);
+        //log4GE.printHeaders();
         log.info("test");
 
         //processCSV(base + "test.csv", UPDATE);
@@ -80,7 +101,7 @@ public class Mezzmo extends BatchJobV2{
         if (base == null){
             throw new RuntimeException("Problem Getting OneDrive Path");
         }
-        System.out.println("OneDrive Path: " + base);
+        log.info("OneDrive Path: " + base);
         base += "\\Muziek\\Export\\";
 
         processCSV(base, "MP3SongsWithPlayCount.V4_TEST.csv", UPDATE);
@@ -154,7 +175,8 @@ public class Mezzmo extends BatchJobV2{
     }
 
     public void getFileAlbums() {
-        List<MGOFileAlbumCompositeTO> list = MezzmoDAOImpl.getFileAlbum("Ultratop 50 2015%");
+        /*
+        List<MGOFileAlbumCompositeTO> list = getMezzmoService().getFileAlbum("Ultratop 50 2015%");
         for (MGOFileAlbumCompositeTO comp : list) {
             MGOFileTO fileTO = comp.getFileTO();
             MGOFileAlbumTO fileAlbumTO = comp.getFileAlbumTO();
@@ -164,7 +186,7 @@ public class Mezzmo extends BatchJobV2{
             System.out.println("playCount = " + fileTO.getPlayCount());
             System.out.println("ranking = " + fileTO.getRanking());
             System.out.println("DateLastPlayed = " + fileTO.getDateLastPlayed());
-        }
+        }*/
     }
 
     public List<MGOFileAlbumCompositeTO> getListOfMP3FilesToUpdate(String fileID, String file, String playCount, String album, String dateLastPlayed, List<MGOFileAlbumCompositeTO> errorList) {
@@ -173,7 +195,7 @@ public class Mezzmo extends BatchJobV2{
         MGOFileAlbumCompositeTO compSearchTO = new MGOFileAlbumCompositeTO();
         compSearchTO.getFileTO().setFileTitle(fileID);
         compSearchTO.getFileAlbumTO().setName(album);
-        List<MGOFileTO> list = MezzmoDAOImpl.getFiles(compSearchTO);
+        List<MGOFileTO> list = getMezzmoService().getFiles(compSearchTO);
         List<MGOFileAlbumCompositeTO> updateList = new ArrayList<MGOFileAlbumCompositeTO>();
         MGOFileAlbumCompositeTO fileAlbumCompositeTO = new MGOFileAlbumCompositeTO();
         fileAlbumCompositeTO.getFileTO().setFileTitle(fileID);
@@ -243,7 +265,7 @@ public class Mezzmo extends BatchJobV2{
             FileWriter fileWriter = null;
             CSVPrinter csvFilePrinter = null;
             System.out.println("List Of ERRORS Found");
-            System.out.println("==========================================");
+            System.out.println(StringUtils.repeat('=', 100));
             System.out.println("Total: " + updateList.size());
             try {
                 String filename = basePath + "MP3Songs.Errors." + DateFormatUtils.format(new Date(), "yyyyMMdd.HHmm") + ".csv";
@@ -292,10 +314,11 @@ public class Mezzmo extends BatchJobV2{
     }
 
         public static MezzmoServiceImpl getMezzmoService(){
-            if (mezzmoService == null){
-                mezzmoService = new MezzmoServiceImpl();
+
+            if (mezzmoService == null) {
+                return MezzmoServiceImpl.getInstance();
             }
-       return mezzmoService;
+            return mezzmoService;
     }
 }
 

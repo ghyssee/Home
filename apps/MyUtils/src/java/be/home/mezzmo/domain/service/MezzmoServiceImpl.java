@@ -12,6 +12,11 @@ import java.util.List;
  */
 public class MezzmoServiceImpl {
 
+    private static MezzmoServiceImpl instance = null;
+
+    protected MezzmoServiceImpl(){
+    }
+
 
     public int updatePlayCount(String fileID, String album, int playCount, java.util.Date dateLastPlayed) throws SQLException {
         MezzmoBO bo = new MezzmoBO();
@@ -24,5 +29,16 @@ public class MezzmoServiceImpl {
 
     }
 
+    public List<MGOFileTO> getFiles(MGOFileAlbumCompositeTO compSearchTO){
+        MezzmoBO bo = new MezzmoBO();
+        return bo.getFiles(compSearchTO);
+    }
+
+    public synchronized static MezzmoServiceImpl getInstance() {
+        if(instance == null) {
+            instance = new MezzmoServiceImpl();
+        }
+        return instance;
+    }
 
     }
