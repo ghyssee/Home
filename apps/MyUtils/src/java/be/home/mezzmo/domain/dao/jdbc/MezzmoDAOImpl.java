@@ -2,6 +2,7 @@ package be.home.mezzmo.domain.dao.jdbc;
 
 import be.home.common.dao.jdbc.MezzmoDB;
 import be.home.common.dao.jdbc.SQLiteJDBC;
+import be.home.common.dao.jdbc.SQLiteUtils;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.MGOFileAlbumTO;
 import be.home.mezzmo.domain.model.MGOFileTO;
@@ -112,9 +113,9 @@ public class MezzmoDAOImpl extends MezzmoDB {
                 fileTO.setFileTitle(rs.getString("FILETITLE"));
                 fileTO.setPlayCount(rs.getInt("PLAYCOUNT"));
                 fileTO.setRanking(rs.getInt("RANKING"));
-                fileTO.setDateLastPlayed(convertToDate(rs.getLong("DATELASTPLAYED")));
+                fileTO.setDateLastPlayed(SQLiteUtils.convertToDate(rs.getLong("DATELASTPLAYED")));
                 Long f= rs.getLong("DATELASTPLAYED");
-                convertToDate(f);
+                SQLiteUtils.convertToDate(f);
                 fileAlbumTO.setId(rs.getInt("FILEALBUMID"));
                 fileAlbumTO.setName(rs.getString("ALBUMNAME"));
                 list.add(fileAlbumComposite);
@@ -127,22 +128,6 @@ public class MezzmoDAOImpl extends MezzmoDB {
         }
         System.out.println("Number of rows retrieved: " + list.size());
         return list;
-    }
-
-    public java.util.Date convertToDate(Long f){
-        if (f != null && f.longValue() != 0) {
-            java.util.Date date = new java.util.Date(f * 1000);
-            return date;
-        }
-        return null;
-    }
-
-    public long convertDateToLong(java.util.Date date){
-        if (date != null) {
-            long longDate = date.getTime() / 1000;
-            return longDate;
-        }
-        return 0;
     }
 
     public List<MGOFileTO> getFiles(MGOFileAlbumCompositeTO compSearchTO)
@@ -195,7 +180,7 @@ public class MezzmoDAOImpl extends MezzmoDB {
             stmt = c.prepareStatement(FILE_UPDATE_PLAYCOUNT);
             int idx = 1;
             stmt.setInt(idx++, playCount);
-            stmt.setLong(idx++, convertDateToLong(dateLastPlayed));
+            stmt.setLong(idx++, SQLiteUtils.convertDateToLong(dateLastPlayed));
             stmt.setString(idx++, fileID);
             stmt.setInt(idx++, playCount);
             stmt.setString(idx++, album == null ? "%" : album);
