@@ -1,14 +1,14 @@
 {
-"defaultPath" : "c:/My Data/Mezzmo/",
-"databases" :  [
+   "defaultPath" : "c:/My Data/Mezzmo/",
+   "databases" : [
       {
          "id" : "MEZZMO",
-		 "path": "c:/My Data/Mezzmo/",
+         "path" : "c:/My Data/Mezzmo/",
          "name" : "mezzmo.db"
       },
       {
          "id" : "IPOD",
-		 "path": "c:/My Data/Mezzmo/",
+         "path" : "c:/My Data/Mezzmo/",
          "name" : "ipod.db"
       }
    ]

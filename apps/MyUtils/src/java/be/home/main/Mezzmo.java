@@ -53,7 +53,7 @@ public class Mezzmo extends BatchJobV2{
         Mezzmo instance = new Mezzmo();
         try {
             config = instance.init();
-            instance.test();
+            SQLiteJDBC.initialize(workingDir);
             instance.run();
         }
         catch (FileNotFoundException e){
@@ -63,25 +63,6 @@ public class Mezzmo extends BatchJobV2{
         }
 
     }
-
-    public void test(){
-        InputStream i = null;
-        try {
-            i = new FileInputStream(workingDir + "/config/databases.json");
-            Reader reader = new InputStreamReader(i, "UTF-8");
-            JsonReader r = new JsonReader(reader);
-            Gson gson = new Gson();
-            DataBaseConfiguration config = gson.fromJson(r, DataBaseConfiguration.class);
-            SQLiteJDBC.config = config;
-            r.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
 
     @Override
     public void run() {
@@ -104,7 +85,7 @@ public class Mezzmo extends BatchJobV2{
         log.info("OneDrive Path: " + base);
         base += "\\Muziek\\Export\\";
 
-        processCSV(base, "MP3SongsWithPlayCount.V5.csv", UPDATE);
+        processCSV(base, "MP3Songs.Errors.20160501.1537.csv", UPDATE);
         //processCSV(base + "MP3SongsWithPlayCount_Fixes.V2.csv", UPDATE);
         //getFileAlbums();
 
