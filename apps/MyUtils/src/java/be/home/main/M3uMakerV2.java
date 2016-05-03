@@ -26,39 +26,14 @@ public class M3uMakerV2 extends BatchJobV2 {
 
 
     public static void main(String args[])  {
-        M3uMaker instance = new M3uMaker();
+        M3uMakerV2 instance = new M3uMakerV2();
         boolean fileRenamed = false;
         try {
             config = instance.init();
             System.out.println("Full Path Config Dir = " + config.getFullPathConfigDir());
             ultratopConfig = instance.init(config.getFullPathConfigDir() + "/UltratopConfig.json");
             System.out.println(config.toString());
-
-
-            for (UltratopConfig.Year year : ultratopConfig.years){
-                System.out.println(StringUtils.repeat("*", 200));
-                System.out.println("YEAR    : " + year.year);
-                System.out.println("LISTFILE: " + year.listFile);
-                System.out.println("ENABLED : " + year.enabled);
-                System.out.println(StringUtils.repeat("*", 200));
-                if (year.enabled) {
-                    for (UltratopConfig.Month m3uMonth : year.m3uMonth) {
-                        System.out.println("MONTH ID       : " + m3uMonth.id);
-                        System.out.println("MONTH BASEDIR  : " + m3uMonth.baseDir);
-                        System.out.println("MONTH INPUTFILE: " + m3uMonth.inputFile);
-                        System.out.println("MONTH ENABLED  : " + m3uMonth.enabled);
-                        System.out.println(StringUtils.repeat("=", 200));
-                        if (m3uMonth.enabled){
-                            fileRenamed = fileRenamed || instance.run(ultratopConfig, year, m3uMonth);
-                        }
-                    }
-                }
-                System.out.println();
-                if (fileRenamed){
-                    System.out.println("File(s) were renamed. You should run Mp3ListMaker to update the year list for " + year.year);
-                    System.out.println();
-                }
-            }
+            instance.processUltratopConfigurationFile(ultratopConfig);
 
             /*
             for (ConfigTO.Parts part : config.parts){
@@ -91,7 +66,7 @@ public class M3uMakerV2 extends BatchJobV2 {
                     System.out.println("MONTH ENABLED  : " + m3uMonth.enabled);
                     System.out.println(StringUtils.repeat("=", 200));
                     if (m3uMonth.enabled){
-                        run(ultratopConfig, year, m3uMonth);
+                        processMonth(ultratopConfig, year, m3uMonth);
                     }
                 }
             }
@@ -100,7 +75,7 @@ public class M3uMakerV2 extends BatchJobV2 {
     }
 
 
-    public boolean run(UltratopConfig.Config m3u, UltratopConfig.Year year, UltratopConfig.Month m3uMonth) {
+    public boolean processMonth(UltratopConfig.Config m3u, UltratopConfig.Year year, UltratopConfig.Month m3uMonth) {
 
         final String batchJob = "M3u";
         log4GE = new Log4GE(config.wiki.resultLog);
@@ -109,53 +84,32 @@ public class M3uMakerV2 extends BatchJobV2 {
         //log.info("Batchjob " + batchJob + " started on " + new Date());
         String baseFolder = m3u.baseDir + File.separator + m3uMonth.baseDir + File.separator;
         String inputFile =  baseFolder + m3uMonth.inputFile;
-        List <M3uTO> ultratopList = null;
-        List <M3uTO> renameList = new ArrayList <M3uTO> ();
-        List <M3uTO> errorBaseList = new ArrayList <M3uTO> ();
+        List <M3uTO> songsOfUltratop = null;
         boolean fileRenamed = false;
         try {
-            ultratopList = getSongsFromUltratopListFile(inputFile);
-            validateM3uList(ultratopList, inputFile);
-            List <M3uTO> listOfMP3Files = getSongsFromYearListFile(getFullPathYearListFile(year.listFile));
-            validateM3uList(listOfMP3Files, getFullPathYearListFile(year.listFile));
-            lookupMP3Songs(ultratopList, listOfMP3Files, m3uMonth.inputFile, baseFolder);
-            List <M3uTO> baseDirList = lookupMP3InBaseDirectory(baseFolder, ultratopList,listOfMP3Files );
-            int trackNr = 51;
-            for (M3uTO line : baseDirList){
-                switch (line.getStatus()) {
-                    case M3uTO.STATUS_BASE_OK:
-                        //System.out.println("BASE OK: " + line.getOriginalLine());
-                        String track = StringUtils.leftPad(String.valueOf(trackNr), 2, "0");
-                        if (track.equals(line.getTrack())){
-                            //System.out.println("NO RENAME necessary for " + line.getOriginalLine());
-                        }
-                        else {
-                            //System.out.println("Rename " + line.getOriginalLine() + " TO " + trackNr + " " + line.getArtist() + " - " + line.getSong());
-                            line.setTrack(track);
-                            renameList.add(line);
-                        }
-                        trackNr++;
-                        break;
-                    case M3uTO.MATCH_FOUND:
-                        //System.out.println("OK: " + line.getOriginalLine());
-                        break;
-                    case M3uTO.STATUS_OK:
-                        //System.out.println("OK: " + line.getOriginalLine());
-                        break;
-                    case M3uTO.ERROR_BASE_SONG_INFO:
-                        errorBaseList.add(line);
-                        break;
-                    case M3uTO.RENAME:
-                        //System.out.println(line.getErrorMessage());
-                        renameList.add(line);
-                        break;
-                    default:
-                        System.out.println(line.getErrorMessage());
-                        break;
+            songsOfUltratop = getSongsFromUltratopListFile(inputFile);
+            List <M3uTO> songsOfYearList = processYearList(year);
+            List <M3uTO> baseDirList = getFileList(baseFolder);
+            matchUltratopWithYearList(songsOfUltratop, songsOfYearList);
+            matchUltratopWithYearList(songsOfUltratop, baseDirList);
+
+            makePlayList(songsOfUltratop, baseFolder);
+            boolean errorFound = false;
+            for (M3uTO song : songsOfUltratop){
+                if (song.getM3uSong() == null){
+                    if (!errorFound){
+                        errorFound = true;
+                        System.err.println("ERRORS Found");
+                        System.err.println(StringUtils.repeat('=', 100));
+                    }
+                    System.err.println("No Match Found: " + song.getLine());
                 }
+                //System.out.println("Track: " + song.getTrack() + " " + song.getM3uSong());
             }
-            fileRenamed = printResult(ultratopList, renameList, errorBaseList);
-            makeM3uFile(ultratopList, baseFolder);
+            if (errorFound){
+                System.err.println(StringUtils.repeat('=', 100));
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -170,144 +124,7 @@ public class M3uMakerV2 extends BatchJobV2 {
         return config.oneDriveDir + File.separator + listFile;
     }
 
-    private boolean printResult(List <M3uTO> ultratopList, List <M3uTO> renameList, List <M3uTO> errorBaseList){
-        System.out.println();
-        System.out.println("RESULT");
-        System.out.println(StringUtils.repeat("=", 200));
-        boolean printHeader = true;
-        boolean errorFound = false;
-        boolean fileRenamed = false;
-        for (M3uTO ultratopSong : ultratopList){
-            switch (ultratopSong.getStatus()) {
-                case M3uTO.STATUS_OK:
-                    //System.out.println("ULTRATOP OK: " + ultratopSong.getOriginalLine());
-                    break;
-                case M3uTO.STATUS_ERROR:
-                    errorFound = true;
-                    if (printHeader){
-                        printHeader = false;
-                        System.out.println();
-                        System.out.println("ULTRATOP ERRORS");
-                        System.out.println("===============");
-                    }
-                    System.out.println("ERROR: " + ultratopSong.getOriginalLine());
-                    break;
-                case M3uTO.NO_MATCH_FOUND:
-                    errorFound = true;
-                    if (printHeader){
-                        printHeader = false;
-                        System.out.println();
-                        System.out.println("ULTRATOP ERRORS");
-                        System.out.println("===============");
-                    }
-                    System.out.println("NO MATCH FOUND: " + ultratopSong.getOriginalLine());
-                    break;
-            }
-        }
-        if (renameList.size() > 0){
-            errorFound = true;
-            System.out.println();
-            System.out.println("RENAMING THE FOLLOWING FILES");
-            System.out.println("============================");
-            if (ultratopConfig.rename){
-                System.out.println("STATUS: RENAMING ENABLED");
-            }
-            else {
-                System.out.println("STATUS: RENAMING DISABLED");
-            }
-            for (M3uTO renameSong : renameList){
-                System.out.println("ORIGINAL NAME: " + renameSong.getMp3File().getAbsoluteFile());
-                File newFile = new File(renameSong.getMp3File().getParent() + File.separator + renameSong.getTrack() + " " +
-                        renameSong.getArtist() + SPLIT_SONG + renameSong.getSong() + "." + FilenameUtils.getExtension(renameSong.getMp3File().getName()));
-                System.out.println("NEW NAME     : " + newFile.getAbsolutePath());
-                if (ultratopConfig.rename){
-                    if (renameSong.getMp3File().renameTo(newFile)) {
-                        System.out.println("STATUS: Renamed");
-                        fileRenamed = true;
-                    }
-                    else {
-                        System.err.println("STATUS: ERROR");
-                    }
-                }
-                System.out.println(StringUtils.repeat("=",200));
-            }
-        }
-        if (errorBaseList.size() > 0) {
-            errorFound = true;
-            System.out.println();
-            System.out.println("BASELIST ERRORLIST");
-            System.out.println("==================");
-            for (M3uTO errorSong : errorBaseList) {
-                System.out.println("ERROR Getting info from " + errorSong.getMp3File().getAbsolutePath());
-                System.out.println(StringUtils.repeat("=", 200));
-            }
-        }
-        if (!errorFound){
-            System.out.println("NO PROBLEMS FOUND");
-        }
-        System.out.println(StringUtils.repeat("=", 200));
-        return (fileRenamed);
-    }
-
-    private List  <M3uTO> lookupMP3InBaseDirectory(String baseDir, List <M3uTO> ultratopList, List <M3uTO> yearList){
-        File folder = new File(baseDir);
-        File[] listOfFiles = folder.listFiles();
-        List <M3uTO> baseDirList = new ArrayList <M3uTO> ();
-        for (int i=0; i < listOfFiles.length; i++){
-            File file = listOfFiles[i];
-            if (file.getName().toUpperCase().endsWith(".MP3")) {
-                String strippedLine = file.getName();
-                strippedLine = FilenameUtils.removeExtension(strippedLine);
-                M3uTO info = evaluateSong(strippedLine, "..\\" + folder.getName() + "\\" + file.getName());
-                info.setMp3File(listOfFiles[i]);
-                if (info.getStatus() == M3uTO.STATUS_OK){
-
-                    M3uTO lookupMP3 = lookupMP3Song(info, yearList);
-                    if (lookupMP3 != null){
-                        // found the base dir song in the year list, so no rename necessary
-                        info.setStatus(M3uTO.STATUS_OK);
-                    }
-                    else {
-                        info.setStatus(M3uTO.STATUS_BASE_OK);
-                    }
-                    baseDirList.add(info);
-                }
-                else {
-                    //info.setMp3File(listOfFiles[i]);
-                    info.setStatus(M3uTO.ERROR_BASE_SONG_INFO);
-                    info.setErrorMessage("lookupMP3InBaseDirectory: Problem getting song info for " + file.getName());
-                    baseDirList.add(info);
-                }
-            }
-        }
-        for (M3uTO ultratopSong: ultratopList){
-            // no matching song found yet in the year list file
-            // look it up in the base Dir
-            if (ultratopSong.getM3uSong() == null){
-                M3uTO lookupMP3 = lookupMP3Song(ultratopSong, baseDirList);
-                if (lookupMP3 != null){
-                    // we found a match, now check track number
-                    if (ultratopSong.getTrack().equals(lookupMP3.getTrack())){
-                        ultratopSong.setM3uSong(FilenameUtils.getName(lookupMP3.getOriginalLine()));
-                        lookupMP3.setStatus(M3uTO.STATUS_OK);
-                    }
-                    else {
-                        //System.out.println("Wrong track number " + ultratopSong.getLine());
-                        lookupMP3.setStatus(M3uTO.RENAME);
-                        lookupMP3.setTrack(ultratopSong.getTrack());
-                    }
-                }
-                else {
-                    ultratopSong.setStatus(M3uTO.NO_MATCH_FOUND);
-                }
-            }
-        }
-        return baseDirList;
-
-
-    }
-
-    private void makeM3uFile(List <M3uTO> ultratopList, String baseDir){
+    private void makePlayList(List<M3uTO> ultratopList, String baseDir){
         PrintWriter writer = null;
         //OutputStreamWriter writer = null;
         File listFile = new File(baseDir);
@@ -346,66 +163,6 @@ public class M3uMakerV2 extends BatchJobV2 {
         System.out.println("FINISHED: " + counter + " songs added" );
         System.out.println(StringUtils.repeat("*", 200));
         System.out.println();
-
-    }
-
-    private void lookupMP3Songs(List <M3uTO> ultratopList, List <M3uTO> ListOfMP3Files, String inputFile, String baseDir){
-
-        System.out.println("Matching MP3 songs");
-
-        boolean success = true;
-        File listFile = new File(baseDir);
-        String parent = listFile.getName();
-        for (M3uTO m3uTO: ultratopList){
-            M3uTO m3u = lookupMP3Song(m3uTO, ListOfMP3Files);
-            if (m3u == null){
-                //System.out.println("NO Match found for " + m3uTO.getLine());
-                success = false;
-            }
-            else {
-                File tmpFile = new File(m3u.getOriginalLine());
-                String parent2 = tmpFile.getParentFile().getName();
-                //System.out.println("Parent 1 = " + parent);
-                //System.out.println("Parent 2 = " + parent2);
-                if (parent.equalsIgnoreCase(parent2)){
-                    m3uTO.setM3uSong(FilenameUtils.getName(m3u.getOriginalLine()));
-                    //System.out.println(FilenameUtils.getName(m3u.getOriginalLine()));
-                }
-                else {
-                    m3uTO.setM3uSong(m3u.getOriginalLine());
-                }
-            }
-        }
-        if (success){
-            System.out.println("LOOKUP SUCCESSFULL: " + inputFile);
-        }
-        else {
-            System.err.println("LOOKUP ERRORS : " + inputFile);
-        }
-        System.out.println("Finished Matching MP3 songs");
-
-    }
-
-    private M3uTO lookupMP3Song(M3uTO song, List <M3uTO> listOfMP3Files ){
-
-        if (song.getStatus() == M3uTO.STATUS_OK){
-            String uniqueSong = getUniqueSong(song.getSong());
-            String uniqueArtist = getUniqueSong(song.getArtist());
-            for (M3uTO m3uTO: listOfMP3Files) {
-                if (m3uTO.getStatus() == M3uTO.STATUS_OK || m3uTO.getStatus() == M3uTO.STATUS_BASE_OK){
-                    //System.out.println("Comparing 1: " + getUniqueSong(song.getSong()));
-                    //System.out.println("Comparing 2: " + getUniqueSong(m3uTO.getSong()));
-                    if (uniqueSong.equals(getUniqueSong(m3uTO.getSong()))) {
-                        //System.out.println("Comparing 1: " + getUniqueSong(song.getArtist()));
-                        //System.out.println("Comparing 2: " + getUniqueSong(m3uTO.getArtist()));
-                        if (uniqueArtist.equals(getUniqueSong(m3uTO.getArtist()))) {
-                            return m3uTO;
-                        }
-                    }
-                }
-            }
-        }
-        return null;
 
     }
 
@@ -486,96 +243,144 @@ public class M3uMakerV2 extends BatchJobV2 {
         return tmpSong;
     }
 
-    private void validateM3uList(List <M3uTO> lines, String file){
-        boolean errorFound = false;
-        for (M3uTO m3uTO: lines){
-            if (m3uTO.getStatus() == M3uTO.STATUS_OK){
-                //System.out.println("     " + "Track  : " + m3uTO.getTrack());
-                //System.out.println("     " + "Artist : " + m3uTO.getArtist());
-                //System.out.println("     " + "Song   : " + m3uTO.getSong());
-            }
-            else {
-                System.err.println("m3u: Problem with line " + m3uTO.getOriginalLine());
-                errorFound = true;
-            }
-        }
-        if (!errorFound){
-            System.out.println(file + ": Processed OK (" + lines.size() + " songs found)");
-        }
-    }
+    private M3uTO getSongInfo(String strippedSongLine) {
 
-    private M3uTO evaluateSong(String strippedSongLine, String songLine){
-        String[] song = strippedSongLine.substring(3).split(SPLIT_SONG);
-        M3uTO m3u = new M3uTO();
-        m3u.setLine(strippedSongLine);
-        m3u.setOriginalLine(songLine);
+        // Song is in format <Track 2 Numbers><Space><Artist><Space>-<Space><Title>
+        // Minimum length is: 8
+        if (StringUtils.isBlank(strippedSongLine) || strippedSongLine.length() < 8){
+            throw new RuntimeException("Invalid format for line: + strippedSongLine");
+        }
+
+        String[] array = strippedSongLine.substring(3).split(SPLIT_SONG);
+        if (array.length < 2){
+            throw new RuntimeException("Invalid format for line: + strippedSongLine");
+        }
+        M3uTO song = new M3uTO();
+        song.setLine(strippedSongLine);
+        //m3u.setOriginalLine(songLine);
         String track = "";
-        switch (song.length) {
-            case 0:
-                m3u.setStatus(M3uTO.STATUS_ERROR);
-                m3u.setErrorMessage("No Artist or Song Title Found");
-                break;
-            case 1:
-                m3u.setStatus(M3uTO.STATUS_ERROR);
-                m3u.setErrorMessage("No Artist or Song Title Found");
-                break;
+        switch (array.length) {
             case 2:
-                m3u.setStatus(M3uTO.STATUS_OK);
+                //m3u.setStatus(M3uTO.STATUS_OK);
                 track = strippedSongLine.substring(0,2);
-                m3u.setArtist(song[0].trim());
-                m3u.setSong(song[1].trim());
-                m3u.setTrack(track);
+                song.setArtist(array[0].trim());
+                song.setSong(array[1].trim());
+                song.setTrack(track);
                 break;
             default:
-                m3u.setStatus(M3uTO.STATUS_OK);
+                //song.setStatus(M3uTO.STATUS_OK);
+                // join all other parts together in 1 string
                 track = strippedSongLine.substring(0,2);
-                m3u.setTrack(track);
-                m3u.setArtist(song[0].trim());
-                m3u.setSong(song[1].trim());
-                for (int i=2; i < song.length; i++){
-                    m3u.setSong(m3u.getSong()+song[i]);
+                song.setTrack(track);
+                song.setArtist(array[0].trim());
+                song.setSong(array[1].trim());
+                for (int i=2; i < array.length; i++){
+                    song.setSong(song.getSong()+array[i]);
                 }
                 break;
         }
-        return m3u;
+        return song;
     }
 
+    private List<M3uTO> processYearList(UltratopConfig.Year year) throws IOException {
 
-
-    private List<M3uTO> getSongsFromYearListFile(String inputFile) throws IOException {
-        System.out.println("Processing Year List " + inputFile);
+        String inputFile = getFullPathYearListFile(year.listFile);
+        System.out.println("Start Year List: " + inputFile);
         List <String> lines = new ArrayList<String>();
         File myFile = new File(inputFile);
         if (myFile.isFile()) {
             lines = FileUtils.getContents(new File(inputFile), "UTF-8");
         }
-        List <M3uTO> newLines = new ArrayList();
+        List <M3uTO> songs = new ArrayList();
         //System.out.println(line);
         for(String line: lines) {
-            if (StringUtils.isBlank(line)) {
-            } else {
+            // ignore empty lines
+            if (!StringUtils.isBlank(line)) {
                 File tmpFile = new File(line);
                 String strippedLine = tmpFile.getName();
                 strippedLine = FilenameUtils.removeExtension(strippedLine);
-                newLines.add(evaluateSong(strippedLine, line));
+                M3uTO song = getSongInfo(strippedLine);
+                song.setM3uSong(line);
+                songs.add(song);
             }
         }
-        System.out.println("Finished Year List " + inputFile);
-        return newLines;
+        System.out.println("Finished Year List: " + inputFile);
+        return songs;
     }
 
     private List<M3uTO> getSongsFromUltratopListFile(String inputFile) throws IOException {
-        System.out.println("Getting Ultratop List " + inputFile);
+        System.out.println("Start: Ultratop List + " + inputFile);
         List <String> lines = FileUtils.getContents(new File(inputFile), "UTF-8");
-        List <M3uTO> newLines = new ArrayList();
+        List <M3uTO> songs = new ArrayList();
         for(String line: lines) {
             if (StringUtils.isBlank(line)) {
             } else {
-                newLines.add(evaluateSong(line, line));
+                songs.add(getSongInfo(line));
             }
         }
-        System.out.println("Finished Ultratop List " + inputFile);
-        return newLines;
+        System.out.println("Finished: Ultratop List");
+        return songs;
     }
 
+    private List <M3uTO> getFileList(String baseDir){
+        System.out.println("Start File List: " + baseDir);
+        File folder = new File(baseDir);
+        File[] listOfFiles = folder.listFiles();
+        List <M3uTO> baseDirList = new ArrayList <M3uTO> ();
+        for (int i=0; i < listOfFiles.length; i++){
+            File file = listOfFiles[i];
+            if (file.getName().toUpperCase().endsWith(".MP3")) {
+                String strippedLine = file.getName();
+                strippedLine = FilenameUtils.removeExtension(strippedLine);
+                M3uTO info = getSongInfo(strippedLine);
+                info.setM3uSong(file.getName());
+                baseDirList.add(info);
+            }
+        }
+        System.out.println("End File List: " + baseDir);
+        return baseDirList;
+    }
+
+    private void matchUltratopWithYearList(List <M3uTO> ultratopList, List <M3uTO> ListOfMP3Files){
+
+        System.out.println("Start: Match Ultratop With Year List");
+
+        boolean success = true;
+        for (M3uTO song: ultratopList) {
+            M3uTO foundSong = findSong(song, ListOfMP3Files);
+            System.out.println("Lookup: " + song.getLine());
+            if (foundSong != null){
+                song.setM3uSong(foundSong.getM3uSong());
+                //System.out.println("FOUND: " + foundSong.getM3uSong());
+            }
+            else {
+                System.out.println("NOT FOUND: " + song.getLine());
+            }
+        }
+        System.out.println("End: Match Ultratop With Year List");
+
+    }
+
+    private M3uTO findSong(M3uTO song, List <M3uTO> list ){
+
+        String uniqueSong = getUniqueSong(song.getSong());
+        String uniqueArtist = getUniqueSong(song.getArtist());
+        for (M3uTO m3uTO: list) {
+            //System.out.println("Comparing 1: " + getUniqueSong(song.getSong()));
+            //System.out.println("Comparing 2: " + getUniqueSong(m3uTO.getSong()));
+            if (uniqueSong.equals(getUniqueSong(m3uTO.getSong()))) {
+                //System.out.println("Comparing 1: " + getUniqueSong(song.getArtist()));
+                //System.out.println("Comparing 2: " + getUniqueSong(m3uTO.getArtist()));
+                if (uniqueArtist.equals(getUniqueSong(m3uTO.getArtist()))) {
+                    return m3uTO;
+                }
+            }
+        }
+        return null;
+
+    }
+
+
+
 }
+
