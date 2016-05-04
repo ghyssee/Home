@@ -1,13 +1,14 @@
 package be.home.main;
 
-import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.FileUtils;
+import be.home.common.utils.WinUtils;
 import be.home.model.ConfigTO;
 import be.home.model.M3uTO;
 import be.home.model.UltratopConfig;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -19,20 +20,18 @@ import java.util.List;
  */
 public class M3uMakerV2 extends BatchJobV2 {
 
-    public static Log4GE log4GE;
     public static ConfigTO.Config config;
     public static UltratopConfig.Config ultratopConfig;
     private static String SPLIT_SONG = " - ";
+    private static final Logger log = Logger.getLogger(M3uMakerV2.class);
 
 
     public static void main(String args[])  {
         M3uMakerV2 instance = new M3uMakerV2();
-        boolean fileRenamed = false;
         try {
             config = instance.init();
-            System.out.println("Full Path Config Dir = " + config.getFullPathConfigDir());
+            log.info("Full Path To Config Dir = " + config.getFullPathConfigDir());
             ultratopConfig = instance.init(config.getFullPathConfigDir() + "/UltratopConfig.json");
-            System.out.println(config.toString());
             instance.processUltratopConfigurationFile(ultratopConfig);
 
             /*
@@ -53,35 +52,29 @@ public class M3uMakerV2 extends BatchJobV2 {
 
     public void processUltratopConfigurationFile(UltratopConfig.Config config){
         for (UltratopConfig.Year year : config.years){
-            System.out.println(StringUtils.repeat("*", 200));
-            System.out.println("YEAR    : " + year.year);
-            System.out.println("LISTFILE: " + year.listFile);
-            System.out.println("ENABLED : " + year.enabled);
-            System.out.println(StringUtils.repeat("*", 200));
             if (year.enabled) {
+                log.info(StringUtils.repeat("*", 200));
+                log.info("YEAR    : " + year.year);
+                log.info("LISTFILE: " + year.listFile);
+                log.info("ENABLED : " + year.enabled);
+                log.info(StringUtils.repeat("*", 200));
                 for (UltratopConfig.Month m3uMonth : year.m3uMonth) {
-                    System.out.println("MONTH ID       : " + m3uMonth.id);
-                    System.out.println("MONTH BASEDIR  : " + m3uMonth.baseDir);
-                    System.out.println("MONTH INPUTFILE: " + m3uMonth.inputFile);
-                    System.out.println("MONTH ENABLED  : " + m3uMonth.enabled);
-                    System.out.println(StringUtils.repeat("=", 200));
                     if (m3uMonth.enabled){
+                        log.info("MONTH ID       : " + m3uMonth.id);
+                        log.info("MONTH BASEDIR  : " + m3uMonth.baseDir);
+                        log.info("MONTH INPUTFILE: " + m3uMonth.inputFile);
+                        log.info("MONTH ENABLED  : " + m3uMonth.enabled);
+                        log.info(StringUtils.repeat("=", 200));
                         processMonth(ultratopConfig, year, m3uMonth);
                     }
                 }
             }
-            System.out.println();
         }
     }
 
 
-    public boolean processMonth(UltratopConfig.Config m3u, UltratopConfig.Year year, UltratopConfig.Month m3uMonth) {
+    public void processMonth(UltratopConfig.Config m3u, UltratopConfig.Year year, UltratopConfig.Month m3uMonth) {
 
-        final String batchJob = "M3u";
-        log4GE = new Log4GE(config.wiki.resultLog);
-        log4GE.clear();
-        log4GE.start("Wiki Make CSV file");
-        //log.info("Batchjob " + batchJob + " started on " + new Date());
         String baseFolder = m3u.baseDir + File.separator + m3uMonth.baseDir + File.separator;
         String inputFile =  baseFolder + m3uMonth.inputFile;
         List <M3uTO> songsOfUltratop = null;
@@ -90,8 +83,8 @@ public class M3uMakerV2 extends BatchJobV2 {
             songsOfUltratop = getSongsFromUltratopListFile(inputFile);
             List <M3uTO> songsOfYearList = processYearList(year);
             List <M3uTO> baseDirList = getFileList(baseFolder);
-            matchUltratopWithYearList(songsOfUltratop, songsOfYearList);
-            matchUltratopWithYearList(songsOfUltratop, baseDirList);
+            matchUltratop(songsOfUltratop, songsOfYearList);
+            matchUltratop(songsOfUltratop, baseDirList);
 
             makePlayList(songsOfUltratop, baseFolder);
             boolean errorFound = false;
@@ -99,29 +92,27 @@ public class M3uMakerV2 extends BatchJobV2 {
                 if (song.getM3uSong() == null){
                     if (!errorFound){
                         errorFound = true;
-                        System.err.println("ERRORS Found");
-                        System.err.println(StringUtils.repeat('=', 100));
+                        log.error("ERRORS Found");
+                        log.error(StringUtils.repeat('=', 100));
                     }
-                    System.err.println("No Match Found: " + song.getLine());
+                    log.error("No Match Found: " + song.getLine());
                 }
                 //System.out.println("Track: " + song.getTrack() + " " + song.getM3uSong());
             }
             if (errorFound){
-                System.err.println(StringUtils.repeat('=', 100));
+                log.error(StringUtils.repeat('=', 100));
             }
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        //log.info("Batchjob " + batchJob + " ended on " + new Date());
-        log4GE.end();
-        return fileRenamed;
-
     }
 
     private String getFullPathYearListFile(String listFile) {
-        return config.oneDriveDir + File.separator + listFile;
+        String base = WinUtils.getOneDrivePath() + File.separator + listFile;
+        return base;
+
     }
 
     private void makePlayList(List<M3uTO> ultratopList, String baseDir){
@@ -129,7 +120,7 @@ public class M3uMakerV2 extends BatchJobV2 {
         //OutputStreamWriter writer = null;
         File listFile = new File(baseDir);
         File m3uFile = new File(baseDir + File.separator + listFile.getName() + ".m3u");
-        System.out.println("Making M3u File " + m3uFile);
+        log.info("Making M3u File " + m3uFile);
         int counter = 0;
         try {
             Charset charset = Charset.forName("UTF-8");
@@ -160,9 +151,9 @@ public class M3uMakerV2 extends BatchJobV2 {
                 writer.close();
             }
         }
-        System.out.println("FINISHED: " + counter + " songs added" );
-        System.out.println(StringUtils.repeat("*", 200));
-        System.out.println();
+        log.info("FINISHED: " + counter + " songs added");
+        log.info(StringUtils.repeat("*", 200));
+        log.info("");
 
     }
 
@@ -252,23 +243,20 @@ public class M3uMakerV2 extends BatchJobV2 {
         }
 
         String[] array = strippedSongLine.substring(3).split(SPLIT_SONG);
-        if (array.length < 2){
+        if (array == null || array.length < 2){
             throw new RuntimeException("Invalid format for line: + strippedSongLine");
         }
         M3uTO song = new M3uTO();
         song.setLine(strippedSongLine);
-        //m3u.setOriginalLine(songLine);
         String track = "";
         switch (array.length) {
             case 2:
-                //m3u.setStatus(M3uTO.STATUS_OK);
                 track = strippedSongLine.substring(0,2);
                 song.setArtist(array[0].trim());
                 song.setSong(array[1].trim());
                 song.setTrack(track);
                 break;
             default:
-                //song.setStatus(M3uTO.STATUS_OK);
                 // join all other parts together in 1 string
                 track = strippedSongLine.substring(0,2);
                 song.setTrack(track);
@@ -292,7 +280,6 @@ public class M3uMakerV2 extends BatchJobV2 {
             lines = FileUtils.getContents(new File(inputFile), "UTF-8");
         }
         List <M3uTO> songs = new ArrayList();
-        //System.out.println(line);
         for(String line: lines) {
             // ignore empty lines
             if (!StringUtils.isBlank(line)) {
@@ -309,7 +296,7 @@ public class M3uMakerV2 extends BatchJobV2 {
     }
 
     private List<M3uTO> getSongsFromUltratopListFile(String inputFile) throws IOException {
-        System.out.println("Start: Ultratop List + " + inputFile);
+        log.info("Start: Ultratop List + " + inputFile);
         List <String> lines = FileUtils.getContents(new File(inputFile), "UTF-8");
         List <M3uTO> songs = new ArrayList();
         for(String line: lines) {
@@ -318,12 +305,12 @@ public class M3uMakerV2 extends BatchJobV2 {
                 songs.add(getSongInfo(line));
             }
         }
-        System.out.println("Finished: Ultratop List");
+        log.info("Finished: Ultratop List");
         return songs;
     }
 
     private List <M3uTO> getFileList(String baseDir){
-        System.out.println("Start File List: " + baseDir);
+        log.info("Start File List: " + baseDir);
         File folder = new File(baseDir);
         File[] listOfFiles = folder.listFiles();
         List <M3uTO> baseDirList = new ArrayList <M3uTO> ();
@@ -337,27 +324,25 @@ public class M3uMakerV2 extends BatchJobV2 {
                 baseDirList.add(info);
             }
         }
-        System.out.println("End File List: " + baseDir);
+        log.info("End File List: " + baseDir);
         return baseDirList;
     }
 
-    private void matchUltratopWithYearList(List <M3uTO> ultratopList, List <M3uTO> ListOfMP3Files){
+    private void matchUltratop(List <M3uTO> ultratopList, List <M3uTO> ListOfMP3Files){
 
-        System.out.println("Start: Match Ultratop With Year List");
+        log.info("Start: Match Ultratop");
 
         boolean success = true;
         for (M3uTO song: ultratopList) {
-            M3uTO foundSong = findSong(song, ListOfMP3Files);
-            System.out.println("Lookup: " + song.getLine());
-            if (foundSong != null){
-                song.setM3uSong(foundSong.getM3uSong());
-                //System.out.println("FOUND: " + foundSong.getM3uSong());
-            }
-            else {
-                System.out.println("NOT FOUND: " + song.getLine());
+            if (song.getM3uSong() == null) {
+                M3uTO foundSong = findSong(song, ListOfMP3Files);
+                log.info("Lookup: " + song.getLine());
+                if (foundSong != null) {
+                    song.setM3uSong(foundSong.getM3uSong());
+                }
             }
         }
-        System.out.println("End: Match Ultratop With Year List");
+        log.info("End: Match Ultratop");
 
     }
 
