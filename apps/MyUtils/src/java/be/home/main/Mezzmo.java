@@ -85,8 +85,8 @@ public class Mezzmo extends BatchJobV2{
         log.info("OneDrive Path: " + base);
         base += "\\Muziek\\Export\\";
 
-        processCSV(base, "MP3Songs.Errors.20160501.1537.csv", UPDATE);
-        //processCSV(base + "MP3SongsWithPlayCount_Fixes.V2.csv", UPDATE);
+        //processCSV(base, "MezzmoDB.PlayCount.V07.csv", UPDATE);
+        processCSV(base, "MP3Songs.Errors.20160510.1447.csv", UPDATE);
         //getFileAlbums();
 
     }

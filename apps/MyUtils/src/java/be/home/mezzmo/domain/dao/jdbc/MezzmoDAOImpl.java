@@ -42,7 +42,15 @@ public class MezzmoDAOImpl extends MezzmoDB {
             " INNER JOIN MGOFileAlbum ON (MGOFileAlbum.ID = MGOFileAlbumRelationship.ID)" +
             " WHERE 1=1" +
             " AND MGOFile.FileTitle like ?" +
-            " AND MGOFileAlbum.data like ?"; //"'Ultratop 50 2015%'";
+            " AND MGOFileAlbum.data like ?";
+
+    private static final String FILE_PLAYCOUNT = "SELECT " + getColumns(COLUMNS) + " FROM MGOFileAlbumRelationship " +
+            " INNER JOIN MGOFile ON (MGOFileAlbumRelationship.FileID = MGOFile.ID)" +
+            " INNER JOIN MGOFileAlbum ON (MGOFileAlbum.ID = MGOFileAlbumRelationship.ID)" +
+            " INNER JOIN MGOFileExtension ON (MGOFileExtension.ID = MGOFile.extensionID)" +
+            " WHERE 1=1" +
+            " AND MGOFileExtension.data = 'mp3'" +
+            " AND MGOFile.PlayCount > 0";
 
     private static final String FILE_UPDATE_PLAYCOUNT = "UPDATE MGOFile " +
             " SET PlayCount = ? " +
@@ -207,5 +215,39 @@ public class MezzmoDAOImpl extends MezzmoDB {
         return rec;
         //System.out.println("Number of rows retrieved: " + list.size());
     }
+
+    public List<MGOFileAlbumCompositeTO> getMP3FilesWithPlayCount()
+    {
+        //System.out.println("Get List of Mp3's for specific FileTitle");
+        PreparedStatement stmt = null;
+        List<MGOFileAlbumCompositeTO> list = new ArrayList<MGOFileAlbumCompositeTO>();
+        try {
+            Connection c = getInstance().getConnection();
+
+            //stmt = c.createStatement();
+            stmt = c.prepareStatement(FILE_PLAYCOUNT);
+            //System.out.println(FILE_SELECT_TITLE);
+            ResultSet rs = stmt.executeQuery();
+            while ( rs.next() ) {
+                MGOFileAlbumCompositeTO fileAlbumComposite = new MGOFileAlbumCompositeTO();
+                MGOFileTO fileTO = fileAlbumComposite.getFileTO();
+                MGOFileAlbumTO fileAlbumTO = fileAlbumComposite.getFileAlbumTO();
+                fileTO.setFileTitle(rs.getString("FILETITLE"));
+                fileTO.setPlayCount(rs.getInt("PLAYCOUNT"));
+                fileTO.setFile(rs.getString("FILE"));
+                fileTO.setFile(rs.getString("DATELASTPLAYED"));
+                fileAlbumTO.setName(rs.getString("ALBUMNAME"));
+                list.add(fileAlbumComposite);
+            }
+            rs.close();
+            stmt.close();
+        } catch ( Exception e ) {
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            System.exit(0);
+        }
+        //System.out.println("Number of rows retrieved: " + list.size());
+        return list;
+    }
+
 
 }
