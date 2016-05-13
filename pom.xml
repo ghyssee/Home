@@ -262,6 +262,11 @@
 				<artifactId>jna-platform</artifactId>
 				<version>4.2.2</version>
 			</dependency>
+			<dependency>
+			  <groupId>com.mpatric</groupId>
+			  <artifactId>mp3agic</artifactId>
+			  <version>0.8.4</version>
+			</dependency>
 	</dependencies>
     </dependencyManagement>
 
