@@ -201,7 +201,7 @@ public class MezzmoDAOImpl extends MezzmoDB {
         System.err.println( e.getClass().getName() + ": " + e.getMessage() );
         if (c != null) {
             try {
-                System.err.print("Transaction is being rolled back");
+                System.err.println("Transaction is being rolled back");
                 c.rollback();
             } catch(SQLException excep) {
                 System.err.println( excep.getClass().getName() + ": " + excep.getMessage() );
