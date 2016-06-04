@@ -101,7 +101,7 @@ public class ConfigTO {
         public List <Parts> parts = new ArrayList <Parts>();
 
         public String getFullPathConfigDir(){
-            return oneDriveDir + "/" + configDir;
+            return configDir;
         }
 
         public void Config(){};

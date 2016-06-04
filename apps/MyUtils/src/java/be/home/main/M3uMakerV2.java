@@ -31,7 +31,8 @@ public class M3uMakerV2 extends BatchJobV2 {
         try {
             config = instance.init();
             log.info("Full Path To Config Dir = " + config.getFullPathConfigDir());
-            ultratopConfig = instance.init(config.getFullPathConfigDir() + "/UltratopConfig.json");
+            ultratopConfig = instance.init(WinUtils.getOneDrivePath() + File.separator +
+                    config.getFullPathConfigDir() + "/UltratopConfig.json");
             instance.processUltratopConfigurationFile(ultratopConfig);
 
             /*
@@ -225,6 +226,7 @@ public class M3uMakerV2 extends BatchJobV2 {
         tmpSong = tmpSong.replace(" (DEEPEND REMIX)", "");
         tmpSong = tmpSong.replace("Ø", "O");
         tmpSong = tmpSong.replace("$IGN", "SIGN");
+        tmpSong = tmpSong.replace("!", "I");
 
         return tmpSong.trim();
     }

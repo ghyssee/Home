@@ -79,13 +79,10 @@ public class Mezzmo extends BatchJobV2{
         //processCSV(base + "MP3SongsWithPlayCount_Fixes.V1.csv", UPDATE);
         //processCSV(base + "MP3SongsWithPlayCount.V2.csv", UPDATE);
         String base = WinUtils.getOneDrivePath();
-        if (base == null){
-            throw new RuntimeException("Problem Getting OneDrive Path");
-        }
         log.info("OneDrive Path: " + base);
         base += "\\Muziek\\Export\\";
 
-        processCSV(base, "MezzmoDB.PlayCount.V09.csv", UPDATE);
+        processCSV(base, "MezzmoDB.PlayCount.V12.csv", UPDATE);
         //processCSV(base, "MP3Songs.Errors.20160514.1502.csv", UPDATE);
         //getFileAlbums();
 

@@ -21,7 +21,8 @@ public class WinUtils {
                         "Software\\Microsoft\\SkyDrive\\", "UserFolder");
             }
             catch (Win32Exception ex2){
-            }
+                    throw new RuntimeException("Problem Getting OneDrive Path");
+                }
         }
         return path;
     }

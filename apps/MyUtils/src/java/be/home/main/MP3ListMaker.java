@@ -4,6 +4,7 @@ import be.home.common.constants.InitConstants;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.FileUtils;
+import be.home.common.utils.WinUtils;
 import be.home.model.ConfigTO;
 import be.home.model.M3uTO;
 import be.home.picmgt.common.CSVPrinter;
@@ -29,7 +30,7 @@ public class MP3ListMaker extends BatchJobV2 {
     private static String LIST_TITLE = "List 2016 V2.txt";
     private static String BASE_DIR = "r:/My Music/iPod";
     //private static String BASE_DIR = "g:/My Music/ultratop";
-    private static String DESTINATION_DIR = "c:/My Programs/OneDrive/Muziek/Lists/";
+    private static String DESTINATION_DIR = WinUtils.getOneDrivePath() + File.separator+ "Muziek/Lists/";
     private static String FILTER = "Ultratop 50 2016";
 
 
