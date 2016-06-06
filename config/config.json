@@ -5,6 +5,10 @@
    },
    "logDir" : "logsV3",
    "logFile" : "log/result.log",
+   "Mezzmo":{
+     "base": "h:/shared/Mijn Muziek",
+	 "playListPath": "Eric/Playlists"
+	},
    "movies" : {
       "excludePaths" : [
          {
@@ -42,8 +46,6 @@
       "stockPlace" : "HDD_102",
       "synchronizeDir" : "C:/Temp/YAMJ_TEST/My Movies"
    },
-   "oneDriveDir" : "C:/My Programs/OneDrive",
-   "oneDriveDir2" : "C:/My Programs/OneDrive",
    "parts" : [
       {
          "id" : "1",

@@ -3,6 +3,7 @@ package be.home.main;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.FileUtils;
+import be.home.common.utils.WinUtils;
 import be.home.model.ConfigTO;
 import be.home.model.M3uTO;
 import be.home.model.UltratopConfig;
@@ -144,7 +145,7 @@ public class M3uMaker extends BatchJobV2 {
     }
 
     private String getFullPathYearListFile(String listFile) {
-        return config.oneDriveDir + File.separator + listFile;
+        return WinUtils.getOneDrivePath() + File.separator + listFile;
     }
 
     private boolean printResult(List <M3uTO> ultratopList, List <M3uTO> renameList, List <M3uTO> errorBaseList){

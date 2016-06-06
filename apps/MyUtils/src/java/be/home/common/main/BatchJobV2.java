@@ -105,18 +105,49 @@ public abstract class BatchJobV2 {
     private Map <String,String> initParams(String args[], ParamTO requiredParams []){
 
         Map <String,String> params = new HashMap ();
+        String key = null;
+        String value = null;
+
+        if (args != null){
+            for (int i=0; i < args.length; i++) {
+                if ((i % 2) == 0) {
+                    if (!args[i].startsWith("-")) {
+                        printParameterList("Invalid argument : " + args[i] + "\n" + "Key should start with a -, seperated with e SPACE followed by the Value", requiredParams);
+                    }
+                    key = args[i];
+                } else {
+                    value = args[i];
+                    params.put(key.toUpperCase(), value);
+                }
+            }
+
+        }
+        return params;
+    }
+
+    private Map <String,String> initParamsOld(String args[], ParamTO requiredParams []){
+
+        Map <String,String> params = new HashMap ();
+        String key = null;
+        String value = null;
 
         if (args != null){
             for (int i=0; i < args.length; i++){
+                if ((i%2) == 0){
+
+                }
                 String cmds[] = args[i].split(" -");
-                if (cmds == null || !cmds[0].startsWith("-")){
-                    printParameterList("Invalid argument : " + args[i] + "\n" + "Key And Value should be seperated by a \"=\"", requiredParams);
+                System.out.println(" args length : " + args.length);
+                if (cmds == null){
+                    printParameterList("Invalid argument : " + args[i] + "\n" + "Key And Value should be seperated by a SPACE", requiredParams);
                 }
                 else {
                     for (int j=0; j < cmds.length; j++){
                         String param[] = cmds[j].split("=");
+                        System.out.println(" args[i] = " +  args[i]);
+                        System.out.println(" cmds[j] = " +  cmds[j]);
                         if (param == null || param.length != 2){
-                            printParameterList("Invalid argument : " + args[i] + "\n" + "Key And Value should be seperated by a \"=\"", requiredParams);
+                            printParameterList("Invalid argument : " + args[i] + "\n" + "Key And Value should be seperated by a SPACE", requiredParams);
                         }
                         else {
                             params.put(param[0].toUpperCase(), param[1]);

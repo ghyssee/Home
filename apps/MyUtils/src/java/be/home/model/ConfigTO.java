@@ -90,7 +90,6 @@ public class ConfigTO {
     }
 
     public class Config {
-        public String oneDriveDir;
         public String configDir;
         public String logDir;
         public String logFile;
@@ -109,7 +108,6 @@ public class ConfigTO {
 
         public String toString() {
             StringBuilder b = new StringBuilder();
-            b.append("OneDriveDir : " + oneDriveDir + "\n");
             b.append("ConfigDir : " + configDir + "\n");
             b.append("logDir : " + logDir + "\n");
             b.append("logFile : " + logFile + "\n");
