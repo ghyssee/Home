@@ -1,4 +1,4 @@
-package be.home.main;
+package be.home.main.mezzmo;
 
 import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.dao.jdbc.SQLiteUtils;
@@ -10,9 +10,6 @@ import be.home.mezzmo.domain.model.MGOFileAlbumTO;
 import be.home.mezzmo.domain.model.MGOFileTO;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.model.ConfigTO;
-import be.home.model.DataBaseConfiguration;
-import com.google.gson.Gson;
-import com.google.gson.stream.JsonReader;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
@@ -83,6 +80,7 @@ public class Mezzmo extends BatchJobV2{
         base += "\\Muziek\\Export\\";
 
         processCSV(base, "MezzmoDB.PlayCount.V12.csv", UPDATE);
+        //processCSV(base, "export.csv", UPDATE);
         //processCSV(base, "MP3Songs.Errors.20160514.1502.csv", UPDATE);
         //getFileAlbums();
 

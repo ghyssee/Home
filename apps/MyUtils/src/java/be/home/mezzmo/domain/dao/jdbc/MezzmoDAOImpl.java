@@ -50,7 +50,8 @@ public class MezzmoDAOImpl extends MezzmoDB {
             " INNER JOIN MGOFileExtension ON (MGOFileExtension.ID = MGOFile.extensionID)" +
             " WHERE 1=1" +
             " AND MGOFileExtension.data = 'mp3'" +
-            " AND MGOFile.PlayCount > 0";
+            " AND MGOFile.PlayCount > 0" +
+            " ORDER BY datetime(f.DateLastPlayed, 'unixepoch', 'localtime')  ASC";
 
     private static final String FILE_UPDATE_PLAYCOUNT = "UPDATE MGOFile " +
             " SET PlayCount = ? " +
