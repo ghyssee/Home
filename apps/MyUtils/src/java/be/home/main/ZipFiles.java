@@ -5,6 +5,7 @@ import be.home.common.archiving.ZipArchiver;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 import be.home.model.*;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
 import java.io.*;
@@ -12,6 +13,7 @@ import java.net.URISyntaxException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.security.CodeSource;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -58,6 +60,13 @@ public class ZipFiles extends BatchJobV2 {
     public void start(String source, String zipFile) throws IOException {
 
         String configFile = config.movies.importFile;
+
+        String ext = FilenameUtils.getExtension(zipFile);
+        zipFile = FilenameUtils.removeExtension(zipFile);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd.HHmmss");
+        String formattedDate = formatter.format(new Date());
+        zipFile = zipFile + "." + formattedDate + "." + ext;
+
         //zip();
         List <Path> listOfFiles = fileList(source);
         for (Path path : listOfFiles) {

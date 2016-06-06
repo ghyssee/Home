@@ -112,7 +112,7 @@ public abstract class BatchJobV2 {
             for (int i=0; i < args.length; i++) {
                 if ((i % 2) == 0) {
                     if (!args[i].startsWith("-")) {
-                        printParameterList("Invalid argument : " + args[i] + "\n" + "Key should start with a -, seperated with e SPACE followed by the Value", requiredParams);
+                        printParameterList("Invalid argument : " + args[i] + "\n" + "Key should start with a -, seperated with a SPACE followed by the Value", requiredParams);
                     }
                     key = args[i];
                 } else {
