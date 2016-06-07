@@ -4,6 +4,8 @@ import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.dao.jdbc.SQLiteUtils;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
+import be.home.common.model.TransferObject;
+import be.home.common.utils.DateUtils;
 import be.home.common.utils.WinUtils;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
@@ -19,6 +21,7 @@ import org.apache.log4j.Logger;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -31,7 +34,7 @@ public class ExportPlayCount extends BatchJobV2{
 
     public static Log4GE log4GE;
     public static ConfigTO.Config config;
-    private static final Logger log = Logger.getLogger(Mezzmo.class);
+    private static final Logger log = Logger.getLogger(ExportPlayCount.class);
 
     public static void main(String args[]) {
 
@@ -66,41 +69,29 @@ public class ExportPlayCount extends BatchJobV2{
 
     }
 
-    public void export(String base, String fileName) {
-        System.out.println(StringUtils.repeat('*',100));
-        System.out.println("Processing CSV File: " + fileName);
-        System.out.println(StringUtils.repeat('*',100));
-        FileReader fileReader = null;
+    public void export(String base, String fileName){
+        TransferObject to = new TransferObject();
         Writer fileWriter = null;
+        File exportFile = new File(base + "MP3SongsWithPlay." + DateUtils.formatDate(new Date(), DateUtils.YYYYMMDDHHMMSS) + ".csv");
         CSVPrinter csvFilePrinter = null;
+        CSVFormat csvFileFormat = CSVFormat.DEFAULT.withHeader(FILE_HEADER_MAPPING);
+        FileOutputStream outputStream = null;
+
         try {
-            File file = new File(base + fileName);
-            File exportFile = new File(base + "Export.csv");
-            FileInputStream stream = new FileInputStream(file);
-            final Reader reader = new InputStreamReader(new BOMInputStream(stream), StandardCharsets.UTF_8);
-            CSVFormat csvFileFormat = CSVFormat.DEFAULT.withHeader(FILE_HEADER_MAPPING);
-            FileOutputStream outputStream = new FileOutputStream(exportFile);
+            outputStream = new FileOutputStream(exportFile);
             fileWriter = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
             csvFilePrinter = new CSVPrinter(fileWriter, csvFileFormat);
-            CSVParser csvFileParser = new CSVParser(reader, csvFileFormat);
-            int counter = 0;
-            List<CSVRecord> list = csvFileParser.getRecords();
-            if (list != null && list.size() > 1) {
-                for (CSVRecord csvRecord : list.subList(1, list.size())) {
-                    counter++;
-                    List record = new ArrayList();
-                    for (int i=0; i < FILE_HEADER_MAPPING.length; i++){
-                        record.add(csvRecord.get(FILE_HEADER_MAPPING[i]));
-                    }
-                    csvFilePrinter.printRecord(record);
-                    System.out.println("FileTitle: " + csvRecord.get("FileTitle"));
-                    System.out.println("PlayCount: " + csvRecord.get("PlayCount"));
-                }
-                System.out.println("Nr Of Records in CSV File: " + counter);
-            } else {
-                System.err.println("Problem reading CSV file or file only contains header");
+
+            do {
+                List<MGOFileAlbumCompositeTO> list = getMezzmoService().getMP3FilesWithPlayCount(to);
+                System.out.println("Index = " + to.getIndex());
+                writeToExportFile(list, csvFilePrinter);
             }
-        } catch (java.io.IOException e) {
+            while (!to.isEndOfList());
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         } finally {
             if (fileWriter != null){
@@ -114,20 +105,23 @@ public class ExportPlayCount extends BatchJobV2{
                     e.printStackTrace();
                 }
             }
-            if (fileReader != null) {
-                try {
-                    fileReader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
+
     }
 
-    public List<MGOFileAlbumCompositeTO> getListOfMP3SongsWithPlayCount() {
-        return null;
-    }
+    public void writeToExportFile( List<MGOFileAlbumCompositeTO> list, CSVPrinter csvFilePrinter) throws IOException {
+        //{"FileTitle", "PlayCount", "File", "DateLastPlayed", "Album"};
+        for (MGOFileAlbumCompositeTO comp : list ){
+            List record = new ArrayList();
+            record.add(comp.getFileTO().getFileTitle());
+            record.add(comp.getFileTO().getPlayCount());
+            record.add(comp.getFileTO().getFile());
+            record.add(SQLiteUtils.convertDateToLong(comp.getFileTO().getDateLastPlayed()));
+            record.add(comp.getFileAlbumTO().getName());
+            csvFilePrinter.printRecord(record);
+        }
 
+    }
 
         public static MezzmoServiceImpl getMezzmoService(){
 

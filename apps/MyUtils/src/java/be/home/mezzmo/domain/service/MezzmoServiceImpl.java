@@ -1,5 +1,6 @@
 package be.home.mezzmo.domain.service;
 
+import be.home.common.model.TransferObject;
 import be.home.mezzmo.domain.bo.MezzmoBO;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.MGOFileTO;
@@ -28,6 +29,12 @@ public class MezzmoServiceImpl {
         return bo.findMP3Files(compSearchTO);
 
     }
+
+    public List<MGOFileAlbumCompositeTO> getMP3FilesWithPlayCount(TransferObject to){
+        MezzmoBO bo = new MezzmoBO();
+        return bo.getMP3FilesWithPlayCount(to);
+    }
+
 
     public List<MGOFileTO> getFiles(MGOFileAlbumCompositeTO compSearchTO){
         MezzmoBO bo = new MezzmoBO();

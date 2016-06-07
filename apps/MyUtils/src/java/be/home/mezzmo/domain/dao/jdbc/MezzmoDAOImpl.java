@@ -3,6 +3,7 @@ package be.home.mezzmo.domain.dao.jdbc;
 import be.home.common.dao.jdbc.MezzmoDB;
 import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.dao.jdbc.SQLiteUtils;
+import be.home.common.model.TransferObject;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.MGOFileAlbumTO;
 import be.home.mezzmo.domain.model.MGOFileTO;
@@ -51,7 +52,8 @@ public class MezzmoDAOImpl extends MezzmoDB {
             " WHERE 1=1" +
             " AND MGOFileExtension.data = 'mp3'" +
             " AND MGOFile.PlayCount > 0" +
-            " ORDER BY datetime(f.DateLastPlayed, 'unixepoch', 'localtime')  ASC";
+            " ORDER BY datetime(MGOFile.DateLastPlayed, 'unixepoch', 'localtime')  ASC" +
+            " LIMIT ?,?";
 
     private static final String FILE_UPDATE_PLAYCOUNT = "UPDATE MGOFile " +
             " SET PlayCount = ? " +
@@ -217,7 +219,7 @@ public class MezzmoDAOImpl extends MezzmoDB {
         //System.out.println("Number of rows retrieved: " + list.size());
     }
 
-    public List<MGOFileAlbumCompositeTO> getMP3FilesWithPlayCount()
+    public List<MGOFileAlbumCompositeTO> getMP3FilesWithPlayCount(TransferObject to)
     {
         //System.out.println("Get List of Mp3's for specific FileTitle");
         PreparedStatement stmt = null;
@@ -227,6 +229,8 @@ public class MezzmoDAOImpl extends MezzmoDB {
 
             //stmt = c.createStatement();
             stmt = c.prepareStatement(FILE_PLAYCOUNT);
+            stmt.setLong(1, to.getIndex());
+            stmt.setLong(2, to.getLimit());
             //System.out.println(FILE_SELECT_TITLE);
             ResultSet rs = stmt.executeQuery();
             while ( rs.next() ) {
@@ -236,7 +240,8 @@ public class MezzmoDAOImpl extends MezzmoDB {
                 fileTO.setFileTitle(rs.getString("FILETITLE"));
                 fileTO.setPlayCount(rs.getInt("PLAYCOUNT"));
                 fileTO.setFile(rs.getString("FILE"));
-                fileTO.setFile(rs.getString("DATELASTPLAYED"));
+                Long f= rs.getLong("DATELASTPLAYED");
+                fileTO.setDateLastPlayed(SQLiteUtils.convertToDate(f));
                 fileAlbumTO.setName(rs.getString("ALBUMNAME"));
                 list.add(fileAlbumComposite);
             }
@@ -246,6 +251,10 @@ public class MezzmoDAOImpl extends MezzmoDB {
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
             System.exit(0);
         }
+        if (list.size() == 0 || list.size() < to.getLimit()){
+            to.setEndOfList(true);
+        }
+        to.addIndex(list.size());
         //System.out.println("Number of rows retrieved: " + list.size());
         return list;
     }

@@ -4,6 +4,7 @@ import be.home.common.archiving.Archiver;
 import be.home.common.archiving.ZipArchiver;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
+import be.home.common.utils.DateUtils;
 import be.home.model.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
@@ -25,7 +26,7 @@ public class ZipFiles extends BatchJobV2 {
 
     public static Log4GE log4GE;
     public static ConfigTO.Config config;
-    private static final Logger log = Logger.getLogger(MovieInfoMaker.class);
+    private static final Logger log = Logger.getLogger(ZipFiles.class);
     private static ParamTO PARAMS [] = {new ParamTO("-source", new String[]{"This is the source directory to start the backup", "of files and folders"},
                                                     ParamTO.REQUIRED),
                                         new ParamTO("-zipFile", new String[]{"This is the name of the zipfile"},
@@ -36,7 +37,7 @@ public class ZipFiles extends BatchJobV2 {
     public static void main(String args[]) {
 
         String currentDir = System.getProperty("user.dir");
-        System.out.println("Current Working dir: " + currentDir);
+        log.info("Current Working dir: " + currentDir);
 
         ZipFiles instance = new ZipFiles();
         instance.printHeader("ZipFiles " + VERSION, "=");
@@ -63,21 +64,20 @@ public class ZipFiles extends BatchJobV2 {
 
         String ext = FilenameUtils.getExtension(zipFile);
         zipFile = FilenameUtils.removeExtension(zipFile);
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd.HHmmss");
-        String formattedDate = formatter.format(new Date());
-        zipFile = zipFile + "." + formattedDate + "." + ext;
+
+        zipFile = zipFile + "." + DateUtils.formatDate(new Date(), DateUtils.YYYYMMDDHHMMSS) + "." + ext;
 
         //zip();
         List <Path> listOfFiles = fileList(source);
         for (Path path : listOfFiles) {
-            System.out.println(path.toString());
+            log.info(path.toString());
         }
         //Files.walkFileTree(Paths.get("/temp"), new MyFileVisitor());
        //Archiver zipArchiver = new ZipArchiver("/temp/3/A Cinderella Story (2004).NFO", "/temp/1/ziptest.zip");
         Archiver zipArchiver = new ZipArchiver(source, zipFile);
         //Archiver zipArchiver = new ZipArchiver("C:/My Test", "c:/My Backups/zipFile.zip");
         zipArchiver.run();
-        System.out.println("Finished zipping files");
+        log.info("Finished zipping files");
 
     }
 
@@ -89,7 +89,7 @@ public class ZipFiles extends BatchJobV2 {
             if (attrs.isDirectory()) {
                 throw new IllegalStateException("WAT!? Visiting directory: " + file.toAbsolutePath().toString());
             }
-            System.out.println("Visiting file: " + file.toAbsolutePath().toString());
+            log.info("Visiting file: " + file.toAbsolutePath().toString());
             return super.visitFile(file, attrs);
         }
     }

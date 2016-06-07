@@ -1,6 +1,7 @@
 package be.home.mezzmo.domain.bo;
 
 import be.home.common.model.BusinessObject;
+import be.home.common.model.TransferObject;
 import be.home.mezzmo.domain.dao.jdbc.MezzmoDAOImpl;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.MGOFileTO;
@@ -31,8 +32,8 @@ public class MezzmoBO extends BusinessObject {
         return getMezzmoDAO().getFiles(compSearchTO);
     }
 
-    public List<MGOFileAlbumCompositeTO> getMP3FilesWithPlayCount(){
-        return getMezzmoDAO().getMP3FilesWithPlayCount();
+    public List<MGOFileAlbumCompositeTO> getMP3FilesWithPlayCount(TransferObject to){
+        return getMezzmoDAO().getMP3FilesWithPlayCount(to);
     }
 
     public MezzmoDAOImpl getMezzmoDAO(){

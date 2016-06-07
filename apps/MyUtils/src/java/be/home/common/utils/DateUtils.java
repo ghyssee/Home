@@ -9,6 +9,7 @@ public class DateUtils {
 
 	public static final String YYYYMMDD = "yyyyMMdd";
 	private static final Locale CURRENT_LOCALE = new Locale("nl", "BE");
+	public static final String YYYYMMDDHHMMSS = "yyyyMMdd.HHmmss";
 
 	private static final SimpleDateFormat YYYYMMDD_FORMATTER = new SimpleDateFormat(
 			YYYYMMDD, CURRENT_LOCALE);
