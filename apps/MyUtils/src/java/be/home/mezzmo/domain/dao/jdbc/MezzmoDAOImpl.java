@@ -28,6 +28,9 @@ public class MezzmoDAOImpl extends MezzmoDB {
     private static final String COLUMNS_FILE[] = {"MGOFile.ID as FILEID", "MGOFile.File as FILE",
             "MGOFile.PlayCount as PLAYCOUNT", "MGOFile.Ranking as RANKING"};
 
+    private static final String COLUMNS_ALBUMS[] = {"MGOFile.ID as FILEID", "MGOFile.File as FILE",
+            "MGOFile.PlayCount as PLAYCOUNT", "MGOFile.Ranking as RANKING"};
+
     private static final String FILEALBUM_SELECT = "SELECT " + getColumns(COLUMNS) + " FROM MGOFileAlbumRelationship " +
      " INNER JOIN MGOFile ON (MGOFileAlbumRelationship.FileID = MGOFile.ID)" +
      " INNER JOIN MGOFileAlbum ON (MGOFileAlbum.ID = MGOFileAlbumRelationship.ID)" +
@@ -68,6 +71,16 @@ public class MezzmoDAOImpl extends MezzmoDB {
             " AND MGOFileAlbum.data like ?" +
             " AND MGOFile.FileTitle like ?" +
             ")";
+
+    private static final String LIST_ALBUMS = "SELECT " + getColumns(COLUMNS) + " FROM MGOFileAlbumRelationship " +
+            " INNER JOIN MGOFile ON (MGOFileAlbumRelationship.FileID = MGOFile.ID)" +
+            " INNER JOIN MGOFileAlbum ON (MGOFileAlbum.ID = MGOFileAlbumRelationship.ID)" +
+            " INNER JOIN MGOFileExtension ON (MGOFileExtension.ID = MGOFile.extensionID)" +
+            " WHERE 1=1" +
+            " AND MGOFileExtension.data = 'mp3'" +
+            " AND MGOFile.PlayCount > 0" +
+            " ORDER BY datetime(MGOFile.DateLastPlayed, 'unixepoch', 'localtime')  ASC" +
+            " LIMIT ?,?";
 
     public static String getColumns(String[] columns){
         String col = "";
