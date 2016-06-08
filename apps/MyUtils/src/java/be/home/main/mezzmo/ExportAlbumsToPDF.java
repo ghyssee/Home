@@ -97,7 +97,7 @@ public class ExportAlbumsToPDF extends BatchJobV2{
             PageEvent event = new PageEvent();
             writer.setPageEvent(event);
             event.setHeader("ALBUMS");
-            document.setMargins(document.leftMargin(), document.rightMargin(), document.topMargin(), document.bottomMargin()+50F);
+            document.setMargins(document.leftMargin(), document.rightMargin(), document.topMargin(), document.bottomMargin()+30F);
             document.open();
 
             PdfPTable table = new PdfPTable(3);
@@ -134,13 +134,13 @@ public class ExportAlbumsToPDF extends BatchJobV2{
     private void fillTableRow(MGOFileAlbumCompositeTO comp, PdfPTable table, Font font) throws IOException, DocumentException {
         PdfPCell cell1 = new PdfPCell(new MezzmoParagraph(comp.getFileAlbumTO().getName()));
         cell1.setVerticalAlignment(Element.ALIGN_MIDDLE);
-        cell1.setFixedHeight(20);
+        cell1.setFixedHeight(15);
         String albumArtist = comp.getAlbumArtistTO().getName();
         if (albumArtist != null && "VARIOUS ARTISTS".equals(albumArtist.toUpperCase())){
             albumArtist = "";
         }
         PdfPCell cell2 = new PdfPCell(new MezzmoParagraph(albumArtist));
-        cell2.setFixedHeight(20);
+        cell2.setFixedHeight(15);
         cell2.setVerticalAlignment(Element.ALIGN_MIDDLE);
         table.addCell(createImageCell("C:\\Projects\\GitHub\\Home\\config\\folder.jpg"));
         table.addCell(cell1);
@@ -169,7 +169,7 @@ public class ExportAlbumsToPDF extends BatchJobV2{
 
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-        cell.setFixedHeight(20);
+        cell.setFixedHeight(15);
         cell.setPaddingBottom(1);
         cell.setPaddingTop(1);
         cell.setPaddingLeft(1);

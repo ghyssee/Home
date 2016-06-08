@@ -9,7 +9,7 @@ import com.itextpdf.text.Paragraph;
 public class MezzmoParagraph extends Paragraph {
 
     public MezzmoParagraph(String text) {
-        super(text, new Font(Font.FontFamily.HELVETICA, 10, Font.NORMAL));
+        super(text, new Font(Font.FontFamily.HELVETICA, 8, Font.NORMAL));
     }
 
     public MezzmoParagraph(String text, Font font) {
