@@ -35,6 +35,12 @@ public class MezzmoServiceImpl {
         return bo.getMP3FilesWithPlayCount(to);
     }
 
+    public List<MGOFileAlbumCompositeTO> getAlbums(TransferObject to){
+        MezzmoBO bo = new MezzmoBO();
+        return bo.getAlbums(to);
+    }
+
+
 
     public List<MGOFileTO> getFiles(MGOFileAlbumCompositeTO compSearchTO){
         MezzmoBO bo = new MezzmoBO();

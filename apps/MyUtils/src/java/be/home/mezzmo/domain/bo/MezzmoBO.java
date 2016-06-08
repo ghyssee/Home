@@ -36,6 +36,10 @@ public class MezzmoBO extends BusinessObject {
         return getMezzmoDAO().getMP3FilesWithPlayCount(to);
     }
 
+    public List<MGOFileAlbumCompositeTO> getAlbums(TransferObject to){
+        return getMezzmoDAO().getAlbums(to);
+    }
+
     public MezzmoDAOImpl getMezzmoDAO(){
         return new MezzmoDAOImpl();
     }

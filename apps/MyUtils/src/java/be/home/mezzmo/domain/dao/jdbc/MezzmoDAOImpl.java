@@ -4,6 +4,7 @@ import be.home.common.dao.jdbc.MezzmoDB;
 import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.dao.jdbc.SQLiteUtils;
 import be.home.common.model.TransferObject;
+import be.home.mezzmo.domain.model.MGOAlbumArtistTO;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.MGOFileAlbumTO;
 import be.home.mezzmo.domain.model.MGOFileTO;
@@ -72,15 +73,16 @@ public class MezzmoDAOImpl extends MezzmoDB {
             " AND MGOFile.FileTitle like ?" +
             ")";
 
-    private static final String LIST_ALBUMS = "SELECT " + getColumns(COLUMNS) + " FROM MGOFileAlbumRelationship " +
-            " INNER JOIN MGOFile ON (MGOFileAlbumRelationship.FileID = MGOFile.ID)" +
-            " INNER JOIN MGOFileAlbum ON (MGOFileAlbum.ID = MGOFileAlbumRelationship.ID)" +
-            " INNER JOIN MGOFileExtension ON (MGOFileExtension.ID = MGOFile.extensionID)" +
-            " WHERE 1=1" +
-            " AND MGOFileExtension.data = 'mp3'" +
-            " AND MGOFile.PlayCount > 0" +
-            " ORDER BY datetime(MGOFile.DateLastPlayed, 'unixepoch', 'localtime')  ASC" +
-            " LIMIT ?,?";
+    private static final String LIST_ALBUMS = "SELECT DISTINCT MGOFileAlbum.data AS ALBUMNAME, MGOAlbumArtist.data AS ALBUMARTISTNAME" +
+                                " FROM MGOFileAlbumRelationship" +
+                                " INNER JOIN MGOFileAlbum ON (MGOFileAlbum.ID = MGOFileAlbumRelationship.ID)" +
+                                " INNER JOIN MGOAlbumArtistRelationship ON (MGOAlbumArtistRelationship.fileID = MGOFileAlbumRelationship.fileID)" +
+                                " INNER JOIN MGOAlbumArtist ON (MGOAlbumArtist.ID = MGOAlbumArtistRelationship.ID)" +
+                                " INNER JOIN MGOFile ON (MGOFile.ID = MGOAlbumArtistRelationship.fileID)" +
+                                " INNER JOIN MGOFileExtension ON (MGOFileExtension.ID = MGOFILE.extensionID)" +
+                                " WHERE 1=1" +
+                                " AND MGOFileExtension.data = 'mp3'" +
+                                " ORDER BY MGOFileAlbum.data";
 
     public static String getColumns(String[] columns){
         String col = "";
@@ -269,6 +271,36 @@ public class MezzmoDAOImpl extends MezzmoDB {
         }
         to.addIndex(list.size());
         //System.out.println("Number of rows retrieved: " + list.size());
+        return list;
+    }
+
+    public List<MGOFileAlbumCompositeTO> getAlbums(TransferObject to)
+    {
+        PreparedStatement stmt = null;
+        List<MGOFileAlbumCompositeTO> list = new ArrayList<MGOFileAlbumCompositeTO>();
+        try {
+            Connection c = getInstance().getConnection();
+
+            //stmt = c.createStatement();
+            stmt = c.prepareStatement(LIST_ALBUMS);
+            //stmt.setLong(1, to.getIndex());
+            //stmt.setLong(2, to.getLimit());
+            //System.out.println(FILE_SELECT_TITLE);
+            ResultSet rs = stmt.executeQuery();
+            while ( rs.next() ) {
+                MGOFileAlbumCompositeTO fileAlbumComposite = new MGOFileAlbumCompositeTO();
+                MGOFileAlbumTO fileAlbumTO = fileAlbumComposite.getFileAlbumTO();
+                MGOAlbumArtistTO albumArtistTO = fileAlbumComposite.getAlbumArtistTO();
+                fileAlbumTO.setName(rs.getString("ALBUMNAME"));
+                albumArtistTO.setName(rs.getString("ALBUMARTISTNAME"));
+                list.add(fileAlbumComposite);
+            }
+            rs.close();
+            stmt.close();
+        } catch ( Exception e ) {
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            System.exit(0);
+        }
         return list;
     }
 
