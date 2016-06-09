@@ -89,13 +89,13 @@ public class ExportAlbums extends BatchJobV2{
 
     public void export(String base, String fileName) throws JRException {
 
-        String jrxmlFileName = "C:/reports/MezzmoJavaBean2.jrxml";
+        String jrxmlFileName = "C:/Projects/GitHub/Home/apps/MyUtils/src/resources/MezzmoJavaBean.jrxml";
         String jasperFileName = "C:/reports/MezzmoJavaBean2.jasper";
         String pdfFileName = "C:/reports/MezzmoJavaBean2.pdf";
         Map hm = new HashMap();
         //hm.put("ID", "123");
         //hm.put("DATENAME", "April 2006");
-        JRDataSource dataSource = new JRBeanCollectionDataSource(MezzmoJavaBeanFactory.getCompositeAlbumList());
+        JRDataSource dataSource = new JRBeanCollectionDataSource(getMezzmoService().getAlbums(new TransferObject()));
         JasperCompileManager.compileReportToFile(jrxmlFileName, jasperFileName);
         JasperPrint jprint = (JasperPrint) JasperFillManager.fillReport(jasperFileName, hm, dataSource);
         JasperExportManager.exportReportToPdfFile(jprint, pdfFileName);
