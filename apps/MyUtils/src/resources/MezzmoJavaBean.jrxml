@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.2.2.final using JasperReports Library version 6.2.2  -->
+<!-- 2016-06-09T14:19:09 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="MezzmoJavaBean" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="0bd011ea-7148-4095-b724-e39890d40c5a">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MezzmoJavaBeanFactory"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="fileAlbumTO.name" class="java.lang.String">
+		<fieldDescription><![CDATA[fileAlbumTO.name]]></fieldDescription>
+	</field>
+	<field name="albumArtistTO.name" class="java.lang.String">
+		<fieldDescription><![CDATA[albumArtistTO.name]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="37" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="555" height="37" uuid="5f1d1238-78f5-47e0-a0c2-ed71ba6acb93"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial Black" size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Lijst Van Albums]]></text>
+			</staticText>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="42" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="100" height="20" uuid="05c07545-ed64-428e-850d-fffe9023f197"/>
+				<text><![CDATA[album]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="350" y="1" width="100" height="21" uuid="fb7a7e54-4727-411d-b40d-717edacd204d"/>
+				<text><![CDATA[artist]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="47" splitType="Stretch">
+			<textField>
+				<reportElement x="10" y="10" width="100" height="30" uuid="50ce9625-ae84-4571-824b-44700b6e21dd"/>
+				<textFieldExpression><![CDATA[$F{fileAlbumTO.name}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="31" splitType="Stretch">
+			<textField>
+				<reportElement x="425" y="11" width="120" height="16" uuid="34af5486-933c-49d2-b308-58130606bec7"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA["Page " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="MMMMM dd, yyyy">
+				<reportElement x="0" y="10" width="100" height="19" uuid="df2c5a4b-d171-4f33-ae32-69470eff7983">
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>
