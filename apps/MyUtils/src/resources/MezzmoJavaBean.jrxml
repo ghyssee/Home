@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.2.2.final using JasperReports Library version 6.2.2  -->
-<!-- 2016-06-09T16:00:12 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="MezzmoJavaBean" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="0bd011ea-7148-4095-b724-e39890d40c5a">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MezzmoJavaBeanFactory"/>
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -20,23 +21,23 @@
 			<staticText>
 				<reportElement x="0" y="0" width="555" height="37" uuid="5f1d1238-78f5-47e0-a0c2-ed71ba6acb93"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial Black" size="16" isBold="true"/>
+					<font fontName="Arial" size="16" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Lijst Van Albums]]></text>
 			</staticText>
 		</band>
 	</title>
 	<columnHeader>
-		<band height="53" splitType="Stretch">
+		<band height="38" splitType="Stretch">
 			<rectangle>
 				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="8" width="567" height="18" backcolor="rgba(230, 230, 230, 0.92941177)" uuid="ba76eb44-af97-43d6-bca8-0477098e67d7"/>
 			</rectangle>
 			<staticText>
-				<reportElement x="0" y="7" width="100" height="20" uuid="05c07545-ed64-428e-850d-fffe9023f197"/>
+				<reportElement x="9" y="10" width="47" height="16" uuid="05c07545-ed64-428e-850d-fffe9023f197"/>
 				<text><![CDATA[album]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="340" y="7" width="100" height="17" uuid="fb7a7e54-4727-411d-b40d-717edacd204d"/>
+				<reportElement mode="Transparent" x="352" y="8" width="100" height="17" uuid="fb7a7e54-4727-411d-b40d-717edacd204d"/>
 				<text><![CDATA[artist]]></text>
 			</staticText>
 		</band>
@@ -44,14 +45,14 @@
 	<detail>
 		<band height="14" splitType="Stretch">
 			<textField isStretchWithOverflow="true">
-				<reportElement x="0" y="0" width="320" height="14" uuid="50ce9625-ae84-4571-824b-44700b6e21dd"/>
+				<reportElement x="8" y="0" width="320" height="14" uuid="50ce9625-ae84-4571-824b-44700b6e21dd"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{fileAlbumTO.name}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
-				<reportElement x="340" y="0" width="150" height="14" uuid="42b3a676-5ba0-4480-ae81-e9a7cfd8ed26"/>
+				<reportElement x="349" y="0" width="150" height="14" uuid="42b3a676-5ba0-4480-ae81-e9a7cfd8ed26"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -70,7 +71,7 @@
 				<textFieldExpression><![CDATA["Page " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<textField pattern="MMMMM dd, yyyy">
-				<reportElement x="0" y="10" width="100" height="19" uuid="df2c5a4b-d171-4f33-ae32-69470eff7983">
+				<reportElement x="7" y="10" width="100" height="19" uuid="df2c5a4b-d171-4f33-ae32-69470eff7983">
 					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
 				</reportElement>
 				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>

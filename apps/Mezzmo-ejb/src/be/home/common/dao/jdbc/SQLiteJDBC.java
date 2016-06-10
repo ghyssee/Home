@@ -3,7 +3,7 @@ package be.home.common.dao.jdbc;
 /**
  * Created by ghyssee on 9/02/2016.
  */
-import be.home.model.DataBaseConfiguration;
+import be.home.common.model.DataBaseConfiguration;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import org.apache.log4j.Logger;

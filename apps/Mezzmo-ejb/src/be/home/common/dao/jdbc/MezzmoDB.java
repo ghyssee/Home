@@ -1,6 +1,6 @@
 package be.home.common.dao.jdbc;
 
-import be.home.model.DataBaseConfiguration;
+import be.home.common.model.DataBaseConfiguration;
 
 import java.util.HashMap;
 import java.util.Map;

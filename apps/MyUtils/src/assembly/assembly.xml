@@ -3,14 +3,13 @@
           xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
     <includeBaseDirectory>false</includeBaseDirectory>
 <fileSets>
-<!--
 <fileSet>
   <directory>src/resources/assembly</directory>
   <outputDirectory>/logs</outputDirectory>
   <excludes>
     <exclude>*</exclude>
   </excludes>
-</fileSet> -->
+</fileSet>
 <fileSet filtered="true" encoding="UTF-8">
  <directory>logs</directory>
 </fileSet>

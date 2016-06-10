@@ -1,7 +1,5 @@
 package be.home.mezzmo.domain.model;
 
-import be.home.mezzmo.domain.service.MezzmoServiceImpl;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -11,16 +9,15 @@ import java.util.List;
  */
 public class MezzmoJavaBeanFactory {
 
-    private static List<AlbumTO> albumList = new ArrayList <AlbumTO> ();
-    public static MezzmoServiceImpl mezzmoService = null;
+    private static List<AlbumTO> albumList = new ArrayList<AlbumTO>();
 
-    public static void setAlbumList(List<AlbumTO> albumList2){
+    public static void setAlbumList(List<AlbumTO> albumList2) {
         albumList = albumList2;
     }
 
-    public static Collection getAlbumList(){
+    public static Collection getAlbumList() {
 
-        List<AlbumTO> albumList2 = new ArrayList <AlbumTO> ();
+        List<AlbumTO> albumList2 = new ArrayList<AlbumTO>();
         albumList2.add(new AlbumTO("TEST ALBUM", "TEST ARTIST"));
         albumList2.add(new AlbumTO("TEST ALBUM 2", "TEST ARTIST 2"));
         //getMezzmoService().getAlbums(to);
@@ -28,9 +25,9 @@ public class MezzmoJavaBeanFactory {
         return albumList2;
     }
 
-    public static Collection getCompositeAlbumList(){
+    public static Collection getCompositeAlbumList() {
 
-        List<MGOFileAlbumCompositeTO> list = new ArrayList <MGOFileAlbumCompositeTO> ();
+        List<MGOFileAlbumCompositeTO> list = new ArrayList<MGOFileAlbumCompositeTO>();
         MGOFileAlbumCompositeTO comp = new MGOFileAlbumCompositeTO();
         MGOFileTO fileTO = new MGOFileTO();
         MGOFileAlbumTO album = new MGOFileAlbumTO();
@@ -44,14 +41,5 @@ public class MezzmoJavaBeanFactory {
         //getMezzmoService().getAlbums(to);
 
         return list;
-    }
-
-
-    public static MezzmoServiceImpl getMezzmoService(){
-
-        if (mezzmoService == null) {
-            return MezzmoServiceImpl.getInstance();
-        }
-        return mezzmoService;
     }
 }

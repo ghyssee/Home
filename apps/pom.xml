@@ -18,6 +18,8 @@
 	<modules>
 		<module>MyUtils</module>
 		<module>JMSUtility</module>
+		<module>../TestUtils</module>
+		<module>Mezzmo-ejb</module>
 	</modules>
 </project>
 

@@ -1,14 +1,12 @@
 package be.home.mezzmo.domain.dao.jdbc;
 
 import be.home.common.dao.jdbc.MezzmoDB;
-import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.dao.jdbc.SQLiteUtils;
 import be.home.common.model.TransferObject;
 import be.home.mezzmo.domain.model.MGOAlbumArtistTO;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.MGOFileAlbumTO;
 import be.home.mezzmo.domain.model.MGOFileTO;
-import be.home.model.DataBaseConfiguration;
 
 import java.sql.*;
 import java.util.ArrayList;
