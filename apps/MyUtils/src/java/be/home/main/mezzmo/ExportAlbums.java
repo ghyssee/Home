@@ -4,23 +4,14 @@ import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.main.BatchJobV2;
 import be.home.common.model.TransferObject;
 import be.home.common.utils.WinUtils;
-import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
-import be.home.mezzmo.domain.model.MezzmoJavaBeanFactory;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
-import be.home.mezzmo.domain.util.itext.MezzmoParagraph;
-import be.home.mezzmo.domain.util.itext.MezzmoTableCellHeader;
-import be.home.mezzmo.domain.util.itext.PageEvent;
 import be.home.model.ConfigTO;
-import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.*;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -67,24 +58,6 @@ public class ExportAlbums extends BatchJobV2{
             e.printStackTrace();
         }
 
-    }
-
-    class MyFooter extends PdfPageEventHelper {
-        Font ffont = new Font(Font.FontFamily.UNDEFINED, 5, Font.ITALIC);
-
-        public void onEndPage(PdfWriter writer, Document document) {
-            PdfContentByte cb = writer.getDirectContent();
-            Phrase header = new Phrase("this is a header", ffont);
-            Phrase footer = new Phrase("this is a footer", ffont);
-            ColumnText.showTextAligned(cb, Element.ALIGN_CENTER,
-                    header,
-                    (document.right() - document.left()) / 2 + document.leftMargin(),
-                    document.top() + 10, 0);
-            ColumnText.showTextAligned(cb, Element.ALIGN_CENTER,
-                    footer,
-                    (document.right() - document.left()) / 2 + document.leftMargin(),
-                    document.bottom() - 10, 0);
-        }
     }
 
     public void export(String base, String fileName) throws JRException {
