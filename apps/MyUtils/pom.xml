@@ -16,16 +16,49 @@
 
 	<build>
 	<sourceDirectory>src/java</sourceDirectory>
+	<!--
 	<resources>
 		<resource>
 			  <directory>${basedir}/src/resources</directory>
 			<filtering>true</filtering>
 		</resource>
+		<resource>
+			  <directory>${basedir}/src/config</directory>
+				<filtering>true</filtering>
+		</resource>
 	</resources>
+	-->
 	
 	<plugins>
 
-	  <plugin>
+
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.0.1</version>
+        <executions>
+          <execution>
+            <id>copy-resources</id>
+            <!-- here the phase you need -->
+            <phase>install</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${build.install}/config</outputDirectory>
+              <resources>          
+                <resource>
+                  <directory>${myDirectory}/config</directory>
+					<excludes>
+					  <exclude>.gitignore</exclude>
+					</excludes>
+				 </resource>
+              </resources>              
+            </configuration>            
+          </execution>
+        </executions>
+      </plugin>
+
+	<plugin>
             <artifactId>maven-dependency-plugin</artifactId>
             <executions>
               <execution>
@@ -144,6 +177,14 @@
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>
 			<artifactId>jasperreports</artifactId>
+			<!-- Not Working: still included
+            <exclusions>
+                <exclusion>
+                    <groupId>org.bouncycastle</groupId>
+                    <artifactId>bcprov-jdk14:138</artifactId>
+                </exclusion>
+            </exclusions>
+			-->
 		</dependency>
 		<dependency>
 			<groupId>be.home</groupId>

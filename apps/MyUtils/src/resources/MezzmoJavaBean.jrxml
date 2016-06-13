@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.2.2.final using JasperReports Library version 6.2.2  -->
-<!-- 2016-06-10T21:26:07 -->
+<!-- 2016-06-13T14:06:17 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="MezzmoJavaBean" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="0bd011ea-7148-4095-b724-e39890d40c5a">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MezzmoJavaBeanFactory"/>
 	<property name="ireport.zoom" value="1.0"/>
@@ -14,6 +14,9 @@
 	</field>
 	<field name="albumArtistTO.name" class="java.lang.String">
 		<fieldDescription><![CDATA[albumArtistTO.name]]></fieldDescription>
+	</field>
+	<field name="fileAlbumTO.coverArt" class="java.lang.String">
+		<fieldDescription><![CDATA[fileAlbumTO.coverArt]]></fieldDescription>
 	</field>
 	<background>
 		<band height="132" splitType="Stretch"/>
@@ -65,7 +68,7 @@
 					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 				</reportElement>
-				<imageExpression><![CDATA["C:/Reports/folder.jpg"]]></imageExpression>
+				<imageExpression><![CDATA[$F{fileAlbumTO.coverArt}]]></imageExpression>
 			</image>
 		</band>
 	</detail>
@@ -73,7 +76,7 @@
 		<band splitType="Stretch"/>
 	</columnFooter>
 	<pageFooter>
-		<band height="51" splitType="Stretch">
+		<band height="59" splitType="Stretch">
 			<textField>
 				<reportElement x="425" y="11" width="120" height="16" uuid="34af5486-933c-49d2-b308-58130606bec7"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle"/>

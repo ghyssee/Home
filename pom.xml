@@ -40,7 +40,24 @@
 
         <plugins>
 
-            <plugin>
+			<plugin>
+			  <groupId>org.commonjava.maven.plugins</groupId>
+			  <artifactId>directory-maven-plugin</artifactId>
+			  <version>0.1</version>
+			  <executions>
+				<execution>
+				  <id>directories</id>
+				  <goals>
+					<goal>highest-basedir</goal>
+				  </goals>
+				  <phase>initialize</phase>
+				  <configuration>
+					<property>myDirectory</property>
+				  </configuration>
+				</execution>
+			  </executions>
+			</plugin>
+			<plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>

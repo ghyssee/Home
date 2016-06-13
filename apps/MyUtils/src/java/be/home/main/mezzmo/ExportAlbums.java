@@ -4,14 +4,17 @@ import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.main.BatchJobV2;
 import be.home.common.model.TransferObject;
 import be.home.common.utils.WinUtils;
+import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.model.ConfigTO;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.fill.JRFileVirtualizer;
 import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -68,7 +71,14 @@ public class ExportAlbums extends BatchJobV2{
         Map hm = new HashMap();
         //hm.put("ID", "123");
         //hm.put("DATENAME", "April 2006");
-        JRDataSource dataSource = new JRBeanCollectionDataSource(getMezzmoService().getAlbums(new TransferObject()));
+        List<MGOFileAlbumCompositeTO> list = getMezzmoService().getAlbums(new TransferObject());
+        for (MGOFileAlbumCompositeTO comp : list){
+            comp.getFileAlbumTO().setCoverArt("config/folder.jpg");
+        }
+        JRDataSource dataSource = new JRBeanCollectionDataSource(list);
+        JRFileVirtualizer virtualizer = new JRFileVirtualizer (100, "temp");
+        virtualizer.setReadOnly(false);
+        hm.put(JRParameter.REPORT_VIRTUALIZER, virtualizer);
         JasperCompileManager.compileReportToFile(jrxmlFileName, jasperFileName);
         JasperPrint jprint = (JasperPrint) JasperFillManager.fillReport(jasperFileName, hm, dataSource);
         JasperExportManager.exportReportToPdfFile(jprint, pdfFileName);

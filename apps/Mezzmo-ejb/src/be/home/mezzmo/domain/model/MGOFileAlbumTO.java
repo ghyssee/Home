@@ -7,6 +7,8 @@ public class MGOFileAlbumTO {
     private int id;
     private String name;
 
+    private String coverArt;
+
     public int getId() {
         return id;
     }
@@ -21,5 +23,13 @@ public class MGOFileAlbumTO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getCoverArt() {
+        return coverArt;
+    }
+
+    public void setCoverArt(String coverArt) {
+        this.coverArt = coverArt;
     }
 }
