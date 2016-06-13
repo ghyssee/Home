@@ -68,6 +68,7 @@ public class ExportAlbums extends BatchJobV2{
         String jrxmlFileName = "C:/Projects/GitHub/Home/apps/MyUtils/src/resources/MezzmoJavaBean.jrxml";
         String jasperFileName = "C:/reports/MezzmoJavaBean2.jasper";
         String pdfFileName = "C:/reports/MezzmoJavaBean2.pdf";
+        String htmlFile = "C:/reports/Albums.html";
         Map hm = new HashMap();
         //hm.put("ID", "123");
         //hm.put("DATENAME", "April 2006");
@@ -82,6 +83,8 @@ public class ExportAlbums extends BatchJobV2{
         JasperCompileManager.compileReportToFile(jrxmlFileName, jasperFileName);
         JasperPrint jprint = (JasperPrint) JasperFillManager.fillReport(jasperFileName, hm, dataSource);
         JasperExportManager.exportReportToPdfFile(jprint, pdfFileName);
+        //JasperExportManager.exportReportToHtmlFile(jprint,htmlFile);
+
     }
 
     public static MezzmoServiceImpl getMezzmoService(){
