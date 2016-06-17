@@ -6,6 +6,10 @@ import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.DateUtils;
 import be.home.model.*;
+import com.mpatric.mp3agic.ID3v2;
+import com.mpatric.mp3agic.InvalidDataException;
+import com.mpatric.mp3agic.Mp3File;
+import com.mpatric.mp3agic.UnsupportedTagException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
@@ -58,6 +62,13 @@ public class MP3Processor extends BatchJobV2 {
         List <Path> listOfFiles = fileList("C:/My Programs/Private Documents/test");
         for (Path path : listOfFiles) {
             log.info(path.toString());
+            try {
+                readMP3File(path.toString());
+            } catch (InvalidDataException e) {
+                e.printStackTrace();
+            } catch (UnsupportedTagException e) {
+                e.printStackTrace();
+            }
         }
         log.info("Finished processing MP3s");
     }
@@ -73,6 +84,22 @@ public class MP3Processor extends BatchJobV2 {
             log.info("Visiting file: " + file.toAbsolutePath().toString());
             return super.visitFile(file, attrs);
         }
+    }
+
+    private void readMP3File(String fileName) throws InvalidDataException, IOException, UnsupportedTagException {
+        Mp3File mp3file = new Mp3File(fileName);
+        System.out.println("Length of this mp3 is: " + mp3file.getLengthInSeconds() + " seconds");
+        System.out.println("Bitrate: " + mp3file.getBitrate() + " kbps " + (mp3file.isVbr() ? "(VBR)" : "(CBR)"));
+        System.out.println("Sample rate: " + mp3file.getSampleRate() + " Hz");
+        System.out.println("Has ID3v2 tag?: " + (mp3file.hasId3v2Tag() ? "YES" : "NO"));
+        ID3v2 id3v2Tag = mp3file.getId3v2Tag();
+        System.out.println("Track: " + id3v2Tag.getTrack());
+        System.out.println("Artist: " + id3v2Tag.getArtist());
+        System.out.println("Title: " + id3v2Tag.getTitle());
+        System.out.println("Album: " + id3v2Tag.getAlbum());
+        System.out.println("Year: " + id3v2Tag.getYear());
+        System.out.println("Genre: " + id3v2Tag.getGenre() + " (" + id3v2Tag.getGenreDescription() + ")");
+        System.out.println("Comment: " + id3v2Tag.getComment());
     }
 
     public static List<Path> fileList(String directory) {
