@@ -6,10 +6,7 @@ import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.DateUtils;
 import be.home.model.*;
-import com.mpatric.mp3agic.ID3v2;
-import com.mpatric.mp3agic.InvalidDataException;
-import com.mpatric.mp3agic.Mp3File;
-import com.mpatric.mp3agic.UnsupportedTagException;
+import com.mpatric.mp3agic.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
@@ -64,6 +61,8 @@ public class MP3Processor extends BatchJobV2 {
             log.info(path.toString());
             try {
                 readMP3File(path.toString());
+            }  catch (NotSupportedException e) {
+                    e.printStackTrace();
             } catch (InvalidDataException e) {
                 e.printStackTrace();
             } catch (UnsupportedTagException e) {
@@ -86,7 +85,7 @@ public class MP3Processor extends BatchJobV2 {
         }
     }
 
-    private void readMP3File(String fileName) throws InvalidDataException, IOException, UnsupportedTagException {
+    private void readMP3File(String fileName) throws InvalidDataException, IOException, UnsupportedTagException, NotSupportedException {
         Mp3File mp3file = new Mp3File(fileName);
         System.out.println("Length of this mp3 is: " + mp3file.getLengthInSeconds() + " seconds");
         System.out.println("Bitrate: " + mp3file.getBitrate() + " kbps " + (mp3file.isVbr() ? "(VBR)" : "(CBR)"));
@@ -100,6 +99,18 @@ public class MP3Processor extends BatchJobV2 {
         System.out.println("Year: " + id3v2Tag.getYear());
         System.out.println("Genre: " + id3v2Tag.getGenre() + " (" + id3v2Tag.getGenreDescription() + ")");
         System.out.println("Comment: " + id3v2Tag.getComment());
+        id3v2Tag.setAlbum("Test Album");
+        mp3file.setId3v2Tag(id3v2Tag);
+        File originalFile = new File(fileName);
+        File newFile = new File(fileName + ".bak");
+        /*
+        mp3file.save(newFile.getAbsolutePath());
+        if (originalFile.delete()){
+            newFile.renameTo(originalFile);
+        }
+        else {
+            System.err.println("There was a problem deleting the file " + fileName);
+        }*/
     }
 
     public static List<Path> fileList(String directory) {
@@ -120,8 +131,15 @@ public class MP3Processor extends BatchJobV2 {
                 fileNames.add(path);
             }
             directoryStream.close();
+        } catch (IOException ex) {
         }
-        catch (IOException ex) {}
+        Collections.sort(fileNames, new Comparator<Path>() {
+            @Override
+            public int compare(Path f1, Path f2) {
+                return f1.toString().compareTo(f2.toString());
+            }
+
+        });
         return fileNames;
     }
 
