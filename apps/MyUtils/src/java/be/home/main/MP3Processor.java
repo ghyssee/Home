@@ -6,6 +6,8 @@ import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.DateUtils;
 import be.home.model.*;
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
 import com.mpatric.mp3agic.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
@@ -40,6 +42,7 @@ public class MP3Processor extends BatchJobV2 {
         String currentDir = System.getProperty("user.dir");
         log.info("Current Working dir: " + currentDir);
 
+
         MP3Processor instance = new MP3Processor();
         instance.printHeader("ZipFiles " + VERSION, "=");
         try {
@@ -54,11 +57,24 @@ public class MP3Processor extends BatchJobV2 {
 
     }
 
-    public void start() throws IOException {
+    public void start() throws FileNotFoundException, UnsupportedEncodingException {
+
+        File albumInfo = new File("c:/My Programs/iMacros/output/album.txt");
+        InputStream i = null;
+        Reader reader;
+        i = new FileInputStream(albumInfo.getAbsolutePath());
+        reader = new InputStreamReader(i, "UTF-8");
+        JsonReader r = new JsonReader(reader);
+        Gson gson = new Gson();
+        AlbumInfo.Config album = gson.fromJson(r, AlbumInfo.Config.class);
+        System.out.println(album.album);
 
         List <Path> listOfFiles = fileList("C:/My Programs/Private Documents/test");
+        int index = 1;
         for (Path path : listOfFiles) {
             log.info(path.toString());
+            findMP3File(album, index);
+            index++;
             try {
                 readMP3File(path.toString());
             }  catch (NotSupportedException e) {
@@ -66,6 +82,8 @@ public class MP3Processor extends BatchJobV2 {
             } catch (InvalidDataException e) {
                 e.printStackTrace();
             } catch (UnsupportedTagException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -111,6 +129,16 @@ public class MP3Processor extends BatchJobV2 {
         else {
             System.err.println("There was a problem deleting the file " + fileName);
         }*/
+    }
+
+    private void findMP3File(AlbumInfo.Config album, int trackNumber){
+        for (AlbumInfo.Track track : album.tracks){
+            int albumTrack = Integer.parseInt(track.track);
+            if (albumTrack == trackNumber){
+                System.out.println("Found: " + track.track + " " + track.artist + " - " + track.title);
+            }
+        }
+
     }
 
     public static List<Path> fileList(String directory) {
