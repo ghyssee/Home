@@ -5,6 +5,7 @@ import be.home.common.archiving.ZipArchiver;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.DateUtils;
+import be.home.domain.model.MP3Helper;
 import be.home.model.*;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
@@ -68,7 +69,18 @@ public class MP3Processor extends BatchJobV2 {
         Gson gson = new Gson();
         AlbumInfo.Config album = gson.fromJson(r, AlbumInfo.Config.class);
         System.out.println(album.album);
+        MP3Helper helper = new MP3Helper();
+        System.out.println("Helper:" + helper.prettifySong("(dj Anton) djtest"));
+        System.out.println("Helper:" + helper.prettifySong("Helper dj Test"));
+        System.out.println("Helper: " + helper.prettifySong("Test (DNCE)"));
+        System.out.println("Helper: " + "(Test".matches("^\\((.*)"));
+        System.out.println("Helper: " + "\"Test".matches("\"|\\((.*)"));
 
+        for (AlbumInfo.Track track: album.tracks){
+            System.out.println("Song: " + helper.prettifySong(track.artist) + " - " + helper.prettifySong(track.title));
+        }
+
+       /*
         List <Path> listOfFiles = fileList("C:/My Programs/Private Documents/test");
         int index = 1;
         for (Path path : listOfFiles) {
@@ -86,7 +98,7 @@ public class MP3Processor extends BatchJobV2 {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
+        }*/
         log.info("Finished processing MP3s");
     }
 
@@ -140,6 +152,9 @@ public class MP3Processor extends BatchJobV2 {
         }
 
     }
+
+
+
 
     public static List<Path> fileList(String directory) {
 

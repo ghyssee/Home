@@ -39,7 +39,7 @@
           <execution>
             <id>copy-resources</id>
             <!-- here the phase you need -->
-            <phase>install</phase>
+            <phase>process-resources</phase>
             <goals>
               <goal>copy-resources</goal>
             </goals>
@@ -48,6 +48,25 @@
               <resources>          
                 <resource>
                   <directory>${myDirectory}/config</directory>
+					<excludes>
+					  <exclude>.gitignore</exclude>
+					</excludes>
+				 </resource>
+              </resources>              
+            </configuration>            
+          </execution>
+          <execution>
+            <id>copy-resources2</id>
+            <!-- here the phase you need -->
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${build.install}/bin</outputDirectory>
+              <resources>          
+                <resource>
+                  <directory>bin</directory>
 					<excludes>
 					  <exclude>.gitignore</exclude>
 					</excludes>
