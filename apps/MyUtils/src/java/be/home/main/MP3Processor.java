@@ -11,6 +11,7 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.mpatric.mp3agic.*;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.*;
@@ -70,25 +71,19 @@ public class MP3Processor extends BatchJobV2 {
         AlbumInfo.Config album = gson.fromJson(r, AlbumInfo.Config.class);
         System.out.println(album.album);
         MP3Helper helper = new MP3Helper();
-        System.out.println("Helper:" + helper.prettifySong("(dj Anton) djtest"));
-        System.out.println("Helper:" + helper.prettifySong("Helper dj Test"));
-        System.out.println("Helper: " + helper.prettifySong("Test (DNCE)"));
-        System.out.println("Helper: " + "(Test".matches("^\\((.*)"));
-        System.out.println("Helper: " + "\"Test".matches("\"|\\((.*)"));
 
         for (AlbumInfo.Track track: album.tracks){
             System.out.println("Song: " + helper.prettifySong(track.artist) + " - " + helper.prettifySong(track.title));
         }
 
-       /*
         List <Path> listOfFiles = fileList("C:/My Programs/Private Documents/test");
         int index = 1;
         for (Path path : listOfFiles) {
             log.info(path.toString());
-            findMP3File(album, index);
-            index++;
             try {
-                readMP3File(path.toString());
+                System.out.println("Lookup with index: " + index);
+                AlbumInfo.Track track = findMP3File(album, index++);
+                readMP3File(album, track, path.toString());
             }  catch (NotSupportedException e) {
                     e.printStackTrace();
             } catch (InvalidDataException e) {
@@ -98,7 +93,7 @@ public class MP3Processor extends BatchJobV2 {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }*/
+        }
         log.info("Finished processing MP3s");
     }
 
@@ -115,7 +110,7 @@ public class MP3Processor extends BatchJobV2 {
         }
     }
 
-    private void readMP3File(String fileName) throws InvalidDataException, IOException, UnsupportedTagException, NotSupportedException {
+    private void readMP3File(AlbumInfo.Config album, AlbumInfo.Track track, String fileName) throws InvalidDataException, IOException, UnsupportedTagException, NotSupportedException {
         Mp3File mp3file = new Mp3File(fileName);
         System.out.println("Length of this mp3 is: " + mp3file.getLengthInSeconds() + " seconds");
         System.out.println("Bitrate: " + mp3file.getBitrate() + " kbps " + (mp3file.isVbr() ? "(VBR)" : "(CBR)"));
@@ -123,16 +118,29 @@ public class MP3Processor extends BatchJobV2 {
         System.out.println("Has ID3v2 tag?: " + (mp3file.hasId3v2Tag() ? "YES" : "NO"));
         ID3v2 id3v2Tag = mp3file.getId3v2Tag();
         System.out.println("Track: " + id3v2Tag.getTrack());
+        System.out.println("Track: " + track.track);
+        System.out.println(StringUtils.repeat('=', 100));
         System.out.println("Artist: " + id3v2Tag.getArtist());
+        System.out.println("Artist: " + track.artist);
+        System.out.println(StringUtils.repeat('=', 100));
         System.out.println("Title: " + id3v2Tag.getTitle());
+        System.out.println("Title: " + track.title);
+        System.out.println(StringUtils.repeat('=', 100));
         System.out.println("Album: " + id3v2Tag.getAlbum());
         System.out.println("Year: " + id3v2Tag.getYear());
         System.out.println("Genre: " + id3v2Tag.getGenre() + " (" + id3v2Tag.getGenreDescription() + ")");
         System.out.println("Comment: " + id3v2Tag.getComment());
-        id3v2Tag.setAlbum("Test Album");
+        System.out.println(StringUtils.repeat('=', 100));
+        System.out.println(StringUtils.repeat('=', 100));
+        id3v2Tag.setAlbum(album.album);
+        id3v2Tag.setTrack(StringUtils.leftPad(track.track, 2, "0"));
+        id3v2Tag.setArtist(track.artist);
+        id3v2Tag.setTitle(track.title);
+        //if (album.album)
+
         mp3file.setId3v2Tag(id3v2Tag);
-        File originalFile = new File(fileName);
-        File newFile = new File(fileName + ".bak");
+        //File originalFile = new File(fileName);
+        //File newFile = new File(fileName + ".bak");
         /*
         mp3file.save(newFile.getAbsolutePath());
         if (originalFile.delete()){
@@ -143,13 +151,15 @@ public class MP3Processor extends BatchJobV2 {
         }*/
     }
 
-    private void findMP3File(AlbumInfo.Config album, int trackNumber){
+    private AlbumInfo.Track findMP3File(AlbumInfo.Config album, int trackNumber){
+        return album.tracks.get(trackNumber-1);
+        /*
         for (AlbumInfo.Track track : album.tracks){
             int albumTrack = Integer.parseInt(track.track);
             if (albumTrack == trackNumber){
                 System.out.println("Found: " + track.track + " " + track.artist + " - " + track.title);
             }
-        }
+        }*/
 
     }
 
@@ -161,7 +171,6 @@ public class MP3Processor extends BatchJobV2 {
         DirectoryStream.Filter<Path> filter = new DirectoryStream.Filter<Path>() {
             public boolean accept(Path file) throws IOException {
                 String fileExt = FilenameUtils.getExtension(file.toString()).toLowerCase();
-                System.out.println("ext = " + fileExt);
                 return "mp3".equals(fileExt);
             }
         };

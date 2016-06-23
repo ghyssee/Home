@@ -33,6 +33,7 @@ public class AlbumInfo {
 
     public class Config {
         public String album;
+        public String albumArtist;
         public int total;
         public List <Track> tracks = new ArrayList <Track>();
 

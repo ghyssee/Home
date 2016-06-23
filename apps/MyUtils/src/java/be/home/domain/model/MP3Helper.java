@@ -12,7 +12,7 @@ public class MP3Helper {
         String prettifiedText = text;
         if (StringUtils.isNotBlank(text)){
             char[] tmp = {'('};
-            prettifiedText = WordUtils.capitalizeFully(prettifiedText, new char[]{'(', ' '});
+            prettifiedText = WordUtils.capitalizeFully(prettifiedText, new char[]{'(', ' ','.'});
             prettifiedText = prettifiedText.replace("(Radio Edit)", "");
             prettifiedText = prettifiedText.replace("(Vocal Radio Edit)", "");
             prettifiedText = prettifiedText.replace("(Vocal Radio Cut)", "");
@@ -22,6 +22,7 @@ public class MP3Helper {
             prettifiedText = prettifiedText.replace("(Original Radio Cut)", "");
             prettifiedText = prettifiedText.replace("(Radio Version / Original)", "");
             prettifiedText = prettifiedText.replace("(Single Edit)", "");
+            prettifiedText = prettifiedText.replace("(Original)", "");
             //prettifiedText = prettifiedText.replaceFirst("^Dj |dj ", "DJ ");
             //prettifiedText = prettifiedText.replaceAll(" Dj | dj \"", " DJ ");
             //prettifiedText = prettifiedText.replaceAll(" Mc \"", " MC ");
@@ -45,11 +46,13 @@ public class MP3Helper {
                     newText += " ";
                 }
                 String word = words[i];
-                if (word.startsWith("(") || word.startsWith("\"")){
+                // check if word starts with a " or a (
+                if (word.matches(("^(\"|\\()(.*)"))){
                     prefix = word.substring(0,1);
                     word = word.substring(1);
                 }
-                if (word.endsWith(")") || word.endsWith("\"")){
+                // check if word ends with a " or a (
+                if (word.matches(".*(\\)|\")$")){
                     suffix = word.substring(word.length()-1,word.length());
                     word = word.substring(0, word.length()-1);
                 }
@@ -58,7 +61,6 @@ public class MP3Helper {
                 word = replaceWord(word, "Ft.", "Feat.");
                 word = replaceWord(word, "Feat", "Feat.");
                 word = replaceWord(word, "Dj", "DJ");
-                word = replaceWord(word, "(Dj", "(DJ");
                 word = replaceWord(word, "Ii", "II");
                 word = replaceWord(word, "Pm", "PM");
                 word = replaceWord(word, "Am", "AM");
@@ -73,6 +75,8 @@ public class MP3Helper {
                 word = replaceWord(word, "Sq-1", "SQ-1");
                 word = replaceWord(word, "Dnce", "DNCE");
                 word = replaceWord(word, "In-grid", "In-Grid");
+                word = replaceWord(word, "Rns", "RNS");
+
                 newText += prefix + word + suffix;
             }
         }
