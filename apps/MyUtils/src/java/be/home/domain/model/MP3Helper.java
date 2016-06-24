@@ -8,6 +8,14 @@ import org.apache.commons.lang3.text.WordUtils;
  */
 public class MP3Helper {
 
+    public String removeDurationFromString(String text){
+        String prettifiedText = text;
+        prettifiedText = prettifiedText.replaceAll("[0-9][0-9]:[0-9][0-9]$", "");
+        prettifiedText = prettifiedText.replaceAll("\\([0-9][0-9]:[0-9][0-9]\\)$", "");
+        return prettifiedText;
+    }
+
+
     public String prettifySong(String text){
         String prettifiedText = text;
         if (StringUtils.isNotBlank(text)){
@@ -76,6 +84,10 @@ public class MP3Helper {
                 word = replaceWord(word, "Dnce", "DNCE");
                 word = replaceWord(word, "In-grid", "In-Grid");
                 word = replaceWord(word, "Rns", "RNS");
+                word = replaceWord(word, "P!Nk", "P!nk");
+                word = replaceWord(word, "Tp4y", "TP4Y");
+                word = replaceWord(word, "Omi", "OMI");
+
 
                 newText += prefix + word + suffix;
             }

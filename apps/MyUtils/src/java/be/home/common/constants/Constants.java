@@ -26,8 +26,9 @@ public interface Constants {
     }
 
     public interface Path {
-        public static final String MP3_PREPROCESSOR = "C:/My Data/tmp/Java/MP3Processor/Preprocess";
-        public static final String MP3_PROCESSOR = "C:/My Data/tmp/Java/MP3Processor/Process";
-        public static final String MP3_NEW = "C:/My Data/tmp/Java/MP3Processor/New";
+        public static final String MP3_BASEDIR = "C:/My Data/tmp/Java/MP3Processor/";
+        public static final String MP3_PREPROCESSOR = MP3_BASEDIR + "Preprocess";
+        public static final String MP3_PROCESSOR = MP3_BASEDIR + "Process";
+        public static final String MP3_NEW = MP3_BASEDIR + "New";
     }
 }

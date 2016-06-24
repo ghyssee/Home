@@ -3,6 +3,7 @@ package be.home.main;
 import be.home.common.constants.Constants;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
+import be.home.domain.model.MP3Helper;
 import be.home.model.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -22,8 +23,11 @@ import java.util.regex.Pattern;
 public class MP3PreProcessor extends BatchJobV2 {
 
     private static final String VERSION = "V1.0";
-    private static final TAGS[] FORMAT_TRACK = {TAGS.TRACK, TAGS.ARTIST, TAGS.TITLE};
-    private static final String CD_TAG = "TRACKLIST";
+    private static final TAGS[] FORMAT_TRACK = {TAGS.TRACK, TAGS.TITLE, TAGS.ARTIST};
+    // Set Duration to null to disable the removal of the duration for the specified field
+    private static final TAGS DURATION = TAGS.ARTIST;
+    private static final String CD_TAG = "CD";
+    private static final String FILE = "albuminfo.txt";
     private static final String SEPERATOR_1 = "\\.";
     private static final String SEPERATOR_2 = " - ";
 
@@ -49,6 +53,7 @@ public class MP3PreProcessor extends BatchJobV2 {
 
         MP3PreProcessor instance = new MP3PreProcessor();
         instance.printHeader("ZipFiles " + VERSION, "=");
+
         try {
             instance.start();
         } catch (IOException e) {
@@ -63,7 +68,7 @@ public class MP3PreProcessor extends BatchJobV2 {
 
     public void start() throws IOException {
 
-        Path file = Paths.get(Constants.Path.MP3_PREPROCESSOR + File.separator + "AlbumInfo.txt");
+        Path file = Paths.get(Constants.Path.MP3_PREPROCESSOR + File.separator + FILE);
         BufferedReader reader2 = Files.newBufferedReader(file, Charset.defaultCharset());
         StringBuilder content = new StringBuilder();
         String line = null;
@@ -128,6 +133,10 @@ public class MP3PreProcessor extends BatchJobV2 {
 
     private void fillInfo(AlbumInfo.Track track, String part, TAGS type){
 
+        if (DURATION != null && DURATION.equals(type)) {
+            MP3Helper helper = new MP3Helper();
+            part = helper.removeDurationFromString(part);
+        }
         part = part.trim();
         switch (type) {
             case TRACK:

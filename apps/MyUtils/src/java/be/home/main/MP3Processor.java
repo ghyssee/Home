@@ -1,11 +1,9 @@
 package be.home.main;
 
-import be.home.common.archiving.Archiver;
-import be.home.common.archiving.ZipArchiver;
 import be.home.common.constants.Constants;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
-import be.home.common.utils.DateUtils;
+
 import be.home.domain.model.MP3Helper;
 import be.home.model.*;
 import com.google.gson.Gson;
@@ -16,11 +14,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.*;
-import java.net.URISyntaxException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.security.CodeSource;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -32,8 +27,9 @@ public class MP3Processor extends BatchJobV2 {
 
     public static Log4GE log4GE;
     public static ConfigTO.Config config;
-    public static final String INPUT_FILE2 = Constants.Path.MP3_PROCESSOR + File.separator + "Album.json";
-    public static final String INPUT_FILE = Constants.Path.MP3_PROCESSOR + File.separator + "Album2.json";
+    public static final String MP3_DIR = Constants.Path.MP3_BASEDIR + "Kidszone 2015";
+    public static final String INPUT_FILE = Constants.Path.MP3_PROCESSOR + File.separator + "Album.json";
+    public static final String INPUT_FILE2 = Constants.Path.MP3_PROCESSOR + File.separator + "Album2.json";
     private static final Logger log = Logger.getLogger(ZipFiles.class);
     private static ParamTO PARAMS [] = {new ParamTO("-source", new String[]{"This is the source directory to start the backup", "of files and folders"},
             ParamTO.REQUIRED),
@@ -81,7 +77,7 @@ public class MP3Processor extends BatchJobV2 {
             track.title = helper.prettifySong(track.title);
         }
 
-        List <Path> listOfFiles = fileList("C:/My Programs/Private Documents/test");
+        List <Path> listOfFiles = fileList(MP3_DIR);
         int index = 1;
         if (listOfFiles.size() != album.tracks.size()){
             throw new RuntimeException("Nr of MP3 files (" + listOfFiles.size() + ") does not match Nr of Track records found (" + album.tracks.size() + ")");
@@ -140,11 +136,17 @@ public class MP3Processor extends BatchJobV2 {
         System.out.println("Comment: " + id3v2Tag.getComment());
         System.out.println(StringUtils.repeat('=', 100));
         System.out.println(StringUtils.repeat('=', 100));*/
-        id3v2Tag.setAlbum(album.album);
+        if (StringUtils.isNotBlank(album.album)){
+            id3v2Tag.setAlbum(album.album);
+        }
+        // compilation cd //
+        id3v2Tag.setCompilation(true);
+        id3v2Tag.setAlbumArtist("Various Artists");
         id3v2Tag.setTrack(StringUtils.leftPad(track.track, 2, "0"));
         id3v2Tag.setArtist(track.artist);
         id3v2Tag.setTitle(track.title);
-        //if (album.album)
+        id3v2Tag.clearAlbumImage();
+        id3v2Tag.setPartOfSet(track.cd);
 
         mp3file.setId3v2Tag(id3v2Tag);
         File originalFile = new File(fileName);
