@@ -9,6 +9,7 @@ import java.util.List;
 public class AlbumInfo {
 
     public class Track {
+
         public String track;
         public String artist;
         public String title;

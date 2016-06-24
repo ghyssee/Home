@@ -24,4 +24,10 @@ public interface Constants {
             NFO, SOURCE, DESTINATION, ERROR_NFO, DIFFERENT_TITLE, EXIST_NFO;
         }
     }
+
+    public interface Path {
+        public static final String MP3_PREPROCESSOR = "C:/My Data/tmp/Java/MP3Processor/Preprocess";
+        public static final String MP3_PROCESSOR = "C:/My Data/tmp/Java/MP3Processor/Process";
+        public static final String MP3_NEW = "C:/My Data/tmp/Java/MP3Processor/New";
+    }
 }

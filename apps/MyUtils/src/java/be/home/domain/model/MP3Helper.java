@@ -12,7 +12,7 @@ public class MP3Helper {
         String prettifiedText = text;
         if (StringUtils.isNotBlank(text)){
             char[] tmp = {'('};
-            prettifiedText = WordUtils.capitalizeFully(prettifiedText, new char[]{'(', ' ','.'});
+            prettifiedText = WordUtils.capitalizeFully(prettifiedText, new char[]{'(', ' ','.', '-'});
             prettifiedText = prettifiedText.replace("(Radio Edit)", "");
             prettifiedText = prettifiedText.replace("(Vocal Radio Edit)", "");
             prettifiedText = prettifiedText.replace("(Vocal Radio Cut)", "");

@@ -2,6 +2,7 @@ package be.home.main;
 
 import be.home.common.archiving.Archiver;
 import be.home.common.archiving.ZipArchiver;
+import be.home.common.constants.Constants;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.DateUtils;
@@ -31,6 +32,8 @@ public class MP3Processor extends BatchJobV2 {
 
     public static Log4GE log4GE;
     public static ConfigTO.Config config;
+    public static final String INPUT_FILE2 = Constants.Path.MP3_PROCESSOR + File.separator + "Album.json";
+    public static final String INPUT_FILE = Constants.Path.MP3_PROCESSOR + File.separator + "Album2.json";
     private static final Logger log = Logger.getLogger(ZipFiles.class);
     private static ParamTO PARAMS [] = {new ParamTO("-source", new String[]{"This is the source directory to start the backup", "of files and folders"},
             ParamTO.REQUIRED),
@@ -61,7 +64,8 @@ public class MP3Processor extends BatchJobV2 {
 
     public void start() throws FileNotFoundException, UnsupportedEncodingException {
 
-        File albumInfo = new File("c:/My Programs/iMacros/output/album.txt");
+        //File albumInfo = new File("c:/My Programs/iMacros/output/album.txt");
+        File albumInfo = new File(INPUT_FILE);
         InputStream i = null;
         Reader reader;
         i = new FileInputStream(albumInfo.getAbsolutePath());
@@ -73,15 +77,18 @@ public class MP3Processor extends BatchJobV2 {
         MP3Helper helper = new MP3Helper();
 
         for (AlbumInfo.Track track: album.tracks){
-            System.out.println("Song: " + helper.prettifySong(track.artist) + " - " + helper.prettifySong(track.title));
+            track.artist = helper.prettifySong(track.artist);
+            track.title = helper.prettifySong(track.title);
         }
 
         List <Path> listOfFiles = fileList("C:/My Programs/Private Documents/test");
         int index = 1;
+        if (listOfFiles.size() != album.tracks.size()){
+            throw new RuntimeException("Nr of MP3 files (" + listOfFiles.size() + ") does not match Nr of Track records found (" + album.tracks.size() + ")");
+        }
         for (Path path : listOfFiles) {
             log.info(path.toString());
             try {
-                System.out.println("Lookup with index: " + index);
                 AlbumInfo.Track track = findMP3File(album, index++);
                 readMP3File(album, track, path.toString());
             }  catch (NotSupportedException e) {
@@ -112,26 +119,27 @@ public class MP3Processor extends BatchJobV2 {
 
     private void readMP3File(AlbumInfo.Config album, AlbumInfo.Track track, String fileName) throws InvalidDataException, IOException, UnsupportedTagException, NotSupportedException {
         Mp3File mp3file = new Mp3File(fileName);
-        System.out.println("Length of this mp3 is: " + mp3file.getLengthInSeconds() + " seconds");
-        System.out.println("Bitrate: " + mp3file.getBitrate() + " kbps " + (mp3file.isVbr() ? "(VBR)" : "(CBR)"));
-        System.out.println("Sample rate: " + mp3file.getSampleRate() + " Hz");
-        System.out.println("Has ID3v2 tag?: " + (mp3file.hasId3v2Tag() ? "YES" : "NO"));
+//        System.out.println("Length of this mp3 is: " + mp3file.getLengthInSeconds() + " seconds");
+ //       System.out.println("Bitrate: " + mp3file.getBitrate() + " kbps " + (mp3file.isVbr() ? "(VBR)" : "(CBR)"));
+ //       System.out.println("Sample rate: " + mp3file.getSampleRate() + " Hz");
+ //       System.out.println("Has ID3v2 tag?: " + (mp3file.hasId3v2Tag() ? "YES" : "NO"));
         ID3v2 id3v2Tag = mp3file.getId3v2Tag();
         System.out.println("Track: " + id3v2Tag.getTrack());
-        System.out.println("Track: " + track.track);
+        System.out.println("NEW Track: " + track.track);
         System.out.println(StringUtils.repeat('=', 100));
         System.out.println("Artist: " + id3v2Tag.getArtist());
-        System.out.println("Artist: " + track.artist);
+        System.out.println("NEW Artist: " + track.artist);
         System.out.println(StringUtils.repeat('=', 100));
         System.out.println("Title: " + id3v2Tag.getTitle());
-        System.out.println("Title: " + track.title);
+        System.out.println("NEW Title: " + track.title);
         System.out.println(StringUtils.repeat('=', 100));
+        /*
         System.out.println("Album: " + id3v2Tag.getAlbum());
         System.out.println("Year: " + id3v2Tag.getYear());
         System.out.println("Genre: " + id3v2Tag.getGenre() + " (" + id3v2Tag.getGenreDescription() + ")");
         System.out.println("Comment: " + id3v2Tag.getComment());
         System.out.println(StringUtils.repeat('=', 100));
-        System.out.println(StringUtils.repeat('=', 100));
+        System.out.println(StringUtils.repeat('=', 100));*/
         id3v2Tag.setAlbum(album.album);
         id3v2Tag.setTrack(StringUtils.leftPad(track.track, 2, "0"));
         id3v2Tag.setArtist(track.artist);
@@ -139,16 +147,17 @@ public class MP3Processor extends BatchJobV2 {
         //if (album.album)
 
         mp3file.setId3v2Tag(id3v2Tag);
-        //File originalFile = new File(fileName);
-        //File newFile = new File(fileName + ".bak");
-        /*
+        File originalFile = new File(fileName);
+        File newFile = new File(Constants.Path.MP3_NEW + File.separator + originalFile.getName());
+        System.out.println("New File " + newFile);
+
         mp3file.save(newFile.getAbsolutePath());
-        if (originalFile.delete()){
-            newFile.renameTo(originalFile);
-        }
-        else {
-            System.err.println("There was a problem deleting the file " + fileName);
-        }*/
+        //if (originalFile.delete()){
+         //   newFile.renameTo(originalFile);
+        //}
+        //else {
+          //  System.err.println("There was a problem deleting the file " + fileName);
+        //}*/
     }
 
     private AlbumInfo.Track findMP3File(AlbumInfo.Config album, int trackNumber){
