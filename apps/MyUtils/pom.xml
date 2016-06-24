@@ -50,6 +50,7 @@
                   <directory>${myDirectory}/config</directory>
 					<excludes>
 					  <exclude>.gitignore</exclude>
+					  <exclude>localDatabases.json</exclude>
 					</excludes>
 				 </resource>
               </resources>              
