@@ -35,14 +35,9 @@ public class MP3PreProcessor extends BatchJobV2 {
     public static Log4GE log4GE;
     public static ConfigTO.Config config;
     private static final Logger log = Logger.getLogger(ZipFiles.class);
-    private static ParamTO PARAMS [] = {new ParamTO("-source", new String[]{"This is the source directory to start the backup", "of files and folders"},
-            ParamTO.REQUIRED),
-            new ParamTO("-zipFile", new String[]{"This is the name of the zipfile"},
-                    ParamTO.REQUIRED)
-    };
 
     public enum TAGS {
-        TRACK, ARTIST, TITLE;
+        TRACK, ARTIST, TITLE
     }
 
     public static void main(String args[]) {
@@ -70,7 +65,6 @@ public class MP3PreProcessor extends BatchJobV2 {
 
         Path file = Paths.get(Constants.Path.MP3_PREPROCESSOR + File.separator + FILE);
         BufferedReader reader2 = Files.newBufferedReader(file, Charset.defaultCharset());
-        StringBuilder content = new StringBuilder();
         String line = null;
         AlbumInfo info = new AlbumInfo();
         AlbumInfo.Config configAlbum = info.new Config();
