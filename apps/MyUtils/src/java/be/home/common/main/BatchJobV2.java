@@ -3,6 +3,7 @@ package be.home.common.main;
 import java.io.*;
 import java.net.URL;
 
+import be.home.common.constants.Constants;
 import be.home.model.ConfigTO;
 import be.home.model.ParamTO;
 import be.home.model.UltratopConfig;
@@ -27,7 +28,8 @@ public abstract class BatchJobV2 {
 
     private static final Logger log = Logger.getLogger(BatchJobV2.class);
     public static String workingDir = System.getProperty("user.dir");
-    private String paramIniFile = workingDir + "/config/config.json";
+    // private String paramIniFile = workingDir + "/config/config.json";
+    private String paramIniFile = Constants.Path.BASE_CONFIG_DIR + File.separator + "config.json";
 
     public Map <String,String> validateParams(String[] args, ParamTO paramArray []) {
         Map <String,String> params = initParams(args, paramArray);

@@ -92,8 +92,7 @@ public class MP3PreProcessor extends BatchJobV2 {
         System.out.println(tmp);
         String cd = null;
         Pattern pattern = Pattern.compile(CD_TAG + "(.*)");
-        Matcher matcher = pattern.matcher(tmp);
-        matcher = pattern.matcher(tmp.toUpperCase());
+        Matcher matcher = pattern.matcher(tmp.toUpperCase());
         if (matcher.matches()) {
             String[] array = tmp.toUpperCase().split(CD_TAG);
             cd = array[1].trim();

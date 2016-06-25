@@ -10,9 +10,9 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>Mezzmo-ejb</artifactId>
-    <name>Mezzmo-ejb</name>
-    <description>Mezzmo-ejb</description>
+    <artifactId>Home-Common</artifactId>
+    <name>Home-Common</name>
+    <description>Home-Common</description>
 	<packaging>jar</packaging>
 	<version>1.0-SNAPSHOT</version>
 	
@@ -46,21 +46,13 @@
 </build>
 
         <dependencies>
-
-            <dependency>
-                <groupId>log4j</groupId>
-                <artifactId>log4j</artifactId>
-				<scope>compile</scope>
-            </dependency>
 			<dependency>
-				<groupId>com.google.code.gson</groupId>
-				<artifactId>gson</artifactId>
-				<scope>compile</scope>
+				<groupId>net.java.dev.jna</groupId>
+				<artifactId>jna</artifactId>
 			</dependency>
 			<dependency>
-				<groupId>be.home</groupId>
-				<artifactId>Home-Common</artifactId>
-				<version>1.0-SNAPSHOT</version>
+				<groupId>net.java.dev.jna</groupId>
+				<artifactId>jna-platform</artifactId>
 			</dependency>
 
 		</dependencies>

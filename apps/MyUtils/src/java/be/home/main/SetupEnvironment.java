@@ -11,7 +11,9 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
 import java.io.*;
+import java.net.InetAddress;
 import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.security.CodeSource;
@@ -51,6 +53,21 @@ public class SetupEnvironment extends BatchJobV2 {
         checkDirectory(Constants.Path.MP3_NEW);
         checkDirectory(Constants.Path.MP3_PREPROCESSOR);
         checkDirectory(Constants.Path.MP3_PROCESSOR);
+        checkDirectory(Constants.Path.BASE_DIR);
+        checkDirectory(Constants.Path.BASE_CONFIG_DIR);
+        checkDirectory(Constants.Path.BASE_DATA_DIR);
+        String hostname = null;
+        try
+        {
+            InetAddress addr;
+            addr = InetAddress.getLocalHost();
+            hostname = addr.getHostName();
+        }
+        catch (UnknownHostException ex)
+        {
+            System.out.println("Hostname can not be resolved");
+        }
+        System.out.println("Hostname = " + hostname);
     }
 
     private void checkDirectory(String directory) throws IOException {

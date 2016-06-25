@@ -3,6 +3,7 @@ package be.home.common.dao.jdbc;
 /**
  * Created by ghyssee on 9/02/2016.
  */
+import be.home.common.constants.Constants;
 import be.home.common.model.DataBaseConfiguration;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
@@ -61,7 +62,8 @@ public class SQLiteJDBC
         String localConfig = workingDir + "/config/localDatabases.json";
         File file = new File (localConfig);
         if (!file.exists()){
-            file = new File(workingDir + "/config/databases.json");
+            //file = new File(workingDir + "/config/databases.json");
+            file = new File(Constants.Path.BASE_CONFIG_DIR + File.separator + "databases.json");
         }
         log.info("Database Config file = " + file.getAbsolutePath());
         try {

@@ -1,5 +1,10 @@
 package be.home.common.constants;
 
+import be.home.common.utils.WinUtils;
+
+import java.io.File;
+import java.nio.file.FileSystem;
+
 /**
  * Created by ghyssee on 28/09/2015.
  */
@@ -30,5 +35,8 @@ public interface Constants {
         public static final String MP3_PREPROCESSOR = MP3_BASEDIR + "Preprocess";
         public static final String MP3_PROCESSOR = MP3_BASEDIR + "Process";
         public static final String MP3_NEW = MP3_BASEDIR + "New";
+        public static final String BASE_DIR = WinUtils.getOneDrivePath() + File.separator;
+        public static final String BASE_CONFIG_DIR = BASE_DIR + "Config/Java";
+        public static final String BASE_DATA_DIR = BASE_DIR + "Data/Java";
     }
 }
