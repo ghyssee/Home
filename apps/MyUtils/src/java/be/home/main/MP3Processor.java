@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
@@ -27,16 +28,9 @@ public class MP3Processor extends BatchJobV2 {
 
     public static Log4GE log4GE;
     public static ConfigTO.Config config;
-    public static final String MP3_DIR = Constants.Path.MP3_BASEDIR + "Kidszone 2015";
+    public static final String MP3_DIR = Constants.Path.MP3_BASEDIR + "Ministry of Sound - Throwback Summer Jamz 2016";
     public static final String INPUT_FILE = Constants.Path.MP3_PROCESSOR + File.separator + "Album.json";
-    public static final String INPUT_FILE2 = Constants.Path.MP3_PROCESSOR + File.separator + "Album2.json";
     private static final Logger log = Logger.getLogger(ZipFiles.class);
-    private static ParamTO PARAMS [] = {new ParamTO("-source", new String[]{"This is the source directory to start the backup", "of files and folders"},
-            ParamTO.REQUIRED),
-            new ParamTO("-zipFile", new String[]{"This is the name of the zipfile"},
-                    ParamTO.REQUIRED)
-    };
-
 
     public static void main(String args[]) {
 
@@ -58,23 +52,25 @@ public class MP3Processor extends BatchJobV2 {
 
     }
 
-    public void start() throws FileNotFoundException, UnsupportedEncodingException {
+    public void start() throws IOException {
 
         //File albumInfo = new File("c:/My Programs/iMacros/output/album.txt");
         File albumInfo = new File(INPUT_FILE);
-        InputStream i = null;
-        Reader reader;
-        i = new FileInputStream(albumInfo.getAbsolutePath());
-        reader = new InputStreamReader(i, "UTF-8");
-        JsonReader r = new JsonReader(reader);
+
+        Path file = Paths.get(INPUT_FILE);
+        BufferedReader reader2 = Files.newBufferedReader(file, Charset.forName("UTF-8"));
+        JsonReader r = new JsonReader(reader2);
         Gson gson = new Gson();
+
         AlbumInfo.Config album = gson.fromJson(r, AlbumInfo.Config.class);
         System.out.println(album.album);
         MP3Helper helper = new MP3Helper();
 
+        album.album = helper.prettifyAlbum(album.album);
         for (AlbumInfo.Track track: album.tracks){
             track.artist = helper.prettifySong(track.artist);
             track.title = helper.prettifySong(track.title);
+            helper.checkTrack(track);
         }
 
         List <Path> listOfFiles = fileList(MP3_DIR);
@@ -129,6 +125,7 @@ public class MP3Processor extends BatchJobV2 {
         System.out.println("Title: " + id3v2Tag.getTitle());
         System.out.println("NEW Title: " + track.title);
         System.out.println(StringUtils.repeat('=', 100));
+        //EncodedText.
         /*
         System.out.println("Album: " + id3v2Tag.getAlbum());
         System.out.println("Year: " + id3v2Tag.getYear());
@@ -143,7 +140,8 @@ public class MP3Processor extends BatchJobV2 {
         id3v2Tag.setCompilation(true);
         id3v2Tag.setAlbumArtist("Various Artists");
         id3v2Tag.setTrack(StringUtils.leftPad(track.track, 2, "0"));
-        id3v2Tag.setArtist(track.artist);
+        EncodedText tmp = new EncodedText(track.artist);
+        id3v2Tag.setArtist(tmp.toString());
         id3v2Tag.setTitle(track.title);
         id3v2Tag.clearAlbumImage();
         id3v2Tag.setPartOfSet(track.cd);

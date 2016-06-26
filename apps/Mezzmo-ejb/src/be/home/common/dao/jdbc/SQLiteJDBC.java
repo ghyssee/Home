@@ -59,8 +59,8 @@ public class SQLiteJDBC
 
     public static void initialize(String workingDir){
         InputStream i = null;
-        String localConfig = workingDir + "/config/localDatabases.json";
-        File file = new File (localConfig);
+        //String localConfig = workingDir + "/config/localDatabases.json";
+        File file = new File (Constants.Path.BASE_LOCAL_CONFIG_DIR + File.separator + "localDatabases.json");
         if (!file.exists()){
             //file = new File(workingDir + "/config/databases.json");
             file = new File(Constants.Path.BASE_CONFIG_DIR + File.separator + "databases.json");

@@ -56,18 +56,8 @@ public class SetupEnvironment extends BatchJobV2 {
         checkDirectory(Constants.Path.BASE_DIR);
         checkDirectory(Constants.Path.BASE_CONFIG_DIR);
         checkDirectory(Constants.Path.BASE_DATA_DIR);
-        String hostname = null;
-        try
-        {
-            InetAddress addr;
-            addr = InetAddress.getLocalHost();
-            hostname = addr.getHostName();
-        }
-        catch (UnknownHostException ex)
-        {
-            System.out.println("Hostname can not be resolved");
-        }
-        System.out.println("Hostname = " + hostname);
+        checkDirectory(Constants.Path.BASE_LOCAL_CONFIG_DIR);
+
     }
 
     private void checkDirectory(String directory) throws IOException {

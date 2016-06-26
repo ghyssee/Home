@@ -1,5 +1,6 @@
 package be.home.common.constants;
 
+import be.home.common.utils.NetUtils;
 import be.home.common.utils.WinUtils;
 
 import java.io.File;
@@ -38,5 +39,6 @@ public interface Constants {
         public static final String BASE_DIR = WinUtils.getOneDrivePath() + File.separator;
         public static final String BASE_CONFIG_DIR = BASE_DIR + "Config/Java";
         public static final String BASE_DATA_DIR = BASE_DIR + "Data/Java";
+        public static final String BASE_LOCAL_CONFIG_DIR = BASE_CONFIG_DIR + File.separator + NetUtils.getHostName();
     }
 }

@@ -26,10 +26,12 @@ public class MP3PreProcessor extends BatchJobV2 {
     private static final TAGS[] FORMAT_TRACK = {TAGS.TRACK, TAGS.TITLE, TAGS.ARTIST};
     // Set Duration to null to disable the removal of the duration for the specified field
     private static final TAGS DURATION = TAGS.ARTIST;
-    private static final String CD_TAG = "CD";
-    private static final String FILE = "albuminfo.txt";
+    private static final String CD_TAG = "Disc:";
+    private static final String FILE = "album.txt";
     private static final String SEPERATOR_1 = "\\.";
-    private static final String SEPERATOR_2 = " - ";
+    private static final String SEPERATOR_3 = " - ";
+    private static final String SEPERATOR_2 = " – ";
+
 
 
     public static Log4GE log4GE;
@@ -80,6 +82,16 @@ public class MP3PreProcessor extends BatchJobV2 {
     }
 
     private void writeJsonFile(AlbumInfo.Config album) throws IOException {
+        Path file = Paths.get(Constants.Path.MP3_PROCESSOR + File.separator + "Album.json");
+        BufferedWriter writer = Files.newBufferedWriter(file, Charset.defaultCharset());
+        //Writer writer = new FileWriter(Constants.Path.MP3_PROCESSOR + File.separator + "Album.json");
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        gson.toJson(album, writer);
+        writer.flush();
+        writer.close();
+    }
+
+    private void writeJsonFile2(AlbumInfo.Config album) throws IOException {
         Writer writer = new FileWriter(Constants.Path.MP3_PROCESSOR + File.separator + "Album.json");
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         gson.toJson(album, writer);
@@ -91,15 +103,16 @@ public class MP3PreProcessor extends BatchJobV2 {
         String tmp = line.trim();
         System.out.println(tmp);
         String cd = null;
-        Pattern pattern = Pattern.compile(CD_TAG + "(.*)");
-        Matcher matcher = pattern.matcher(tmp.toUpperCase());
-        if (matcher.matches()) {
-            String[] array = tmp.toUpperCase().split(CD_TAG);
+        Pattern pattern2 = Pattern.compile(CD_TAG.toUpperCase() + "(.*)");
+        Matcher matcher2 = pattern2.matcher(tmp.toUpperCase());
+        //if (line.toUpperCase().startsWith(CD_TAG.toUpperCase())){
+        if (matcher2.matches()) {
+            String[] array = tmp.toUpperCase().split(CD_TAG.toUpperCase());
             cd = array[1].trim();
             album.total = Integer.parseInt(cd);
         }
-        pattern = Pattern.compile("[0-9]+(" + SEPERATOR_1 + ").+[" + SEPERATOR_2 + "].*");
-        matcher = pattern.matcher(tmp);
+        Pattern pattern = Pattern.compile("[0-9]+(" + SEPERATOR_1 + ").+[" + SEPERATOR_2 + "].*");
+        Matcher matcher = pattern.matcher(tmp);
         if (matcher.matches()) {
             AlbumInfo.Track track = splitString(tmp);
             if (album.total > 0) {

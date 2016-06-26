@@ -1,12 +1,18 @@
 package be.home.domain.model;
 
+import be.home.model.AlbumInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by ghyssee on 23/06/2016.
  */
 public class MP3Helper {
+
+    private static char[] startChars = new char[]{'(', ' ','.', '-', '"'};
 
     public String removeDurationFromString(String text){
         String prettifiedText = text;
@@ -20,7 +26,7 @@ public class MP3Helper {
         String prettifiedText = text;
         if (StringUtils.isNotBlank(text)){
             char[] tmp = {'('};
-            prettifiedText = WordUtils.capitalizeFully(prettifiedText, new char[]{'(', ' ','.', '-'});
+            prettifiedText = WordUtils.capitalizeFully(prettifiedText, startChars);
             prettifiedText = prettifiedText.replace("(Radio Edit)", "");
             prettifiedText = prettifiedText.replace("(Vocal Radio Edit)", "");
             prettifiedText = prettifiedText.replace("(Vocal Radio Cut)", "");
@@ -35,6 +41,14 @@ public class MP3Helper {
             //prettifiedText = prettifiedText.replaceAll(" Dj | dj \"", " DJ ");
             //prettifiedText = prettifiedText.replaceAll(" Mc \"", " MC ");
             prettifiedText = prettifiedText.replace("Fpi Project", "FPI Project");
+            prettifiedText = prettifiedText.replaceAll("\\[[eE]xplicit\\]", "");
+            prettifiedText = prettifiedText.replace("(Album Version)", "");
+            prettifiedText = prettifiedText.replace("(Video Edit)", "");
+            prettifiedText = prettifiedText.replace("(Uk Radio Version)", "");
+            prettifiedText = prettifiedText.replace("(Single Version)", "");
+
+
+
             prettifiedText = stripSong(prettifiedText);
             prettifiedText = prettifiedText.replace("  ", " ");
             prettifiedText = prettifiedText.trim();
@@ -71,7 +85,6 @@ public class MP3Helper {
                 word = replaceWord(word, "Dj", "DJ");
                 word = replaceWord(word, "Ii", "II");
                 word = replaceWord(word, "Pm", "PM");
-                word = replaceWord(word, "Am", "AM");
                 word = replaceWord(word, "Dcup", "DCup");
                 word = replaceWord(word, "Dcup", "DCup");
                 word = replaceWord(word, "Deville", "DeVille");
@@ -87,6 +100,17 @@ public class MP3Helper {
                 word = replaceWord(word, "P!Nk", "P!nk");
                 word = replaceWord(word, "Tp4y", "TP4Y");
                 word = replaceWord(word, "Omi", "OMI");
+                word = replaceWord(word, "Tjr", "TJR");
+                word = replaceWord(word, "Featuring", "Feat.");
+                word = replaceWord(word, "Clmd", "CLMD");
+                word = replaceWord(word, "Dna", "DNA");
+                word = replaceWord(word, "3lw", "3LW");
+                word = replaceWord(word, "Tlc", "TLC");
+                word = replaceWord(word, "Lp", "LP");
+
+                // 19eighty7 => 19Eighty7
+                // (17) => remove
+
 
 
                 newText += prefix + word + suffix;
@@ -117,6 +141,36 @@ public class MP3Helper {
                 prettifiedText = prettifiedText.substring(0, prettifiedText.length()-1);
             }
             prettifiedText = prettifiedText.replaceAll("\\([0-9]\\)", "");
+        }
+        return prettifiedText;
+    }
+
+    public void checkTrack(AlbumInfo.Track track){
+        // [feat. Majid Jordan]";
+        String FEAT = ".*\\[[Ff]eat.";
+        Pattern pattern = Pattern.compile(FEAT + "(.*)\\]");
+        Matcher matcher = pattern.matcher(track.title);
+        if (matcher.matches()) {
+            //System.out.println("match found: " + track.title);
+            String extraArtist = track.title.replaceAll(FEAT, "").replaceFirst("]", "");
+            //System.out.println("extraArtist = " + extraArtist);
+            track.artist += " Feat." + extraArtist;
+            Pattern p = Pattern.compile("(.*)" + FEAT );
+            Matcher m = p.matcher(track.title);
+            if (m.find()) {
+                String s = m.group(1);
+                //System.out.println("new title: **** " + s);
+                track.title = s.trim();
+            }
+        }
+    }
+
+    public String prettifyAlbum(String title){
+        String prettifiedText = title;
+        if (StringUtils.isNotBlank(prettifiedText)) {
+            prettifiedText = WordUtils.capitalizeFully(prettifiedText, startChars);
+            prettifiedText = prettifiedText.replaceFirst("\\[[Ee]xplicit\\]", "");
+            prettifiedText = prettifiedText.trim();
         }
         return prettifiedText;
     }
