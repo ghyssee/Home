@@ -5,10 +5,9 @@ import java.io.IOException;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.ini4j.Ini;
-
-import be.home.common.utils.StringUtilsExtended;
 
 import java.util.Map;
 import java.util.Set;
@@ -39,16 +38,16 @@ public class CommonIniFileBase implements CommonIniFile {
 	public Ini.Section get(String section) {
 
 		Ini.Section sec = (Ini.Section) ini.get(section);
-		log.info(StringUtilsExtended.replicate("-", 50));
+		log.info(StringUtils.repeat('-', 50));
 		log.info("Reading Section [" + section + "]");
-		log.info(StringUtilsExtended.replicate("-", 80));
+		log.info(StringUtils.repeat('-', 80));
 		Set keySet = sec.keySet();
 		for (Object obj : keySet){
 			String key = (String) obj;
 			log.info("Key = " + key);
 			String value = sec.fetch(key);
 			log.info("Value = " + value);
-			log.info(StringUtilsExtended.replicate("-", 50));
+			log.info(StringUtils.repeat('-', 50));
 		}
 		log.info("End Reading Section [" + section + "]");
 		return sec;
