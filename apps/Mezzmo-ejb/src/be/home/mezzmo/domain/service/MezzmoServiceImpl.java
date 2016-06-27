@@ -40,6 +40,11 @@ public class MezzmoServiceImpl {
         return bo.getAlbums(to);
     }
 
+    public List<MGOFileAlbumCompositeTO> getTop20(){
+        MezzmoBO bo = new MezzmoBO();
+        return bo.getTop20();
+    }
+
 
 
     public List<MGOFileTO> getFiles(MGOFileAlbumCompositeTO compSearchTO){

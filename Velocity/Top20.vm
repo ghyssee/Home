@@ -1,0 +1,5 @@
+#EXTM3U
+#foreach( $item in $list )
+#EXTINF:$item.fileTO.duration, $item.fileArtistTO.artist - $item.fileTO.title
+$item.fileTO.file
+#end

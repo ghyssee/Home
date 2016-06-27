@@ -23,10 +23,6 @@ public class MovieSynchronizer extends BatchJobV2 {
 
     public static void main(String args[]) {
 
-        //String test = "Seizoen 01";
-        //System.out.println(test.matches("Seizoen .+"));
-        //System.out.println(test.substring(0, test.indexOf(season)));
-
         MovieSynchronizer instance = new MovieSynchronizer();
         instance.printHeader("MOVIESYNCHRONIZER " + VERSION, "=");
         try {

@@ -8,11 +8,15 @@ public class MGOFileAlbumCompositeTO {
     MGOFileTO fileTO;
     MGOFileAlbumTO fileAlbumTO;
     MGOAlbumArtistTO albumArtistTO;
+    MGOPlaylistTO playlistTO;
+    MGOFileArtistTO fileArtistTO;
 
     public MGOFileAlbumCompositeTO() {
         fileTO = new MGOFileTO();
         fileAlbumTO = new MGOFileAlbumTO();
         albumArtistTO = new MGOAlbumArtistTO();
+        playlistTO = new MGOPlaylistTO();
+        fileArtistTO = new MGOFileArtistTO();
     }
 
 
@@ -38,5 +42,21 @@ public class MGOFileAlbumCompositeTO {
 
     public void setAlbumArtistTO(MGOAlbumArtistTO albumArtistTO) {
         this.albumArtistTO = albumArtistTO;
+    }
+
+    public MGOPlaylistTO getPlaylistTO() {
+        return playlistTO;
+    }
+
+    public void setPlaylistTO(MGOPlaylistTO playlistTO) {
+        this.playlistTO = playlistTO;
+    }
+
+    public MGOFileArtistTO getFileArtistTO() {
+        return fileArtistTO;
+    }
+
+    public void setFileArtistTO(MGOFileArtistTO fileArtistTO) {
+        this.fileArtistTO = fileArtistTO;
     }
 }

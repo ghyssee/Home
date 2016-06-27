@@ -40,8 +40,13 @@ public class MezzmoBO extends BusinessObject {
         return getMezzmoDAO().getAlbums(to);
     }
 
+    public List<MGOFileAlbumCompositeTO> getTop20(){
+        return getMezzmoDAO().getTop20();
+    }
+
     public MezzmoDAOImpl getMezzmoDAO(){
         return new MezzmoDAOImpl();
     }
+
 
 }

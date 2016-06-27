@@ -28,7 +28,7 @@ public class MP3Processor extends BatchJobV2 {
 
     public static Log4GE log4GE;
     public static ConfigTO.Config config;
-    public static final String MP3_DIR = Constants.Path.MP3_BASEDIR + "Ministry of Sound - Throwback Summer Jamz 2016";
+    public static final String MP3_DIR = Constants.Path.MP3_ALBUM + File.separator + "Vlaamse Top Hits 2016 Vol. 1";
     public static final String INPUT_FILE = Constants.Path.MP3_PROCESSOR + File.separator + "Album.json";
     private static final Logger log = Logger.getLogger(ZipFiles.class);
 
@@ -55,7 +55,6 @@ public class MP3Processor extends BatchJobV2 {
     public void start() throws IOException {
 
         //File albumInfo = new File("c:/My Programs/iMacros/output/album.txt");
-        File albumInfo = new File(INPUT_FILE);
 
         Path file = Paths.get(INPUT_FILE);
         BufferedReader reader2 = Files.newBufferedReader(file, Charset.forName("UTF-8"));
@@ -125,7 +124,6 @@ public class MP3Processor extends BatchJobV2 {
         System.out.println("Title: " + id3v2Tag.getTitle());
         System.out.println("NEW Title: " + track.title);
         System.out.println(StringUtils.repeat('=', 100));
-        //EncodedText.
         /*
         System.out.println("Album: " + id3v2Tag.getAlbum());
         System.out.println("Year: " + id3v2Tag.getYear());
@@ -140,8 +138,8 @@ public class MP3Processor extends BatchJobV2 {
         id3v2Tag.setCompilation(true);
         id3v2Tag.setAlbumArtist("Various Artists");
         id3v2Tag.setTrack(StringUtils.leftPad(track.track, 2, "0"));
-        EncodedText tmp = new EncodedText(track.artist);
-        id3v2Tag.setArtist(tmp.toString());
+        //EncodedText tmp = new EncodedText(track.artist);
+        id3v2Tag.setArtist(track.artist);
         id3v2Tag.setTitle(track.title);
         id3v2Tag.clearAlbumImage();
         id3v2Tag.setPartOfSet(track.cd);
@@ -162,18 +160,7 @@ public class MP3Processor extends BatchJobV2 {
 
     private AlbumInfo.Track findMP3File(AlbumInfo.Config album, int trackNumber){
         return album.tracks.get(trackNumber-1);
-        /*
-        for (AlbumInfo.Track track : album.tracks){
-            int albumTrack = Integer.parseInt(track.track);
-            if (albumTrack == trackNumber){
-                System.out.println("Found: " + track.track + " " + track.artist + " - " + track.title);
-            }
-        }*/
-
     }
-
-
-
 
     public static List<Path> fileList(String directory) {
 

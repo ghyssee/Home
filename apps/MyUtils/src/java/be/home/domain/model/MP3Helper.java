@@ -27,27 +27,24 @@ public class MP3Helper {
         if (StringUtils.isNotBlank(text)){
             char[] tmp = {'('};
             prettifiedText = WordUtils.capitalizeFully(prettifiedText, startChars);
+            prettifiedText = prettifiedText.replace("(Album Version)", "");
             prettifiedText = prettifiedText.replace("(Radio Edit)", "");
+            prettifiedText = prettifiedText.replace("(Radio Mix)", "");
             prettifiedText = prettifiedText.replace("(Vocal Radio Edit)", "");
             prettifiedText = prettifiedText.replace("(Vocal Radio Cut)", "");
-            prettifiedText = prettifiedText.replace("(Radio Mix)", "");
+            prettifiedText = prettifiedText.replace("(Video Edit)", "");
             prettifiedText = prettifiedText.replace("(Video Version)", "");
             prettifiedText = prettifiedText.replace("(Single Cut)", "");
+            prettifiedText = prettifiedText.replace("(Single Edit)", "");
+            prettifiedText = prettifiedText.replace("(Single Version)", "");
             prettifiedText = prettifiedText.replace("(Original Radio Cut)", "");
             prettifiedText = prettifiedText.replace("(Radio Version / Original)", "");
-            prettifiedText = prettifiedText.replace("(Single Edit)", "");
             prettifiedText = prettifiedText.replace("(Original)", "");
-            //prettifiedText = prettifiedText.replaceFirst("^Dj |dj ", "DJ ");
-            //prettifiedText = prettifiedText.replaceAll(" Dj | dj \"", " DJ ");
-            //prettifiedText = prettifiedText.replaceAll(" Mc \"", " MC ");
             prettifiedText = prettifiedText.replace("Fpi Project", "FPI Project");
             prettifiedText = prettifiedText.replaceAll("\\[[eE]xplicit\\]", "");
-            prettifiedText = prettifiedText.replace("(Album Version)", "");
-            prettifiedText = prettifiedText.replace("(Video Edit)", "");
             prettifiedText = prettifiedText.replace("(Uk Radio Version)", "");
-            prettifiedText = prettifiedText.replace("(Single Version)", "");
-
-
+            prettifiedText = prettifiedText.replace("Tourist Lemc", "Tourist LeMC");
+            prettifiedText = prettifiedText.replace("Bart Kaell", "Bart Kaëll");
 
             prettifiedText = stripSong(prettifiedText);
             prettifiedText = prettifiedText.replace("  ", " ");

@@ -50,6 +50,7 @@ public class SetupEnvironment extends BatchJobV2 {
 
     public void start() throws IOException {
         checkDirectory(Constants.Path.MP3_BASEDIR);
+        checkDirectory(Constants.Path.MP3_ALBUM);
         checkDirectory(Constants.Path.MP3_NEW);
         checkDirectory(Constants.Path.MP3_PREPROCESSOR);
         checkDirectory(Constants.Path.MP3_PROCESSOR);
@@ -62,7 +63,6 @@ public class SetupEnvironment extends BatchJobV2 {
 
     private void checkDirectory(String directory) throws IOException {
         Path pathToFile = Paths.get(directory);
-        //Files.createDirectories(pathToFile.getParent());
         if (!Files.exists(pathToFile)) {
             try {
                 Files.createDirectories(pathToFile);
