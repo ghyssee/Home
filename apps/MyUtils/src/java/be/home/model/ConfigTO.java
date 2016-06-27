@@ -37,14 +37,15 @@ public class ConfigTO {
         }
     }
 
-    public class Mezzmo {
-        public String database;
-        public String toString() {
-            StringBuilder b = new StringBuilder();
-            b.append("Mezzmo Database: " + database + "\n");
-            return b.toString();
-        }
+    public class Playlist {
+        public String path;
+        public String top20;
     }
+    public class Mezzmo {
+        public String base;
+        public Playlist playlist;
+    }
+
 
     public class Parts {
         public String id;

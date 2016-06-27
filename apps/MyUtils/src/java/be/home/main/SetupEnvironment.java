@@ -57,6 +57,7 @@ public class SetupEnvironment extends BatchJobV2 {
         checkDirectory(Constants.Path.BASE_DIR);
         checkDirectory(Constants.Path.BASE_CONFIG_DIR);
         checkDirectory(Constants.Path.BASE_DATA_DIR);
+        checkDirectory(Constants.Path.BASE_DATA_DIR_PLAYLIST);
         checkDirectory(Constants.Path.BASE_LOCAL_CONFIG_DIR);
 
     }

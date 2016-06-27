@@ -67,22 +67,42 @@ public class MakeTop20 extends BatchJobV2{
         log.info("OneDrive Path: " + base);
         base += "\\Muziek\\Export\\";
 
-        makeTop20(base, "MezzmoDB.PlayCount.V12.csv");
+        try {
+            makeTop20(base, "MezzmoDB.PlayCount.V12.csv");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
 
     }
 
-    public void makeTop20(String base, String fileName){
+    public void makeTop20(String base, String fileName) throws IOException {
         List <MGOFileAlbumCompositeTO> list = getMezzmoService().getTop20();
         for (MGOFileAlbumCompositeTO comp : list){
+            // get relative path
             Path pathAbsolute = Paths.get(comp.getFileTO().getFile());
-            Path pathBase = Paths.get(MP3_PLAYLIST);
+            Path pathBase = Paths.get(config.mezzmo.base + File.separator + config.mezzmo.playlist.path);
             Path pathRelative = pathBase.relativize(pathAbsolute);
             comp.getFileTO().setFile(pathRelative.toString());
         }
+        if (list.size() > 0){
+            writePlaylist(list);
+        }
+        else {
+            log.warn("No MP3 files found for the playlist");
+        }
 
+    }
+
+    private void writePlaylist(List <MGOFileAlbumCompositeTO> list) throws IOException {
         Properties p = new Properties();
         p.setProperty("file.resource.loader.path", Constants.Path.VELOCITY_DIR);
+
+        Path outputFolder = Paths.get(config.mezzmo.base + File.separator + config.mezzmo.playlist.path);
+        if (Files.notExists(outputFolder)){
+            outputFolder = Paths.get(Constants.Path.BASE_DATA_DIR_PLAYLIST);
+        }
+        log.info("Playlist folder: " + outputFolder.toString());
 
         VelocityEngine ve = new VelocityEngine();
         ve.init(p);
@@ -91,22 +111,17 @@ public class MakeTop20 extends BatchJobV2{
         /*  create a context and add data */
         VelocityContext context = new VelocityContext();
         context.put("list", list);
-        Path file = Paths.get(Constants.Path.MP3_PROCESSOR + File.separator + "test.m3u");
+        Path file = Paths.get( outputFolder + File.separator + config.mezzmo.playlist.top20);
         BufferedWriter writer = null;
         try {
             writer = Files.newBufferedWriter(file, Charset.defaultCharset());
             t.merge(context, writer);
-        } catch (IOException e) {
-            e.printStackTrace();
         }
         finally {
             if (writer != null){
-                try {
                     writer.flush();
                     writer.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                    log.info("Playlist created: " + file.toString());
             }
         }
     }
