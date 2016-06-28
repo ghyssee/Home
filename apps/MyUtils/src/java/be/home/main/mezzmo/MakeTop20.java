@@ -2,30 +2,20 @@ package be.home.main.mezzmo;
 
 import be.home.common.constants.Constants;
 import be.home.common.dao.jdbc.SQLiteJDBC;
-import be.home.common.dao.jdbc.SQLiteUtils;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
-import be.home.common.model.TransferObject;
-import be.home.common.utils.DateUtils;
 import be.home.common.utils.WinUtils;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
+import be.home.mezzmo.domain.service.MediaMonkeyServiceImpl;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.model.ConfigTO;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.csv.CSVRecord;
-import org.apache.commons.io.input.BOMInputStream;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
 
 import java.io.*;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -37,6 +27,7 @@ import java.util.*;
 public class MakeTop20 extends BatchJobV2{
 
     public static MezzmoServiceImpl mezzmoService = null;
+    public static MediaMonkeyServiceImpl mediaMonkeyService = null;
 
     public static Log4GE log4GE;
     public static ConfigTO.Config config;
@@ -61,6 +52,7 @@ public class MakeTop20 extends BatchJobV2{
 
     @Override
     public void run() {
+
         final String batchJob = "Export PlayCount";
 
         String base = WinUtils.getOneDrivePath();
@@ -77,6 +69,9 @@ public class MakeTop20 extends BatchJobV2{
     }
 
     public void makeTop20(String base, String fileName) throws IOException {
+
+
+        /* based on Mezzmo DB
         List <MGOFileAlbumCompositeTO> list = getMezzmoService().getTop20();
         for (MGOFileAlbumCompositeTO comp : list){
             // get relative path
@@ -86,7 +81,24 @@ public class MakeTop20 extends BatchJobV2{
             comp.getFileTO().setFile(pathRelative.toString());
         }
         if (list.size() > 0){
-            writePlaylist(list);
+            writePlaylist(list, config.mezzmo.playlist.top20);
+        }
+        else {
+            log.warn("No MP3 files found for the playlist");
+        }*/
+
+        // based on MediaMonkey DB
+        List <MGOFileAlbumCompositeTO> list2 = getMediaMonkeyService().getTop20();
+        for (MGOFileAlbumCompositeTO comp : list2){
+            // get relative path
+            String DRIVE = "I";
+            Path pathAbsolute = Paths.get(DRIVE + comp.getFileTO().getFile());
+            Path pathBase = Paths.get(DRIVE + ":" + File.separator + config.mediaMonkey.base + File.separator + config.mediaMonkey.playlist.path);
+            Path pathRelative = pathBase.relativize(pathAbsolute);
+            comp.getFileTO().setFile(pathRelative.toString());
+        }
+        if (list2.size() > 0){
+            writePlaylist(list2, config.mezzmo.playlist.top20);
         }
         else {
             log.warn("No MP3 files found for the playlist");
@@ -94,11 +106,12 @@ public class MakeTop20 extends BatchJobV2{
 
     }
 
-    private void writePlaylist(List <MGOFileAlbumCompositeTO> list) throws IOException {
+    private void writePlaylist(List <MGOFileAlbumCompositeTO> list, String outputFile) throws IOException {
         Properties p = new Properties();
         p.setProperty("file.resource.loader.path", Constants.Path.VELOCITY_DIR);
 
-        Path outputFolder = Paths.get(config.mezzmo.base + File.separator + config.mezzmo.playlist.path);
+        String filename = config.mezzmo.base + File.separator + config.mezzmo.playlist.path;
+        Path outputFolder = Paths.get(filename);
         if (Files.notExists(outputFolder)){
             outputFolder = Paths.get(Constants.Path.BASE_DATA_DIR_PLAYLIST);
         }
@@ -111,7 +124,7 @@ public class MakeTop20 extends BatchJobV2{
         /*  create a context and add data */
         VelocityContext context = new VelocityContext();
         context.put("list", list);
-        Path file = Paths.get( outputFolder + File.separator + config.mezzmo.playlist.top20);
+        Path file = Paths.get( outputFolder + File.separator + outputFile);
         BufferedWriter writer = null;
         try {
             writer = Files.newBufferedWriter(file, Charset.defaultCharset());
@@ -132,6 +145,14 @@ public class MakeTop20 extends BatchJobV2{
             return MezzmoServiceImpl.getInstance();
         }
         return mezzmoService;
+    }
+
+    public static MediaMonkeyServiceImpl getMediaMonkeyService(){
+
+        if (mediaMonkeyService == null) {
+            return MediaMonkeyServiceImpl.getInstance();
+        }
+        return mediaMonkeyService;
     }
 }
 

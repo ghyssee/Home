@@ -1,26 +1,17 @@
 package be.home.common.main;
 
 import java.io.*;
-import java.net.URL;
 
 import be.home.common.constants.Constants;
+import be.home.common.utils.JSONUtils;
 import be.home.model.ConfigTO;
 import be.home.model.ParamTO;
 import be.home.model.UltratopConfig;
-import com.google.gson.Gson;
-import com.google.gson.stream.JsonReader;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.xml.DOMConfigurator;
 import java.net.*;
 import java.security.CodeSource;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
-
-import be.home.common.constants.InitConstants;
-import be.home.common.exceptions.ApplicationException;
 
 import org.apache.log4j.Logger;
 
@@ -187,11 +178,7 @@ public abstract class BatchJobV2 {
             iniFile = new File(workingDir + "/config/config.json");
         }
         System.out.println("Ini File:" + iniFile.getAbsolutePath());
-        InputStream i = new FileInputStream(iniFile.getAbsolutePath());
-        Reader reader = new InputStreamReader(i, "UTF-8");
-        JsonReader r = new JsonReader(reader);
-        Gson gson = new Gson();
-        ConfigTO.Config config = gson.fromJson(r, ConfigTO.Config.class);
+        ConfigTO.Config config = ( ConfigTO.Config) JSONUtils.openJSON(iniFile.getAbsolutePath(), ConfigTO.Config.class);
         // check if log directory exists, if not create it
         File logDir = new File(workingDir + File.separator + config.logDir);
         System.out.println("LogDir = " + logDir.getAbsolutePath());
@@ -200,18 +187,12 @@ public abstract class BatchJobV2 {
             logDir.mkdirs();
         }
 
-        r.close();
         return config;
     }
 
 
-    public UltratopConfig.Config init(String configFile) throws FileNotFoundException, UnsupportedEncodingException, IOException {
-        InputStream i = new FileInputStream(configFile);
-        Reader reader = new InputStreamReader(i, "UTF-8");
-        JsonReader r = new JsonReader(reader);
-        Gson gson = new Gson();
-        UltratopConfig.Config config = gson.fromJson(r, UltratopConfig.Config.class);
-        r.close();
+    public UltratopConfig.Config init(String configFile)  {
+        UltratopConfig.Config config = (UltratopConfig.Config) JSONUtils.openJSON(configFile, UltratopConfig.Config.class );
         return config;
     }
 

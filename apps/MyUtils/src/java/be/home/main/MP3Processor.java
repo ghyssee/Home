@@ -4,6 +4,7 @@ import be.home.common.constants.Constants;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 
+import be.home.common.utils.JSONUtils;
 import be.home.domain.model.MP3Helper;
 import be.home.model.*;
 import com.google.gson.Gson;
@@ -56,12 +57,8 @@ public class MP3Processor extends BatchJobV2 {
 
         //File albumInfo = new File("c:/My Programs/iMacros/output/album.txt");
 
-        Path file = Paths.get(INPUT_FILE);
-        BufferedReader reader2 = Files.newBufferedReader(file, Charset.forName("UTF-8"));
-        JsonReader r = new JsonReader(reader2);
-        Gson gson = new Gson();
+        AlbumInfo.Config album = (AlbumInfo.Config) JSONUtils.openJSON(INPUT_FILE, AlbumInfo.Config.class);
 
-        AlbumInfo.Config album = gson.fromJson(r, AlbumInfo.Config.class);
         System.out.println(album.album);
         MP3Helper helper = new MP3Helper();
 

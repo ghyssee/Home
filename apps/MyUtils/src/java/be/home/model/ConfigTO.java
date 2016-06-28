@@ -46,6 +46,10 @@ public class ConfigTO {
         public Playlist playlist;
     }
 
+    public class MediaMonkey {
+        public String base;
+        public Playlist playlist;
+    }
 
     public class Parts {
         public String id;
@@ -98,6 +102,7 @@ public class ConfigTO {
         public Wiki wiki;
         public Movies movies;
         public Mezzmo mezzmo;
+        public MediaMonkey mediaMonkey;
         public List <Parts> parts = new ArrayList <Parts>();
 
         public String getFullPathConfigDir(){
