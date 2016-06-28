@@ -116,6 +116,8 @@ public class MakeTop20 extends BatchJobV2{
 
             Path pathRelative = pathBase.relativize(pathAbsolute);
             comp.getFileTO().setFile(pathRelative.toString());
+            int duration = (comp.getFileTO().getDuration())/1000;
+            comp.getFileTO().setDuration(duration);
         }
         if (list2.size() > 0){
             writePlaylist(list2, config.mezzmo.playlist.top20);
