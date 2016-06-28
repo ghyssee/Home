@@ -2,6 +2,7 @@ package be.home.mezzmo.domain.dao.jdbc;
 
 import be.home.common.dao.jdbc.MezzmoDB;
 import be.home.common.dao.jdbc.SQLiteUtils;
+import be.home.common.exceptions.MultipleOccurencesException;
 import be.home.common.model.TransferObject;
 import be.home.mezzmo.domain.model.*;
 
@@ -89,6 +90,10 @@ public class MezzmoDAOImpl extends MezzmoDB {
                                              " AND PLL.Name = '11 Top Of The Moment'" +
                                              " ORDER BY PLF.rowid " +
                                              " LIMIT 0,20";
+
+    private static final String FIND_BY_FILE = "SELECT ID AS FILEID " +
+                                               "FROM MGOfile " +
+                                               "WHERE FILE LIKE ?";
 
     public static String getColumns(String[] columns){
         String col = "";
@@ -345,6 +350,39 @@ public class MezzmoDAOImpl extends MezzmoDB {
             System.exit(0);
         }
         return list;
+    }
+
+    public MGOFileTO findByFile(String file){
+        MGOFileTO fileTO = null;
+        PreparedStatement stmt = null;
+        boolean error = false;
+        try {
+            Connection c = getInstance().getConnection();
+
+            //stmt = c.createStatement();
+            stmt = c.prepareStatement(FIND_BY_FILE);
+            stmt.setString(1, file);
+            ResultSet rs = stmt.executeQuery();
+            int counter = 0;
+            while ( rs.next() ) {
+                if (counter > 0){
+                    error = true;
+                    break;
+                }
+                fileTO = new MGOFileTO();
+                fileTO.setId(rs.getInt("FILEID"));
+                counter++;
+            }
+            rs.close();
+            stmt.close();
+        } catch ( Exception e ) {
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            System.exit(0);
+        }
+        if (error){
+            throw new MultipleOccurencesException("FILE: " + file);
+        }
+        return fileTO;
     }
 
 

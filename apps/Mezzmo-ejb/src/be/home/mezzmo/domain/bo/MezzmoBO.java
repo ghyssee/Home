@@ -44,6 +44,10 @@ public class MezzmoBO extends BusinessObject {
         return getMezzmoDAO().getTop20();
     }
 
+    public MGOFileTO findByFile(String file){
+        return getMezzmoDAO().findByFile(file);
+    }
+
     public MezzmoDAOImpl getMezzmoDAO(){
         return new MezzmoDAOImpl();
     }

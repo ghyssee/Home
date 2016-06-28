@@ -6,6 +6,7 @@ import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.WinUtils;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
+import be.home.mezzmo.domain.model.MGOFileTO;
 import be.home.mezzmo.domain.service.MediaMonkeyServiceImpl;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.model.ConfigTO;
@@ -86,6 +87,8 @@ public class MakeTop20 extends BatchJobV2{
         else {
             log.warn("No MP3 files found for the playlist");
         }*/
+
+        MGOFileTO fileTO = getMezzmoService().findByFile("H:\\Shared\\Mijn Muziek\\Eric\\Albums\\100 Nr 1 Hits Volume 1 (2002)\\104 Liquid Ft. Silvy - Turn The Tide.mp3");
 
         // based on MediaMonkey DB
         List <MGOFileAlbumCompositeTO> list2 = getMediaMonkeyService().getTop20();

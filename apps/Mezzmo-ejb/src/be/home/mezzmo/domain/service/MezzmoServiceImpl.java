@@ -52,6 +52,11 @@ public class MezzmoServiceImpl {
         return bo.getFiles(compSearchTO);
     }
 
+    public MGOFileTO findByFile(String file){
+        MezzmoBO bo = new MezzmoBO();
+        return bo.findByFile(file);
+    }
+
     public synchronized static MezzmoServiceImpl getInstance() {
         if(instance == null) {
             instance = new MezzmoServiceImpl();
