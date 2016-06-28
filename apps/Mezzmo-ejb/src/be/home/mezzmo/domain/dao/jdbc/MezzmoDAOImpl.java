@@ -93,7 +93,7 @@ public class MezzmoDAOImpl extends MezzmoDB {
 
     private static final String FIND_BY_FILE = "SELECT ID AS FILEID " +
                                                "FROM MGOfile " +
-                                               "WHERE FILE LIKE ?";
+                                               "WHERE UPPER(FILE) LIKE UPPER(?)";
 
     public static String getColumns(String[] columns){
         String col = "";

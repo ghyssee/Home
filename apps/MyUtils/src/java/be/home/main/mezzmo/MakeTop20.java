@@ -88,7 +88,7 @@ public class MakeTop20 extends BatchJobV2{
             log.warn("No MP3 files found for the playlist");
         }*/
 
-        MGOFileTO fileTO = getMezzmoService().findByFile("H:\\Shared\\Mijn Muziek\\Eric\\Albums\\100 Nr 1 Hits Volume 1 (2002)\\104 Liquid Ft. Silvy - Turn The Tide.mp3");
+        //MGOFileTO fileTO = getMezzmoService().findByFile("H:\\Shared\\Mijn Muziek\\Eric\\Albums\\100 Nr 1 Hits Volume 1 (2002)\\104 Liquid Ft. Silvy - Turn The Tide.mp3");
 
         // based on MediaMonkey DB
         List <MGOFileAlbumCompositeTO> list2 = getMediaMonkeyService().getTop20();
@@ -97,6 +97,23 @@ public class MakeTop20 extends BatchJobV2{
             String DRIVE = "I";
             Path pathAbsolute = Paths.get(DRIVE + comp.getFileTO().getFile());
             Path pathBase = Paths.get(DRIVE + ":" + File.separator + config.mediaMonkey.base + File.separator + config.mediaMonkey.playlist.path);
+            System.out.println("pathBase: " + pathBase.toString());
+            System.out.println("pathAbsolute: " + pathAbsolute.toString());
+            Path iPodBase = Paths.get(DRIVE + ":" + File.separator + config.mediaMonkey.base);
+            Path mezzmoBase = Paths.get(config.mezzmo.base + File.separator + "Eric");
+            System.out.println("iPodBase: " + iPodBase.toString());
+            System.out.println("MezzmoBase: " + mezzmoBase.toString());
+            String file = pathAbsolute.toString().replace(iPodBase.toString(), mezzmoBase.toString());
+            System.out.println("Replace: " + file);
+            MGOFileTO fileTO = getMezzmoService().findByFile(file);
+            if (fileTO != null && fileTO.getId() > 0){
+                System.out.println("FOUND: " + fileTO.getId());
+                // H:\Shared\Mijn Muziek\Eric\iPod\Ultratop 50 20160507 07 Mei 2016\59 Kiiara - Gold.mp3
+            }
+            else {
+                System.out.println("NOT FOUND: " + file);
+            }
+
             Path pathRelative = pathBase.relativize(pathAbsolute);
             comp.getFileTO().setFile(pathRelative.toString());
         }
