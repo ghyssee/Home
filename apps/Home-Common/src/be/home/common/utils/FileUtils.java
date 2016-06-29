@@ -1,16 +1,23 @@
 package be.home.common.utils;
 
+import be.home.common.exceptions.ApplicationException;
 import org.apache.commons.io.input.BOMInputStream;
+import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class FileUtils {
+
+	private static final Logger log = Logger.getLogger(FileUtils.class);
 
 	public static boolean isJPGFile(File fileName) {
 		if (fileName != null
@@ -189,4 +196,15 @@ public class FileUtils {
 		return new InputStreamReader(new BOMInputStream(inputStream), StandardCharsets.UTF_8);
 	}
 
+	public static void checkDirectory(String directory) throws IOException {
+		Path pathToFile = Paths.get(directory);
+		if (!Files.exists(pathToFile)) {
+			try {
+				Files.createDirectories(pathToFile);
+				log.info("Creating directory " + directory);
+			} catch (IOException e) {
+				throw new ApplicationException("There was a problem creating the directory " + directory);
+			}
+		}
+	}
 }

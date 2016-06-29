@@ -1,5 +1,7 @@
 package be.home.main;
 
+import be.home.common.exceptions.ApplicationException;
+import be.home.common.utils.FileUtils;
 import be.home.model.ConfigTO;
 import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
@@ -38,30 +40,19 @@ public class SetupEnvironment extends BatchJobV2 {
     }
 
     public void start() throws IOException {
-        checkDirectory(Setup.getInstance().getFullPath(Constants.Path.BASEDIR));
-        checkDirectory(Setup.getInstance().getFullPath(Constants.Path.ALBUM));
-        checkDirectory(Setup.getInstance().getFullPath(Constants.Path.NEW));
-        checkDirectory(Setup.getInstance().getFullPath(Constants.Path.PREPROCESS));
-        checkDirectory(Setup.getInstance().getFullPath(Constants.Path.PROCESS));
-        checkDirectory(Setup.getInstance().getFullPath(Constants.Path.ONEDRIVE));
-        checkDirectory(Setup.getInstance().getFullPath(Constants.Path.CONFIG));
-        checkDirectory(Setup.getInstance().getFullPath(Constants.Path.DATA));
-        checkDirectory(Setup.getInstance().getFullPath(Constants.Path.PLAYLIST));
-        checkDirectory(Setup.getInstance().getFullPath(Constants.Path.LOCAL_CONFIG));
-        checkDirectory(Setup.getInstance().getFullPath(Constants.Path.VELOCITY));
+        Setup setup = Setup.getInstance();
+        FileUtils.checkDirectory(setup.getFullPath(Constants.Path.BASEDIR));
+        FileUtils.checkDirectory(setup.getFullPath(Constants.Path.ALBUM));
+        FileUtils.checkDirectory(setup.getFullPath(Constants.Path.NEW));
+        FileUtils.checkDirectory(setup.getFullPath(Constants.Path.PREPROCESS));
+        FileUtils.checkDirectory(setup.getFullPath(Constants.Path.PROCESS));
+        FileUtils.checkDirectory(setup.getFullPath(Constants.Path.ONEDRIVE));
+        FileUtils.checkDirectory(setup.getFullPath(Constants.Path.CONFIG));
+        FileUtils.checkDirectory(setup.getFullPath(Constants.Path.DATA));
+        FileUtils.checkDirectory(setup.getFullPath(Constants.Path.PLAYLIST));
+        FileUtils.checkDirectory(setup.getFullPath(Constants.Path.LOCAL_CONFIG));
+        FileUtils.checkDirectory(setup.getFullPath(Constants.Path.VELOCITY));
 
-    }
-
-    private void checkDirectory(String directory) throws IOException {
-        Path pathToFile = Paths.get(directory);
-        if (!Files.exists(pathToFile)) {
-            try {
-                Files.createDirectories(pathToFile);
-                log.info("Creating directory " + directory);
-            } catch (IOException e) {
-                System.err.println(e);
-            }
-        }
     }
 
 
