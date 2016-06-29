@@ -6,6 +6,7 @@ import be.home.common.constants.Constants;
 import be.home.common.utils.JSONUtils;
 import be.home.model.ConfigTO;
 import be.home.model.ParamTO;
+import be.home.model.Setup;
 import be.home.model.UltratopConfig;
 import org.apache.commons.lang3.StringUtils;
 import java.net.*;
@@ -186,6 +187,8 @@ public abstract class BatchJobV2 {
             log.warn("Log Directory does not exist.... Creating " + logDir.getAbsolutePath());
             logDir.mkdirs();
         }
+        Setup.getInstance().init();
+        System.out.println(Setup.getInstance().getFullPath("mp3Processor"));
 
         return config;
     }

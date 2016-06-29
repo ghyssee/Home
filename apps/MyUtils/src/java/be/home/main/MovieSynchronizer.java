@@ -19,7 +19,7 @@ public class MovieSynchronizer extends BatchJobV2 {
 
     public static Log4GE log4GE;
     public static ConfigTO.Config config;
-    private static final Logger log = Logger.getLogger(MovieInfoMaker.class);
+    private static final Logger log = Logger.getLogger(MovieSynchronizer.class);
 
     public static void main(String args[]) {
 
@@ -30,9 +30,9 @@ public class MovieSynchronizer extends BatchJobV2 {
             instance.start();
         }
         catch (FileNotFoundException e){
-           e.printStackTrace();
+           log.error(e);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e);
         }
     }
 

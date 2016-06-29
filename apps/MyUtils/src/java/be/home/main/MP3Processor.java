@@ -1,6 +1,7 @@
 package be.home.main;
 
 import be.home.common.constants.Constants;
+import be.home.common.exceptions.ApplicationException;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 
@@ -29,9 +30,9 @@ public class MP3Processor extends BatchJobV2 {
 
     public static Log4GE log4GE;
     public static ConfigTO.Config config;
-    public static final String MP3_DIR = Constants.Path.MP3_ALBUM + File.separator + "Vlaamse Top Hits 2016 Vol. 1";
+    public static final String MP3_DIR = Setup.getInstance().getFullPath(Constants.Path.ALBUM) + File.separator + "Studio Brussel - Wife Is Music (2012)";
     public static final String INPUT_FILE = Constants.Path.MP3_PROCESSOR + File.separator + "Album.json";
-    private static final Logger log = Logger.getLogger(ZipFiles.class);
+    private static final Logger log = Logger.getLogger(MP3Processor.class);
 
     public static void main(String args[]) {
 
@@ -143,7 +144,7 @@ public class MP3Processor extends BatchJobV2 {
 
         mp3file.setId3v2Tag(id3v2Tag);
         File originalFile = new File(fileName);
-        File newFile = new File(Constants.Path.MP3_NEW + File.separator + originalFile.getName());
+        File newFile = new File(Setup.getInstance().getFullPath(Constants.Path.NEW) + File.separator + originalFile.getName());
         System.out.println("New File " + newFile);
 
         mp3file.save(newFile.getAbsolutePath());
@@ -169,22 +170,28 @@ public class MP3Processor extends BatchJobV2 {
         };
 
         List<Path> fileNames = new ArrayList<>();
-        try (
-                DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(directory), filter);
-        ) {
-            for (Path path : directoryStream) {
-                fileNames.add(path);
+        Path path = Paths.get(directory);
+        if (Files.exists(path)) {
+            try (
+                    DirectoryStream<Path> directoryStream = Files.newDirectoryStream(path, filter);
+            ) {
+                for (Path file : directoryStream) {
+                    fileNames.add(file);
+                }
+                directoryStream.close();
+            } catch (IOException ex) {
             }
-            directoryStream.close();
-        } catch (IOException ex) {
-        }
-        Collections.sort(fileNames, new Comparator<Path>() {
-            @Override
-            public int compare(Path f1, Path f2) {
-                return f1.toString().compareTo(f2.toString());
-            }
+            Collections.sort(fileNames, new Comparator<Path>() {
+                @Override
+                public int compare(Path f1, Path f2) {
+                    return f1.toString().compareTo(f2.toString());
+                }
 
-        });
+            });
+        }
+        else {
+            throw new ApplicationException("MP3 Directory " + directory + " does not exist!");
+        }
         return fileNames;
     }
 

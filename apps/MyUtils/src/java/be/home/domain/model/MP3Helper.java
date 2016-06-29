@@ -83,7 +83,7 @@ public class MP3Helper {
                 word = replaceWord(word, "Ii", "II");
                 word = replaceWord(word, "Pm", "PM");
                 word = replaceWord(word, "Dcup", "DCup");
-                word = replaceWord(word, "Dcup", "DCup");
+                word = replaceWord(word, "Deus", "dEUS");
                 word = replaceWord(word, "Deville", "DeVille");
                 word = replaceWord(word, "Pres.", "Presents");
                 word = replaceWord(word, "Atb", "ATB");
@@ -104,6 +104,9 @@ public class MP3Helper {
                 word = replaceWord(word, "3lw", "3LW");
                 word = replaceWord(word, "Tlc", "TLC");
                 word = replaceWord(word, "Lp", "LP");
+                word = replaceWord(word, "Kt", "KT");
+                word = replaceWord(word, "O'connor", "O'Connor");
+
 
                 // 19eighty7 => 19Eighty7
                 // (17) => remove

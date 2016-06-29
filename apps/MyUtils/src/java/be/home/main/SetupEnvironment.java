@@ -6,6 +6,8 @@ import be.home.common.constants.Constants;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.DateUtils;
+import be.home.common.utils.JSONUtils;
+import be.home.common.utils.WinUtils;
 import be.home.model.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
@@ -49,16 +51,17 @@ public class SetupEnvironment extends BatchJobV2 {
     }
 
     public void start() throws IOException {
-        checkDirectory(Constants.Path.MP3_BASEDIR);
-        checkDirectory(Constants.Path.MP3_ALBUM);
-        checkDirectory(Constants.Path.MP3_NEW);
-        checkDirectory(Constants.Path.MP3_PREPROCESSOR);
-        checkDirectory(Constants.Path.MP3_PROCESSOR);
-        checkDirectory(Constants.Path.BASE_DIR);
-        checkDirectory(Constants.Path.BASE_CONFIG_DIR);
-        checkDirectory(Constants.Path.BASE_DATA_DIR);
-        checkDirectory(Constants.Path.BASE_DATA_DIR_PLAYLIST);
-        checkDirectory(Constants.Path.BASE_LOCAL_CONFIG_DIR);
+        checkDirectory(Setup.getInstance().getFullPath(Constants.Path.BASEDIR));
+        checkDirectory(Setup.getInstance().getFullPath(Constants.Path.ALBUM));
+        checkDirectory(Setup.getInstance().getFullPath(Constants.Path.NEW));
+        checkDirectory(Setup.getInstance().getFullPath(Constants.Path.PREPROCESS));
+        checkDirectory(Setup.getInstance().getFullPath(Constants.Path.PROCESS));
+        checkDirectory(Setup.getInstance().getFullPath(Constants.Path.ONEDRIVE));
+        checkDirectory(Setup.getInstance().getFullPath(Constants.Path.CONFIG));
+        checkDirectory(Setup.getInstance().getFullPath(Constants.Path.DATA));
+        checkDirectory(Setup.getInstance().getFullPath(Constants.Path.PLAYLIST));
+        checkDirectory(Setup.getInstance().getFullPath(Constants.Path.LOCAL_CONFIG));
+        checkDirectory(Setup.getInstance().getFullPath(Constants.Path.VELOCITY));
 
     }
 

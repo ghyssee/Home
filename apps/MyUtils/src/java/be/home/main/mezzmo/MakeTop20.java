@@ -61,7 +61,7 @@ public class MakeTop20 extends BatchJobV2{
         base += "\\Muziek\\Export\\";
 
         try {
-            makeTop20(base, "MezzmoDB.PlayCount.V12.csv");
+            makeTop20();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -69,7 +69,7 @@ public class MakeTop20 extends BatchJobV2{
 
     }
 
-    public void makeTop20(String base, String fileName) throws IOException {
+    public void makeTop20() throws IOException {
 
 
         /* based on Mezzmo DB
@@ -108,7 +108,6 @@ public class MakeTop20 extends BatchJobV2{
             MGOFileTO fileTO = getMezzmoService().findByFile(file);
             if (fileTO != null && fileTO.getId() > 0){
                 System.out.println("FOUND: " + fileTO.getId());
-                // H:\Shared\Mijn Muziek\Eric\iPod\Ultratop 50 20160507 07 Mei 2016\59 Kiiara - Gold.mp3
             }
             else {
                 System.out.println("NOT FOUND: " + file);

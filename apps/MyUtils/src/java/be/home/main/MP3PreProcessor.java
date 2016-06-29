@@ -36,7 +36,7 @@ public class MP3PreProcessor extends BatchJobV2 {
 
     public static Log4GE log4GE;
     public static ConfigTO.Config config;
-    private static final Logger log = Logger.getLogger(ZipFiles.class);
+    private static final Logger log = Logger.getLogger(MP3PreProcessor.class);
 
     public enum TAGS {
         TRACK, ARTIST, TITLE
@@ -65,7 +65,7 @@ public class MP3PreProcessor extends BatchJobV2 {
 
     public void start() throws IOException {
 
-        Path file = Paths.get(Constants.Path.MP3_PREPROCESSOR + File.separator + FILE);
+        Path file = Paths.get(Setup.getInstance().getFullPath(Constants.Path.PREPROCESS) + File.separator + FILE);
         BufferedReader reader2 = Files.newBufferedReader(file, Charset.defaultCharset());
         String line = null;
         AlbumInfo info = new AlbumInfo();
@@ -77,7 +77,7 @@ public class MP3PreProcessor extends BatchJobV2 {
             }
         }
         //writeJsonFile(configAlbum);
-        JSONUtils.writeJsonFile(configAlbum, Constants.Path.MP3_PROCESSOR + File.separator + "Album.json");
+        JSONUtils.writeJsonFile(configAlbum, Setup.getInstance().getFullPath(Constants.Path.PROCESS) + File.separator + "Album.json");
 
 
     }

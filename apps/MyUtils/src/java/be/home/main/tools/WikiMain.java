@@ -1,6 +1,5 @@
-package be.home.main;
+package be.home.main.tools;
 
-import be.home.common.constants.InitConstants;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.FileUtils;
@@ -9,15 +8,12 @@ import be.home.picmgt.common.CSVPrinter;
 import be.home.picmgt.common.CSVPrinterImpl;
 import be.home.picmgt.model.to.WikiAppsTO;
 import be.home.picmgt.model.wiki.WikiHelper;
-import com.google.gson.Gson;
-import com.google.gson.stream.JsonReader;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 /**

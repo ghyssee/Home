@@ -1,4 +1,4 @@
-package be.home.main;
+package be.home.main.tools;
 
 import be.home.common.archiving.Archiver;
 import be.home.common.archiving.ZipArchiver;
@@ -10,11 +10,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
 import java.io.*;
-import java.net.URISyntaxException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.security.CodeSource;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**

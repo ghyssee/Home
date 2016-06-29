@@ -67,7 +67,7 @@ public class ExportAlbums extends BatchJobV2{
 
         String jrxmlFileName = "C:/Projects/GitHub/Home/apps/MyUtils/src/resources/MezzmoJavaBean.jrxml";
         String jasperFileName = "C:/reports/MezzmoJavaBean2.jasper";
-        String pdfFileName = "C:/reports/MezzmoJavaBean2.pdf";
+        String pdfFileName = "C:/reports/ListOfAlbums.pdf";
         String htmlFile = "C:/reports/Albums.html";
         Map hm = new HashMap();
         //hm.put("ID", "123");
