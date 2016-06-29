@@ -1,26 +1,13 @@
 package be.home.main;
 
-import be.home.common.archiving.Archiver;
-import be.home.common.archiving.ZipArchiver;
+import be.home.model.ConfigTO;
+import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
-import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
-import be.home.common.utils.DateUtils;
-import be.home.common.utils.JSONUtils;
-import be.home.common.utils.WinUtils;
-import be.home.model.*;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
 import java.io.*;
-import java.net.InetAddress;
-import java.net.URISyntaxException;
-import java.net.UnknownHostException;
 import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.security.CodeSource;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * Created by ghyssee on 20/02/2015.

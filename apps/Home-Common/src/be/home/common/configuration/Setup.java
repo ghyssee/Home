@@ -1,4 +1,4 @@
-package be.home.model;
+package be.home.common.configuration;
 
 import be.home.common.exceptions.ApplicationException;
 import be.home.common.utils.JSONUtils;
@@ -7,7 +7,6 @@ import be.home.common.utils.WinUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,7 +16,7 @@ import java.util.Map;
 public class Setup {
 
 
-    public static Map<String, Object> map = new HashMap<String, Object>();
+    private static Map<String, Object> map = new HashMap<String, Object>();
 
     private static Setup setup = new Setup();
 
@@ -42,7 +41,6 @@ public class Setup {
                 path = tmp.get("path") + File.separator + path;
                 parent = (String) tmp.get("parent");
                 if (parent != null) {
-                    //path = tmp.get("path") + File.separator + path;
                     tmp = (Map<String, Object>) map.get(parent);
                     if (tmp == null){
                         throw new ApplicationException("Parent Not Found: " + parent);

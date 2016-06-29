@@ -1,9 +1,12 @@
 package be.home.main;
 
+import be.home.model.ConfigTO;
+import be.home.model.MovieBO;
+import be.home.model.MovieStatusTO;
+import be.home.model.MovieTO;
 import be.home.common.constants.Constants;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
-import be.home.model.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 

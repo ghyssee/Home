@@ -10,6 +10,7 @@ import be.home.mezzmo.domain.model.MGOFileTO;
 import be.home.mezzmo.domain.service.MediaMonkeyServiceImpl;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.model.ConfigTO;
+import be.home.common.configuration.Setup;
 import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -129,7 +130,7 @@ public class MakeTop20 extends BatchJobV2{
 
     private void writePlaylist(List <MGOFileAlbumCompositeTO> list, String outputFile) throws IOException {
         Properties p = new Properties();
-        p.setProperty("file.resource.loader.path", Constants.Path.VELOCITY_DIR);
+        p.setProperty("file.resource.loader.path", Setup.getInstance().getFullPath(Constants.Path.VELOCITY));
 
         String filename = config.mezzmo.base + File.separator + config.mezzmo.playlist.path;
         Path outputFolder = Paths.get(filename);

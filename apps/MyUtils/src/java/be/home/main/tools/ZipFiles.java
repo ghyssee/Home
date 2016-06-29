@@ -2,10 +2,11 @@ package be.home.main.tools;
 
 import be.home.common.archiving.Archiver;
 import be.home.common.archiving.ZipArchiver;
+import be.home.model.ConfigTO;
+import be.home.model.ParamTO;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.DateUtils;
-import be.home.model.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 

@@ -1,12 +1,14 @@
 package be.home.main;
 
+import be.home.model.AlbumInfo;
+import be.home.model.ConfigTO;
+import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
 import be.home.common.exceptions.ApplicationException;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.JSONUtils;
 import be.home.domain.model.MP3Helper;
-import be.home.model.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 

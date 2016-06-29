@@ -2,11 +2,11 @@ package be.home.common.main;
 
 import java.io.*;
 
+import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
 import be.home.common.utils.JSONUtils;
 import be.home.model.ConfigTO;
 import be.home.model.ParamTO;
-import be.home.model.Setup;
 import be.home.model.UltratopConfig;
 import org.apache.commons.lang3.StringUtils;
 import java.net.*;

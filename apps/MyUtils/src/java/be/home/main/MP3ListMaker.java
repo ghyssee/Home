@@ -1,22 +1,12 @@
 package be.home.main;
 
-import be.home.common.constants.InitConstants;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.FileUtils;
 import be.home.common.utils.WinUtils;
 import be.home.model.ConfigTO;
-import be.home.model.M3uTO;
-import be.home.picmgt.common.CSVPrinter;
-import be.home.picmgt.common.CSVPrinterImpl;
-import be.home.picmgt.model.to.WikiAppsTO;
-import be.home.picmgt.model.wiki.WikiHelper;
-import com.google.gson.Gson;
-import com.google.gson.stream.JsonReader;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 

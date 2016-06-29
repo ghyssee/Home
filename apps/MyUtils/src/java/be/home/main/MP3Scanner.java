@@ -1,15 +1,13 @@
 package be.home.main;
 
+import be.home.model.ConfigTO;
+import be.home.model.ParamTO;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
-import be.home.common.utils.FileUtils;
-import be.home.model.*;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
 import java.util.regex.Pattern;
 
 /**

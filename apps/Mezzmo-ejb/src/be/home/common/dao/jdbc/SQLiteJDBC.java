@@ -3,12 +3,11 @@ package be.home.common.dao.jdbc;
 /**
  * Created by ghyssee on 9/02/2016.
  */
+import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
 import be.home.common.model.DataBaseConfiguration;
 import be.home.common.utils.JSONUtils;
 import be.home.common.utils.WinUtils;
-import com.google.gson.Gson;
-import com.google.gson.stream.JsonReader;
 import org.apache.log4j.Logger;
 
 import java.io.*;
@@ -64,7 +63,7 @@ public class SQLiteJDBC
     public static void initialize(String workingDir){
         InputStream i = null;
         //String localConfig = workingDir + "/config/localDatabases.json";
-        File file = new File (Constants.Path.BASE_LOCAL_CONFIG_DIR + File.separator + "localDatabases.json");
+        File file = new File (Setup.getInstance().getFullPath(Constants.Path.LOCAL_CONFIG) + File.separator + "localDatabases.json");
         Map <String, DataBaseConfiguration.DataBase> map = new HashMap <String, DataBaseConfiguration.DataBase>();
         if (file.exists()){
             log.debug("Local Database Configuration File found: " + file.getAbsolutePath());

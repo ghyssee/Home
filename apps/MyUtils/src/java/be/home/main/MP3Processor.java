@@ -1,5 +1,8 @@
 package be.home.main;
 
+import be.home.model.AlbumInfo;
+import be.home.model.ConfigTO;
+import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
 import be.home.common.exceptions.ApplicationException;
 import be.home.common.logging.Log4GE;
@@ -7,16 +10,12 @@ import be.home.common.main.BatchJobV2;
 
 import be.home.common.utils.JSONUtils;
 import be.home.domain.model.MP3Helper;
-import be.home.model.*;
-import com.google.gson.Gson;
-import com.google.gson.stream.JsonReader;
 import com.mpatric.mp3agic.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.*;
-import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
@@ -31,7 +30,7 @@ public class MP3Processor extends BatchJobV2 {
     public static Log4GE log4GE;
     public static ConfigTO.Config config;
     public static final String MP3_DIR = Setup.getInstance().getFullPath(Constants.Path.ALBUM) + File.separator + "Studio Brussel - Wife Is Music (2012)";
-    public static final String INPUT_FILE = Constants.Path.MP3_PROCESSOR + File.separator + "Album.json";
+    public static final String INPUT_FILE = Setup.getInstance().getFullPath(Constants.Path.PROCESS) + File.separator + "Album.json";
     private static final Logger log = Logger.getLogger(MP3Processor.class);
 
     public static void main(String args[]) {

@@ -42,7 +42,7 @@ public interface Constants {
         public static final String BASE_DATA_DIR = BASE_DIR + "Data";
         public static final String BASE_DATA_DIR_PLAYLIST = BASE_DATA_DIR + File.separator + "Playlists";
         public static final String BASE_LOCAL_CONFIG_DIR = BASE_CONFIG_DIR + File.separator + NetUtils.getHostName();
-        public static final String VELOCITY_DIR = BASE_CONFIG_DIR + File.separator + "Velocity";
+        //public static final String VELOCITY_DIR = BASE_CONFIG_DIR + File.separator + "Velocity";
 
         public static final String BASEDIR = "mp3Processor";
         public static final String ALBUM = "album";

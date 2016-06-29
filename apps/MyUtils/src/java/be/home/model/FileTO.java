@@ -3,7 +3,6 @@ package be.home.model;
 import be.home.common.utils.FileUtils;
 
 import java.io.File;
-import java.util.List;
 
 /**
  * Created by ghyssee on 24/03/2015.
