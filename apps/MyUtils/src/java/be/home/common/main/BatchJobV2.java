@@ -21,7 +21,7 @@ public abstract class BatchJobV2 {
     private static final Logger log = Logger.getLogger(BatchJobV2.class);
     public static String workingDir = System.getProperty("user.dir");
     // private String paramIniFile = workingDir + "/config/config.json";
-    private String paramIniFile = Constants.Path.BASE_CONFIG_DIR + File.separator + "config.json";
+    private String paramIniFile = Setup.getInstance().getFullPath(Constants.Path.CONFIG) + File.separator + "config.json";
 
     public Map <String,String> validateParams(String[] args, ParamTO paramArray []) {
         Map <String,String> params = initParams(args, paramArray);
@@ -66,26 +66,26 @@ public abstract class BatchJobV2 {
         }
         maxLength++;
         lengthRequired++;
-        System.out.println("List of parameters");
-        System.out.println(StringUtils.repeat("=", maxLength + lengthRequired + maxLengthDescription));
-        System.out.print(StringUtils.rightPad("Id", maxLength));
-        System.out.print(StringUtils.rightPad(REQ, lengthRequired));
-        System.out.println("Description");
-        System.out.println(StringUtils.repeat("-", maxLength  + lengthRequired + maxLengthDescription));
+        log.info("List of parameters");
+        log.info(StringUtils.repeat("=", maxLength + lengthRequired + maxLengthDescription));
+        log.info(StringUtils.rightPad("Id", maxLength) + StringUtils.rightPad(REQ, lengthRequired));
+        log.info("Description");
+        log.info(StringUtils.repeat("-", maxLength + lengthRequired + maxLengthDescription));
         for (int i=0; i < requiredParams.length; i++){
-            System.out.print(StringUtils.rightPad(requiredParams[i].getId(), maxLength));
-            System.out.print(StringUtils.rightPad(requiredParams[i].isRequired() ? "Y" : "N", lengthRequired));
+            String logMessage = StringUtils.rightPad(requiredParams[i].getId(), maxLength);
+            logMessage += StringUtils.rightPad(requiredParams[i].isRequired() ? "Y" : "N", lengthRequired);
             for (int j=0; j < requiredParams[i].getDescription().length; j++){
                 if (j==0) {
-                    System.out.println(requiredParams[i].getDescription()[j]);
+                    logMessage += requiredParams[i].getDescription()[j];
                 }
                 else {
-                    System.out.println(StringUtils.repeat(" ", maxLength + lengthRequired) + requiredParams[i].getDescription()[j]);
+                    logMessage += StringUtils.repeat(" ", maxLength + lengthRequired) + requiredParams[i].getDescription()[j];
+                    log.info(logMessage);
                 }
             }
             //System.out.println(requiredParams[i].getDescription());
         }
-        System.out.println(StringUtils.repeat("=", maxLength + lengthRequired +  maxLengthDescription));
+        log.info(StringUtils.repeat("=", maxLength + lengthRequired +  maxLengthDescription));
         System.exit(1);
     }
 

@@ -135,7 +135,7 @@ public class MakeTop20 extends BatchJobV2{
         String filename = config.mezzmo.base + File.separator + config.mezzmo.playlist.path;
         Path outputFolder = Paths.get(filename);
         if (Files.notExists(outputFolder)){
-            outputFolder = Paths.get(Constants.Path.BASE_DATA_DIR_PLAYLIST);
+            outputFolder = Paths.get(Setup.getInstance().getFullPath(Constants.Path.PLAYLIST));
         }
         log.info("Playlist folder: " + outputFolder.toString());
 
