@@ -106,6 +106,8 @@ public class MP3Helper {
                 word = replaceWord(word, "Lp", "LP");
                 word = replaceWord(word, "Kt", "KT");
                 word = replaceWord(word, "O'connor", "O'Connor");
+                word = replaceWord(word, "Klubbb3", "KLUBBB3");
+
 
 
                 // 19eighty7 => 19Eighty7

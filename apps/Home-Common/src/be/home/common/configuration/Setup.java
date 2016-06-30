@@ -21,15 +21,11 @@ public class Setup {
     private static Setup setup = new Setup();
 
     private Setup() {
-
+        map = (Map<String, Object>) JSONUtils.openJSON(WinUtils.getOneDrivePath() + File.separator + "config/Setup.json", map.getClass());
     }
 
     public static Setup getInstance() {
         return setup;
-    }
-
-    public static void init() {
-        map = (Map<String, Object>) JSONUtils.openJSON(WinUtils.getOneDrivePath() + File.separator + "config/Setup.json", map.getClass());
     }
 
     public static String getFullPath(String type) {

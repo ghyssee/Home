@@ -161,7 +161,7 @@ public abstract class BatchJobV2 {
     }
 
     public ConfigTO.Config init() throws FileNotFoundException, UnsupportedEncodingException, IOException {
-        Setup.getInstance().init();
+        //Setup.getInstance().init();
         String paramIniFile = Setup.getInstance().getFullPath(Constants.Path.CONFIG) + File.separator + "config.json";
         File iniFile = new File(paramIniFile);
         if (!iniFile.exists()){
