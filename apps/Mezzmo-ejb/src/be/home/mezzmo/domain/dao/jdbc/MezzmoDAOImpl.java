@@ -69,7 +69,10 @@ public class MezzmoDAOImpl extends MezzmoDB {
             " AND MGOFile.FileTitle like ?" +
             ")";
 
-    private static final String LIST_ALBUMS = "SELECT DISTINCT MGOFileAlbum.data AS ALBUMNAME, MGOAlbumArtist.data AS ALBUMARTISTNAME" +
+    private static final String LIST_ALBUMS = "SELECT DISTINCT MGOFileAlbum.data AS ALBUMNAME," +
+                                " MGOAlbumArtist.data AS ALBUMARTISTNAME," +
+                                " MGOAlbumArtist.id AS ALBUMID," +
+                                " MAX(MGOFile.Year) AS YEAR" +
                                 " FROM MGOFileAlbumRelationship" +
                                 " INNER JOIN MGOFileAlbum ON (MGOFileAlbum.ID = MGOFileAlbumRelationship.ID)" +
                                 " INNER JOIN MGOAlbumArtistRelationship ON (MGOAlbumArtistRelationship.fileID = MGOFileAlbumRelationship.fileID)" +
@@ -77,6 +80,7 @@ public class MezzmoDAOImpl extends MezzmoDB {
                                 " INNER JOIN MGOFile ON (MGOFile.ID = MGOAlbumArtistRelationship.fileID)" +
                                 " INNER JOIN MGOFileExtension ON (MGOFileExtension.ID = MGOFILE.extensionID)" +
                                 " WHERE 1=1" +
+                                " GROUP BY ALBUMNAME, ALBUMARTISTNAME, ALBUMID" +
                                 " AND MGOFileExtension.data = 'mp3'" +
                                 " ORDER BY MGOFileAlbum.data";
 
@@ -94,6 +98,17 @@ public class MezzmoDAOImpl extends MezzmoDB {
     private static final String FIND_BY_FILE = "SELECT ID AS FILEID " +
                                                "FROM MGOfile " +
                                                "WHERE UPPER(FILE) LIKE UPPER(?)";
+
+    private static final String FIND_ALBUM_YEAR = "SELECT MAX(MGOFile.Year) AS YEAR " +
+                                                  "FROM MGOFileAlbumRelationship " +
+                                                  "INNER JOIN MGOFileAlbum ON (MGOFileAlbum.ID = MGOFileAlbumRelationship.ID) " +
+                                                  "INNER JOIN MGOFile ON (MGOFile.ID = MGOFileAlbumRelationship.fileID) " +
+                                                  "INNER JOIN MGOFileExtension ON (MGOFileExtension.ID = MGOFILE.extensionID) " +
+                                                  "WHERE 1=1 " +
+                                                  "AND MGOFileExtension.data = 'mp3' " +
+                                                  "AND MGOFileAlbum.id like ? ";
+
+
 
     public static String getColumns(String[] columns){
         String col = "";
@@ -302,7 +317,10 @@ public class MezzmoDAOImpl extends MezzmoDB {
                 MGOFileAlbumCompositeTO fileAlbumComposite = new MGOFileAlbumCompositeTO();
                 MGOFileAlbumTO fileAlbumTO = fileAlbumComposite.getFileAlbumTO();
                 MGOAlbumArtistTO albumArtistTO = fileAlbumComposite.getAlbumArtistTO();
+                MGOFileTO fileTO = fileAlbumComposite.getFileTO();
+                fileTO.setYear(rs.getInt("YEAR"));
                 fileAlbumTO.setName(rs.getString("ALBUMNAME"));
+                fileAlbumTO.setId(rs.getInt("ALBUMID"));
                 albumArtistTO.setName(rs.getString("ALBUMARTISTNAME"));
                 list.add(fileAlbumComposite);
             }
@@ -385,5 +403,37 @@ public class MezzmoDAOImpl extends MezzmoDB {
         return fileTO;
     }
 
+    public MGOFileTO findAlbumYear(int albumId){
+        MGOFileTO fileTO = null;
+        PreparedStatement stmt = null;
+        boolean error = false;
+        try {
+            Connection c = getInstance().getConnection();
+
+            //stmt = c.createStatement();
+            stmt = c.prepareStatement(FIND_ALBUM_YEAR);
+            stmt.setInt(1, albumId);
+            ResultSet rs = stmt.executeQuery();
+            int counter = 0;
+            while ( rs.next() ) {
+                if (counter > 0){
+                    error = true;
+                    break;
+                }
+                fileTO = new MGOFileTO();
+                fileTO.setId(rs.getInt("YEAR"));
+                counter++;
+            }
+            rs.close();
+            stmt.close();
+        } catch ( Exception e ) {
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            System.exit(0);
+        }
+        if (error){
+            throw new MultipleOccurencesException("AlbumId: " + albumId);
+        }
+        return fileTO;
+    }
 
 }

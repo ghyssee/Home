@@ -21,7 +21,6 @@ public abstract class BatchJobV2 {
     private static final Logger log = Logger.getLogger(BatchJobV2.class);
     public static String workingDir = System.getProperty("user.dir");
     // private String paramIniFile = workingDir + "/config/config.json";
-    private String paramIniFile = Setup.getInstance().getFullPath(Constants.Path.CONFIG) + File.separator + "config.json";
 
     public Map <String,String> validateParams(String[] args, ParamTO paramArray []) {
         Map <String,String> params = initParams(args, paramArray);
@@ -85,7 +84,7 @@ public abstract class BatchJobV2 {
             }
             //System.out.println(requiredParams[i].getDescription());
         }
-        log.info(StringUtils.repeat("=", maxLength + lengthRequired +  maxLengthDescription));
+        log.info(StringUtils.repeat("=", maxLength + lengthRequired + maxLengthDescription));
         System.exit(1);
     }
 
@@ -162,6 +161,8 @@ public abstract class BatchJobV2 {
     }
 
     public ConfigTO.Config init() throws FileNotFoundException, UnsupportedEncodingException, IOException {
+        Setup.getInstance().init();
+        String paramIniFile = Setup.getInstance().getFullPath(Constants.Path.CONFIG) + File.separator + "config.json";
         File iniFile = new File(paramIniFile);
         if (!iniFile.exists()){
             iniFile = new File(workingDir + "/../config/config.json");
@@ -187,7 +188,6 @@ public abstract class BatchJobV2 {
             log.warn("Log Directory does not exist.... Creating " + logDir.getAbsolutePath());
             logDir.mkdirs();
         }
-        Setup.getInstance().init();
         System.out.println(Setup.getInstance().getFullPath("mp3Processor"));
 
         return config;

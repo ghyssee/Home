@@ -57,6 +57,11 @@ public class MezzmoServiceImpl {
         return bo.findByFile(file);
     }
 
+    public MGOFileTO findAlbumYear(int albumId){
+        MezzmoBO bo = new MezzmoBO();
+        return bo.findAlbumYear(albumId);
+    }
+
     public synchronized static MezzmoServiceImpl getInstance() {
         if(instance == null) {
             instance = new MezzmoServiceImpl();

@@ -48,6 +48,10 @@ public class MezzmoBO extends BusinessObject {
         return getMezzmoDAO().findByFile(file);
     }
 
+    public MGOFileTO findAlbumYear(int albumId){
+        return getMezzmoDAO().findAlbumYear(albumId);
+    }
+
     public MezzmoDAOImpl getMezzmoDAO(){
         return new MezzmoDAOImpl();
     }

@@ -5,6 +5,7 @@ import be.home.common.main.BatchJobV2;
 import be.home.common.model.TransferObject;
 import be.home.common.utils.WinUtils;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
+import be.home.mezzmo.domain.model.MGOFileTO;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.model.ConfigTO;
 import net.sf.jasperreports.engine.*;
@@ -75,13 +76,17 @@ public class ExportAlbums extends BatchJobV2{
         List<MGOFileAlbumCompositeTO> list = getMezzmoService().getAlbums(new TransferObject());
         for (MGOFileAlbumCompositeTO comp : list){
             comp.getFileAlbumTO().setCoverArt("config/folder.jpg");
+            //MGOFileTO fileTO = getMezzmoService().findAlbumYear(comp.getFileAlbumTO().getId());
         }
         JRDataSource dataSource = new JRBeanCollectionDataSource(list);
         JRFileVirtualizer virtualizer = new JRFileVirtualizer (100, "temp");
         virtualizer.setReadOnly(false);
         hm.put(JRParameter.REPORT_VIRTUALIZER, virtualizer);
+        log.info("Compiling report " + jrxmlFileName);
         JasperCompileManager.compileReportToFile(jrxmlFileName, jasperFileName);
+        log.info("Preparing report " + pdfFileName);
         JasperPrint jprint = (JasperPrint) JasperFillManager.fillReport(jasperFileName, hm, dataSource);
+        log.info("Writing report " + pdfFileName);
         JasperExportManager.exportReportToPdfFile(jprint, pdfFileName);
         //JasperExportManager.exportReportToHtmlFile(jprint,htmlFile);
 
