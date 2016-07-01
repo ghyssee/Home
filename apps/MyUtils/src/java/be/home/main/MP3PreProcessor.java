@@ -1,5 +1,7 @@
 package be.home.main;
 
+import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
+import be.home.mezzmo.domain.model.MezzmoJavaBeanFactory;
 import be.home.model.AlbumInfo;
 import be.home.model.ConfigTO;
 import be.home.common.configuration.Setup;
@@ -68,6 +70,7 @@ public class MP3PreProcessor extends BatchJobV2 {
 
     public void start() throws IOException {
 
+        List <MGOFileAlbumCompositeTO> list = (List<MGOFileAlbumCompositeTO>) MezzmoJavaBeanFactory.getCompositeAlbumList();
         Path file = Paths.get(Setup.getInstance().getFullPath(Constants.Path.PREPROCESS) + File.separator + FILE);
         BufferedReader reader2 = Files.newBufferedReader(file, Charset.defaultCharset());
         String line = null;

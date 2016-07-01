@@ -57,5 +57,6 @@ public interface Constants {
         public static final String PLAYLIST = "playlist";
         public static final String LOCAL_CONFIG = "localConfig";
         public static final String VELOCITY = "velocity";
+        public static final String RESOURCES = "resource";
     }
 }

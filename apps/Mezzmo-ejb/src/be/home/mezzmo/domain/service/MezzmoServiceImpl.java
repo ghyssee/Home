@@ -40,6 +40,11 @@ public class MezzmoServiceImpl {
         return bo.getAlbums(to);
     }
 
+    public List<MGOFileAlbumCompositeTO> getAlbumTracks(TransferObject to){
+        MezzmoBO bo = new MezzmoBO();
+        return bo.getAlbumTracks(to);
+    }
+
     public List<MGOFileAlbumCompositeTO> getTop20(){
         MezzmoBO bo = new MezzmoBO();
         return bo.getTop20();
@@ -57,9 +62,9 @@ public class MezzmoServiceImpl {
         return bo.findByFile(file);
     }
 
-    public MGOFileTO findAlbumYear(int albumId){
+    public MGOFileTO findCoverArt(int albumId){
         MezzmoBO bo = new MezzmoBO();
-        return bo.findAlbumYear(albumId);
+        return bo.findCoverArt(albumId);
     }
 
     public synchronized static MezzmoServiceImpl getInstance() {

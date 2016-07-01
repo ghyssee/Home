@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.2.2.final using JasperReports Library version 6.2.2  -->
-<!-- 2016-06-13T14:06:17 -->
+<!-- 2016-07-01T10:31:19 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="MezzmoJavaBean" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="0bd011ea-7148-4095-b724-e39890d40c5a">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MezzmoJavaBeanFactory"/>
 	<property name="ireport.zoom" value="1.0"/>
@@ -17,6 +17,9 @@
 	</field>
 	<field name="fileAlbumTO.coverArt" class="java.lang.String">
 		<fieldDescription><![CDATA[fileAlbumTO.coverArt]]></fieldDescription>
+	</field>
+	<field name="fileTO.year" class="java.lang.Integer">
+		<fieldDescription><![CDATA[fileTO.year]]></fieldDescription>
 	</field>
 	<background>
 		<band height="132" splitType="Stretch"/>
@@ -45,12 +48,19 @@
 				<reportElement mode="Transparent" x="369" y="8" width="100" height="17" uuid="fb7a7e54-4727-411d-b40d-717edacd204d"/>
 				<text><![CDATA[artist]]></text>
 			</staticText>
+			<staticText>
+				<reportElement x="330" y="9" width="30" height="17" uuid="9ca57d5f-7461-4d14-818a-5cf42ffa6d53">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<text><![CDATA[Year]]></text>
+			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="14" splitType="Stretch">
+		<band height="33" splitType="Stretch">
 			<textField isStretchWithOverflow="true">
-				<reportElement x="33" y="0" width="320" height="14" uuid="50ce9625-ae84-4571-824b-44700b6e21dd"/>
+				<reportElement x="33" y="0" width="287" height="14" uuid="50ce9625-ae84-4571-824b-44700b6e21dd"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -70,6 +80,17 @@
 				</reportElement>
 				<imageExpression><![CDATA[$F{fileAlbumTO.coverArt}]]></imageExpression>
 			</image>
+			<textField>
+				<reportElement x="330" y="0" width="30" height="14" uuid="d1670eef-1052-4d9e-b759-43e8107ea5b3">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fileTO.year}]]></textFieldExpression>
+			</textField>
 		</band>
 	</detail>
 	<columnFooter>

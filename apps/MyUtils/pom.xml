@@ -16,18 +16,13 @@
 
 	<build>
 	<sourceDirectory>src/java</sourceDirectory>
-	<!--
 	<resources>
 		<resource>
 			  <directory>${basedir}/src/resources</directory>
 			<filtering>true</filtering>
 		</resource>
-		<resource>
-			  <directory>${basedir}/src/config</directory>
-				<filtering>true</filtering>
-		</resource>
 	</resources>
-	-->
+
 	
 	<plugins>
 

@@ -1,5 +1,7 @@
 package be.home.main.mezzmo;
 
+import be.home.common.configuration.Setup;
+import be.home.common.constants.Constants;
 import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.main.BatchJobV2;
 import be.home.common.model.TransferObject;
@@ -25,7 +27,7 @@ public class ExportAlbums extends BatchJobV2{
 
     public static MezzmoServiceImpl mezzmoService = null;
     public static ConfigTO.Config config;
-    private static final Logger log = Logger.getLogger(ExportAlbumsToPDF.class);
+    private static final Logger log = Logger.getLogger(ExportAlbums.class);
 
     public static void main(String args[]) {
 
@@ -74,12 +76,18 @@ public class ExportAlbums extends BatchJobV2{
         //hm.put("ID", "123");
         //hm.put("DATENAME", "April 2006");
         List<MGOFileAlbumCompositeTO> list = getMezzmoService().getAlbums(new TransferObject());
+        //List<MGOFileAlbumCompositeTO> listTracks = getMezzmoService().getAlbumTracks(new TransferObject());
+        log.info("Getting cover arts of the albums");
         for (MGOFileAlbumCompositeTO comp : list){
-            comp.getFileAlbumTO().setCoverArt("config/folder.jpg");
-            //MGOFileTO fileTO = getMezzmoService().findAlbumYear(comp.getFileAlbumTO().getId());
+            //comp.getFileAlbumTO().setCoverArt(Setup.getInstance().getFullPath(Constants.Path.RESOURCES) + "folder.jpg");
+            //comp.getFileAlbumTO().setCoverArt("C:/My Programs/OneDrive/Config/Java/Resources/folder.jpg");
+            MGOFileTO fileTO = getMezzmoService().findCoverArt(comp.getFileAlbumTO().getId());
+            comp.getFileAlbumTO().setCoverArt(getCoverArtFile(fileTO.getFile()));
+            log.debug("Album: " + comp.getFileAlbumTO().getName());
+            log.debug("CoverArt: " + comp.getFileAlbumTO().getCoverArt());
         }
         JRDataSource dataSource = new JRBeanCollectionDataSource(list);
-        JRFileVirtualizer virtualizer = new JRFileVirtualizer (100, "temp");
+        JRFileVirtualizer virtualizer = new JRFileVirtualizer (100, "c:/temp");
         virtualizer.setReadOnly(false);
         hm.put(JRParameter.REPORT_VIRTUALIZER, virtualizer);
         log.info("Compiling report " + jrxmlFileName);
@@ -90,6 +98,17 @@ public class ExportAlbums extends BatchJobV2{
         JasperExportManager.exportReportToPdfFile(jprint, pdfFileName);
         //JasperExportManager.exportReportToHtmlFile(jprint,htmlFile);
 
+    }
+
+    private String getCoverArtFile(String filename){
+        File file = new File(filename);
+        String path = file.getParentFile().getPath();
+        File coverArt = new File(path + File.separator + "folder.jpg");
+        if (!coverArt.exists()){
+            //coverArt = new File("C:/My Programs/OneDrive/Config/Java/Resources/folder.jpg");
+            coverArt = new File(Setup.getInstance().getFullPath(Constants.Path.RESOURCES) + File.separator + "folder.jpg");
+        }
+        return coverArt.toString();
     }
 
     public static MezzmoServiceImpl getMezzmoService(){

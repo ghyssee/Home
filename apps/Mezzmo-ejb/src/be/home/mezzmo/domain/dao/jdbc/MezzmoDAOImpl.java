@@ -71,7 +71,7 @@ public class MezzmoDAOImpl extends MezzmoDB {
 
     private static final String LIST_ALBUMS = "SELECT DISTINCT MGOFileAlbum.data AS ALBUMNAME," +
                                 " MGOAlbumArtist.data AS ALBUMARTISTNAME," +
-                                " MGOAlbumArtist.id AS ALBUMID," +
+                                " MGOFileAlbum.id AS ALBUMID," +
                                 " MAX(MGOFile.Year) AS YEAR" +
                                 " FROM MGOFileAlbumRelationship" +
                                 " INNER JOIN MGOFileAlbum ON (MGOFileAlbum.ID = MGOFileAlbumRelationship.ID)" +
@@ -80,9 +80,29 @@ public class MezzmoDAOImpl extends MezzmoDB {
                                 " INNER JOIN MGOFile ON (MGOFile.ID = MGOAlbumArtistRelationship.fileID)" +
                                 " INNER JOIN MGOFileExtension ON (MGOFileExtension.ID = MGOFILE.extensionID)" +
                                 " WHERE 1=1" +
-                                " GROUP BY ALBUMNAME, ALBUMARTISTNAME, ALBUMID" +
                                 " AND MGOFileExtension.data = 'mp3'" +
+                                " GROUP BY ALBUMNAME, ALBUMARTISTNAME, ALBUMID" +
                                 " ORDER BY MGOFileAlbum.data";
+
+    private static final String LIST_ALBUMS_TRACKS = "SELECT DISTINCT MGOFileAlbum.data AS ALBUMNAME," +
+            " MGOAlbumArtist.data AS ALBUMARTISTNAME," +
+            " MGOFileAlbum.id AS ALBUMID," +
+            " MGOFile.Track AS TRACK, " +
+            " MGOFileArtist.data AS ARTIST, " +
+            " MGOFile.title AS TITLE" +
+            " FROM MGOFileAlbumRelationship" +
+            " INNER JOIN MGOFileAlbum ON (MGOFileAlbum.ID = MGOFileAlbumRelationship.ID)" +
+            " INNER JOIN MGOAlbumArtistRelationship ON (MGOAlbumArtistRelationship.fileID = MGOFileAlbumRelationship.fileID)" +
+            " INNER JOIN MGOAlbumArtist ON (MGOAlbumArtist.ID = MGOAlbumArtistRelationship.ID)" +
+            " INNER JOIN MGOFile ON (MGOFile.ID = MGOAlbumArtistRelationship.fileID)" +
+            " INNER JOIN MGOFileExtension ON (MGOFileExtension.ID = MGOFILE.extensionID)" +
+            " INNER JOIN MGOFileArtistRelationship ON (MGOFileArtistRelationship.fileID = MGOFile.id) " +
+            " INNER JOIN MGOFileArtist ON (MGOFileArtist.id = MGOFileArtistRelationship.id)" +
+            " WHERE 1=1" +
+            " AND MGOFileExtension.data = 'mp3'" +
+            " GROUP BY ALBUMNAME, ALBUMARTISTNAME, ALBUMID" +
+            " ORDER BY MGOFileAlbum.data" +
+            " LIMIT 0,1000";
 
     private static final String LIST_TOP20 = "SELECT FileTitle AS FILETITLE, PlayCount AS PLAYCOUNT, Title AS TITLE, FA.DATA AS ARTIST, PLL.ID AS PLAYLIST_ID, MGoFile.ID AS FILE_ID, MGOFile.File AS FILE, MGOFile.duration AS DURATION" +
                                              " FROM MGOPlaylist_To_File AS PLF" +
@@ -99,14 +119,15 @@ public class MezzmoDAOImpl extends MezzmoDB {
                                                "FROM MGOfile " +
                                                "WHERE UPPER(FILE) LIKE UPPER(?)";
 
-    private static final String FIND_ALBUM_YEAR = "SELECT MAX(MGOFile.Year) AS YEAR " +
+    private static final String FIND_COVER_ART = "SELECT MGOFile.File AS FILE " +
                                                   "FROM MGOFileAlbumRelationship " +
                                                   "INNER JOIN MGOFileAlbum ON (MGOFileAlbum.ID = MGOFileAlbumRelationship.ID) " +
                                                   "INNER JOIN MGOFile ON (MGOFile.ID = MGOFileAlbumRelationship.fileID) " +
                                                   "INNER JOIN MGOFileExtension ON (MGOFileExtension.ID = MGOFILE.extensionID) " +
                                                   "WHERE 1=1 " +
                                                   "AND MGOFileExtension.data = 'mp3' " +
-                                                  "AND MGOFileAlbum.id like ? ";
+                                                  "AND MGOFileAlbum.id like ? " +
+                                                  "LIMIT 0,1";
 
 
 
@@ -333,6 +354,38 @@ public class MezzmoDAOImpl extends MezzmoDB {
         return list;
     }
 
+    public List<MGOFileAlbumCompositeTO> getAlbumTracks(TransferObject to)
+    {
+        PreparedStatement stmt = null;
+        List<MGOFileAlbumCompositeTO> list = new ArrayList<MGOFileAlbumCompositeTO>();
+        try {
+            Connection c = getInstance().getConnection();
+
+            stmt = c.prepareStatement(LIST_ALBUMS_TRACKS);
+            ResultSet rs = stmt.executeQuery();
+            while ( rs.next() ) {
+                MGOFileAlbumCompositeTO fileAlbumComposite = new MGOFileAlbumCompositeTO();
+                MGOFileAlbumTO fileAlbumTO = fileAlbumComposite.getFileAlbumTO();
+                MGOAlbumArtistTO albumArtistTO = fileAlbumComposite.getAlbumArtistTO();
+                MGOFileArtistTO artistTO = fileAlbumComposite.getFileArtistTO();
+                MGOFileTO fileTO = fileAlbumComposite.getFileTO();
+                fileTO.setTrack(rs.getInt("TRACK"));
+                fileTO.setTitle(rs.getString("TITLE"));
+                artistTO.setArtist(rs.getString("ARTIST"));
+                fileAlbumTO.setName(rs.getString("ALBUMNAME"));
+                fileAlbumTO.setId(rs.getInt("ALBUMID"));
+                albumArtistTO.setName(rs.getString("ALBUMARTISTNAME"));
+                list.add(fileAlbumComposite);
+            }
+            rs.close();
+            stmt.close();
+        } catch ( Exception e ) {
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            System.exit(0);
+        }
+        return list;
+    }
+
     public List<MGOFileAlbumCompositeTO> getTop20()
     {
         PreparedStatement stmt = null;
@@ -403,7 +456,7 @@ public class MezzmoDAOImpl extends MezzmoDB {
         return fileTO;
     }
 
-    public MGOFileTO findAlbumYear(int albumId){
+    public MGOFileTO findCoverArt(int albumId){
         MGOFileTO fileTO = null;
         PreparedStatement stmt = null;
         boolean error = false;
@@ -411,7 +464,7 @@ public class MezzmoDAOImpl extends MezzmoDB {
             Connection c = getInstance().getConnection();
 
             //stmt = c.createStatement();
-            stmt = c.prepareStatement(FIND_ALBUM_YEAR);
+            stmt = c.prepareStatement(FIND_COVER_ART);
             stmt.setInt(1, albumId);
             ResultSet rs = stmt.executeQuery();
             int counter = 0;
@@ -421,7 +474,7 @@ public class MezzmoDAOImpl extends MezzmoDB {
                     break;
                 }
                 fileTO = new MGOFileTO();
-                fileTO.setId(rs.getInt("YEAR"));
+                fileTO.setFile(rs.getString("FILE"));
                 counter++;
             }
             rs.close();

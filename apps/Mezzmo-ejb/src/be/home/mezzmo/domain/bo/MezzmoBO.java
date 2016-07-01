@@ -40,6 +40,10 @@ public class MezzmoBO extends BusinessObject {
         return getMezzmoDAO().getAlbums(to);
     }
 
+    public List<MGOFileAlbumCompositeTO> getAlbumTracks(TransferObject to){
+        return getMezzmoDAO().getAlbumTracks(to);
+    }
+
     public List<MGOFileAlbumCompositeTO> getTop20(){
         return getMezzmoDAO().getTop20();
     }
@@ -48,8 +52,8 @@ public class MezzmoBO extends BusinessObject {
         return getMezzmoDAO().findByFile(file);
     }
 
-    public MGOFileTO findAlbumYear(int albumId){
-        return getMezzmoDAO().findAlbumYear(albumId);
+    public MGOFileTO findCoverArt(int albumId){
+        return getMezzmoDAO().findCoverArt(albumId);
     }
 
     public MezzmoDAOImpl getMezzmoDAO(){
