@@ -21,12 +21,19 @@ public class MP3Helper {
         return prettifiedText;
     }
 
-
-    public String prettifySong(String text){
+    public String prettifyString(String text){
         String prettifiedText = text;
-        if (StringUtils.isNotBlank(text)){
+        if (StringUtils.isNotBlank(text)) {
             char[] tmp = {'('};
             prettifiedText = WordUtils.capitalizeFully(prettifiedText, startChars);
+        }
+        return prettifiedText;
+    }
+
+
+    public String prettifySong(String text){
+        String prettifiedText = prettifyString(text);
+        if (StringUtils.isNotBlank(text)){
             prettifiedText = prettifiedText.replace("(Album Version)", "");
             prettifiedText = prettifiedText.replace("(Radio Edit)", "");
             prettifiedText = prettifiedText.replace("(Radio Mix)", "");
@@ -40,21 +47,37 @@ public class MP3Helper {
             prettifiedText = prettifiedText.replace("(Original Radio Cut)", "");
             prettifiedText = prettifiedText.replace("(Radio Version / Original)", "");
             prettifiedText = prettifiedText.replace("(Original)", "");
-            prettifiedText = prettifiedText.replace("Fpi Project", "FPI Project");
             prettifiedText = prettifiedText.replaceAll("\\[[eE]xplicit\\]", "");
             prettifiedText = prettifiedText.replace("(Uk Radio Version)", "");
-            prettifiedText = prettifiedText.replace("Tourist Lemc", "Tourist LeMC");
-            prettifiedText = prettifiedText.replace("Bart Kaell", "Bart Kaëll");
 
             prettifiedText = stripSong(prettifiedText);
             prettifiedText = prettifiedText.replace("  ", " ");
             prettifiedText = prettifiedText.trim();
-            prettifiedText = checkWords(prettifiedText);
+            prettifiedText = checkWords(prettifiedText, Mp3Tag.TITLE);
         }
         return prettifiedText;
     }
 
-    private String checkWords(String text){
+    public String prettifyArtist(String text){
+        String prettifiedText = prettifyString(text);
+        if (StringUtils.isNotBlank(text)) {
+            prettifiedText = prettifiedText.replace("Fpi Project", "FPI Project");
+            prettifiedText = prettifiedText.replace("Tourist Lemc", "Tourist LeMC");
+            prettifiedText = prettifiedText.replace("Bart Kaell", "Bart Kaëll");
+            prettifiedText = stripSong(prettifiedText);
+            prettifiedText = prettifiedText.replace("  ", " ");
+            prettifiedText = prettifiedText.trim();
+            prettifiedText = checkWords(prettifiedText, Mp3Tag.ARTIST);
+        }
+        return prettifiedText;
+
+    }
+
+    private enum Mp3Tag {
+        ARTIST, TITLE
+    }
+
+    private String checkWords(String text, Mp3Tag tag) {
         String newText = "";
         if (StringUtils.isNotBlank(text)) {
             String words[] = text.split(" ");
@@ -107,6 +130,22 @@ public class MP3Helper {
                 word = replaceWord(word, "Kt", "KT");
                 word = replaceWord(word, "O'connor", "O'Connor");
                 word = replaceWord(word, "Klubbb3", "KLUBBB3");
+                word = replaceWord(word, "Dvbbs", "DVBBS");
+                word = replaceWord(word, "Will.I.Am", "Will.i.am");
+                word = replaceWord(word, "Onerepublic", "OneRepublic");
+                word = replaceWord(word, "Lmfao", "LMFAO");
+                word = replaceWord(word, "Chef'special", "Chef'Special");
+                word = replaceWord(word, "Tiesto", "Tiësto");
+                word = replaceWord(word, "Kshmr", "KSHMR");
+                word = replaceWord(word, "W&w", "W&W");
+
+                switch (tag){
+                    case ARTIST:
+                        word = replaceWord(word, "And", "&");
+                        break;
+                    case TITLE:
+                        break;
+                }
 
 
 

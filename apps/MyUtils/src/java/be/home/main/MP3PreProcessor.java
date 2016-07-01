@@ -25,10 +25,11 @@ import java.util.regex.Pattern;
 public class MP3PreProcessor extends BatchJobV2 {
 
     private static final String VERSION = "V1.0";
-    private static final TAGS[] FORMAT_TRACK = {TAGS.TRACK, TAGS.TITLE, TAGS.ARTIST};
+    private static final TAGS[] FORMAT_TRACK = {TAGS.TRACK, TAGS.ARTIST, TAGS.TITLE};
     // Set Duration to null to disable the removal of the duration for the specified field
-    private static final TAGS DURATION = TAGS.ARTIST;
-    private static final String CD_TAG = "CD";
+    private static final TAGS DURATION = null;// TAGS.ARTIST;
+    private static final String CD_TAG = "Tracklist";
+    private static final String ALBUM_TAG = "Album:";
     private static final String FILE = "albuminfo.txt";
     private static final String SEPERATOR_1 = "\\.";
     //private static final String SEPERATOR_3 = " - ";
@@ -87,25 +88,50 @@ public class MP3PreProcessor extends BatchJobV2 {
 
     private void processLine(AlbumInfo.Config album, List <AlbumInfo.Track> tracks, String line){
         String tmp = line.trim();
-        System.out.println(tmp);
+        log.info(tmp);
+        if (checkCDTag(album, tmp)){
+            log.info("CD Tag found");
+        }
+        else if (checkAlbumTag(album, tmp)){
+            log.info("Album Tag found");
+        }
+        else {
+            Pattern pattern = Pattern.compile("[0-9]+(" + SEPERATOR_1 + ").+[" + SEPERATOR_2 + "].*");
+            Matcher matcher = pattern.matcher(tmp);
+            if (matcher.matches()) {
+                AlbumInfo.Track track = splitString(tmp);
+                if (album.total > 0) {
+                    track.cd = StringUtils.leftPad(String.valueOf(album.total), 2);
+                }
+                tracks.add(track);
+            }
+        }
+    }
+
+    private boolean checkCDTag(AlbumInfo.Config album, String line){
         String cd = null;
-        Pattern pattern2 = Pattern.compile(CD_TAG.toUpperCase() + "(.*)");
-        Matcher matcher2 = pattern2.matcher(tmp.toUpperCase());
-        //if (line.toUpperCase().startsWith(CD_TAG.toUpperCase())){
+        Pattern pattern = Pattern.compile(CD_TAG.toUpperCase() + "(.*)");
+        Matcher matcher2 = pattern.matcher(line.toUpperCase());
+        boolean cdTagFound = false;
         if (matcher2.matches()) {
-            String[] array = tmp.toUpperCase().split(CD_TAG.toUpperCase());
+            String[] array = line.toUpperCase().split(CD_TAG.toUpperCase());
             cd = array[1].trim();
             album.total = Integer.parseInt(cd);
+            cdTagFound = true;
         }
-        Pattern pattern = Pattern.compile("[0-9]+(" + SEPERATOR_1 + ").+[" + SEPERATOR_2 + "].*");
-        Matcher matcher = pattern.matcher(tmp);
-        if (matcher.matches()) {
-            AlbumInfo.Track track = splitString(tmp);
-            if (album.total > 0) {
-                track.cd = StringUtils.leftPad(String.valueOf(album.total), 2);
-            }
-            tracks.add(track);
+        return cdTagFound;
+    }
+
+    private boolean checkAlbumTag(AlbumInfo.Config album, String line){
+        Pattern pattern = Pattern.compile(ALBUM_TAG.toUpperCase() + "(.*)");
+        Matcher matcher2 = pattern.matcher(line.toUpperCase());
+        boolean tagFound = false;
+        if (matcher2.matches()) {
+            String[] array = line.toUpperCase().split(ALBUM_TAG.toUpperCase());
+            album.album = array[1].trim();
+            tagFound = true;
         }
+        return tagFound;
     }
 
     private AlbumInfo.Track splitString(String line){
