@@ -14,7 +14,7 @@ public class MP3Helper {
 
     private static char[] startChars = new char[]{'(', ' ','.', '-', '"'};
 
-    public String removeDurationFromString(String text){
+    public static String removeDurationFromString(String text){
         String prettifiedText = text;
         prettifiedText = prettifiedText.replaceAll("[0-9][0-9]:[0-9][0-9]$", "");
         prettifiedText = prettifiedText.replaceAll("\\([0-9][0-9]:[0-9][0-9]\\)$", "");
@@ -138,6 +138,7 @@ public class MP3Helper {
                 word = replaceWord(word, "Tiesto", "Tiësto");
                 word = replaceWord(word, "Kshmr", "KSHMR");
                 word = replaceWord(word, "W&w", "W&W");
+                word = replaceWord(word, "Kvr", "KVR");
 
                 switch (tag){
                     case ARTIST:

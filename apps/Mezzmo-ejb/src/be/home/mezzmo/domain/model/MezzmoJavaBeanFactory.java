@@ -43,4 +43,31 @@ public class MezzmoJavaBeanFactory {
 
         return list;
     }
+
+    public static Collection getAlbumTrackList() {
+
+        List<MGOFileAlbumCompositeTO> list = new ArrayList<MGOFileAlbumCompositeTO>();
+        MGOFileAlbumCompositeTO comp = new MGOFileAlbumCompositeTO();
+        MGOFileTO fileTO = new MGOFileTO();
+        fileTO.setYear(2015);
+        MGOFileAlbumTO album = new MGOFileAlbumTO();
+        album.setName("ALBUM NAME 1");
+        album.setCoverArt(Setup.getInstance().getFullPath(Constants.Path.RESOURCES) + "folder.jpg");
+        //System.getProperty("user.dir")+ "/config/folder.jpg");
+        //album.setCoverArt("C:\\Projects\\GitHub\\Home\\config\\folder.jpg");
+        MGOAlbumArtistTO albumArtist = new MGOAlbumArtistTO();
+        albumArtist.setName("ALBUM ARTIST 1");
+        comp.setFileTO(fileTO);
+        comp.setFileAlbumTO(album);
+        comp.setAlbumArtistTO(albumArtist);
+        list.add(comp);
+        //getMezzmoService().getAlbums(to);
+
+        return list;
+    }
+
+    private static void fillInfo(String Album, String AlbumArtist, int year, String track,
+                            String Artist, String title){
+
+    }
 }

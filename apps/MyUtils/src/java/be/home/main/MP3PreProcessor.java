@@ -27,15 +27,16 @@ import java.util.regex.Pattern;
 public class MP3PreProcessor extends BatchJobV2 {
 
     private static final String VERSION = "V1.0";
-    private static final TAGS[] FORMAT_TRACK = {TAGS.TRACK, TAGS.ARTIST, TAGS.TITLE};
     // Set Duration to null to disable the removal of the duration for the specified field
+    //private static final TAGS[] FORMAT_TRACK = {TAGS.ARTIST, TAGS.TITLE};
+    private static final TAGS[] FORMAT_TRACK = {TAGS.TRACK, TAGS.ARTIST, TAGS.TITLE};
     private static final TAGS DURATION = null;// TAGS.ARTIST;
     private static final String CD_TAG = "Tracklist";
     private static final String ALBUM_TAG = "Album:";
-    private static final String FILE = "albuminfo.txt";
+    private static final String FILE = "album.txt";
     private static final String SEPERATOR_1 = "\\.";
     //private static final String SEPERATOR_3 = " - ";
-    private static final String SEPERATOR_2 = " [-|–] ";
+    private static final String SEPERATOR_2 = "[-|–]";
 
 
 
@@ -82,6 +83,7 @@ public class MP3PreProcessor extends BatchJobV2 {
                 processLine(configAlbum, configAlbum.tracks, line);
             }
         }
+        reader2.close();
         //writeJsonFile(configAlbum);
         JSONUtils.writeJsonFile(configAlbum, Setup.getInstance().getFullPath(Constants.Path.PROCESS) + File.separator + "Album.json");
 
@@ -99,12 +101,17 @@ public class MP3PreProcessor extends BatchJobV2 {
             log.info("Album Tag found");
         }
         else {
-            Pattern pattern = Pattern.compile("[0-9]+(" + SEPERATOR_1 + ").+[" + SEPERATOR_2 + "].*");
+            String patternString = "[0-9]+(" + SEPERATOR_1 + ").+" + SEPERATOR_2 + ".+";
+            System.out.println("patternString: " + patternString);
+            Pattern pattern = Pattern.compile(patternString);
             Matcher matcher = pattern.matcher(tmp);
             if (matcher.matches()) {
                 AlbumInfo.Track track = splitString(tmp);
                 if (album.total > 0) {
                     track.cd = StringUtils.leftPad(String.valueOf(album.total), 2);
+                }
+                if (track.track == null){
+                    track.track = String.format("%25d", album.tracks.size()+1);
                 }
                 tracks.add(track);
             }
@@ -149,7 +156,12 @@ public class MP3PreProcessor extends BatchJobV2 {
         }
         fillInfo(track, array1[0], FORMAT_TRACK[0]);
         fillInfo(track, array2[0], FORMAT_TRACK[1]);
-        fillInfo(track, array2[1], FORMAT_TRACK[2]);
+        if (FORMAT_TRACK.length > 2){
+            fillInfo(track, array2[1], FORMAT_TRACK[2]);
+        }
+        else {
+            //fillInfo(track, "1", FORMAT_TRACK[2]);
+        }
         System.out.println("Track: "+ track.track);
         System.out.println("Artist: "+ track.artist);
         System.out.println("Title: "+ track.title);

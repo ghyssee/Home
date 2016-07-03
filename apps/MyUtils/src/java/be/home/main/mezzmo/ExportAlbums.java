@@ -68,8 +68,8 @@ public class ExportAlbums extends BatchJobV2{
 
     public void export(String base, String fileName) throws JRException {
 
-        String jrxmlFileName = "C:/Projects/GitHub/Home/apps/MyUtils/src/resources/MezzmoJavaBean.jrxml";
-        String jasperFileName = "C:/reports/MezzmoJavaBean2.jasper";
+        String jrxmlFileName = "config/MezzmoJavaBean.jrxml";
+        String jasperFileName = "config/MezzmoJavaBean.jasper";
         String pdfFileName = "C:/reports/ListOfAlbums.pdf";
         String htmlFile = "C:/reports/Albums.html";
         Map hm = new HashMap();
@@ -87,7 +87,7 @@ public class ExportAlbums extends BatchJobV2{
             log.debug("CoverArt: " + comp.getFileAlbumTO().getCoverArt());
         }
         JRDataSource dataSource = new JRBeanCollectionDataSource(list);
-        JRFileVirtualizer virtualizer = new JRFileVirtualizer (100, "c:/temp");
+        JRFileVirtualizer virtualizer = new JRFileVirtualizer (100, Setup.getInstance().getFullPath(Constants.Path.TMP));
         virtualizer.setReadOnly(false);
         hm.put(JRParameter.REPORT_VIRTUALIZER, virtualizer);
         log.info("Compiling report " + jrxmlFileName);
