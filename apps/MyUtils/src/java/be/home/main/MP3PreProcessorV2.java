@@ -51,7 +51,7 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
             @Override
             public void method(AlbumInfo.Track track, String item, boolean duration) {
                 System.out.println("first enum constant behavior!");
-                track.track = item;
+                track.track =  StringUtils.leftPad(item, 2, "0");
             }
         },
         ARTIST {
@@ -136,29 +136,6 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
         }
         throw new ApplicationException("Pattern not found:" + id);
     }
-
-    public void start2() throws IOException {
-
-        List <MGOFileAlbumCompositeTO> list = (List<MGOFileAlbumCompositeTO>) MezzmoJavaBeanFactory.getCompositeAlbumList();
-        Path file = Paths.get(Setup.getInstance().getFullPath(Constants.Path.PREPROCESS) + File.separator + FILE);
-        BufferedReader reader2 = Files.newBufferedReader(file, Charset.defaultCharset());
-        String line = null;
-        AlbumInfo info = new AlbumInfo();
-        AlbumInfo.Config configAlbum = info.new Config();
-        configAlbum.total = 0;
-        while ((line = reader2.readLine()) != null) {
-            if (StringUtils.isNotBlank(line)) {
-                //processLine(configAlbum, configAlbum.tracks, line);
-            }
-        }
-        reader2.close();
-        //writeJsonFile(configAlbum);
-        JSONUtils.writeJsonFile(configAlbum, Setup.getInstance().getFullPath(Constants.Path.PROCESS) + File.separator + "Album.json");
-
-
-    }
-
-
 
     private void processLine(AlbumInfo.Config album, List <AlbumInfo.Track> tracks, String line,
                              MP3PreprocessorConfig patternConfig, String sPattern){

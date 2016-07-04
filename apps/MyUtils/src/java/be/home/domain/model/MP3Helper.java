@@ -12,7 +12,9 @@ import java.util.regex.Pattern;
  */
 public class MP3Helper {
 
-    private static char[] startChars = new char[]{'(', ' ','.', '-', '"'};
+    private static char[] startChars = new char[]{'(', ' ','.', '-', '"', '['};
+    private static final String OPEN_BRACKET = "[\\(|\\[]";
+    private static final String CLOSE_BRACKET = "[\\)|\\]]";
 
     public static String removeDurationFromString(String text){
         String prettifiedText = text;
@@ -34,8 +36,10 @@ public class MP3Helper {
     public String prettifySong(String text){
         String prettifiedText = prettifyString(text);
         if (StringUtils.isNotBlank(text)){
-            prettifiedText = prettifiedText.replace("(Album Version)", "");
-            prettifiedText = prettifiedText.replace("(Radio Edit)", "");
+            //prettifiedText = prettifiedText.replaceAll("\\[]", "(");
+            //prettifiedText = prettifiedText.replaceAll("\\]]", ")");
+            prettifiedText = prettifiedText.replaceAll(OPEN_BRACKET + "Album Version" + CLOSE_BRACKET, "");
+            prettifiedText = prettifiedText.replaceAll(replaceBetweenBrackets("Radio Edit"), "");
             prettifiedText = prettifiedText.replace("(Radio Mix)", "");
             prettifiedText = prettifiedText.replace("(Vocal Radio Edit)", "");
             prettifiedText = prettifiedText.replace("(Vocal Radio Cut)", "");
@@ -58,12 +62,20 @@ public class MP3Helper {
         return prettifiedText;
     }
 
+    public String replaceBetweenBrackets(String text){
+        return OPEN_BRACKET + text + CLOSE_BRACKET;
+
+    }
+
     public String prettifyArtist(String text){
         String prettifiedText = prettifyString(text);
         if (StringUtils.isNotBlank(text)) {
             prettifiedText = prettifiedText.replace("Fpi Project", "FPI Project");
             prettifiedText = prettifiedText.replace("Tourist Lemc", "Tourist LeMC");
             prettifiedText = prettifiedText.replace("Bart Kaell", "Bart Kaëll");
+            prettifiedText = prettifiedText.replaceAll(replaceBetweenBrackets("Remix"), "");
+            prettifiedText = prettifiedText.replaceAll(replaceBetweenBrackets("Black Box Radio Edit"), "");
+
             prettifiedText = stripSong(prettifiedText);
             prettifiedText = prettifiedText.replace("  ", " ");
             prettifiedText = prettifiedText.trim();
@@ -189,14 +201,16 @@ public class MP3Helper {
 
     public void checkTrack(AlbumInfo.Track track){
         // [feat. Majid Jordan]";
-        String FEAT = ".*\\[[Ff]eat.";
-        Pattern pattern = Pattern.compile(FEAT + "(.*)\\]");
+        String FEAT = ".*[\\(|\\[][Ff]eat.";
+        String CLOSE_FEAT = "[\\)|\\]]";
+        Pattern pattern = Pattern.compile(FEAT + "(.*)" + CLOSE_FEAT);
         Matcher matcher = pattern.matcher(track.title);
         if (matcher.matches()) {
             //System.out.println("match found: " + track.title);
-            String extraArtist = track.title.replaceAll(FEAT, "").replaceFirst("]", "");
+            String extraArtist = track.title.replaceAll(FEAT, "").replaceFirst(CLOSE_FEAT, "");
+            extraArtist = prettifyArtist(prettifySong(extraArtist));
             //System.out.println("extraArtist = " + extraArtist);
-            track.artist += " Feat." + extraArtist;
+            track.artist += " Feat. " + extraArtist;
             Pattern p = Pattern.compile("(.*)" + FEAT );
             Matcher m = p.matcher(track.title);
             if (m.find()) {
