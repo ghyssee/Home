@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.2.2.final using JasperReports Library version 6.2.2  -->
-<!-- 2016-07-01T10:31:19 -->
+<!-- 2016-07-05T12:27:32 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="MezzmoJavaBean" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="0bd011ea-7148-4095-b724-e39890d40c5a">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MezzmoJavaBeanFactory"/>
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<style name="HorizontalLine">
+		<pen lineStyle="Solid"/>
+	</style>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -58,7 +61,8 @@
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="33" splitType="Stretch">
+		<band height="16" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 			<textField isStretchWithOverflow="true">
 				<reportElement x="33" y="0" width="287" height="14" uuid="50ce9625-ae84-4571-824b-44700b6e21dd"/>
 				<textElement>
@@ -97,7 +101,7 @@
 		<band splitType="Stretch"/>
 	</columnFooter>
 	<pageFooter>
-		<band height="59" splitType="Stretch">
+		<band height="33" splitType="Stretch">
 			<textField>
 				<reportElement x="425" y="11" width="120" height="16" uuid="34af5486-933c-49d2-b308-58130606bec7"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle"/>
@@ -109,6 +113,12 @@
 				</reportElement>
 				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
+			<line>
+				<reportElement x="0" y="1" width="565" height="1" uuid="0f13ebf6-5684-418e-bf1c-e973a2c5558b">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+			</line>
 		</band>
 	</pageFooter>
 	<summary>

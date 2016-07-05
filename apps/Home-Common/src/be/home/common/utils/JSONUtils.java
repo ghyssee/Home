@@ -65,7 +65,7 @@ public class JSONUtils {
 
     public static void writeJsonFile(Object o, String filename) throws IOException {
         Path file = Paths.get(filename);
-        BufferedWriter writer = Files.newBufferedWriter(file, Charset.defaultCharset());
+        BufferedWriter writer = Files.newBufferedWriter(file, Charset.forName("UTF-8"));
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         gson.toJson(o, writer);
         writer.flush();

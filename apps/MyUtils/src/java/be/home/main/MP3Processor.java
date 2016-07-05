@@ -30,7 +30,7 @@ public class MP3Processor extends BatchJobV2 {
     public static Log4GE log4GE;
     public static ConfigTO.Config config;
     public static final String MP3_DIR = Setup.getInstance().getFullPath(Constants.Path.ALBUM) + File.separator +
-                                         "Kidszone Zomer 2016";
+                                         "The Braun MTV Eurochart 2016 Volume 07";
     public static final String INPUT_FILE = Setup.getInstance().getFullPath(Constants.Path.PROCESS) + File.separator + "Album.json";
     private static final Logger log = Logger.getLogger(MP3Processor.class);
 
@@ -60,7 +60,6 @@ public class MP3Processor extends BatchJobV2 {
 
         AlbumInfo.Config album = (AlbumInfo.Config) JSONUtils.openJSON(INPUT_FILE, AlbumInfo.Config.class);
 
-        System.out.println(album.album);
         MP3Helper helper = new MP3Helper();
 
         album.album = helper.prettifyAlbum(album.album);

@@ -16,8 +16,13 @@ public class MP3PreprocessorConfig {
 
     public List <Pattern> patterns;
     public List <Pattern> splitters;
-    public List <ConfigRecord> config1;
-    public List <ConfigRecord> config2;
+    public List <ConfigItem> configurations;
+    public String activeConfiguration;
+
+    public class ConfigItem {
+        public String id;
+        public List <ConfigRecord> config;
+    }
 
     public class ConfigRecord {
         public String type;

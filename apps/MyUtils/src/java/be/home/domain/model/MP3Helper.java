@@ -23,6 +23,11 @@ public class MP3Helper {
         return prettifiedText;
     }
 
+    public static String replaceSpecialCharacters(String text){
+        text = text.replaceAll("’", "'");
+        return text;
+    }
+
     public String prettifyString(String text){
         String prettifiedText = text;
         if (StringUtils.isNotBlank(text)) {
@@ -38,7 +43,7 @@ public class MP3Helper {
         if (StringUtils.isNotBlank(text)){
             //prettifiedText = prettifiedText.replaceAll("\\[]", "(");
             //prettifiedText = prettifiedText.replaceAll("\\]]", ")");
-            prettifiedText = prettifiedText.replaceAll(OPEN_BRACKET + "Album Version" + CLOSE_BRACKET, "");
+            prettifiedText = prettifiedText.replaceAll(replaceBetweenBrackets("Album Version"), "");
             prettifiedText = prettifiedText.replaceAll(replaceBetweenBrackets("Radio Edit"), "");
             prettifiedText = prettifiedText.replace("(Radio Mix)", "");
             prettifiedText = prettifiedText.replace("(Vocal Radio Edit)", "");
@@ -73,6 +78,8 @@ public class MP3Helper {
             prettifiedText = prettifiedText.replace("Fpi Project", "FPI Project");
             prettifiedText = prettifiedText.replace("Tourist Lemc", "Tourist LeMC");
             prettifiedText = prettifiedText.replace("Bart Kaell", "Bart Kaëll");
+            prettifiedText = prettifiedText.replace("Rene Froger", "René Froger");
+
             prettifiedText = prettifiedText.replaceAll(replaceBetweenBrackets("Remix"), "");
             prettifiedText = prettifiedText.replaceAll(replaceBetweenBrackets("Black Box Radio Edit"), "");
 
@@ -86,7 +93,7 @@ public class MP3Helper {
     }
 
     private enum Mp3Tag {
-        ARTIST, TITLE
+        ARTIST, TITLE, ALBUM
     }
 
     private String checkWords(String text, Mp3Tag tag) {
@@ -116,6 +123,7 @@ public class MP3Helper {
                 word = replaceWord(word, "Feat", "Feat.");
                 word = replaceWord(word, "Dj", "DJ");
                 word = replaceWord(word, "Ii", "II");
+                word = replaceWord(word, "ii", "III");
                 word = replaceWord(word, "Pm", "PM");
                 word = replaceWord(word, "Dcup", "DCup");
                 word = replaceWord(word, "Deus", "dEUS");
@@ -123,6 +131,7 @@ public class MP3Helper {
                 word = replaceWord(word, "Pres.", "Presents");
                 word = replaceWord(word, "Atb", "ATB");
                 word = replaceWord(word, "Mc's", "MC's");
+                word = replaceWord(word, "Mk", "MK");
                 word = replaceWord(word, "Mcs", "MC's");
                 word = replaceWord(word, "Mc", "MC");
                 word = replaceWord(word, "Sq-1", "SQ-1");
@@ -151,10 +160,14 @@ public class MP3Helper {
                 word = replaceWord(word, "Kshmr", "KSHMR");
                 word = replaceWord(word, "W&w", "W&W");
                 word = replaceWord(word, "Kvr", "KVR");
+                word = replaceWord(word, "Mtv", "MTV");
 
                 switch (tag){
                     case ARTIST:
                         word = replaceWord(word, "And", "&");
+                        word = replaceWord(word, "Lvndscape", "LVNDSCAPE");
+                        word = replaceWord(word, "Redone", "RedOne");
+
                         break;
                     case TITLE:
                         break;
@@ -215,7 +228,6 @@ public class MP3Helper {
             Matcher m = p.matcher(track.title);
             if (m.find()) {
                 String s = m.group(1);
-                //System.out.println("new title: **** " + s);
                 track.title = s.trim();
             }
         }
@@ -226,6 +238,8 @@ public class MP3Helper {
         if (StringUtils.isNotBlank(prettifiedText)) {
             prettifiedText = WordUtils.capitalizeFully(prettifiedText, startChars);
             prettifiedText = prettifiedText.replaceFirst("\\[[Ee]xplicit\\]", "");
+            prettifiedText = checkWords(prettifiedText, Mp3Tag.ALBUM);
+
             prettifiedText = prettifiedText.trim();
         }
         return prettifiedText;

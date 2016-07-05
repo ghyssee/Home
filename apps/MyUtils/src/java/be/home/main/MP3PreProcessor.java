@@ -31,9 +31,9 @@ public class MP3PreProcessor extends BatchJobV2 {
     //private static final TAGS[] FORMAT_TRACK = {TAGS.ARTIST, TAGS.TITLE};
     private static final TAGS[] FORMAT_TRACK = {TAGS.TRACK, TAGS.ARTIST, TAGS.TITLE};
     private static final TAGS DURATION = null;// TAGS.ARTIST;
-    private static final String CD_TAG = "Tracklist";
+    private static final String CD_TAG = "cd";
     private static final String ALBUM_TAG = "Album:";
-    private static final String FILE = "album.txt";
+    private static final String FILE = "Pre.txt";
     private static final String SEPERATOR_1 = "\\.";
     //private static final String SEPERATOR_3 = " - ";
     private static final String SEPERATOR_2 = "[-|–]";
