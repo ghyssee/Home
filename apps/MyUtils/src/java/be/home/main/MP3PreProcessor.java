@@ -171,7 +171,7 @@ public class MP3PreProcessor extends BatchJobV2 {
     private void fillInfo(AlbumInfo.Track track, String part, TAGS type){
 
         if (DURATION != null && DURATION.equals(type)) {
-            MP3Helper helper = new MP3Helper();
+            MP3Helper helper = MP3Helper.getInstance();
             part = helper.removeDurationFromString(part);
         }
         part = part.trim();

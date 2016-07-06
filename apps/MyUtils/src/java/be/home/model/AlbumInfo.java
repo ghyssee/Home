@@ -36,6 +36,7 @@ public class AlbumInfo {
         public String album;
         public String albumArtist;
         public int total;
+        public boolean renum = false;
         public List <Track> tracks = new ArrayList <Track>();
 
         public void Config(){};

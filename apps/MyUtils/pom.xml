@@ -194,6 +194,10 @@
 			-->
 		</dependency>
 		<dependency>
+		  <groupId>com.google.guava</groupId>
+		  <artifactId>guava</artifactId>
+		</dependency>
+		<dependency>
 		  <groupId>com.mpatric</groupId>
 		  <artifactId>mp3agic</artifactId>
 		</dependency>

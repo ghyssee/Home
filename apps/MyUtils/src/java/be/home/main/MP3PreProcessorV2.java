@@ -1,13 +1,10 @@
 package be.home.main;
 
-import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
-import be.home.mezzmo.domain.model.MezzmoJavaBeanFactory;
 import be.home.model.AlbumInfo;
 import be.home.model.ConfigTO;
 import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
 import be.home.common.exceptions.ApplicationException;
-import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.JSONUtils;
 import be.home.domain.model.MP3Helper;
@@ -29,10 +26,12 @@ import java.util.regex.Pattern;
 public class MP3PreProcessorV2 extends BatchJobV2 {
 
     private static final String VERSION = "V1.0";
-    // Set Duration to null to disable the removal of the duration for the specified field
-    //private static final TAGS[] FORMAT_TRACK = {TAGS.ARTIST, TAGS.TITLE};
-    private static final String CD_TAG = "cd";
+    private static final String CD_TAG = "CD";
     private static final String ALBUM_TAG = "Album:";
+    /* if the RENUM tag is found, than the track info from the file will be ignored and the automatic counter
+       will be used
+    */
+    private static final String RENUM_TAG = "{RENUM}";
     private static final String FILE = "Album.txt";
 
     public static ConfigTO.Config config;
@@ -43,21 +42,33 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
         TRACK {
             @Override
             public void method(AlbumInfo.Track track, String item, boolean duration) {
+                item = removeDuration(item, duration);
                 track.track =  StringUtils.leftPad(item, 2, "0");
             }
         },
         ARTIST {
             @Override
             public void method(AlbumInfo.Track track, String item, boolean duration) {
+
+                item = removeDuration(item, duration);
                 track.artist = item;
             }
         },
         TITLE {
             @Override
             public void method(AlbumInfo.Track track, String item, boolean duration) {
+                item = removeDuration(item, duration);
                 track.title = item;
             }
         }; // note the semi-colon after the final constant, not just a comma!
+        public String removeDuration (String item, boolean duration){
+            if (duration){
+                item = MP3Helper.getInstance().removeDurationFromString(item);
+            }
+            return item;
+        }
+
+
         public abstract void method(AlbumInfo.Track track, String item, boolean duration); // could also be in an interface that MyEnum implements
         }
 
@@ -125,31 +136,45 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
 
         String pattern= "";
         for (MP3PreprocessorConfig.ConfigRecord c :list){
-            MP3PreprocessorConfig.Pattern p = findPattern(mp3Config.patterns, c.type);
+            MP3PreprocessorConfig.Pattern p = findPattern(mp3Config.getPatterns(), c.type);
             pattern += p.pattern;
             if (c.splitter != null){
-                p = findPattern(mp3Config.splitters, c.splitter);
+                p = findPattern(mp3Config.getSplitters(), c.splitter);
                 pattern += p.pattern;
             }
         }
         return pattern;
     }
 
-    private MP3PreprocessorConfig.Pattern findPattern (List <MP3PreprocessorConfig.Pattern> list, String id){
-        for (MP3PreprocessorConfig.Pattern record : list){
-            if (id.equals(record.id)){
-                return record;
-            }
+    private MP3PreprocessorConfig.Pattern findPattern (Map <String, MP3PreprocessorConfig.Pattern> map, String id){
+
+        MP3PreprocessorConfig.Pattern p = map.get(id);
+        if (p== null) {
+            throw new ApplicationException("Pattern not found:" + id);
         }
-        throw new ApplicationException("Pattern not found:" + id);
+        return p;
     }
+
+    private boolean CheckSpecialTags(AlbumInfo.Config album, String tmp){
+        String tmpLine = tmp.trim();
+        if (tmpLine.equals(RENUM_TAG)){
+            album.renum = true;
+            return true;
+        }
+        return false;
+    }
+
 
     private void processLine(AlbumInfo.Config album, List <AlbumInfo.Track> tracks, String line,
                              MP3PreprocessorConfig mp3Config, MP3PreprocessorConfig.ConfigItem configItem,
                              String sPattern, AtomicInteger counter){
-        String tmp = MP3Helper.replaceSpecialCharacters(line.trim());
+        String tmp = MP3Helper.getInstance().replaceSpecialCharacters(line.trim());
         log.info(tmp);
-        if (checkCDTag(album, tmp)){
+        if (CheckSpecialTags(album, tmp)){
+            log.info("Special Tag Found");
+            counter.set(1);
+        }
+        else if (checkCDTag(album, tmp)){
             log.info("CD Tag found");
             counter.set(1);
         }
@@ -166,7 +191,7 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
                 if (album.total > 0) {
                     track.cd = String.valueOf(album.total);
                 }
-                if (track.track == null){
+                if (track.track == null || album.renum){
                     track.track = String.format("%02d", counter.get());
                 }
                 log.info("Track: " + track.track);
@@ -180,12 +205,13 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
 
     private boolean checkCDTag(AlbumInfo.Config album, String line){
         String cd = null;
-        Pattern pattern = Pattern.compile(CD_TAG.toUpperCase() + "(.*)");
+        Pattern pattern = Pattern.compile(CD_TAG.toUpperCase() + "[1-9](.*)");
         Matcher matcher2 = pattern.matcher(line.toUpperCase());
         boolean cdTagFound = false;
         if (matcher2.matches()) {
             String[] array = line.toUpperCase().split(CD_TAG.toUpperCase());
             cd = array[1].trim();
+            cd = cd.replaceAll("[^0-9]", "");
             album.total = Integer.parseInt(cd);
             cdTagFound = true;
         }
@@ -193,11 +219,11 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
     }
 
     private boolean checkAlbumTag(AlbumInfo.Config album, String line){
-        Pattern pattern = Pattern.compile(ALBUM_TAG.toUpperCase() + "(.*)");
-        Matcher matcher2 = pattern.matcher(line.toUpperCase());
+        Pattern pattern = Pattern.compile(ALBUM_TAG + "(.*)");
+        Matcher matcher2 = pattern.matcher(line);
         boolean tagFound = false;
         if (matcher2.matches()) {
-            String[] array = line.toUpperCase().split(ALBUM_TAG.toUpperCase());
+            String[] array = line.split(ALBUM_TAG);
             album.album = array[1].trim();
             tagFound = true;
         }
@@ -212,7 +238,7 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
         for (MP3PreprocessorConfig.ConfigRecord tmp : configItem.config){
             TAGS tag = TAGS.valueOf(tmp.type);
             if (tmp.splitter != null) {
-                MP3PreprocessorConfig.Pattern split = findPattern(mp3Config.splitters, tmp.splitter);
+                MP3PreprocessorConfig.Pattern split = findPattern(mp3Config.getSplitters(), tmp.splitter);
                 String[] array1= rest.split(split.pattern,2);
                 if (array1.length >= 2){
                     rest = "";

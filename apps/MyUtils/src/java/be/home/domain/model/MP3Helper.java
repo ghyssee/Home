@@ -1,9 +1,16 @@
 package be.home.domain.model;
 
+import be.home.common.configuration.Setup;
+import be.home.common.constants.Constants;
+import be.home.common.utils.JSONUtils;
+import be.home.common.utils.WinUtils;
 import be.home.model.AlbumInfo;
+import be.home.model.MP3Prettifier;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 
+import java.io.File;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,18 +19,30 @@ import java.util.regex.Pattern;
  */
 public class MP3Helper {
 
+    private static MP3Helper mp3Helper = new MP3Helper();
+    private static MP3Prettifier mp3Prettifer;
+
+    private MP3Helper() {
+        mp3Prettifer = (MP3Prettifier) JSONUtils.openJSON(Setup.getInstance().getFullPath(Constants.Path.CONFIG) +
+                File.separator + "MP3Prettifier.json", MP3Prettifier.class);
+    }
+
+    public static MP3Helper getInstance() {
+        return mp3Helper;
+    }
+
     private static char[] startChars = new char[]{'(', ' ','.', '-', '"', '['};
     private static final String OPEN_BRACKET = "[\\(|\\[]";
     private static final String CLOSE_BRACKET = "[\\)|\\]]";
 
-    public static String removeDurationFromString(String text){
+    public String removeDurationFromString(String text){
         String prettifiedText = text;
         prettifiedText = prettifiedText.replaceAll("[0-9][0-9]:[0-9][0-9]$", "");
         prettifiedText = prettifiedText.replaceAll("\\([0-9][0-9]:[0-9][0-9]\\)$", "");
-        return prettifiedText;
+        return prettifiedText.trim();
     }
 
-    public static String replaceSpecialCharacters(String text){
+    public String replaceSpecialCharacters(String text){
         text = text.replaceAll("’", "'");
         return text;
     }
@@ -41,8 +60,17 @@ public class MP3Helper {
     public String prettifySong(String text){
         String prettifiedText = prettifyString(text);
         if (StringUtils.isNotBlank(text)){
+            for (MP3Prettifier.Word wordObj : mp3Prettifer.song.replacements){
+                if (wordObj.parenthesis) {
+                    prettifiedText = prettifiedText.replaceAll(replaceBetweenBrackets(wordObj.oldWord), wordObj.newWord);
+                }
+                else {
+                    prettifiedText = prettifiedText.replace(wordObj.oldWord, wordObj.newWord);
+                }
+            }
             //prettifiedText = prettifiedText.replaceAll("\\[]", "(");
             //prettifiedText = prettifiedText.replaceAll("\\]]", ")");
+            /*
             prettifiedText = prettifiedText.replaceAll(replaceBetweenBrackets("Album Version"), "");
             prettifiedText = prettifiedText.replaceAll(replaceBetweenBrackets("Radio Edit"), "");
             prettifiedText = prettifiedText.replace("(Radio Mix)", "");
@@ -58,6 +86,7 @@ public class MP3Helper {
             prettifiedText = prettifiedText.replace("(Original)", "");
             prettifiedText = prettifiedText.replaceAll("\\[[eE]xplicit\\]", "");
             prettifiedText = prettifiedText.replace("(Uk Radio Version)", "");
+            */
 
             prettifiedText = stripSong(prettifiedText);
             prettifiedText = prettifiedText.replace("  ", " ");
@@ -75,10 +104,15 @@ public class MP3Helper {
     public String prettifyArtist(String text){
         String prettifiedText = prettifyString(text);
         if (StringUtils.isNotBlank(text)) {
+            for (MP3Prettifier.Word wordObj : mp3Prettifer.artist.names){
+                prettifiedText = prettifiedText.replace(wordObj.oldWord, wordObj.newWord);
+            }
+            /*
             prettifiedText = prettifiedText.replace("Fpi Project", "FPI Project");
             prettifiedText = prettifiedText.replace("Tourist Lemc", "Tourist LeMC");
             prettifiedText = prettifiedText.replace("Bart Kaell", "Bart Kaëll");
             prettifiedText = prettifiedText.replace("Rene Froger", "René Froger");
+            */
 
             prettifiedText = prettifiedText.replaceAll(replaceBetweenBrackets("Remix"), "");
             prettifiedText = prettifiedText.replaceAll(replaceBetweenBrackets("Black Box Radio Edit"), "");
@@ -117,6 +151,12 @@ public class MP3Helper {
                     suffix = word.substring(word.length()-1,word.length());
                     word = word.substring(0, word.length()-1);
                 }
+
+                for (MP3Prettifier.Word wordObj : mp3Prettifer.words){
+                    word = replaceWord(word, wordObj.oldWord, wordObj.newWord);
+                }
+
+                /*
                 word = replaceWord(word, "Vs", "Vs.");
                 word = replaceWord(word, "Ft", "Feat.");
                 word = replaceWord(word, "Ft.", "Feat.");
@@ -161,12 +201,18 @@ public class MP3Helper {
                 word = replaceWord(word, "W&w", "W&W");
                 word = replaceWord(word, "Kvr", "KVR");
                 word = replaceWord(word, "Mtv", "MTV");
+                */
 
                 switch (tag){
                     case ARTIST:
+                        for (MP3Prettifier.Word wordObj : mp3Prettifer.artist.words){
+                            word = replaceWord(word, wordObj.oldWord, wordObj.newWord);
+                        }
+                        /*
                         word = replaceWord(word, "And", "&");
                         word = replaceWord(word, "Lvndscape", "LVNDSCAPE");
                         word = replaceWord(word, "Redone", "RedOne");
+                        */
 
                         break;
                     case TITLE:
@@ -213,16 +259,13 @@ public class MP3Helper {
     }
 
     public void checkTrack(AlbumInfo.Track track){
-        // [feat. Majid Jordan]";
         String FEAT = ".*[\\(|\\[][Ff]eat.";
         String CLOSE_FEAT = "[\\)|\\]]";
         Pattern pattern = Pattern.compile(FEAT + "(.*)" + CLOSE_FEAT);
         Matcher matcher = pattern.matcher(track.title);
         if (matcher.matches()) {
-            //System.out.println("match found: " + track.title);
             String extraArtist = track.title.replaceAll(FEAT, "").replaceFirst(CLOSE_FEAT, "");
             extraArtist = prettifyArtist(prettifySong(extraArtist));
-            //System.out.println("extraArtist = " + extraArtist);
             track.artist += " Feat. " + extraArtist;
             Pattern p = Pattern.compile("(.*)" + FEAT );
             Matcher m = p.matcher(track.title);
