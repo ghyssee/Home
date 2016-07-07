@@ -259,8 +259,14 @@ public class MP3Helper {
     }
 
     public void checkTrack(AlbumInfo.Track track){
-        String FEAT = ".*[\\(|\\[][Ff]eat.";
-        String CLOSE_FEAT = "[\\)|\\]]";
+        // search for (Feat. xxx) or Feat. xxx or Feat xxx or (Feat xxx)
+        String FEAT = ".*[\\(|\\[| ][Ff](ea)?t[.| ]";
+        String CLOSE_FEAT = "\\)|\\]";
+        checkTrackPattern(track, FEAT, CLOSE_FEAT);
+        //FEAT = ".*[\\(|\\[| ][Ff]t[.| ]";
+        //CLOSE_FEAT = "";
+        //checkTrackPattern(track, FEAT, CLOSE_FEAT);
+        /*
         Pattern pattern = Pattern.compile(FEAT + "(.*)" + CLOSE_FEAT);
         Matcher matcher = pattern.matcher(track.title);
         if (matcher.matches()) {
@@ -268,6 +274,22 @@ public class MP3Helper {
             extraArtist = prettifyArtist(prettifySong(extraArtist));
             track.artist += " Feat. " + extraArtist;
             Pattern p = Pattern.compile("(.*)" + FEAT );
+            Matcher m = p.matcher(track.title);
+            if (m.find()) {
+                String s = m.group(1);
+                track.title = s.trim();
+            }
+        }*/
+    }
+
+    private void checkTrackPattern(AlbumInfo.Track track, String startPattern, String endPattern){
+        Pattern pattern = Pattern.compile(startPattern + "(.*)"); // + endPattern);
+        Matcher matcher = pattern.matcher(track.title);
+        if (matcher.matches()) {
+            String extraArtist = track.title.replaceAll(startPattern, "").replaceFirst(endPattern, "");
+            extraArtist = prettifyArtist(prettifySong(extraArtist));
+            track.artist += " Feat. " + extraArtist;
+            Pattern p = Pattern.compile("(.*)" + startPattern );
             Matcher m = p.matcher(track.title);
             if (m.find()) {
                 String s = m.group(1);

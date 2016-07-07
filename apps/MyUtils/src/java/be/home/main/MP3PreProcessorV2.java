@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 public class MP3PreProcessorV2 extends BatchJobV2 {
 
     private static final String VERSION = "V1.0";
-    private static final String CD_TAG = "CD";
+    private static final String CD_TAG = "cd";
     private static final String ALBUM_TAG = "Album:";
     /* if the RENUM tag is found, than the track info from the file will be ignored and the automatic counter
        will be used
@@ -205,7 +205,8 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
 
     private boolean checkCDTag(AlbumInfo.Config album, String line){
         String cd = null;
-        Pattern pattern = Pattern.compile(CD_TAG.toUpperCase() + "[1-9](.*)");
+        // CD TAG followed by zero or more spaces and 1 or more numbers
+        Pattern pattern = Pattern.compile(CD_TAG.toUpperCase() + "( *)[1-9]{1,}");
         Matcher matcher2 = pattern.matcher(line.toUpperCase());
         boolean cdTagFound = false;
         if (matcher2.matches()) {
