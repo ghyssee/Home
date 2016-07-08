@@ -94,6 +94,64 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
 
     }
 
+    public enum PatternType {PREFIX, SUFFIX}
+
+    public String replacePattern(String line, String rep, PatternType patternType){
+        if (rep != null) {
+            String pat = "(.*)";
+            switch (patternType) {
+                case PREFIX:
+                    pat = rep + pat;
+                    break;
+                case SUFFIX:
+                    pat = pat + rep;
+                    break;
+            }
+            Pattern pattern = Pattern.compile(pat);
+            Matcher matcher = pattern.matcher(line);
+            if (matcher.matches()) {
+                line = matcher.replaceAll("$1");
+            }
+        }
+        return line;
+    }
+
+    public void startTst() throws IOException {
+        String prefix = "Hitexplosion - ";
+        String suffix = ".mp3";
+        String line = "Hitexplosion - 01 - Loona.mp3Hitexplosion -  - Badam (Edit)Hitexplosion - .mp3";
+        line = replacePattern(line, prefix, PatternType.PREFIX);
+        line = replacePattern(line, suffix, PatternType.SUFFIX);
+        System.out.println("line: " + line);
+        line = "01 - Loona.mp3Hitexplosion -  - Badam (Edit)";
+        line = replacePattern(line, prefix, PatternType.PREFIX);
+        line = replacePattern(line, suffix, PatternType.SUFFIX);
+        System.out.println("line: " + line);
+
+        /*
+        Pattern pattern = Pattern.compile(prefix + "(.*)");
+        Matcher matcher2 = pattern.matcher(line);
+        if (matcher2.matches()) {
+            line = matcher2.replaceAll("$1");
+            //String[] array = line.split(prefix);
+            //line = array[1].trim();
+            System.out.println("Line: " + line);
+        }
+        String suffix = ".mp3";
+        pattern = Pattern.compile("(.*).mp3");
+        matcher2 = pattern.matcher(line);
+        if (matcher2.matches()) {
+            line = matcher2.replaceAll("$1");
+            System.out.println("Line: " + line);
+        }
+
+        /*
+        if (matcher2.matches()) {
+            String[] array = line.split(suffix);
+            String rest = array[0].trim();
+            System.out.println("Rest: " + rest);
+        }*/
+    }
     public void start() throws IOException {
         MP3PreprocessorConfig mp3PreprocessorConfig = (MP3PreprocessorConfig) JSONUtils.openJSON(
                 Setup.getInstance().getFullPath(Constants.Path.CONFIG) + File.separator + "MP3Preprocessor.json", MP3PreprocessorConfig.class);
@@ -168,26 +226,28 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
     private void processLine(AlbumInfo.Config album, List <AlbumInfo.Track> tracks, String line,
                              MP3PreprocessorConfig mp3Config, MP3PreprocessorConfig.ConfigItem configItem,
                              String sPattern, AtomicInteger counter){
-        String tmp = MP3Helper.getInstance().replaceSpecialCharacters(line.trim());
-        log.info(tmp);
-        if (CheckSpecialTags(album, tmp)){
+        line = MP3Helper.getInstance().replaceSpecialCharacters(line.trim());
+        log.info(line);
+        if (CheckSpecialTags(album, line)){
             log.info("Special Tag Found");
             counter.set(1);
         }
-        else if (checkCDTag(album, tmp)){
+        else if (checkCDTag(album, line)){
             log.info("CD Tag found");
             counter.set(1);
         }
-        else if (checkAlbumTag(album, tmp)){
+        else if (checkAlbumTag(album, line)){
             log.info("Album Tag found");
             counter.set(1);
         }
         else {
             log.debug("patternString: " + sPattern);
+            line = replacePattern(line, mp3Config.prefix, PatternType.PREFIX);
+            line = replacePattern(line, mp3Config.suffix, PatternType.SUFFIX);
             Pattern pattern = Pattern.compile(sPattern);
-            Matcher matcher = pattern.matcher(tmp);
+            Matcher matcher = pattern.matcher(line);
             if (matcher.matches()) {
-                AlbumInfo.Track track = splitString(mp3Config, configItem, tmp);
+                AlbumInfo.Track track = splitString(mp3Config, configItem, line);
                 if (album.total > 0) {
                     track.cd = String.valueOf(album.total);
                 }

@@ -26,6 +26,8 @@ public class MP3PreprocessorConfig {
 
     public List <ConfigItem> configurations;
     public String activeConfiguration;
+    public String prefix;
+    public String suffix;
 
     public class ConfigItem {
         public String id;

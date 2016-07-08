@@ -39,13 +39,18 @@ public class JSONUtils {
     }
 
     public static Object openJSON(String filename, Class className)  {
+        return openJSON(filename, className, "UTF-8");
+
+    }
+
+    public static Object openJSON(String filename, Class className, String charSet)  {
         Path file = Paths.get(filename);
         BufferedReader reader = null;
         Object o = null;
         try {
-            reader = Files.newBufferedReader(file, Charset.forName("UTF-8"));
+            reader = Files.newBufferedReader(file, Charset.forName(charSet));
             JsonReader r = new JsonReader(reader);
-            Gson gson = new Gson();
+            Gson gson =  new GsonBuilder().disableHtmlEscaping().create();
             o = gson.fromJson(r, className);
         } catch (IOException e) {
             throw new ApplicationException("Problem processing file " + filename);
@@ -65,7 +70,8 @@ public class JSONUtils {
 
     public static void writeJsonFile(Object o, String filename) throws IOException {
         Path file = Paths.get(filename);
-        BufferedWriter writer = Files.newBufferedWriter(file, Charset.forName("UTF-8"));
+        BufferedWriter writer = Files.newBufferedWriter(file, Charset.forName("UTF-16"));
+        //BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(file), Charset.forName("ISO-8859-1")));
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         gson.toJson(o, writer);
         writer.flush();

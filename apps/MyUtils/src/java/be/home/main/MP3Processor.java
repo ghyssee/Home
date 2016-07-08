@@ -10,17 +10,18 @@ import be.home.common.main.BatchJobV2;
 
 import be.home.common.utils.JSONUtils;
 import be.home.domain.model.MP3Helper;
+import be.home.model.MP3Settings;
 import com.mpatric.mp3agic.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
 import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
-
-import static be.home.model.AlbumInfo.*;
 
 /**
  * Created by ghyssee on 20/02/2015.
@@ -31,8 +32,8 @@ public class MP3Processor extends BatchJobV2 {
 
     public static Log4GE log4GE;
     public static ConfigTO.Config config;
-    public static final String MP3_DIR = Setup.getInstance().getFullPath(Constants.Path.ALBUM) + File.separator +
-                                         "Hits Summer 3 2016";
+    public static final String MP3_SETTINGS = Setup.getInstance().getFullPath(Constants.Path.CONFIG) + File.separator +
+            "MP3Settings.json";
     public static final String INPUT_FILE = Setup.getInstance().getFullPath(Constants.Path.PROCESS) + File.separator + "Album.json";
     private static final Logger log = Logger.getLogger(MP3Processor.class);
 
@@ -70,9 +71,12 @@ public class MP3Processor extends BatchJobV2 {
 
     public void start() throws IOException {
 
-        AlbumInfo.Config album = (AlbumInfo.Config) JSONUtils.openJSON(INPUT_FILE, AlbumInfo.Config.class);
+        AlbumInfo.Config album = (AlbumInfo.Config) JSONUtils.openJSON(INPUT_FILE, AlbumInfo.Config.class, "UTF-16");
+        MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSON(MP3_SETTINGS, MP3Settings.class);
 
         MP3Helper helper = MP3Helper.getInstance();
+        String mp3Dir = Setup.getInstance().getFullPath(Constants.Path.ALBUM) + File.separator + mp3Settings.album;
+        log.info("Album Directory: " + mp3Dir);
 
         album.album = helper.prettifyAlbum(album.album);
         for (AlbumInfo.Track track: album.tracks){
@@ -85,13 +89,13 @@ public class MP3Processor extends BatchJobV2 {
         //if (directories.size() > 0){
 
         //}
-        List <Path> listOfFiles = fileList(MP3_DIR);
+        List <Path> listOfFiles = fileList(mp3Dir);
         if (listOfFiles.size() > 0){
             checkNrOfMP3s(album.tracks, listOfFiles.size());
             processSingleDirectory(album, listOfFiles, 1, "");
         }
         else {
-            List <Path> directories = directoryList(MP3_DIR);
+            List <Path> directories = directoryList(mp3Dir);
 
             // check if Nr of MP3s found correspond with Album Info
             int nrOfMP3s = 0;
@@ -190,14 +194,41 @@ public class MP3Processor extends BatchJobV2 {
         File originalFile = new File(fileName);
         File newFile = new File(Setup.getInstance().getFullPath(Constants.Path.NEW) + File.separator + prefixFileName + originalFile.getName());
         System.out.println("New File " + newFile);
-
-        mp3file.save(newFile.getAbsolutePath());
+        if (track.artist.contains("Λ")){
+            id3v2Tag.setArtist(track.artist.replaceAll("Λ", "&"));
+        }
+        //mp3file.save(newFile.getAbsolutePath());
         //if (originalFile.delete()){
          //   newFile.renameTo(originalFile);
         //}
         //else {
           //  System.err.println("There was a problem deleting the file " + fileName);
         //}*/
+        mp3file.save(newFile.getAbsolutePath());
+    }
+
+    public static byte[] encode(byte[] arr, Charset sourceCharset, Charset targetCharset) {
+
+        ByteBuffer inputBuffer = ByteBuffer.wrap( arr );
+
+        CharBuffer data = sourceCharset.decode(inputBuffer);
+
+        ByteBuffer outputBuffer = targetCharset.encode(data);
+        byte[] outputData = outputBuffer.array();
+
+        return outputData;
+    }
+
+    public static byte[] encode2(byte[] arr, Charset sourceCharset, Charset targetCharset) {
+
+        ByteBuffer inputBuffer = ByteBuffer.wrap( arr );
+
+        CharBuffer data = sourceCharset.decode(inputBuffer);
+
+        ByteBuffer outputBuffer = targetCharset.encode(data);
+        byte[] outputData = outputBuffer.array();
+
+        return outputData;
     }
 
     private AlbumInfo.Track findMP3File(AlbumInfo.Config album, int trackNumber){
