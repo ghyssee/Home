@@ -70,7 +70,7 @@ public class JSONUtils {
 
     public static void writeJsonFile(Object o, String filename) throws IOException {
         Path file = Paths.get(filename);
-        BufferedWriter writer = Files.newBufferedWriter(file, Charset.forName("UTF-16"));
+        BufferedWriter writer = Files.newBufferedWriter(file, Charset.forName("UTF-8"));
         //BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(file), Charset.forName("ISO-8859-1")));
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         gson.toJson(o, writer);

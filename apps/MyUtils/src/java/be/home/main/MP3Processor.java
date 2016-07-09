@@ -11,6 +11,8 @@ import be.home.common.main.BatchJobV2;
 import be.home.common.utils.JSONUtils;
 import be.home.domain.model.MP3Helper;
 import be.home.model.MP3Settings;
+import com.mpatric.mp3agic.ID3v24TagExt;
+import com.mpatric.mp3agic.Mp3FileExt;
 import com.mpatric.mp3agic.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -71,7 +73,7 @@ public class MP3Processor extends BatchJobV2 {
 
     public void start() throws IOException {
 
-        AlbumInfo.Config album = (AlbumInfo.Config) JSONUtils.openJSON(INPUT_FILE, AlbumInfo.Config.class, "UTF-16");
+        AlbumInfo.Config album = (AlbumInfo.Config) JSONUtils.openJSON(INPUT_FILE, AlbumInfo.Config.class, "UTF-8");
         MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSON(MP3_SETTINGS, MP3Settings.class);
 
         MP3Helper helper = MP3Helper.getInstance();
@@ -148,7 +150,7 @@ public class MP3Processor extends BatchJobV2 {
     }
 
     private void readMP3File(AlbumInfo.Config album, AlbumInfo.Track track, String fileName, String prefixFileName) throws InvalidDataException, IOException, UnsupportedTagException, NotSupportedException {
-        Mp3File mp3file = new Mp3File(fileName);
+        Mp3FileExt mp3file = new Mp3FileExt(fileName);
 //        System.out.println("Length of this mp3 is: " + mp3file.getLengthInSeconds() + " seconds");
  //       System.out.println("Bitrate: " + mp3file.getBitrate() + " kbps " + (mp3file.isVbr() ? "(VBR)" : "(CBR)"));
  //       System.out.println("Sample rate: " + mp3file.getSampleRate() + " Hz");
@@ -158,7 +160,7 @@ public class MP3Processor extends BatchJobV2 {
             id3v2Tag = mp3file.getId3v2Tag();
         }
         else {
-            id3v2Tag =  new ID3v24Tag();
+            id3v2Tag =  new ID3v24TagExt();
             mp3file.setId3v2Tag(id3v2Tag);
         }
         System.out.println("Track: " + id3v2Tag.getTrack());
@@ -194,9 +196,9 @@ public class MP3Processor extends BatchJobV2 {
         File originalFile = new File(fileName);
         File newFile = new File(Setup.getInstance().getFullPath(Constants.Path.NEW) + File.separator + prefixFileName + originalFile.getName());
         System.out.println("New File " + newFile);
-        if (track.artist.contains("Λ")){
-            id3v2Tag.setArtist(track.artist.replaceAll("Λ", "&"));
-        }
+        //if (track.artist.contains("Λ")){
+        //    id3v2Tag.setArtist(track.artist.replaceAll("Λ", "&"));
+        //}
         //mp3file.save(newFile.getAbsolutePath());
         //if (originalFile.delete()){
          //   newFile.renameTo(originalFile);
