@@ -489,4 +489,41 @@ public class MezzmoDAOImpl extends MezzmoDB {
         return fileTO;
     }
 
+    public List<MGOFileAlbumCompositeTO> getCustomPlayListSongs(List <MGOFileAlbumTO> albums)
+    {
+        PreparedStatement stmt = null;
+        List<MGOFileAlbumCompositeTO> list = new ArrayList<MGOFileAlbumCompositeTO>();
+        try {
+            Connection c = getInstance().getConnection();
+
+            //stmt = c.createStatement();
+            stmt = c.prepareStatement(LIST_TOP20);
+            //stmt.setLong(1, to.getIndex());
+            //stmt.setLong(2, to.getLimit());
+            //System.out.println(FILE_SELECT_TITLE);
+            ResultSet rs = stmt.executeQuery();
+            while ( rs.next() ) {
+                MGOFileAlbumCompositeTO fileAlbumComposite = new MGOFileAlbumCompositeTO();
+                MGOFileTO fileTO = fileAlbumComposite.getFileTO();
+                fileTO.setId(rs.getInt("FILE_ID"));
+                fileTO.setFileTitle(rs.getString("FILETITLE"));
+                fileTO.setFile(rs.getString("FILE"));
+                fileTO.setTitle(rs.getString("TITLE"));
+                fileTO.setPlayCount(rs.getInt("PLAYCOUNT"));
+                fileTO.setDuration(rs.getInt("DURATION"));
+                MGOFileArtistTO fileArtistTO = fileAlbumComposite.getFileArtistTO();
+                fileArtistTO.setArtist(rs.getString("ARTIST"));
+                MGOPlaylistTO playlistTO = fileAlbumComposite.getPlaylistTO();
+                playlistTO.setID(rs.getInt("PLAYLIST_ID"));
+                list.add(fileAlbumComposite);
+            }
+            rs.close();
+            stmt.close();
+        } catch ( Exception e ) {
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            System.exit(0);
+        }
+        return list;
+    }
+
 }

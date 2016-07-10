@@ -5,26 +5,6 @@
 
 package com.mpatric.mp3agic;
 
-import com.mpatric.mp3agic.BufferTools;
-import com.mpatric.mp3agic.EncodedText;
-import com.mpatric.mp3agic.ID3v1Genres;
-import com.mpatric.mp3agic.ID3v2;
-import com.mpatric.mp3agic.ID3v2ChapterFrameData;
-import com.mpatric.mp3agic.ID3v2ChapterTOCFrameData;
-import com.mpatric.mp3agic.ID3v2CommentFrameData;
-import com.mpatric.mp3agic.ID3v2Frame;
-import com.mpatric.mp3agic.ID3v2FrameSet;
-import com.mpatric.mp3agic.ID3v2ObseleteFrame;
-import com.mpatric.mp3agic.ID3v2ObseletePictureFrameData;
-import com.mpatric.mp3agic.ID3v2PictureFrameData;
-import com.mpatric.mp3agic.ID3v2TagFactory;
-import com.mpatric.mp3agic.ID3v2TextFrameData;
-import com.mpatric.mp3agic.ID3v2UrlFrameData;
-import com.mpatric.mp3agic.ID3v2WWWFrameData;
-import com.mpatric.mp3agic.InvalidDataException;
-import com.mpatric.mp3agic.NoSuchTagException;
-import com.mpatric.mp3agic.NotSupportedException;
-import com.mpatric.mp3agic.UnsupportedTagException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Iterator;

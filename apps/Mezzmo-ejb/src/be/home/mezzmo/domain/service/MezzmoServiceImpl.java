@@ -50,6 +50,11 @@ public class MezzmoServiceImpl {
         return bo.getTop20();
     }
 
+    public List<MGOFileAlbumCompositeTO> getCustomPlayListSongs(){
+        MezzmoBO bo = new MezzmoBO();
+        return bo.getTop20();
+    }
+
 
 
     public List<MGOFileTO> getFiles(MGOFileAlbumCompositeTO compSearchTO){
