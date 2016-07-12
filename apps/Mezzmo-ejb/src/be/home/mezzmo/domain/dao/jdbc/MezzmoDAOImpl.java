@@ -1,10 +1,12 @@
 package be.home.mezzmo.domain.dao.jdbc;
 
 import be.home.common.dao.jdbc.MezzmoDB;
+import be.home.common.dao.jdbc.QueryBuilder;
 import be.home.common.dao.jdbc.SQLiteUtils;
 import be.home.common.exceptions.MultipleOccurencesException;
 import be.home.common.model.TransferObject;
 import be.home.mezzmo.domain.model.*;
+import org.apache.log4j.Logger;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -129,6 +131,31 @@ public class MezzmoDAOImpl extends MezzmoDB {
                                                   "AND MGOFileAlbum.id like ? " +
                                                   "LIMIT 0,1";
 
+    private static final String LIST_CUSTOM = "SELECT MGOFile.File AS FILE, " +
+                                                "MGOFile.FileTitle AS FILETITLE, " +
+                                                "MGOFile.Duration AS DURATION, " +
+                                                "MGOFile.Playcount AS PLAYCOUNT, " +
+                                                "MGOFile.Title AS TITLE, " +
+                                                "MGOFile.Id AS FILE_ID, " +
+                                                "MGOFileAlbum.data AS ALBUM, " +
+                                                "MGOFileArtist.data AS ARTIST " +
+                                                "FROM MGOFileAlbumRelationship " +
+                                                "INNER JOIN MGOFileAlbum ON (MGOFileAlbum.ID = MGOFileAlbumRelationship.ID) " +
+                                                "INNER JOIN MGOAlbumArtistRelationship ON (MGOAlbumArtistRelationship.fileID = MGOFileAlbumRelationship.fileID) " +
+                                                "INNER JOIN MGOAlbumArtist ON (MGOAlbumArtist.ID = MGOAlbumArtistRelationship.ID) " +
+                                                "INNER JOIN MGOFile ON (MGOFile.ID = MGOAlbumArtistRelationship.fileID) " +
+                                                "INNER JOIN MGOFileExtension ON (MGOFileExtension.ID = MGOFILE.extensionID) " +
+                                                "INNER JOIN MGOFileArtistRelationship ON (MGOFileArtistRelationship.fileID = MGOFile.id) " +
+                                                "INNER JOIN MGOFileArtist ON (MGOFileArtist.id = MGOFileArtistRelationship.id) " +
+                                                "WHERE 1=1 " +
+                                                "AND MGOFileExtension.data = 'mp3' " +
+                                                "AND ( " +
+                                                "{WHERE} " +
+                                                ") " +
+                                                "ORDER BY RANDOM() " +
+                                                "LIMIT 0,:limit ";
+
+    private static final Logger log = Logger.getLogger(MezzmoDAOImpl.class);
 
 
     public static String getColumns(String[] columns){
@@ -489,18 +516,26 @@ public class MezzmoDAOImpl extends MezzmoDB {
         return fileTO;
     }
 
-    public List<MGOFileAlbumCompositeTO> getCustomPlayListSongs(List <MGOFileAlbumTO> albums)
+    public List<MGOFileAlbumCompositeTO> getCustomPlayListSongs(List <String> albums, int limit)
     {
         PreparedStatement stmt = null;
+        Statement st = null;
         List<MGOFileAlbumCompositeTO> list = new ArrayList<MGOFileAlbumCompositeTO>();
         try {
             Connection c = getInstance().getConnection();
 
-            //stmt = c.createStatement();
-            stmt = c.prepareStatement(LIST_TOP20);
-            //stmt.setLong(1, to.getIndex());
-            //stmt.setLong(2, to.getLimit());
-            //System.out.println(FILE_SELECT_TITLE);
+            //stmt.
+            String query = LIST_CUSTOM;
+            String orClause = "(MGOFileAlbum.data like ? AND MGOFile.ranking > ? AND MGOFile.playcount < 2) ";
+            query = QueryBuilder.buildOrCondition(query, orClause, albums);
+            log.debug("Custom Playlist Query: " + query);
+            stmt = c.prepareStatement(query);
+            int index = 1;
+            for (String album : albums){
+                stmt.setString(index++, album);
+                stmt.setLong(index++, 0);
+            }
+            stmt.setInt(index++, limit);
             ResultSet rs = stmt.executeQuery();
             while ( rs.next() ) {
                 MGOFileAlbumCompositeTO fileAlbumComposite = new MGOFileAlbumCompositeTO();
@@ -511,10 +546,13 @@ public class MezzmoDAOImpl extends MezzmoDB {
                 fileTO.setTitle(rs.getString("TITLE"));
                 fileTO.setPlayCount(rs.getInt("PLAYCOUNT"));
                 fileTO.setDuration(rs.getInt("DURATION"));
+
                 MGOFileArtistTO fileArtistTO = fileAlbumComposite.getFileArtistTO();
                 fileArtistTO.setArtist(rs.getString("ARTIST"));
-                MGOPlaylistTO playlistTO = fileAlbumComposite.getPlaylistTO();
-                playlistTO.setID(rs.getInt("PLAYLIST_ID"));
+
+                MGOFileAlbumTO fileAlbum = fileAlbumComposite.getFileAlbumTO();
+                fileAlbum.setName(rs.getString("ALBUM"));
+
                 list.add(fileAlbumComposite);
             }
             rs.close();
@@ -525,5 +563,4 @@ public class MezzmoDAOImpl extends MezzmoDB {
         }
         return list;
     }
-
 }

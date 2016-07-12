@@ -137,7 +137,7 @@ public class MakeTop20 extends BatchJobV2{
         if (Files.notExists(outputFolder)){
             outputFolder = Paths.get(Setup.getInstance().getFullPath(Constants.Path.PLAYLIST));
         }
-        log.info("Playlist folder: " + outputFolder.toString());
+        log.info("PlayList folder: " + outputFolder.toString());
 
         VelocityEngine ve = new VelocityEngine();
         ve.init(p);
@@ -156,7 +156,7 @@ public class MakeTop20 extends BatchJobV2{
             if (writer != null){
                     writer.flush();
                     writer.close();
-                    log.info("Playlist created: " + file.toString());
+                    log.info("PlayList created: " + file.toString());
             }
         }
     }

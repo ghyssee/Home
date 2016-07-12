@@ -5,30 +5,20 @@ import be.home.common.constants.Constants;
 import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
+import be.home.common.mp3.PlayList;
 import be.home.common.utils.JSONUtils;
-import be.home.common.utils.WinUtils;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
-import be.home.mezzmo.domain.model.MGOFileTO;
-import be.home.mezzmo.domain.service.MediaMonkeyServiceImpl;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
+import be.home.mezzmo.domain.util.Utils;
 import be.home.model.ConfigTO;
 import be.home.model.Playlist;
 import org.apache.log4j.Logger;
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * Created by Gebruiker on 10/07/2016.
@@ -40,7 +30,6 @@ public class MakeCustomPlaylists extends BatchJobV2{
     public static Log4GE log4GE;
     public static ConfigTO.Config config;
     private static final Logger log = Logger.getLogger(MakeCustomPlaylists.class);
-    public static final String MP3_PLAYLIST = "H:/Shared/Mijn Muziek/Eric/playlist";
 
     public static void main(String args[]) {
 
@@ -80,7 +69,6 @@ public class MakeCustomPlaylists extends BatchJobV2{
         for (int i=0; i < playlists.length; i++){
             processPlayList(playlists[i]);
         }
-        List <MGOFileAlbumCompositeTO> list = getMezzmoService().getTop20();
         //for (MGOFileAlbumCompositeTO comp : list){
             // get relative path
             //Path pathAbsolute = Paths.get(comp.getFileTO().getFile());
@@ -92,8 +80,8 @@ public class MakeCustomPlaylists extends BatchJobV2{
 
     }
 
-    private void processPlayList(Playlist playlist){
-        log.info("Processing Playlist " + playlist.name);
+    private void processPlayList(Playlist playlist) throws IOException {
+        log.info("Processing PlayList " + playlist.name);
         List <String> albums = new ArrayList();
         int i=0;
         for (Playlist.Album album: playlist.albums){
@@ -107,38 +95,20 @@ public class MakeCustomPlaylists extends BatchJobV2{
             log.warn("No albums found ");
         }
         log.info("albums " + albums.toString());
-    }
+        List<MGOFileAlbumCompositeTO> list = getMezzmoService().getCustomPlayListSongs(albums, playlist.limit);
+        Utils mezzmoUtils = new Utils();
+        for (MGOFileAlbumCompositeTO comp : list){
+            System.out.println(comp.getFileTO().getFile());
+            System.out.println(comp.getFileAlbumTO().getName());
+            comp.getFileTO().setFile(mezzmoUtils.relativizeFile(comp.getFileTO().getFile(), config.mezzmo));
 
-    private void writePlaylist(List <MGOFileAlbumCompositeTO> list, String outputFile) throws IOException {
-        Properties p = new Properties();
-        p.setProperty("file.resource.loader.path", Setup.getInstance().getFullPath(Constants.Path.VELOCITY));
-
-        String filename = config.mezzmo.base + File.separator + config.mezzmo.playlist.path;
-        Path outputFolder = Paths.get(filename);
-        if (Files.notExists(outputFolder)){
-            outputFolder = Paths.get(Setup.getInstance().getFullPath(Constants.Path.PLAYLIST));
         }
-        log.info("Playlist folder: " + outputFolder.toString());
-
-        VelocityEngine ve = new VelocityEngine();
-        ve.init(p);
-        /*  next, get the Template  */
-        Template t = ve.getTemplate( "Top20.vm" );
-        /*  create a context and add data */
-        VelocityContext context = new VelocityContext();
-        context.put("list", list);
-        Path file = Paths.get( outputFolder + File.separator + outputFile);
-        BufferedWriter writer = null;
-        try {
-            writer = Files.newBufferedWriter(file, Charset.defaultCharset());
-            t.merge(context, writer);
+        if (list.size() > 0){
+            PlayList pl = new PlayList();
+            pl.make(list, config.mezzmo.base + File.separator + config.mezzmo.playlist.path, playlist.id + PlayList.EXTENSION);
         }
-        finally {
-            if (writer != null){
-                writer.flush();
-                writer.close();
-                log.info("Playlist created: " + file.toString());
-            }
+        else {
+            log.warn("No songs found for playlist " + playlist.name);
         }
     }
 

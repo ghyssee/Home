@@ -10,6 +10,7 @@ public class Playlist {
 
         public String id;
         public String name;
+        public int limit;
         public List <Album> albums;
 
 

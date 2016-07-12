@@ -48,8 +48,8 @@ public class MezzmoBO extends BusinessObject {
         return getMezzmoDAO().getTop20();
     }
 
-    public List<MGOFileAlbumCompositeTO> getCustomPlayListSongs(){
-        return getMezzmoDAO().getTop20();
+    public List<MGOFileAlbumCompositeTO> getCustomPlayListSongs(List <String> albums, int limit){
+        return getMezzmoDAO().getCustomPlayListSongs(albums, limit);
     }
     public MGOFileTO findByFile(String file){
         return getMezzmoDAO().findByFile(file);

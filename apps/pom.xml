@@ -21,6 +21,7 @@
 		<module>../TestUtils</module>
 		<module>Mezzmo-ejb</module>
 		<module>Home-Common</module>
+		<module>Home-Music</module>
 	</modules>
 </project>
 
