@@ -41,6 +41,9 @@ public class Setup {
                     if (tmp == null){
                         throw new ApplicationException("Parent Not Found: " + parent);
                     }
+                    if (type.equals(parent)){
+                        throw new ApplicationException("Parent Path can not be the same as the current Path: " + parent);
+                    }
                 }
             }
             while (parent != null);

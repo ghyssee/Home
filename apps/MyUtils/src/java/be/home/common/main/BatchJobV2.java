@@ -18,9 +18,17 @@ import org.apache.log4j.Logger;
 
 public abstract class BatchJobV2 {
 
-    private static final Logger log = Logger.getLogger(BatchJobV2.class);
+    private static final Logger log = setLogFile();
     public static String workingDir = System.getProperty("user.dir");
     // private String paramIniFile = workingDir + "/config/config.json";
+
+    private static Logger setLogFile(){
+        String logFile = Setup.getInstance().getFullPath(Constants.Path.LOG) + File.separator + "MyUtlis.log";
+        System.setProperty("logfile.name", logFile);
+        Logger log = Logger.getLogger(BatchJobV2.class);
+        log.info("Setting Log4J Log directory to:" + logFile);
+        return log;
+    }
 
     public Map <String,String> validateParams(String[] args, ParamTO paramArray []) {
         Map <String,String> params = initParams(args, paramArray);
