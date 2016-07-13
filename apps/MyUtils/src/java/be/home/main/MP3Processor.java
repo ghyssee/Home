@@ -41,8 +41,13 @@ public class MP3Processor extends BatchJobV2 {
 
     public static void main(String args[]) {
 
-        String currentDir = System.getProperty("user.dir");
-        log.info("Current Working dir: " + currentDir);
+        /*
+        String dynamicLog = // log directory somehow chosen...
+        Properties p = new Properties( Config.ETC + "/log4j.properties" );
+        p.put( "log.dir", dynamicLog ); // overwrite "log.dir"
+        PropertyConfigurator.configure( p );        String currentDir = System.getProperty("user.dir");*/
+        //log.info("Current Working dir: " + currentDir);
+
 
 
         MP3Processor instance = new MP3Processor();

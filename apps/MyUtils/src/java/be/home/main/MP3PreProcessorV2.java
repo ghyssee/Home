@@ -1,5 +1,6 @@
 package be.home.main;
 
+import be.home.common.mp3.Mp3Tags;
 import be.home.model.AlbumInfo;
 import be.home.model.ConfigTO;
 import be.home.common.configuration.Setup;
@@ -35,49 +36,13 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
     private static final String FILE = "Album.txt";
 
     public static ConfigTO.Config config;
-    private static final Logger log = Logger.getLogger(MP3PreProcessor.class);
-
-    public enum TAGS {
-
-        TRACK {
-            @Override
-            public void method(AlbumInfo.Track track, String item, boolean duration) {
-                item = removeDuration(item, duration);
-                track.track =  StringUtils.leftPad(item, 2, "0");
-            }
-        },
-        ARTIST {
-            @Override
-            public void method(AlbumInfo.Track track, String item, boolean duration) {
-
-                item = removeDuration(item, duration);
-                track.artist = item;
-            }
-        },
-        TITLE {
-            @Override
-            public void method(AlbumInfo.Track track, String item, boolean duration) {
-                item = removeDuration(item, duration);
-                track.title = item;
-            }
-        }; // note the semi-colon after the final constant, not just a comma!
-        public String removeDuration (String item, boolean duration){
-            if (duration){
-                item = MP3Helper.getInstance().removeDurationFromString(item);
-            }
-            return item;
-        }
-
-
-        public abstract void method(AlbumInfo.Track track, String item, boolean duration); // could also be in an interface that MyEnum implements
-        }
+    private static final Logger log = Logger.getLogger(MP3PreProcessorV2.class);
 
 
     public static void main(String args[]) {
 
         String currentDir = System.getProperty("user.dir");
         log.info("Current Working dir: " + currentDir);
-
 
         MP3PreProcessorV2 instance = new MP3PreProcessorV2();
         instance.printHeader("ZipFiles " + VERSION, "=");
@@ -128,30 +93,8 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
         line = replacePattern(line, suffix, PatternType.SUFFIX);
         System.out.println("line: " + line);
 
-        /*
-        Pattern pattern = Pattern.compile(prefix + "(.*)");
-        Matcher matcher2 = pattern.matcher(line);
-        if (matcher2.matches()) {
-            line = matcher2.replaceAll("$1");
-            //String[] array = line.split(prefix);
-            //line = array[1].trim();
-            System.out.println("Line: " + line);
-        }
-        String suffix = ".mp3";
-        pattern = Pattern.compile("(.*).mp3");
-        matcher2 = pattern.matcher(line);
-        if (matcher2.matches()) {
-            line = matcher2.replaceAll("$1");
-            System.out.println("Line: " + line);
-        }
-
-        /*
-        if (matcher2.matches()) {
-            String[] array = line.split(suffix);
-            String rest = array[0].trim();
-            System.out.println("Rest: " + rest);
-        }*/
     }
+
     public void start() throws IOException {
         MP3PreprocessorConfig mp3PreprocessorConfig = (MP3PreprocessorConfig) JSONUtils.openJSON(
                 Setup.getInstance().getFullPath(Constants.Path.CONFIG) + File.separator + "MP3Preprocessor.json", MP3PreprocessorConfig.class);
@@ -297,7 +240,7 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
         AlbumInfo.Track track = albumInfo.new Track();
         String rest = line;
         for (MP3PreprocessorConfig.ConfigRecord tmp : configItem.config){
-            TAGS tag = TAGS.valueOf(tmp.type);
+            Mp3Tags tag = Mp3Tags.valueOf(tmp.type);
             if (tmp.splitter != null) {
                 MP3PreprocessorConfig.Pattern split = findPattern(mp3Config.getSplitters(), tmp.splitter);
                 String[] array1= rest.split(split.pattern,2);

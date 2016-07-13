@@ -19,7 +19,7 @@ public class SetupEnvironment extends BatchJobV2 {
     private static final String VERSION = "V1.0";
 
     public static ConfigTO.Config config;
-    private static final Logger log = Logger.getLogger(SetupEnvironment.class);
+    private static Logger log =  Logger.getLogger(SetupEnvironment.class);
 
     public static void main(String args[]) {
 
@@ -53,6 +53,8 @@ public class SetupEnvironment extends BatchJobV2 {
         FileUtils.checkDirectory(setup.getFullPath(Constants.Path.LOCAL_CONFIG));
         FileUtils.checkDirectory(setup.getFullPath(Constants.Path.VELOCITY));
         FileUtils.checkDirectory(setup.getFullPath(Constants.Path.RESOURCES));
+        // this directory will normally automatically be created by Log4J
+        FileUtils.checkDirectory(setup.getFullPath(Constants.Path.LOG));
 
     }
 

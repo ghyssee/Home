@@ -33,6 +33,7 @@ public class MakeCustomPlaylists extends BatchJobV2{
 
     public static void main(String args[]) {
 
+        System.setProperty("logfile.name", Setup.getInstance().getFullPath(Constants.Path.LOG) + File.separator + "MyUtlis.log");
         MakeCustomPlaylists instance = new MakeCustomPlaylists();
         try {
             config = instance.init();
