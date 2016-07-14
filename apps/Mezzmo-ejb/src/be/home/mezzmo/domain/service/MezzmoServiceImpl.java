@@ -50,7 +50,7 @@ public class MezzmoServiceImpl {
         return bo.getTop20();
     }
 
-    public List<MGOFileAlbumCompositeTO> getCustomPlayListSongs(List <String> albums, int limit){
+    public List<MGOFileAlbumCompositeTO> getCustomPlayListSongs(List <MGOFileAlbumCompositeTO> albums, int limit){
         MezzmoBO bo = new MezzmoBO();
         return bo.getCustomPlayListSongs(albums, limit);
     }
@@ -70,6 +70,12 @@ public class MezzmoServiceImpl {
     public MGOFileTO findCoverArt(int albumId){
         MezzmoBO bo = new MezzmoBO();
         return bo.findCoverArt(albumId);
+    }
+
+
+    public List<MGOFileAlbumCompositeTO> findAlbum(String album, String albumArtist){
+        MezzmoBO bo = new MezzmoBO();
+        return bo.findAlbum(album, albumArtist);
     }
 
     public synchronized static MezzmoServiceImpl getInstance() {

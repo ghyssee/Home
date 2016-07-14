@@ -26,7 +26,7 @@ public abstract class BatchJobV2 {
         String logFile = Setup.getInstance().getFullPath(Constants.Path.LOG) + File.separator + "MyUtlis.log";
         System.setProperty("logfile.name", logFile);
         Logger log = Logger.getLogger(BatchJobV2.class);
-        log.info("Setting Log4J Log directory to:" + logFile);
+        log.info("Setting Log4J Log file to:" + logFile);
         return log;
     }
 

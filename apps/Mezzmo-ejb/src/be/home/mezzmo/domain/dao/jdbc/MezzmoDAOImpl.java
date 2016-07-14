@@ -153,7 +153,9 @@ public class MezzmoDAOImpl extends MezzmoDB {
                                                 "{WHERE} " +
                                                 ") " +
                                                 "ORDER BY RANDOM() " +
-                                                "LIMIT 0,:limit ";
+                                                "LIMIT 0,? ";
+
+
 
     private static final Logger log = Logger.getLogger(MezzmoDAOImpl.class);
 
@@ -516,7 +518,7 @@ public class MezzmoDAOImpl extends MezzmoDB {
         return fileTO;
     }
 
-    public List<MGOFileAlbumCompositeTO> getCustomPlayListSongs(List <String> albums, int limit)
+    public List<MGOFileAlbumCompositeTO> getCustomPlayListSongs(List <MGOFileAlbumCompositeTO> albums, int limit)
     {
         PreparedStatement stmt = null;
         Statement st = null;
@@ -526,14 +528,19 @@ public class MezzmoDAOImpl extends MezzmoDB {
 
             //stmt.
             String query = LIST_CUSTOM;
-            String orClause = "(MGOFileAlbum.data like ? AND MGOFile.ranking > ? AND MGOFile.playcount < 2) ";
+            String orClause = "(MGOFileAlbum.data like ? AND MGOFile.ranking > ? AND MGOAlbumArtist.data like ? AND MGOFile.playcount < 2) ";
             query = QueryBuilder.buildOrCondition(query, orClause, albums);
             log.debug("Custom Playlist Query: " + query);
             stmt = c.prepareStatement(query);
             int index = 1;
-            for (String album : albums){
-                stmt.setString(index++, album);
+            for (MGOFileAlbumCompositeTO album : albums){
+                stmt.setString(index++, album.getFileAlbumTO().getName());
                 stmt.setLong(index++, 0);
+                String albumArtist = album.getAlbumArtistTO().getName();
+                if (albumArtist != null){
+                    System.out.println("albumArtist " + albumArtist);
+                }
+                stmt.setString(index++, albumArtist == null ? "%" : albumArtist);
             }
             stmt.setInt(index++, limit);
             ResultSet rs = stmt.executeQuery();

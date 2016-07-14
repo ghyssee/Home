@@ -2,6 +2,7 @@ package be.home.mezzmo.domain.bo;
 
 import be.home.common.model.BusinessObject;
 import be.home.common.model.TransferObject;
+import be.home.mezzmo.domain.dao.jdbc.MezzmoAlbumDAOImpl;
 import be.home.mezzmo.domain.dao.jdbc.MezzmoDAOImpl;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.MGOFileTO;
@@ -48,7 +49,7 @@ public class MezzmoBO extends BusinessObject {
         return getMezzmoDAO().getTop20();
     }
 
-    public List<MGOFileAlbumCompositeTO> getCustomPlayListSongs(List <String> albums, int limit){
+    public List<MGOFileAlbumCompositeTO> getCustomPlayListSongs(List <MGOFileAlbumCompositeTO> albums, int limit){
         return getMezzmoDAO().getCustomPlayListSongs(albums, limit);
     }
     public MGOFileTO findByFile(String file){
@@ -59,8 +60,17 @@ public class MezzmoBO extends BusinessObject {
         return getMezzmoDAO().findCoverArt(albumId);
     }
 
+    public List<MGOFileAlbumCompositeTO> findAlbum (String album, String albumArtist) {
+        return getMezzmoAlbumDAO().findAlbum(album, albumArtist);
+
+    }
+
     public MezzmoDAOImpl getMezzmoDAO(){
         return new MezzmoDAOImpl();
+    }
+
+    public MezzmoAlbumDAOImpl getMezzmoAlbumDAO(){
+        return new MezzmoAlbumDAOImpl();
     }
 
 

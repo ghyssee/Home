@@ -2,6 +2,25 @@
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
 
+   <appender name="stderr" class="org.apache.log4j.ConsoleAppender">
+        <param name="threshold" value="warn" />
+        <param name="target" value="System.err"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%-5p %d [%t][%F:%L] : %m%n" />
+        </layout>
+    </appender>
+    <appender name="stdout" class="org.apache.log4j.ConsoleAppender">
+        <param name="threshold" value="debug" />
+        <param name="target" value="System.out"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%-5p %d [%t][%F:%L] : %m%n" />
+        </layout>
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+            <param name="LevelMin" value="debug" />
+            <param name="LevelMax" value="info" />
+        </filter>
+    </appender>
+
 <!--
   <appender name="R" class="org.apache.log4j.rolling.RollingFileAppender"> 
 	<param name="file" value="${logfile.name}" />
@@ -39,6 +58,8 @@
   </logger>
   <root> 
     <priority value ="debug" /> 
-    <appender-ref ref="R" /> 
+        <appender-ref ref="stderr" />
+        <appender-ref ref="stdout" />
+		<appender-ref ref="R" /> 
   </root>
 </log4j:configuration>
