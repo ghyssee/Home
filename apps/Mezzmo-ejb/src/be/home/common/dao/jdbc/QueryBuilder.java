@@ -1,6 +1,5 @@
 package be.home.common.dao.jdbc;
 
-import java.sql.PreparedStatement;
 import java.util.List;
 
 /**

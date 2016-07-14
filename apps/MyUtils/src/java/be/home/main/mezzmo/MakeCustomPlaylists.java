@@ -33,7 +33,6 @@ public class MakeCustomPlaylists extends BatchJobV2{
 
     public static void main(String args[]) {
 
-        System.setProperty("logfile.name", Setup.getInstance().getFullPath(Constants.Path.LOG) + File.separator + "MyUtlis.log");
         MakeCustomPlaylists instance = new MakeCustomPlaylists();
         try {
             config = instance.init();
@@ -81,12 +80,34 @@ public class MakeCustomPlaylists extends BatchJobV2{
 
     }
 
+    private List<String> validateAlbums(List <Playlist.Album> albums){
+        return null;
+    }
+
     private void processPlayList(Playlist playlist) throws IOException {
         log.info("Processing PlayList " + playlist.name);
-        List <String> albums = new ArrayList();
+        List <MGOFileAlbumCompositeTO> albums = new ArrayList();
         int i=0;
         for (Playlist.Album album: playlist.albums){
-            albums.add(album.name);
+
+            List <MGOFileAlbumCompositeTO> list = getMezzmoService().findAlbum(album.name, album.albumArtist);
+            if (list == null || list.size() == 0){
+                log.warn("ALBUM Not Found: " + album.name);
+            }
+            else if (list.size() > 1){
+                if (!album.name.contains("%")) {
+                    log.warn("Multiple ALBUMS With Same name found for Album: " + album.name);
+                    for (MGOFileAlbumCompositeTO comp : list) {
+                        log.warn("Album Artist: " + comp.getAlbumArtistTO().getName());
+                    }
+                }
+            }
+            else {
+                MGOFileAlbumCompositeTO comp = new MGOFileAlbumCompositeTO();
+                comp.getFileAlbumTO().setName(album.name);
+                comp.getAlbumArtistTO().setName(album.albumArtist);
+                albums.add(comp);
+            }
             i++;
         }
         if (albums.size() > 0){
@@ -96,20 +117,24 @@ public class MakeCustomPlaylists extends BatchJobV2{
             log.warn("No albums found ");
         }
         log.info("albums " + albums.toString());
-        List<MGOFileAlbumCompositeTO> list = getMezzmoService().getCustomPlayListSongs(albums, playlist.limit);
-        Utils mezzmoUtils = new Utils();
-        for (MGOFileAlbumCompositeTO comp : list){
-            System.out.println(comp.getFileTO().getFile());
-            System.out.println(comp.getFileAlbumTO().getName());
-            comp.getFileTO().setFile(mezzmoUtils.relativizeFile(comp.getFileTO().getFile(), config.mezzmo));
+        if (albums != null && albums.size() > 0) {
+            List<MGOFileAlbumCompositeTO> list = getMezzmoService().getCustomPlayListSongs(albums, playlist.limit);
+            Utils mezzmoUtils = new Utils();
+            for (MGOFileAlbumCompositeTO comp : list) {
+                System.out.println(comp.getFileTO().getFile());
+                System.out.println(comp.getFileAlbumTO().getName());
+                comp.getFileTO().setFile(mezzmoUtils.relativizeFile(comp.getFileTO().getFile(), config.mezzmo));
 
-        }
-        if (list.size() > 0){
-            PlayList pl = new PlayList();
-            pl.make(list, config.mezzmo.base + File.separator + config.mezzmo.playlist.path, playlist.id + PlayList.EXTENSION);
+            }
+            if (list.size() > 0) {
+                PlayList pl = new PlayList();
+                pl.make(list, config.mezzmo.base + File.separator + config.mezzmo.playlist.path, playlist.id + PlayList.EXTENSION);
+            } else {
+                log.warn("No songs found for playlist " + playlist.name);
+            }
         }
         else {
-            log.warn("No songs found for playlist " + playlist.name);
+            log.warn("No Albums found for playlist " + playlist.name);
         }
     }
 

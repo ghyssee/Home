@@ -23,9 +23,6 @@ public class SetupEnvironment extends BatchJobV2 {
 
     public static void main(String args[]) {
 
-        String currentDir = System.getProperty("user.dir");
-        log.info("Current Working dir: " + currentDir);
-
         SetupEnvironment instance = new SetupEnvironment();
         instance.printHeader("Setup Environment " + VERSION, "=");
         try {

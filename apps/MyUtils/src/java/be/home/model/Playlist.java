@@ -16,5 +16,6 @@ public class Playlist {
 
         public class Album {
                 public String name;
+                public String albumArtist;
         }
 }
