@@ -1,0 +1,22 @@
+log4j.rootLogger=debug, stdout, R
+
+log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+
+# Pattern to output the caller's file name and line number.
+log4j.appender.stdout.layout.ConversionPattern=%d %p (%t) [%c] - %m%n
+
+#log4j.appender.R=org.apache.log4j.DailyRollingFileAppender
+#log4j.appender.R.File=${logfile.name}
+#log4j.appender.R.DatePattern='.'yyyy-MM-dd-HH-mm
+
+
+log4j.appender.R=org.apache.log4j.rolling.RollingFileAppender
+log4j.appender.R.Threshold=DEBUG
+log4j.appender.R.Encoding=UTF-8
+log4j.appender.R.File=${logfile.path}/MyUtils.log
+log4j.appender.R.RollingPolicy=org.apache.log4j.rolling.TimeBasedRollingPolicy
+log4j.appender.R.RollingPolicy.FileNamePattern=${logfile.path}/MyUtils.%d{yyyy-MM-dd-HH-mm}.log.gzip
+
+log4j.appender.R.layout=org.apache.log4j.PatternLayout
+log4j.appender.R.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss,SSS} %5p [%t] %C %M %c{1}:%L - %m%n
