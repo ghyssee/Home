@@ -35,8 +35,8 @@ public class MP3Helper {
 
     public String removeDurationFromString(String text){
         String prettifiedText = text;
-        prettifiedText = prettifiedText.replaceAll("[0-9][0-9]:[0-9][0-9]$", "");
-        prettifiedText = prettifiedText.replaceAll("\\([0-9][0-9]:[0-9][0-9]\\)$", "");
+        prettifiedText = prettifiedText.replaceAll("[0-9]{1,2}:[0-9][0-9]$", "");
+        prettifiedText = prettifiedText.replaceAll("\\([0-9]{1,2}:[0-9][0-9]\\)$", "");
         return prettifiedText.trim();
     }
 

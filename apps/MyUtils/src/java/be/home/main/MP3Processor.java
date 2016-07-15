@@ -214,30 +214,6 @@ public class MP3Processor extends BatchJobV2 {
         mp3file.save(newFile.getAbsolutePath());
     }
 
-    public static byte[] encode(byte[] arr, Charset sourceCharset, Charset targetCharset) {
-
-        ByteBuffer inputBuffer = ByteBuffer.wrap( arr );
-
-        CharBuffer data = sourceCharset.decode(inputBuffer);
-
-        ByteBuffer outputBuffer = targetCharset.encode(data);
-        byte[] outputData = outputBuffer.array();
-
-        return outputData;
-    }
-
-    public static byte[] encode2(byte[] arr, Charset sourceCharset, Charset targetCharset) {
-
-        ByteBuffer inputBuffer = ByteBuffer.wrap( arr );
-
-        CharBuffer data = sourceCharset.decode(inputBuffer);
-
-        ByteBuffer outputBuffer = targetCharset.encode(data);
-        byte[] outputData = outputBuffer.array();
-
-        return outputData;
-    }
-
     private AlbumInfo.Track findMP3File(AlbumInfo.Config album, int trackNumber){
         return album.tracks.get(trackNumber-1);
     }
