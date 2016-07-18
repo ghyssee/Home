@@ -37,6 +37,7 @@ public class AlbumInfo {
         public String albumArtist;
         public int total;
         public boolean renum = false;
+        public int trackSize;
         public List <Track> tracks = new ArrayList <Track>();
 
         public void Config(){};

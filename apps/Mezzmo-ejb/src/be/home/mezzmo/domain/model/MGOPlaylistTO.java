@@ -33,6 +33,8 @@ public class MGOPlaylistTO {
     private int BackdropArtworkID;
     private String DisplayTitleFormat;
 
+    private String parentName;
+
     public int getID() {
         return ID;
     }
@@ -240,4 +242,14 @@ public class MGOPlaylistTO {
     public void setDisplayTitleFormat(String displayTitleFormat) {
         DisplayTitleFormat = displayTitleFormat;
     }
+
+    public String getParentName() {
+        return parentName;
+    }
+
+    public void setParentName(String parentName) {
+        this.parentName = parentName;
+    }
+
+
 }
