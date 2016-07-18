@@ -4,6 +4,7 @@ import be.home.common.model.TransferObject;
 import be.home.mezzmo.domain.bo.MezzmoBO;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.MGOFileTO;
+import be.home.mezzmo.domain.model.MGOPlaylistTO;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -77,6 +78,18 @@ public class MezzmoServiceImpl {
         MezzmoBO bo = new MezzmoBO();
         return bo.findAlbum(album, albumArtist);
     }
+
+    public List<MGOPlaylistTO> findPlaylist (MGOPlaylistTO search) {
+        MezzmoBO bo = new MezzmoBO();
+        return bo.findPlaylist(search);
+
+    }
+
+    public int insertPlaylist (MGOPlaylistTO playlist) {
+        MezzmoBO bo = new MezzmoBO();
+        return bo.insertPlaylist(playlist);
+    }
+
 
     public synchronized static MezzmoServiceImpl getInstance() {
         if(instance == null) {

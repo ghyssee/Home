@@ -4,8 +4,10 @@ import be.home.common.model.BusinessObject;
 import be.home.common.model.TransferObject;
 import be.home.mezzmo.domain.dao.jdbc.MezzmoAlbumDAOImpl;
 import be.home.mezzmo.domain.dao.jdbc.MezzmoDAOImpl;
+import be.home.mezzmo.domain.dao.jdbc.MezzmoPlaylistDAOImpl;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.MGOFileTO;
+import be.home.mezzmo.domain.model.MGOPlaylistTO;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -65,6 +67,16 @@ public class MezzmoBO extends BusinessObject {
 
     }
 
+    public List<MGOPlaylistTO> findPlaylist (MGOPlaylistTO search) {
+        return getMezzmoPlaylistDAO().findPlaylist(search);
+
+    }
+
+    public int insertPlaylist (MGOPlaylistTO playlist) {
+        return getMezzmoPlaylistDAO().insertPlaylist(playlist);
+
+    }
+
     public MezzmoDAOImpl getMezzmoDAO(){
         return new MezzmoDAOImpl();
     }
@@ -72,6 +84,8 @@ public class MezzmoBO extends BusinessObject {
     public MezzmoAlbumDAOImpl getMezzmoAlbumDAO(){
         return new MezzmoAlbumDAOImpl();
     }
+
+    public MezzmoPlaylistDAOImpl getMezzmoPlaylistDAO() { return new MezzmoPlaylistDAOImpl(); }
 
 
 }

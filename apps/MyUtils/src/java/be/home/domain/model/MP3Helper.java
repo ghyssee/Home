@@ -54,7 +54,6 @@ public class MP3Helper {
         return prettifiedText;
     }
 
-
     public String prettifySong(String text){
         String prettifiedText = prettifyString(text);
         if (StringUtils.isNotBlank(text)){
@@ -302,10 +301,18 @@ public class MP3Helper {
             prettifiedText = WordUtils.capitalizeFully(prettifiedText, startChars);
             prettifiedText = prettifiedText.replaceFirst("\\[[Ee]xplicit\\]", "");
             prettifiedText = checkWords(prettifiedText, Mp3Tag.ALBUM);
+            prettifiedText = prettifiedText.replaceAll("R'n'b", "R'n'B");
+
 
             prettifiedText = prettifiedText.trim();
         }
         return prettifiedText;
+    }
+
+    public String formatTrack(AlbumInfo.Config albumInfo, String track) {
+        int trackSize = albumInfo.trackSize == 0 ? 2 : albumInfo.trackSize;
+        return StringUtils.leftPad(track, trackSize, "0");
+
     }
 
 }

@@ -169,7 +169,7 @@ public class MP3Processor extends BatchJobV2 {
             mp3file.setId3v2Tag(id3v2Tag);
         }
         System.out.println("Track: " + id3v2Tag.getTrack());
-        System.out.println("NEW Track: " + track.track);
+        System.out.println("NEW Track: " + MP3Helper.getInstance().formatTrack(album, track.track));
         System.out.println(StringUtils.repeat('=', 100));
         System.out.println("Artist: " + id3v2Tag.getArtist());
         System.out.println("NEW Artist: " + track.artist);
@@ -190,7 +190,7 @@ public class MP3Processor extends BatchJobV2 {
         // compilation cd //
         id3v2Tag.setCompilation(true);
         id3v2Tag.setAlbumArtist("Various Artists");
-        id3v2Tag.setTrack(StringUtils.leftPad(track.track, 2, "0"));
+        id3v2Tag.setTrack(MP3Helper.getInstance().formatTrack(album, track.track));
         //EncodedText tmp = new EncodedText(track.artist);
         id3v2Tag.setArtist(track.artist);
         id3v2Tag.setTitle(track.title);

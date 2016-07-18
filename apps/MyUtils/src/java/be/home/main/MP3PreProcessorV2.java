@@ -195,8 +195,9 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
                     track.cd = String.valueOf(album.total);
                 }
                 if (track.track == null || album.renum){
-                    track.track = String.format("%02d", counter.get());
+                    track.track = String.format("%d", counter.get());
                 }
+                album.trackSize = Math.max(album.trackSize, track.track.length());
                 log.info("Track: " + track.track);
                 log.info("Artist: " + track.artist);
                 log.info("Title: " + track.title);

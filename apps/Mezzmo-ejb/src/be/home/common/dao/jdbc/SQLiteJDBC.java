@@ -60,6 +60,17 @@ public class SQLiteJDBC
         }
     }
 
+    public static String getColumns(String[] columns){
+        String col = "";
+        for (int i=0; i < columns.length; i++){
+            if (i > 0){
+                col += ", ";
+            }
+            col += columns[i];
+        }
+        return col;
+    }
+
     public static void initialize(String workingDir){
         InputStream i = null;
         //String localConfig = workingDir + "/config/localDatabases.json";
