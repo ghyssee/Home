@@ -34,6 +34,20 @@ public class MezzmoPlaylistDAOImpl extends MezzmoDB {
                                                   "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
 
+
+    private Integer getInteger(ResultSet rs, String id) throws SQLException {
+        return new Integer(rs.getInt(id));
+    }
+
+    private void setInteger(PreparedStatement ps, int index, Integer value) throws SQLException {
+        if (value == null){
+            ps.setNull(index, java.sql.Types.INTEGER);
+        }
+        else {
+            ps.setInt(index, value.intValue());
+        }
+    }
+
     public List<MGOPlaylistTO> findPlaylist(MGOPlaylistTO playlist){
         PreparedStatement stmt = null;
         List<MGOPlaylistTO> list = new ArrayList <MGOPlaylistTO> ();
@@ -46,9 +60,9 @@ public class MezzmoPlaylistDAOImpl extends MezzmoDB {
             ResultSet rs = stmt.executeQuery();
             while ( rs.next() ) {
                 MGOPlaylistTO playlistTO = new MGOPlaylistTO();
-                playlistTO.setID(rs.getInt("ID"));
+                playlistTO.setID(getInteger(rs, "ID"));
                 playlistTO.setName(rs.getString("NAME"));
-                playlistTO.setParentID(rs.getInt("PARENTID"));
+                playlistTO.setParentID(getInteger(rs, "PARENTID"));
                 playlistTO.setParentName(rs.getString("PARENTNAME"));
                 list.add(playlistTO);
             }
@@ -75,11 +89,11 @@ public class MezzmoPlaylistDAOImpl extends MezzmoDB {
             int idx = 1;
 
             stmt.setString(idx++, playlist.getName());
-            stmt.setInt(idx++, playlist.getType());
+            setInteger(stmt, idx++, playlist.getType());
             stmt.setString(idx++, playlist.getDescription());
-            stmt.setInt(idx++, playlist.getParentID());
-            stmt.setInt(idx++, playlist.getAuthor());
-            stmt.setInt(idx++, playlist.getIcon());
+            setInteger(stmt, idx++, playlist.getParentID());
+            setInteger(stmt, idx++, playlist.getAuthor());
+            setInteger(stmt, idx++, playlist.getIcon());
             stmt.setString(idx++, playlist.getFile());
             stmt.setString(idx++, playlist.getTraverseFolder());
             stmt.setString(idx++, playlist.getFolderPath());
@@ -87,17 +101,17 @@ public class MezzmoPlaylistDAOImpl extends MezzmoDB {
             stmt.setString(idx++, playlist.getDynamicTreeToken());
             stmt.setString(idx++, playlist.getRunTime());
             stmt.setString(idx++, playlist.getStreamNum());
-            stmt.setInt(idx++, playlist.getOrderByColumn());
-            stmt.setInt(idx++, playlist.getOrderByDirection());
-            stmt.setInt(idx++, playlist.getLimitBy());
-            stmt.setInt(idx++, playlist.getCombineAnd());
-            stmt.setInt(idx++, playlist.getLimitType());
-            stmt.setInt(idx++, playlist.getPlaylistOrder());
-            stmt.setInt(idx++, playlist.getMediaType());
-            stmt.setInt(idx++, playlist.getThumbnailID());
-            stmt.setInt(idx++, playlist.getThumbnailAuthor());
-            stmt.setInt(idx++, playlist.getContentRatingID());
-            stmt.setInt(idx++, playlist.getBackdropArtworkID());
+            setInteger(stmt, idx++, playlist.getOrderByColumn());
+            setInteger(stmt, idx++, playlist.getOrderByDirection());
+            setInteger(stmt, idx++, playlist.getLimitBy());
+            setInteger(stmt, idx++, playlist.getCombineAnd());
+            setInteger(stmt, idx++, playlist.getLimitType());
+            setInteger(stmt, idx++, playlist.getPlaylistOrder());
+            setInteger(stmt, idx++, playlist.getMediaType());
+            setInteger(stmt, idx++, playlist.getThumbnailID());
+            setInteger(stmt, idx++, playlist.getThumbnailAuthor());
+            setInteger(stmt, idx++, playlist.getContentRatingID());
+            setInteger(stmt, idx++, playlist.getBackdropArtworkID());
             stmt.setString(idx++, playlist.getDisplayTitleFormat());
             //System.out.println(FILE_SELECT_TITLE);
             rec = stmt.executeUpdate();

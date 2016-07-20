@@ -5,12 +5,12 @@ import java.util.List;
 /**
  * Created by ghyssee on 18/07/2016.
  */
-public class PlaylistConfig {
+public class PlaylistSetup {
 
     public class PlaylistRecord {
         public String name;
         public String parent;
-        public int type;
+        public String type;
     }
 
     public List<PlaylistRecord> records;

@@ -5,13 +5,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by ghyssee on 18/07/2016.
+ * Created by Gebruiker on 20/07/2016.
  */
-public enum PlaylistType {
-    NORMAL(16), EXTERNAL(32), SMART(64), FOLDER(128);
+public enum MediaType {
+
+
+    MP3(1), Video(4), Photo(2), Alles(7);
 
     private final int value;
-    private PlaylistType(int value) {
+    private MediaType(int value) {
         this.value = value;
     }
     private static final Map lookup = new HashMap();
@@ -22,13 +24,13 @@ public enum PlaylistType {
 
     // Populate the lookup table on loading time
     static {
-        for (PlaylistType s : EnumSet.allOf(PlaylistType.class))
+        for (MediaType s : EnumSet.allOf(MediaType.class))
             lookup.put(s.name(), s);
     }
 
     // This method can be used for reverse lookup purpose
-    public static PlaylistType get(String tmp) {
-        return (PlaylistType) lookup.get(tmp);
+    public static MediaType get(String tmp) {
+        return (MediaType) lookup.get(tmp);
     }
 
 

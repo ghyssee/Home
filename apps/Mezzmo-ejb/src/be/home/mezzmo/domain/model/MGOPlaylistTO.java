@@ -6,241 +6,241 @@ package be.home.mezzmo.domain.model;
 public class MGOPlaylistTO {
 
 
-    private int ID;
-    private String Name;
-    private int Type;
-    private String Description;
-    private int ParentID;
-    private int Author;
-    private int Icon;
-    private String File;
-    private String TraverseFolder;
-    private String FolderPath;
-    private String Filter;
-    private String DynamicTreeToken;
-    private String RunTime;
-    private String StreamNum;
-    private int OrderByColumn;
-    private int OrderByDirection;
-    private int LimitBy;
-    private int CombineAnd;
-    private int LimitType;
-    private int PlaylistOrder;
-    private int MediaType;
-    private int ThumbnailID;
-    private int ThumbnailAuthor;
-    private int ContentRatingID;
-    private int BackdropArtworkID;
-    private String DisplayTitleFormat;
+    private Integer id;
+    private String name;
+    private Integer type;
+    private String description;
+    private Integer parentID;
+    private Integer author;
+    private Integer icon;
+    private String file;
+    private String traverseFolder;
+    private String folderPath;
+    private String filter;
+    private String dynamicTreeToken;
+    private String runTime;
+    private String streamNum;
+    private Integer orderByColumn;
+    private Integer orderByDirection;
+    private Integer limitBy;
+    private Integer combineAnd;
+    private Integer limitType;
+    private Integer playlistOrder;
+    private Integer mediaType;
+    private Integer thumbnailID;
+    private Integer thumbnailAuthor;
+    private Integer contentRatingID;
+    private Integer backdropArtworkID;
+    private String displayTitleFormat;
 
     private String parentName;
 
-    public int getID() {
-        return ID;
+    public Integer getID() {
+        return id;
     }
 
-    public void setID(int ID) {
-        this.ID = ID;
+    public void setID(Integer id) {
+        this.id = id;
     }
 
     public String getName() {
-        return Name;
+        return name;
     }
 
     public void setName(String name) {
-        Name = name;
+        this.name = name;
     }
 
-    public int getType() {
-        return Type;
+    public Integer getType() {
+        return type;
     }
 
-    public void setType(int type) {
-        Type = type;
+    public void setType(Integer type) {
+        this.type = type;
     }
 
     public String getDescription() {
-        return Description;
+        return description;
     }
 
     public void setDescription(String description) {
-        Description = description;
+        this.description = description;
     }
 
-    public int getParentID() {
-        return ParentID;
+    public Integer getParentID() {
+        return parentID;
     }
 
-    public void setParentID(int parentID) {
-        ParentID = parentID;
+    public void setParentID(Integer parentID) {
+        this.parentID = parentID;
     }
 
-    public int getAuthor() {
-        return Author;
+    public Integer getAuthor() {
+        return author;
     }
 
-    public void setAuthor(int author) {
-        Author = author;
+    public void setAuthor(Integer author) {
+        this.author = author;
     }
 
-    public int getIcon() {
-        return Icon;
+    public Integer getIcon() {
+        return icon;
     }
 
-    public void setIcon(int icon) {
-        Icon = icon;
+    public void setIcon(Integer icon) {
+        this.icon = icon;
     }
 
     public String getFile() {
-        return File;
+        return file;
     }
 
     public void setFile(String file) {
-        File = file;
+        this.file = file;
     }
 
     public String getTraverseFolder() {
-        return TraverseFolder;
+        return traverseFolder;
     }
 
     public void setTraverseFolder(String traverseFolder) {
-        TraverseFolder = traverseFolder;
+        this.traverseFolder = traverseFolder;
     }
 
     public String getFolderPath() {
-        return FolderPath;
+        return folderPath;
     }
 
     public void setFolderPath(String folderPath) {
-        FolderPath = folderPath;
+        this.folderPath = folderPath;
     }
 
     public String getFilter() {
-        return Filter;
+        return filter;
     }
 
     public void setFilter(String filter) {
-        Filter = filter;
+        this.filter = filter;
     }
 
     public String getDynamicTreeToken() {
-        return DynamicTreeToken;
+        return dynamicTreeToken;
     }
 
     public void setDynamicTreeToken(String dynamicTreeToken) {
-        DynamicTreeToken = dynamicTreeToken;
+        this.dynamicTreeToken = dynamicTreeToken;
     }
 
     public String getRunTime() {
-        return RunTime;
+        return runTime;
     }
 
     public void setRunTime(String runTime) {
-        RunTime = runTime;
+        this.runTime = runTime;
     }
 
     public String getStreamNum() {
-        return StreamNum;
+        return streamNum;
     }
 
     public void setStreamNum(String streamNum) {
-        StreamNum = streamNum;
+        this.streamNum = streamNum;
     }
 
-    public int getOrderByColumn() {
-        return OrderByColumn;
+    public Integer getOrderByColumn() {
+        return orderByColumn;
     }
 
-    public void setOrderByColumn(int orderByColumn) {
-        OrderByColumn = orderByColumn;
+    public void setOrderByColumn(Integer orderByColumn) {
+        this.orderByColumn = orderByColumn;
     }
 
-    public int getOrderByDirection() {
-        return OrderByDirection;
+    public Integer getOrderByDirection() {
+        return orderByDirection;
     }
 
-    public void setOrderByDirection(int orderByDirection) {
-        OrderByDirection = orderByDirection;
+    public void setOrderByDirection(Integer orderByDirection) {
+        this.orderByDirection = orderByDirection;
     }
 
-    public int getLimitBy() {
-        return LimitBy;
+    public Integer getLimitBy() {
+        return limitBy;
     }
 
-    public void setLimitBy(int limitBy) {
-        LimitBy = limitBy;
+    public void setLimitBy(Integer limitBy) {
+        this.limitBy = limitBy;
     }
 
-    public int getCombineAnd() {
-        return CombineAnd;
+    public Integer getCombineAnd() {
+        return combineAnd;
     }
 
-    public void setCombineAnd(int combineAnd) {
-        CombineAnd = combineAnd;
+    public void setCombineAnd(Integer combineAnd) {
+        this.combineAnd = combineAnd;
     }
 
-    public int getLimitType() {
-        return LimitType;
+    public Integer getLimitType() {
+        return limitType;
     }
 
-    public void setLimitType(int limitType) {
-        LimitType = limitType;
+    public void setLimitType(Integer limitType) {
+        this.limitType = limitType;
     }
 
-    public int getPlaylistOrder() {
-        return PlaylistOrder;
+    public Integer getPlaylistOrder() {
+        return playlistOrder;
     }
 
-    public void setPlaylistOrder(int playlistOrder) {
-        PlaylistOrder = playlistOrder;
+    public void setPlaylistOrder(Integer playlistOrder) {
+        this.playlistOrder = playlistOrder;
     }
 
-    public int getMediaType() {
-        return MediaType;
+    public Integer getMediaType() {
+        return mediaType;
     }
 
-    public void setMediaType(int mediaType) {
-        MediaType = mediaType;
+    public void setMediaType(Integer mediaType) {
+        this.mediaType = mediaType;
     }
 
-    public int getThumbnailID() {
-        return ThumbnailID;
+    public Integer getThumbnailID() {
+        return thumbnailID;
     }
 
-    public void setThumbnailID(int thumbnailID) {
-        ThumbnailID = thumbnailID;
+    public void setThumbnailID(Integer thumbnailID) {
+        this.thumbnailID = thumbnailID;
     }
 
-    public int getThumbnailAuthor() {
-        return ThumbnailAuthor;
+    public Integer getThumbnailAuthor() {
+        return thumbnailAuthor;
     }
 
-    public void setThumbnailAuthor(int thumbnailAuthor) {
-        ThumbnailAuthor = thumbnailAuthor;
+    public void setThumbnailAuthor(Integer thumbnailAuthor) {
+        this.thumbnailAuthor = thumbnailAuthor;
     }
 
-    public int getContentRatingID() {
-        return ContentRatingID;
+    public Integer getContentRatingID() {
+        return contentRatingID;
     }
 
-    public void setContentRatingID(int contentRatingID) {
-        ContentRatingID = contentRatingID;
+    public void setContentRatingID(Integer contentRatingID) {
+        this.contentRatingID = contentRatingID;
     }
 
-    public int getBackdropArtworkID() {
-        return BackdropArtworkID;
+    public Integer getBackdropArtworkID() {
+        return backdropArtworkID;
     }
 
-    public void setBackdropArtworkID(int backdropArtworkID) {
-        BackdropArtworkID = backdropArtworkID;
+    public void setBackdropArtworkID(Integer backdropArtworkID) {
+        this.backdropArtworkID = backdropArtworkID;
     }
 
     public String getDisplayTitleFormat() {
-        return DisplayTitleFormat;
+        return displayTitleFormat;
     }
 
     public void setDisplayTitleFormat(String displayTitleFormat) {
-        DisplayTitleFormat = displayTitleFormat;
+        this.displayTitleFormat = displayTitleFormat;
     }
 
     public String getParentName() {
