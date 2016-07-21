@@ -9,17 +9,28 @@ import java.util.Map;
  */
 public enum ColumnNum {
 
-    UserRating(27), Title(7), AlbumName(55), AlbumArtist(56), ArtistActors(57);
+    UserRating(27, ColumnType.Number),
+    Title(7, ColumnType.String),
+    AlbumName(55, ColumnType.String),
+    AlbumArtist(56, ColumnType.String),
+    ArtistActors(57, ColumnType.String),
+    PlayCount(5, ColumnType.Number),
+    Year(16, ColumnType.Number);
 
-    private final int value;
-    private ColumnNum(int value) {
+    private int value;
+    private ColumnType columnType;
+    private ColumnNum(int value, ColumnType number) {
+
         this.value = value;
+        this.columnType = number;
     }
     private static final Map lookup = new HashMap();
 
     public int getValue() {
         return value;
     }
+
+    public ColumnType getColumnType() { return columnType;}
 
     // Populate the lookup table on loading time
     static {

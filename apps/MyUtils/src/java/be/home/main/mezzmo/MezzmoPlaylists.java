@@ -5,6 +5,7 @@ import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.JSONUtils;
+import be.home.mezzmo.domain.bo.PlaylistBO;
 import be.home.mezzmo.domain.model.*;
 import be.home.mezzmo.domain.service.MediaMonkeyServiceImpl;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
@@ -25,7 +26,7 @@ public class MezzmoPlaylists extends BatchJobV2{
 
     public static Log4GE log4GE;
     public static ConfigTO.Config config;
-    private static final Logger log = Logger.getLogger(ExportPlayCount.class);
+    private static final Logger log = Logger.getLogger(MezzmoPlaylists.class);
     public static final String MP3_PLAYLIST = "H:/Shared/Mijn Muziek/Eric/playlist";
 
     public static void main(String args[]) {
@@ -125,6 +126,18 @@ public class MezzmoPlaylists extends BatchJobV2{
         PlaylistType type = PlaylistType.get(playlistRec.type);
         if (type == null){
             log.error("Invalid Type: " + playlistRec.type);
+        }
+        else if (type.equals(PlaylistType.SMART)){
+            PlaylistBO playlistBO = new PlaylistBO();
+            for (PlaylistSetup.Condition c : playlistRec.conditions){
+                List <String> errors = playlistBO.validateCondition(c);
+                if (errors.size() > 0){
+                    log.info("Errors Found");
+                    for (String message : errors){
+                        log.info("ERROR Found: "+ message);
+                    }
+                }
+            }
         }
         else if (!type.equals(PlaylistType.NORMAL)){
             log.error("Playlist type not supported: " + playlistRec.type);

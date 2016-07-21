@@ -75,7 +75,7 @@ public class ImportPlayCountFromCSV extends BatchJobV2{
         log.info("OneDrive Path: " + base);
         base += "\\Muziek\\Export\\";
 
-        processCSV(base, "MP3Songs.Errors.20160625.2233.csv", UPDATE);
+        processCSV(base, "MP3SongsWithPlay.20160720.213713.csv", UPDATE);
         //processCSV(base, "export.csv", UPDATE);
         //processCSV(base, "MP3Songs.Errors.20160514.1502.csv", UPDATE);
 

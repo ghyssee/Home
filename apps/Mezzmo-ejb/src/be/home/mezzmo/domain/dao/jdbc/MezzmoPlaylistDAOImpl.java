@@ -30,10 +30,17 @@ public class MezzmoPlaylistDAOImpl extends MezzmoDB {
             "CombineAnd", "LimitType", "PlaylistOrder", "MediaType",
             "ThumbnailID", "ThumbnailAuthor", "ContentRatingID", "BackdropArtworkID",
             "DisplayTitleFormat"};
+
+    private static final String[] COLUMNS_SQL = {"ID", "PlaylistID",
+        "ColumnNum", "ColumnType", "Operand", "ValueOneText",
+        "ValueTwoText","ValueOneInt","ValueTwoInt","GroupNr"};
+
     private static final String INSERT_PLAYLIST = "INSERT INTO MGOPlaylist (" + getColumns(COLUMNS) + ") " +
                                                   "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
 
+    private static final String INSERT_PLAYLIST_SQL = "INSERT INTO MGOPlaylistSQLTO (" + getColumns(COLUMNS) + ") " +
+            "VALUES (?,?,?,?,?,?,?,?,?,?)";
 
     private Integer getInteger(ResultSet rs, String id) throws SQLException {
         return new Integer(rs.getInt(id));
@@ -114,6 +121,51 @@ public class MezzmoPlaylistDAOImpl extends MezzmoDB {
             setInteger(stmt, idx++, playlist.getBackdropArtworkID());
             stmt.setString(idx++, playlist.getDisplayTitleFormat());
             //System.out.println(FILE_SELECT_TITLE);
+            rec = stmt.executeUpdate();
+            c.commit();
+        } catch (SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            if (c != null) {
+                try {
+                    System.err.println("Transaction is being rolled back");
+                    c.rollback();
+                } catch (SQLException excep) {
+                    System.err.println(excep.getClass().getName() + ": " + excep.getMessage());
+                }
+            }
+        } finally {
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException excep) {
+                    System.err.println(excep.getClass().getName() + ": " + excep.getMessage());
+                }
+            }
+            return rec;
+        }
+    }
+
+    public int insertPlaylistSQL(MGOPlaylistSQLTO playlistSQL) {
+        PreparedStatement stmt = null;
+        List<MGOFileTO> list = new ArrayList<MGOFileTO>();
+        Connection c = null;
+        int rec = 0;
+        try {
+            c = getInstance().getConnection();
+
+            //stmt = c.createStatement();
+            stmt = c.prepareStatement(INSERT_PLAYLIST);
+            int idx = 1;
+
+            setInteger(stmt, idx++, playlistSQL.getPlaylistId());
+            setInteger(stmt, idx++, playlistSQL.getColumnNum());
+            setInteger(stmt, idx++, playlistSQL.getColumnType());
+            setInteger(stmt, idx++, playlistSQL.getOperand());
+            stmt.setString(idx++, playlistSQL.getValueOneText());
+            stmt.setString(idx++, playlistSQL.getValueTwoText());
+            setInteger(stmt, idx++, playlistSQL.getValueOneInt());
+            setInteger(stmt, idx++, playlistSQL.getValueTwoInt());
+            setInteger(stmt, idx++, playlistSQL.getGroupNr());
             rec = stmt.executeUpdate();
             c.commit();
         } catch (SQLException e) {
