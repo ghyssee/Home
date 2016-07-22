@@ -2,9 +2,11 @@ package be.home.mezzmo.domain.service;
 
 import be.home.common.model.TransferObject;
 import be.home.mezzmo.domain.bo.MezzmoBO;
+import be.home.mezzmo.domain.bo.PlaylistBO;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.MGOFileTO;
 import be.home.mezzmo.domain.model.MGOPlaylistTO;
+import be.home.mezzmo.domain.model.PlaylistSetup;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -88,6 +90,16 @@ public class MezzmoServiceImpl {
     public int insertPlaylist (MGOPlaylistTO playlist) {
         MezzmoBO bo = new MezzmoBO();
         return bo.insertPlaylist(playlist);
+    }
+
+    public int cleanUpPlaylistSQL (Integer playlistId) {
+        PlaylistBO bo = new PlaylistBO();
+        return bo.cleanUpPlaylist(playlistId);
+    }
+
+    public List<String> validateAndInsertCondition(PlaylistSetup.Condition condition, Integer playlistID){
+        PlaylistBO bo = new PlaylistBO();
+        return bo.validateAndInsertCondition(condition, playlistID);
     }
 
 

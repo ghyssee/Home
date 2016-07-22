@@ -68,7 +68,7 @@ public class MezzmoPlaylists extends BatchJobV2{
 
     public void makePlaylists(PlaylistSetup config) throws IOException {
         for (PlaylistSetup.PlaylistRecord rec : config.records){
-            checkPlaylist(rec);
+            validateAndInsertPlaylist(rec);
         }
     }
 
@@ -84,10 +84,12 @@ public class MezzmoPlaylists extends BatchJobV2{
         return null;
     }
 
-    public MGOPlaylistTO fillPlaylist(String name, String type, int parentID){
+    public MGOPlaylistTO fillPlaylist(List <String> errors, PlaylistSetup.PlaylistRecord pr, int parentID){
+        PlaylistBO playlistBO = new PlaylistBO();
+        PlaylistType playlistType = PlaylistType.get(pr.type);
         MGOPlaylistTO playlist = new MGOPlaylistTO();
-        playlist.setName(name);
-        playlist.setType(PlaylistType.get(type).getValue());
+        playlist.setName(pr.name);
+        playlist.setType(playlistType.getValue());
         playlist.setParentID(parentID);
         playlist.setThumbnailID(-1);
         playlist.setAuthor(5);
@@ -95,31 +97,50 @@ public class MezzmoPlaylists extends BatchJobV2{
         playlist.setPlaylistOrder(0);
         playlist.setThumbnailAuthor(0);
         playlist.setContentRatingID(0);
-        playlist.setBackdropArtworkID(0);
-        playlist.setOrderByColumn(7);
-        playlist.setOrderByDirection(1);
+        playlist.setOrderByColumn(playlistBO.validateOrderByColumn(errors, pr.orderByColumn));
+        playlist.setOrderByDirection(playlistBO.validateSorting(errors, pr.sorting));
         playlist.setDescription("");
         playlist.setDisplayTitleFormat("");
         playlist.setRunTime("0");
-        playlist.setLimitBy(null);
+
+        switch (playlistType){
+            case NORMAL:
+                playlist.setLimitBy(null);
+                playlist.setBackdropArtworkID(0);
+                break;
+            case SMART:
+                playlist.setDynamicTreeToken("");
+                playlist.setLimitBy(pr.limitBy);
+                // default limit time is not implemented, so always items
+                playlist.setLimitType(LimitType.Items.getValue());
+                playlist.setMediaType(playlistBO.validateMediaType(errors, pr.mediaType));
+                playlist.setCombineAnd(playlistBO.validateCombineAnd(errors, pr.combineAnd));
+                playlist.setBackdropArtworkID(-1);
+                break;
+        }
         return playlist;
     }
 
-    public void createPlaylist(PlaylistSetup.PlaylistRecord playlistRec){
+    public void createPlaylist(PlaylistSetup.PlaylistRecord playlistRec, List <String> errors){
         MGOPlaylistTO parentTO = findParent(playlistRec.parent);
-        if (parentTO != null){
+        if (parentTO != null) {
             log.info("Parent Found: " + parentTO.getID() + " / " + parentTO.getName());
             // insert the playlist
-            int nr = getMezzmoService().insertPlaylist(fillPlaylist(playlistRec.name, playlistRec.type, parentTO.getID()));
-            log.info("Nr Of Records created: " + nr);
+            MGOPlaylistTO playlistTO = fillPlaylist(errors, playlistRec, parentTO.getID());
+            if (errors.size() == 0) {
+                int nr = getMezzmoService().insertPlaylist(playlistTO);
+                log.info("Nr Of Records created: " + nr);
+            }
         }
         else {
-            log.error("Parent Not Found in DB: " + playlistRec.parent + " for playlist " + playlistRec.name);
+            String error = "Parent Not Found in DB: " + playlistRec.parent + " for playlist " + playlistRec.name;
+            log.error(error);
+            errors.add(error);
         }
     }
 
 
-    public void checkPlaylist(PlaylistSetup.PlaylistRecord playlistRec) throws IOException {
+    public void validateAndInsertPlaylist(PlaylistSetup.PlaylistRecord playlistRec) throws IOException {
         log.info("Processing playlist: " + playlistRec.name);
         MGOPlaylistTO playlist = new MGOPlaylistTO();
         playlist.setName(playlistRec.name);
@@ -127,46 +148,72 @@ public class MezzmoPlaylists extends BatchJobV2{
         if (type == null){
             log.error("Invalid Type: " + playlistRec.type);
         }
-        else if (type.equals(PlaylistType.SMART)){
-            PlaylistBO playlistBO = new PlaylistBO();
-            for (PlaylistSetup.Condition c : playlistRec.conditions){
-                List <String> errors = playlistBO.validateCondition(c);
-                if (errors.size() > 0){
-                    log.info("Errors Found");
-                    for (String message : errors){
-                        log.info("ERROR Found: "+ message);
-                    }
-                }
-            }
-        }
-        else if (!type.equals(PlaylistType.NORMAL)){
-            log.error("Playlist type not supported: " + playlistRec.type);
-        }
         else {
             playlist.setType(type.getValue());
-            List<MGOPlaylistTO> playlists = getMezzmoService().findPlaylist(playlist);
-            if (playlists.size() == 0) {
-                log.info("Playlist Not Found: " + playlist.getName());
-                // creating the playlist
-                // lookup parent
-                createPlaylist(playlistRec);
-            } else if (playlists.size() == 1) {
-                log.info("Playlist Found: " + playlist.getName());
-                String parentName = playlistRec.parent;
-                String parentDBName = playlists.get(0).getParentName();
-                if (parentName.equals(parentDBName)) {
-                    log.info("Parent Found: " + parentDBName);
-                } else {
-                    log.error("Parent is not correct: " + "Parent DB: " + parentDBName +
-                            " / Parent Config: " + parentName);
-                }
+            List <String> errors = new ArrayList<String>();
+            MGOPlaylistTO playlistTO = null;
+            switch (type){
+                case NORMAL:
+                    playlistTO = checkPlaylist(playlist, playlistRec, errors);
+                    if (playlistTO == null && errors.size() == 0){
+                        createPlaylist(playlistRec, errors);
+                    }
+                    break;
+                case SMART:
+                    playlistTO = checkPlaylist(playlist, playlistRec, errors);
+                    if (playlistTO == null && errors.size() == 0){
+                        createPlaylist(playlistRec, errors);
+                        // look it up again to get the playlist ID
+                        if (errors.size() == 0) {
+                            playlistTO = checkPlaylist(playlist, playlistRec, errors);
+                        }
+                        if (errors.size() == 0) {
 
+                            for (PlaylistSetup.Condition c : playlistRec.conditions) {
+                                errors = getMezzmoService().validateAndInsertCondition(c, playlistTO.getID());
+                                if (errors.size() > 0) {
+                                    log.info("Errors Found");
+                                    for (String message : errors) {
+                                        log.info("ERROR Found: " + message);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    break;
+                default:
+                    log.error("Playlist type not supported: " + playlistRec.type);
+            }
+        }
+    }
+
+    private MGOPlaylistTO checkPlaylist(MGOPlaylistTO playlist, PlaylistSetup.PlaylistRecord playlistRec, List <String> errors){
+        boolean insert = false;
+        MGOPlaylistTO playlistTO = null;
+        List<MGOPlaylistTO> playlists = getMezzmoService().findPlaylist(playlist);
+        if (playlists.size() == 0) {
+            log.info("Playlist Not Found: " + playlist.getName());
+            // creating the playlist
+            // lookup parent
+            //createPlaylist(playlistRec);
+            insert = true;
+        } else if (playlists.size() == 1) {
+            log.info("Playlist Found: " + playlist.getName());
+            playlistTO = playlists.get(0);
+            String parentName = playlistRec.parent;
+            String parentDBName = playlistTO.getParentName();
+            if (parentName.equals(parentDBName)) {
+                log.info("Parent Found: " + parentDBName);
             } else {
-                log.error("Multiple Playlists Found: " + playlist.getName());
+                log.error("Parent is not correct: " + "Parent DB: " + parentDBName +
+                        " / Parent Config: " + parentName);
             }
 
-            System.out.println(playlists.size());
+        } else {
+            errors.add("Multiple Playlists Found: " + playlist.getName());
+            log.error("Multiple Playlists Found: " + playlist.getName());
         }
+        return playlistTO;
     }
 
 

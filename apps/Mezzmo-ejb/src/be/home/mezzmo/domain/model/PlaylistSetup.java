@@ -14,6 +14,8 @@ public class PlaylistSetup {
         public Integer limitBy;
         public String combineAnd;
         public String mediaType;
+        public String orderByColumn;
+        public String sorting;
         public List<Condition> conditions;
     }
 

@@ -1,5 +1,7 @@
 package be.home.mezzmo.domain.bo;
 
+import be.home.mezzmo.domain.dao.jdbc.MezzmoDAOImpl;
+import be.home.mezzmo.domain.dao.jdbc.MezzmoPlaylistDAOImpl;
 import be.home.mezzmo.domain.model.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -14,9 +16,26 @@ public class PlaylistBO {
 
     private static final Logger log = Logger.getLogger(PlaylistBO.class);
 
-    public List<String> validateCondition(PlaylistSetup.Condition condition){
-        MGOPlaylistSQLTO playlistSQL = new MGOPlaylistSQLTO();
+    public List<String> validatePlaylist(PlaylistSetup.PlaylistRecord pr){
+        log.info("Validating " + pr.name);
+        List<String> errors = new ArrayList <String>();
+        validateOrderByColumn(errors, pr.orderByColumn);
+        validateSorting(errors, pr.sorting);
+        return errors;
+    }
+
+    public List<String> validateAndInsertCondition(PlaylistSetup.Condition condition, Integer playlistID){
         log.info("Processing condition for field " + condition.field);
+        MGOPlaylistSQLTO playlistSQL = new MGOPlaylistSQLTO();
+        playlistSQL.setPlaylistId(playlistID);
+        List<String> errors = validateCondition(playlistSQL, condition);
+        if (errors.size() == 0){
+            getMezzmoPlaylistDAO().insertPlaylistSQL(playlistSQL);
+        }
+        return errors;
+    }
+
+    private List<String> validateCondition(MGOPlaylistSQLTO playlistSQL, PlaylistSetup.Condition condition){
         String field = condition.field;
         List<String> errors = new ArrayList<String>();
         if (StringUtils.isBlank(field)){
@@ -50,6 +69,7 @@ public class PlaylistBO {
         playlistSQL.setOperand(validateOperand(errors, condition.operand));
         playlistSQL.setGroupNr(0);
         return errors;
+
     }
 
     private Integer validateValueInt(List <String> errors, String strValue, Value value){
@@ -61,6 +81,63 @@ public class PlaylistBO {
             errors.add("Value " + value.name() + " must be numeric: " + strValue);
         }
         return intValue;
+    }
+
+    public Integer validateOrderByColumn(List <String> errors, String orderBy){
+        Integer retParam = OrderByColumn.Title.getValue();
+        if (StringUtils.isNotBlank(orderBy)) {
+            OrderByColumn o = OrderByColumn.get(orderBy);
+            if (o == null) {
+                errors.add("Invalid orderBY: " + orderBy);
+            } else {
+                retParam = o.getValue();
+            }
+        }
+
+        return retParam;
+    }
+
+
+    public Integer validateSorting(List <String> errors, String sorting){
+        Integer retParam = Sorting.Ascending.getValue();
+        if (StringUtils.isNotBlank(sorting)) {
+            Sorting s = Sorting.get(sorting);
+            if (s == null) {
+                errors.add("Invalid sorting: " + sorting);
+            } else {
+                retParam = s.getValue();
+            }
+        }
+
+        return retParam;
+    }
+
+    public Integer validateMediaType(List <String> errors, String mediaType){
+        Integer retParam = null;
+        if (StringUtils.isNotBlank(mediaType)) {
+            MediaType m = MediaType.get(mediaType);
+            if (m == null) {
+                errors.add("Invalid mediaType: " + mediaType);
+            } else {
+                retParam = m.getValue();
+            }
+        }
+
+        return retParam;
+    }
+
+    public Integer validateCombineAnd(List <String> errors, String combineAnd){
+        Integer retParam = null;
+        if (StringUtils.isNotBlank(combineAnd)) {
+            CombineAnd m = CombineAnd.get(combineAnd);
+            if (m == null) {
+                errors.add("Invalid combineAnd: " + combineAnd);
+            } else {
+                retParam = m.getValue();
+            }
+        }
+
+        return retParam;
     }
 
     private Integer validateOperand(List <String> errors, String operand){
@@ -78,4 +155,15 @@ public class PlaylistBO {
         return retOperand;
 
     }
+
+    public int cleanUpPlaylist (Integer playlistId) {
+        return getMezzmoPlaylistDAO().cleanUpPlaylistSQL(playlistId);
+
+    }
+
+
+    public MezzmoPlaylistDAOImpl getMezzmoPlaylistDAO(){
+        return new MezzmoPlaylistDAOImpl();
+    }
+
 }

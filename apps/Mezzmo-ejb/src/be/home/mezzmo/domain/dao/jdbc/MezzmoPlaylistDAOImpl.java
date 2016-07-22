@@ -31,7 +31,7 @@ public class MezzmoPlaylistDAOImpl extends MezzmoDB {
             "ThumbnailID", "ThumbnailAuthor", "ContentRatingID", "BackdropArtworkID",
             "DisplayTitleFormat"};
 
-    private static final String[] COLUMNS_SQL = {"ID", "PlaylistID",
+    private static final String[] COLUMNS_SQL = {"PlaylistID",
         "ColumnNum", "ColumnType", "Operand", "ValueOneText",
         "ValueTwoText","ValueOneInt","ValueTwoInt","GroupNr"};
 
@@ -39,8 +39,11 @@ public class MezzmoPlaylistDAOImpl extends MezzmoDB {
                                                   "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
 
-    private static final String INSERT_PLAYLIST_SQL = "INSERT INTO MGOPlaylistSQLTO (" + getColumns(COLUMNS) + ") " +
-            "VALUES (?,?,?,?,?,?,?,?,?,?)";
+    private static final String INSERT_PLAYLIST_SQL = "INSERT INTO MGOPlaylistSQL (" + getColumns(COLUMNS_SQL) + ") " +
+            "VALUES (?,?,?,?,?,?,?,?,?)";
+
+    private static final String CLEANUP_PLAYLIST_SQL = "DELETE FROM MGOPlaylistSQL " +
+            "WHERE PlaylistID = ?";
 
     private Integer getInteger(ResultSet rs, String id) throws SQLException {
         return new Integer(rs.getInt(id));
@@ -147,14 +150,13 @@ public class MezzmoPlaylistDAOImpl extends MezzmoDB {
 
     public int insertPlaylistSQL(MGOPlaylistSQLTO playlistSQL) {
         PreparedStatement stmt = null;
-        List<MGOFileTO> list = new ArrayList<MGOFileTO>();
         Connection c = null;
         int rec = 0;
         try {
             c = getInstance().getConnection();
 
             //stmt = c.createStatement();
-            stmt = c.prepareStatement(INSERT_PLAYLIST);
+            stmt = c.prepareStatement(INSERT_PLAYLIST_SQL);
             int idx = 1;
 
             setInteger(stmt, idx++, playlistSQL.getPlaylistId());
@@ -166,6 +168,42 @@ public class MezzmoPlaylistDAOImpl extends MezzmoDB {
             setInteger(stmt, idx++, playlistSQL.getValueOneInt());
             setInteger(stmt, idx++, playlistSQL.getValueTwoInt());
             setInteger(stmt, idx++, playlistSQL.getGroupNr());
+            rec = stmt.executeUpdate();
+            c.commit();
+        } catch (SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            if (c != null) {
+                try {
+                    System.err.println("Transaction is being rolled back");
+                    c.rollback();
+                } catch (SQLException excep) {
+                    System.err.println(excep.getClass().getName() + ": " + excep.getMessage());
+                }
+            }
+        } finally {
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException excep) {
+                    System.err.println(excep.getClass().getName() + ": " + excep.getMessage());
+                }
+            }
+            return rec;
+        }
+    }
+
+    public int cleanUpPlaylistSQL(Integer playlistId) {
+        PreparedStatement stmt = null;
+        Connection c = null;
+        int rec = 0;
+        try {
+            c = getInstance().getConnection();
+
+            //stmt = c.createStatement();
+            stmt = c.prepareStatement(CLEANUP_PLAYLIST_SQL);
+            int idx = 1;
+
+            setInteger(stmt, idx++, playlistId);
             rec = stmt.executeUpdate();
             c.commit();
         } catch (SQLException e) {
