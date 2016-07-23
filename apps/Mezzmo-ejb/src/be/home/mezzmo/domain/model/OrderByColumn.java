@@ -8,7 +8,7 @@ import java.util.Map;
  * Created by Gebruiker on 22/07/2016.
  */
 public enum OrderByColumn {
-    AlbumSeries(13), Title(7), Random(38);
+    AlbumSeries(13), Title(7), RandomShuffle(38), NoOrder(0);
 
     private final int value;
     private OrderByColumn(int value) {

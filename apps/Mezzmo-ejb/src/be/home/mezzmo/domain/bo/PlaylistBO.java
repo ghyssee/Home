@@ -1,6 +1,5 @@
 package be.home.mezzmo.domain.bo;
 
-import be.home.mezzmo.domain.dao.jdbc.MezzmoDAOImpl;
 import be.home.mezzmo.domain.dao.jdbc.MezzmoPlaylistDAOImpl;
 import be.home.mezzmo.domain.model.*;
 import org.apache.commons.lang3.StringUtils;
@@ -28,14 +27,14 @@ public class PlaylistBO {
         log.info("Processing condition for field " + condition.field);
         MGOPlaylistSQLTO playlistSQL = new MGOPlaylistSQLTO();
         playlistSQL.setPlaylistId(playlistID);
-        List<String> errors = validateCondition(playlistSQL, condition);
+        List<String> errors = validateAndFillCondition(playlistSQL, condition);
         if (errors.size() == 0){
             getMezzmoPlaylistDAO().insertPlaylistSQL(playlistSQL);
         }
         return errors;
     }
 
-    private List<String> validateCondition(MGOPlaylistSQLTO playlistSQL, PlaylistSetup.Condition condition){
+    private List<String> validateAndFillCondition(MGOPlaylistSQLTO playlistSQL, PlaylistSetup.Condition condition){
         String field = condition.field;
         List<String> errors = new ArrayList<String>();
         if (StringUtils.isBlank(field)){
@@ -88,7 +87,7 @@ public class PlaylistBO {
         if (StringUtils.isNotBlank(orderBy)) {
             OrderByColumn o = OrderByColumn.get(orderBy);
             if (o == null) {
-                errors.add("Invalid orderBY: " + orderBy);
+                errors.add("Invalid orderBy: " + orderBy);
             } else {
                 retParam = o.getValue();
             }
@@ -96,7 +95,6 @@ public class PlaylistBO {
 
         return retParam;
     }
-
 
     public Integer validateSorting(List <String> errors, String sorting){
         Integer retParam = Sorting.Ascending.getValue();

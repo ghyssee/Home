@@ -16,7 +16,6 @@ import java.util.*;
 
 public class SQLiteJDBC
 {
-    private static SQLiteJDBC instance = null;
     public static DataBaseConfiguration config = null;
     public static Map <String, DataBaseConfiguration.DataBase> dbMap = new HashMap <String, DataBaseConfiguration.DataBase>();
     protected Connection c = null;
@@ -70,8 +69,10 @@ public class SQLiteJDBC
         }
         return col;
     }
-
     public static void initialize(String workingDir){
+        initialize();
+    }
+    public static void initialize(){
         InputStream i = null;
         //String localConfig = workingDir + "/config/localDatabases.json";
         File file = new File (Setup.getInstance().getFullPath(Constants.Path.LOCAL_CONFIG) + File.separator + "localDatabases.json");

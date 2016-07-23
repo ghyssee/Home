@@ -22,7 +22,6 @@ import java.util.*;
 public class MezzmoPlaylists extends BatchJobV2{
 
     public static MezzmoServiceImpl mezzmoService = null;
-    public static MediaMonkeyServiceImpl mediaMonkeyService = null;
 
     public static Log4GE log4GE;
     public static ConfigTO.Config config;
@@ -34,7 +33,7 @@ public class MezzmoPlaylists extends BatchJobV2{
         MezzmoPlaylists instance = new MezzmoPlaylists();
         try {
             config = instance.init();
-            SQLiteJDBC.initialize(workingDir);
+            SQLiteJDBC.initialize();
             instance.run();
         }
         catch (FileNotFoundException e){
@@ -52,10 +51,6 @@ public class MezzmoPlaylists extends BatchJobV2{
 
         PlaylistSetup playlistSetup = (PlaylistSetup) JSONUtils.openJSON(
                 Setup.getInstance().getFullPath(Constants.Path.CONFIG) + File.separator + "PlaylistSetup.json", PlaylistSetup.class);
-
-        String tst = "Is";
-        Operand f = Operand.get(tst);
-        System.out.println("Is: " + f);
 
         try {
             makePlaylists(playlistSetup);
@@ -84,7 +79,7 @@ public class MezzmoPlaylists extends BatchJobV2{
         return null;
     }
 
-    public MGOPlaylistTO fillPlaylist(List <String> errors, PlaylistSetup.PlaylistRecord pr, int parentID){
+    public MGOPlaylistTO validateAndFillPlaylist(List<String> errors, PlaylistSetup.PlaylistRecord pr, int parentID){
         PlaylistBO playlistBO = new PlaylistBO();
         PlaylistType playlistType = PlaylistType.get(pr.type);
         MGOPlaylistTO playlist = new MGOPlaylistTO();
@@ -126,7 +121,7 @@ public class MezzmoPlaylists extends BatchJobV2{
         if (parentTO != null) {
             log.info("Parent Found: " + parentTO.getID() + " / " + parentTO.getName());
             // insert the playlist
-            MGOPlaylistTO playlistTO = fillPlaylist(errors, playlistRec, parentTO.getID());
+            MGOPlaylistTO playlistTO = validateAndFillPlaylist(errors, playlistRec, parentTO.getID());
             if (errors.size() == 0) {
                 int nr = getMezzmoService().insertPlaylist(playlistTO);
                 log.info("Nr Of Records created: " + nr);
@@ -154,29 +149,36 @@ public class MezzmoPlaylists extends BatchJobV2{
             MGOPlaylistTO playlistTO = null;
             switch (type){
                 case NORMAL:
-                    playlistTO = checkPlaylist(playlist, playlistRec, errors);
+                    playlistTO = checkIfPlaylistExist(playlist, playlistRec, errors);
                     if (playlistTO == null && errors.size() == 0){
                         createPlaylist(playlistRec, errors);
                     }
                     break;
                 case SMART:
-                    playlistTO = checkPlaylist(playlist, playlistRec, errors);
-                    if (playlistTO == null && errors.size() == 0){
+                    playlistTO = checkIfPlaylistExist(playlist, playlistRec, errors);
+                    if (playlistTO == null && errors.size() == 0) {
                         createPlaylist(playlistRec, errors);
                         // look it up again to get the playlist ID
                         if (errors.size() == 0) {
-                            playlistTO = checkPlaylist(playlist, playlistRec, errors);
-                        }
-                        if (errors.size() == 0) {
+                            playlistTO = checkIfPlaylistExist(playlist, playlistRec, errors);
+                            if (errors.size() == 0) {
 
-                            for (PlaylistSetup.Condition c : playlistRec.conditions) {
-                                errors = getMezzmoService().validateAndInsertCondition(c, playlistTO.getID());
-                                if (errors.size() > 0) {
-                                    log.info("Errors Found");
-                                    for (String message : errors) {
-                                        log.info("ERROR Found: " + message);
+                                for (PlaylistSetup.Condition c : playlistRec.conditions) {
+                                    errors = getMezzmoService().validateAndInsertCondition(c, playlistTO.getID());
+                                    if (errors.size() > 0) {
+                                        log.info("The following errors found");
+                                        for (String message : errors) {
+                                            log.info("ERROR Found: " + message);
+                                        }
                                     }
                                 }
+                            } else {
+                                log.error("Playlist not found after it was created: " + playlistRec.name);
+                            }
+                        } else {
+                            log.error("Playlist not created: " + playlistRec.name);
+                            for (String msg : errors) {
+                                log.error(msg);
                             }
                         }
                     }
@@ -187,16 +189,14 @@ public class MezzmoPlaylists extends BatchJobV2{
         }
     }
 
-    private MGOPlaylistTO checkPlaylist(MGOPlaylistTO playlist, PlaylistSetup.PlaylistRecord playlistRec, List <String> errors){
-        boolean insert = false;
+    private MGOPlaylistTO checkIfPlaylistExist(MGOPlaylistTO playlist, PlaylistSetup.PlaylistRecord playlistRec, List<String> errors){
         MGOPlaylistTO playlistTO = null;
         List<MGOPlaylistTO> playlists = getMezzmoService().findPlaylist(playlist);
         if (playlists.size() == 0) {
-            log.info("Playlist Not Found: " + playlist.getName());
             // creating the playlist
             // lookup parent
             //createPlaylist(playlistRec);
-            insert = true;
+            log.info("Playlist Not Found: " + playlist.getName());
         } else if (playlists.size() == 1) {
             log.info("Playlist Found: " + playlist.getName());
             playlistTO = playlists.get(0);
@@ -205,13 +205,12 @@ public class MezzmoPlaylists extends BatchJobV2{
             if (parentName.equals(parentDBName)) {
                 log.info("Parent Found: " + parentDBName);
             } else {
-                log.error("Parent is not correct: " + "Parent DB: " + parentDBName +
+                errors.add("Parent is not correct: " + "Parent DB: " + parentDBName +
                         " / Parent Config: " + parentName);
             }
 
         } else {
             errors.add("Multiple Playlists Found: " + playlist.getName());
-            log.error("Multiple Playlists Found: " + playlist.getName());
         }
         return playlistTO;
     }
