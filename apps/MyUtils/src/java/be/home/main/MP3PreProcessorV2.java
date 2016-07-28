@@ -27,8 +27,6 @@ import java.util.regex.Pattern;
 public class MP3PreProcessorV2 extends BatchJobV2 {
 
     private static final String VERSION = "V1.0";
-    private static final String CD_TAG = "cd";
-    private static final String ALBUM_TAG = "Album:";
     /* if the RENUM tag is found, than the track info from the file will be ignored and the automatic counter
        will be used
     */
@@ -175,11 +173,11 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
             log.info("Special Tag Found");
             counter.set(1);
         }
-        else if (checkCDTag(album, line)){
+        else if (checkCDTag(mp3Config, album, line)){
             log.info("CD Tag found");
             counter.set(1);
         }
-        else if (checkAlbumTag(album, line)){
+        else if (checkAlbumTag(mp3Config, album, line)){
             log.info("Album Tag found");
             counter.set(1);
         }
@@ -207,14 +205,14 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
         }
     }
 
-    private boolean checkCDTag(AlbumInfo.Config album, String line){
+    private boolean checkCDTag(MP3PreprocessorConfig mp3Config, AlbumInfo.Config album, String line){
         String cd = null;
         // CD TAG followed by zero or more spaces and 1 or more numbers
-        Pattern pattern = Pattern.compile(CD_TAG.toUpperCase() + "( *)[1-9]{1,}");
+        Pattern pattern = Pattern.compile(mp3Config.cdTag.toUpperCase() + "( *)[1-9]{1,}");
         Matcher matcher2 = pattern.matcher(line.toUpperCase());
         boolean cdTagFound = false;
         if (matcher2.matches()) {
-            String[] array = line.toUpperCase().split(CD_TAG.toUpperCase());
+            String[] array = line.toUpperCase().split(mp3Config.cdTag.toUpperCase());
             cd = array[1].trim();
             cd = cd.replaceAll("[^0-9]", "");
             album.total = Integer.parseInt(cd);
@@ -223,12 +221,12 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
         return cdTagFound;
     }
 
-    private boolean checkAlbumTag(AlbumInfo.Config album, String line){
-        Pattern pattern = Pattern.compile(ALBUM_TAG + "(.*)");
+    private boolean checkAlbumTag(MP3PreprocessorConfig mp3Config, AlbumInfo.Config album, String line){
+        Pattern pattern = Pattern.compile(mp3Config.albumTag + "(.*)");
         Matcher matcher2 = pattern.matcher(line);
         boolean tagFound = false;
         if (matcher2.matches()) {
-            String[] array = line.split(ALBUM_TAG);
+            String[] array = line.split(mp3Config.albumTag);
             album.album = array[1].trim();
             tagFound = true;
         }

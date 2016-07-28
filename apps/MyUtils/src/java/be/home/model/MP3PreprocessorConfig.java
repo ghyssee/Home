@@ -28,6 +28,8 @@ public class MP3PreprocessorConfig {
     public String activeConfiguration;
     public String prefix;
     public String suffix;
+    public String cdTag;
+    public String albumTag;
 
     public class ConfigItem {
         public String id;
