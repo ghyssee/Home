@@ -204,6 +204,10 @@
 		  <groupId>com.mpatric</groupId>
 		  <artifactId>mp3agic</artifactId>
 		</dependency>
+			<dependency>
+				<groupId>org</groupId>
+				<artifactId>jaudiotagger</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>be.home</groupId>
 			<artifactId>Mezzmo-ejb</artifactId>

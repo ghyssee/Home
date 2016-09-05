@@ -22,6 +22,7 @@ public class MezzmoDAOImpl extends MezzmoDB {
     private static final String COLUMNS[] = {"MGOFile.ID as FILEID", "MGOFile.File as FILE",
             "MGOFile.PlayCount as PLAYCOUNT", "MGOFile.Ranking as RANKING",
             "MGOFile.FileTitle as FILETITLE", "MGOFile.DateLastPlayed as DATELASTPLAYED",
+            "MGOFile.Ranking as RANKING",
             "MGOFileAlbum.ID as FILEALBUMID", "MGOFileAlbum.Data as ALBUMNAME" };
 
     private static final String COLUMNS_FILE[] = {"MGOFile.ID as FILEID", "MGOFile.File as FILE",
@@ -30,17 +31,38 @@ public class MezzmoDAOImpl extends MezzmoDB {
     private static final String COLUMNS_ALBUMS[] = {"MGOFile.ID as FILEID", "MGOFile.File as FILE",
             "MGOFile.PlayCount as PLAYCOUNT", "MGOFile.Ranking as RANKING"};
 
+
     private static final String FILEALBUM_SELECT = "SELECT " + getColumns(COLUMNS) + " FROM MGOFileAlbumRelationship " +
-     " INNER JOIN MGOFile ON (MGOFileAlbumRelationship.FileID = MGOFile.ID)" +
-     " INNER JOIN MGOFileAlbum ON (MGOFileAlbum.ID = MGOFileAlbumRelationship.ID)" +
-     " WHERE 1=1" +
-     " AND MGOFileAlbum.data like ?"; //"'Ultratop 50 2015%'";
+            " INNER JOIN MGOFile ON (MGOFileAlbumRelationship.FileID = MGOFile.ID)" +
+            " INNER JOIN MGOFileAlbum ON (MGOFileAlbum.ID = MGOFileAlbumRelationship.ID)" +
+            " WHERE 1=1" +
+            " AND MGOFileAlbum.data like ?"; //"'Ultratop 50 2015%'";
+
+    private static final String FILE_FIND_TAGINFO = "SELECT " + getColumns(COLUMNS) + " FROM MGOFile " +
+            " INNER JOIN MGOFileAlbumRelationship ON (MGOFileAlbumRelationship.FileID = MGOFILE.id)" +
+            " INNER JOIN MGOFileAlbum ON (MGOFileAlbum.ID = MGOFileAlbumRelationship.ID)" +
+            " INNER JOIN MGOFileExtension ON (MGOFileExtension.ID = MGOFILE.extensionID)" +
+            " INNER JOIN MGOFileArtistRelationship ON (MGOFileArtistRelationship.FileID = MGOFILE.id)" +
+            " INNER JOIN MGOFileArtist ON (MGOFileArtist.ID = MGOFileArtistRelationship.ID)" +
+            " INNER JOIN MGOAlbumArtistRelationship ON (MGOAlbumArtistRelationship.FileID = MGOFILE.id)" +
+            " WHERE MGOFileExtension.data = 'mp3'" +
+            " AND MGOFile.Track = ?" +
+            " AND MGOFileArtist.data like ?" +
+            " AND MGOFile.Title like ?" +
+            " AND MGOFileAlbum.data like ?";
 
     private static final String FILE_SELECT_TITLE_OLD = "SELECT " + getColumns(COLUMNS_FILE) + " FROM MGOFile " +
             " WHERE 1=1" +
             " AND MGOFile.FileTitle like ?"; //"'Ultratop 50 2015%'";
 
     private static final String FILE_SELECT_TITLE = "SELECT " + getColumns(COLUMNS) + " FROM MGOFileAlbumRelationship " +
+            " INNER JOIN MGOFile ON (MGOFileAlbumRelationship.FileID = MGOFile.ID)" +
+            " INNER JOIN MGOFileAlbum ON (MGOFileAlbum.ID = MGOFileAlbumRelationship.ID)" +
+            " WHERE 1=1" +
+            " AND MGOFile.FileTitle like ?" +
+            " AND MGOFileAlbum.data like ?";
+
+    private static final String FILE_FIND = "SELECT " + getColumns(COLUMNS) + " FROM MGOFileAlbumRelationship " +
             " INNER JOIN MGOFile ON (MGOFileAlbumRelationship.FileID = MGOFile.ID)" +
             " INNER JOIN MGOFileAlbum ON (MGOFileAlbum.ID = MGOFileAlbumRelationship.ID)" +
             " WHERE 1=1" +
@@ -357,11 +379,7 @@ public class MezzmoDAOImpl extends MezzmoDB {
         try {
             Connection c = getInstance().getConnection();
 
-            //stmt = c.createStatement();
             stmt = c.prepareStatement(LIST_ALBUMS);
-            //stmt.setLong(1, to.getIndex());
-            //stmt.setLong(2, to.getLimit());
-            //System.out.println(FILE_SELECT_TITLE);
             ResultSet rs = stmt.executeQuery();
             while ( rs.next() ) {
                 MGOFileAlbumCompositeTO fileAlbumComposite = new MGOFileAlbumCompositeTO();
@@ -422,11 +440,7 @@ public class MezzmoDAOImpl extends MezzmoDB {
         try {
             Connection c = getInstance().getConnection();
 
-            //stmt = c.createStatement();
             stmt = c.prepareStatement(LIST_TOP20);
-            //stmt.setLong(1, to.getIndex());
-            //stmt.setLong(2, to.getLimit());
-            //System.out.println(FILE_SELECT_TITLE);
             ResultSet rs = stmt.executeQuery();
             while ( rs.next() ) {
                 MGOFileAlbumCompositeTO fileAlbumComposite = new MGOFileAlbumCompositeTO();
@@ -481,6 +495,44 @@ public class MezzmoDAOImpl extends MezzmoDB {
         }
         if (error){
             throw new MultipleOccurencesException("FILE: " + file);
+        }
+        return fileTO;
+    }
+
+    public MGOFileTO findByTitleAndAlbum(MGOFileAlbumCompositeTO comp){
+        MGOFileTO fileTO = null;
+        PreparedStatement stmt = null;
+        boolean error = false;
+        try {
+            Connection c = getInstance().getConnection();
+
+            stmt = c.prepareStatement(FILE_FIND_TAGINFO);
+            int index = 1;
+            stmt.setLong(index++, comp.getFileTO().getTrack());
+            stmt.setString(index++, comp.getFileArtistTO().getArtist());
+            stmt.setString(index++, comp.getFileTO().getTitle());
+            stmt.setString(index++, comp.getFileAlbumTO().getName());
+            ResultSet rs = stmt.executeQuery();
+            int counter = 0;
+            while ( rs.next() ) {
+                if (counter > 0){
+                    error = true;
+                    break;
+                }
+                fileTO = new MGOFileTO();
+                fileTO.setId(rs.getInt("FILEID"));
+                fileTO.setRanking(rs.getInt("RANKING"));
+                counter++;
+            }
+            rs.close();
+            stmt.close();
+        } catch ( Exception e ) {
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            System.exit(0);
+        }
+        if (error){
+            throw new MultipleOccurencesException("FILE: " + comp.getFileTO().getTrack() + "/" +
+                    comp.getFileArtistTO().getArtist() + "/" + comp.getFileTO().getTitle());
         }
         return fileTO;
     }

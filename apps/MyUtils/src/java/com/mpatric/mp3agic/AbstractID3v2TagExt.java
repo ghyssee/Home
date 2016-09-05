@@ -125,6 +125,7 @@ public abstract class AbstractID3v2TagExt implements ID3v2 {
         this.unpackTag(var1);
     }
 
+
     private void unpackTag(byte[] var1) throws NoSuchTagException, UnsupportedTagException, InvalidDataException {
         ID3v2TagFactory.sanityCheckTag(var1);
         int var2 = this.unpackHeader(var1);
