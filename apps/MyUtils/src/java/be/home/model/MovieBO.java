@@ -40,7 +40,10 @@ public class MovieBO {
         if (index >= 0){
            tmp = tmp.substring(0, index);
         }
-        return tmp;
+        index = tmp.indexOf(" - Complete serie");
+        if (index >= 0){
+            tmp = tmp.substring(0, index);
+        }        return tmp;
 
     }
 
