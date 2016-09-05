@@ -102,6 +102,10 @@ public class MezzmoServiceImpl {
         return bo.validateAndInsertCondition(condition, playlistID);
     }
 
+    public MGOFileTO findByTitleAndAlbum(MGOFileAlbumCompositeTO comp){
+        MezzmoBO bo = new MezzmoBO();
+        return bo.findByTitleAndAlbum(comp);
+    }
 
     public synchronized static MezzmoServiceImpl getInstance() {
         if(instance == null) {

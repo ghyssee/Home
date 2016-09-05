@@ -77,6 +77,10 @@ public class MezzmoBO extends BusinessObject {
 
     }
 
+    public MGOFileTO findByTitleAndAlbum(MGOFileAlbumCompositeTO comp){
+        return getMezzmoDAO().findByTitleAndAlbum(comp);
+    }
+
     public MezzmoDAOImpl getMezzmoDAO(){
         return new MezzmoDAOImpl();
     }
