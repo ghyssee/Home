@@ -123,13 +123,15 @@ public class SynchronizeRating extends BatchJobV2 {
             else {
                 int dbRating = fileTO.getRanking() == 0 ? 0 : (fileTO.getRanking());
                 if (rating != dbRating){
-                    log.info("File: " + file.toString());
-                    log.info("Track: " + track);
-                    log.info("Artist: " + comp.getFileArtistTO().getArtist());
-                    log.info("Title: " + comp.getFileTO().getTitle());
-                    log.info("Album: " + comp.getFileAlbumTO().getName());
-                    log.info("Different Rating: " + "Rating MP3: " + rating + " / Rating DB: " + dbRating);
-                    log.info(StringUtils.repeat('=', 100));
+                    if (rating < dbRating && rating == 0) {
+                        log.info("File: " + file.toString());
+                        log.info("Track: " + track);
+                        log.info("Artist: " + comp.getFileArtistTO().getArtist());
+                        log.info("Title: " + comp.getFileTO().getTitle());
+                        log.info("Album: " + comp.getFileAlbumTO().getName());
+                        log.info("Different Rating: " + "Rating MP3: " + rating + " / Rating DB: " + dbRating);
+                        log.info(StringUtils.repeat('=', 100));
+                    }
                 }
             }
         } catch (CannotReadException e) {
