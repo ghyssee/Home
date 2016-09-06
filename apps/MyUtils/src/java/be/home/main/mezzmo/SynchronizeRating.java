@@ -82,18 +82,22 @@ public class SynchronizeRating extends BatchJobV2 {
         MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSON(MP3_SETTINGS, MP3Settings.class, "UTF-8");
 
         MP3Helper helper = MP3Helper.getInstance();
-        String mp3Dir = Setup.getInstance().getFullPath(Constants.Path.ALBUM) + File.separator + mp3Settings.album;
-        log.info("Album Directory: " + mp3Dir);
+        log.info("Start Directory: " + mp3Settings.synchronizer.startDirectory);
+        log.info("Update: " + mp3Settings.synchronizer.updateRating);
         List<Path> files = new ArrayList();
-        Path path = Paths.get("r:\\My Music\\iPod");
-        log.info ("Get List of MP3 files");
+        Path path = Paths.get(mp3Settings.synchronizer.startDirectory);
+        log.info ("Fetching MP3 Files");
         listFiles(path, files);
+        log.info ("Sorting list");
+        Collections.sort(files,
+                (o1, o2) -> o1.toString().compareTo(o2.toString()));
+        log.info ("Check Rating MP3 Files");
         for (Path file : files) {
-            readMP3File(file);
+            readMP3File(mp3Settings, file);
         }
     }
 
-    private void readMP3File(Path file)throws IOException {
+    private void readMP3File(MP3Settings settings, Path file)throws IOException {
 
         AudioFile f = null;
         try {
@@ -105,7 +109,7 @@ public class SynchronizeRating extends BatchJobV2 {
             comp.getFileArtistTO().setArtist(tag.getFirst(FieldKey.ARTIST));
             comp.getFileTO().setTitle(tag.getFirst(FieldKey.TITLE));
             comp.getFileAlbumTO().setName(tag.getFirst(FieldKey.ALBUM));
-            int rating = convertRating(tag.getFirst(FieldKey.RATING));
+            int rating = convertRating(settings, tag.getFirst(FieldKey.RATING));
             MGOFileTO fileTO = getMezzmoService().findByTitleAndAlbum(comp);
             if (fileTO == null) {
                 log.error("File: " + file.toString());
@@ -121,7 +125,7 @@ public class SynchronizeRating extends BatchJobV2 {
                     log.info("Album: " + comp.getFileAlbumTO().getName());
                     log.info("Different Rating: " + "Rating MP3: " + rating + " / Rating DB: " + dbRating);
                     log.info(StringUtils.repeat('=', 100));
-                    if (true) {
+                    if (settings.synchronizer.updateRating) {
                         getMezzmoService().updateRanking(fileTO.getId(), rating);
                     }
                 }
@@ -140,23 +144,23 @@ public class SynchronizeRating extends BatchJobV2 {
 
     }
 
-    private int convertRating (String rating){
+    private int convertRating (MP3Settings settings, String rating){
         int stars = 0;
         if (StringUtils.isNotBlank(rating)) {
             int newRating = Integer.parseInt(rating);
-            if (1 <= newRating && newRating < 64){
+            if (settings.rating.rating1 <= newRating && newRating < settings.rating.rating2){
                 stars = 1;
             }
-            else if (64 <= newRating && newRating < 128){
+            else if (settings.rating.rating2 <= newRating && newRating < settings.rating.rating3){
                 stars = 2;
             }
-            else if (128 <= newRating && newRating < 196){
+            else if (settings.rating.rating3 <= newRating && newRating < settings.rating.rating4){
                 stars = 3;
             }
-            else if (196 <= newRating && newRating < 255){
+            else if (settings.rating.rating4 <= newRating && newRating < settings.rating.rating5){
                 stars = 4;
             }
-            else if (newRating >= 255){
+            else if (newRating >= settings.rating.rating5){
                 stars = 5;
             }
         }
