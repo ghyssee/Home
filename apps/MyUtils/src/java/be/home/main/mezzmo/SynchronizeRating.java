@@ -52,14 +52,6 @@ public class SynchronizeRating extends BatchJobV2 {
     public static void main(String args[]) {
 
         java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.OFF);
-        /*
-        String dynamicLog = // log directory somehow chosen...
-        Properties p = new Properties( Config.ETC + "/log4j.properties" );
-        p.put( "log.dir", dynamicLog ); // overwrite "log.dir"
-        PropertyConfigurator.configure( p );        String currentDir = System.getProperty("user.dir");*/
-        //log.info("Current Working dir: " + currentDir);
-
-
 
         SynchronizeRating instance = new SynchronizeRating();
         instance.printHeader("SyncrhonizeRatings " + VERSION, "=");

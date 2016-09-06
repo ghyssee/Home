@@ -25,6 +25,7 @@ public abstract class BatchJobV2 {
     private static Logger setLogFile(){
         String logFile = Setup.getInstance().getFullPath(Constants.Path.LOG) + File.separator + "MyUtlis.log";
         System.setProperty("logfile.name", logFile);
+        // disable logging of jaudiotagger API
         java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.OFF);
         Logger log = Logger.getLogger(BatchJobV2.class);
         log.info("Setting Log4J Log file to:" + logFile);

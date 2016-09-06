@@ -51,14 +51,7 @@ public class MP3Processor extends BatchJobV2 {
 
     public static void main(String args[]) {
 
-        /*
-        String dynamicLog = // log directory somehow chosen...
-        Properties p = new Properties( Config.ETC + "/log4j.properties" );
-        p.put( "log.dir", dynamicLog ); // overwrite "log.dir"
-        PropertyConfigurator.configure( p );        String currentDir = System.getProperty("user.dir");*/
-        //log.info("Current Working dir: " + currentDir);
-
-
+        java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.OFF);
 
         MP3Processor instance = new MP3Processor();
         instance.printHeader("ZipFiles " + VERSION, "=");
@@ -166,10 +159,6 @@ public class MP3Processor extends BatchJobV2 {
 
     private void readMP3File(AlbumInfo.Config album, AlbumInfo.Track track, String fileName, String prefixFileName) throws InvalidDataException, IOException, UnsupportedTagException, NotSupportedException {
         Mp3FileExt mp3file = new Mp3FileExt(fileName);
-//        System.out.println("Length of this mp3 is: " + mp3file.getLengthInSeconds() + " seconds");
- //       System.out.println("Bitrate: " + mp3file.getBitrate() + " kbps " + (mp3file.isVbr() ? "(VBR)" : "(CBR)"));
- //       System.out.println("Sample rate: " + mp3file.getSampleRate() + " Hz");
- //       System.out.println("Has ID3v2 tag?: " + (mp3file.hasId3v2Tag() ? "YES" : "NO"));
         File f = new File(fileName);
         AudioFile af = null;
         try {
@@ -196,27 +185,10 @@ public class MP3Processor extends BatchJobV2 {
             e.printStackTrace();
         }
 
-        //File originalFile = new File(fileName);
-        //File newFile = new File(Setup.getInstance().getFullPath(Constants.Path.NEW) + File.separator + prefixFileName + originalFile.getName());
-        //System.out.println("New File " + newFile);
-        //if (track.artist.contains("Λ")){
-        //    id3v2Tag.setArtist(track.artist.replaceAll("Λ", "&"));
-        //}
-        //mp3file.save(newFile.getAbsolutePath());
-        //if (originalFile.delete()){
-         //   newFile.renameTo(originalFile);
-        //}
-        //else {
-          //  System.err.println("There was a problem deleting the file " + fileName);
-        //}*/
     }
 
     private void readMP3FileOld(AlbumInfo.Config album, AlbumInfo.Track track, String fileName, String prefixFileName) throws InvalidDataException, IOException, UnsupportedTagException, NotSupportedException {
         Mp3FileExt mp3file = new Mp3FileExt(fileName);
-//        System.out.println("Length of this mp3 is: " + mp3file.getLengthInSeconds() + " seconds");
-        //       System.out.println("Bitrate: " + mp3file.getBitrate() + " kbps " + (mp3file.isVbr() ? "(VBR)" : "(CBR)"));
-        //       System.out.println("Sample rate: " + mp3file.getSampleRate() + " Hz");
-        //       System.out.println("Has ID3v2 tag?: " + (mp3file.hasId3v2Tag() ? "YES" : "NO"));
         ID3v2 id3v2Tag;
         if (mp3file.hasId3v2Tag()) {
             id3v2Tag = mp3file.getId3v2Tag();
@@ -234,13 +206,6 @@ public class MP3Processor extends BatchJobV2 {
         System.out.println("Title: " + id3v2Tag.getTitle());
         System.out.println("NEW Title: " + track.title);
         System.out.println(StringUtils.repeat('=', 100));
-        /*
-        System.out.println("Album: " + id3v2Tag.getAlbum());
-        System.out.println("Year: " + id3v2Tag.getYear());
-        System.out.println("Genre: " + id3v2Tag.getGenre() + " (" + id3v2Tag.getGenreDescription() + ")");
-        System.out.println("Comment: " + id3v2Tag.getComment());
-        System.out.println(StringUtils.repeat('=', 100));
-        System.out.println(StringUtils.repeat('=', 100));*/
         if (StringUtils.isNotBlank(album.album)){
             id3v2Tag.setAlbum(album.album);
         }
@@ -248,7 +213,6 @@ public class MP3Processor extends BatchJobV2 {
         id3v2Tag.setCompilation(true);
         id3v2Tag.setAlbumArtist("Various Artists");
         id3v2Tag.setTrack(MP3Helper.getInstance().formatTrack(album, track.track));
-        //EncodedText tmp = new EncodedText(track.artist);
         id3v2Tag.setArtist(track.artist);
         id3v2Tag.setTitle(track.title);
         id3v2Tag.clearAlbumImage();
