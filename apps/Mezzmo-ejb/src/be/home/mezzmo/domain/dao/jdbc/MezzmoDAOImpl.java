@@ -177,7 +177,9 @@ public class MezzmoDAOImpl extends MezzmoDB {
                                                 "ORDER BY RANDOM() " +
                                                 "LIMIT 0,? ";
 
-
+    private static final String FILE_UPDATE_RATING = "UPDATE MGOFile " +
+            " SET Ranking = ? " +
+            " WHERE ID = ?";
 
     private static final Logger log = Logger.getLogger(MezzmoDAOImpl.class);
 
@@ -622,4 +624,42 @@ public class MezzmoDAOImpl extends MezzmoDB {
         }
         return list;
     }
+
+    public int updateRanking(int fileID, int ranking) throws SQLException {
+        //System.out.println("Get List of Mp3's for specific FileTitle");
+        PreparedStatement stmt = null;
+        List<MGOFileTO> list = new ArrayList<MGOFileTO>();
+        Connection c = null;
+        int rec = 0;
+        try {
+            c = getInstance().getConnection();
+
+            //stmt = c.createStatement();
+            stmt = c.prepareStatement(FILE_UPDATE_RATING);
+            int idx = 1;
+            stmt.setInt(idx++, ranking);
+            stmt.setLong(idx++, fileID);
+            rec =  stmt.executeUpdate();
+            c.commit();
+        }
+        catch (SQLException e ) {
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            if (c != null) {
+                try {
+                    System.err.println("Transaction is being rolled back");
+                    c.rollback();
+                } catch(SQLException excep) {
+                    System.err.println( excep.getClass().getName() + ": " + excep.getMessage() );
+                }
+            }
+        } finally {
+            if (stmt != null) {
+                stmt.close();
+            }
+        }
+        return rec;
+    }
+
+
+
 }

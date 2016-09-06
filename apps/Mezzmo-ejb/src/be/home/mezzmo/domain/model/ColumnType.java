@@ -12,7 +12,7 @@ public enum ColumnType {
     String(1), Number(2);
 
     private final int value;
-    private ColumnType(int value) {
+    ColumnType(int value) {
         this.value = value;
     }
     private static final Map lookup = new HashMap();

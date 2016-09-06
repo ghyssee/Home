@@ -81,6 +81,10 @@ public class MezzmoBO extends BusinessObject {
         return getMezzmoDAO().findByTitleAndAlbum(comp);
     }
 
+    public int updateRanking (int fileID, int ranking) throws SQLException {
+        return getMezzmoDAO().updateRanking(fileID, ranking);
+    }
+
     public MezzmoDAOImpl getMezzmoDAO(){
         return new MezzmoDAOImpl();
     }

@@ -1,5 +1,6 @@
 package be.home.main;
 
+import be.home.mezzmo.domain.model.Compilation;
 import be.home.model.AlbumInfo;
 import be.home.model.ConfigTO;
 import be.home.common.configuration.Setup;
@@ -17,6 +18,15 @@ import com.mpatric.mp3agic.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.CannotWriteException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
+import org.jaudiotagger.tag.FieldKey;
+import org.jaudiotagger.tag.Tag;
+import org.jaudiotagger.tag.TagException;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -160,6 +170,53 @@ public class MP3Processor extends BatchJobV2 {
  //       System.out.println("Bitrate: " + mp3file.getBitrate() + " kbps " + (mp3file.isVbr() ? "(VBR)" : "(CBR)"));
  //       System.out.println("Sample rate: " + mp3file.getSampleRate() + " Hz");
  //       System.out.println("Has ID3v2 tag?: " + (mp3file.hasId3v2Tag() ? "YES" : "NO"));
+        File f = new File(fileName);
+        AudioFile af = null;
+        try {
+            af = AudioFileIO.read(f);
+            Tag tag = af.getTag();
+            tag.setField(FieldKey.TRACK, MP3Helper.getInstance().formatTrack(album, track.track));
+            tag.setField(FieldKey.ARTIST, track.artist);
+            tag.setField(FieldKey.TITLE, track.title);
+            tag.setField(FieldKey.ALBUM, album.album);
+            tag.setField(FieldKey.IS_COMPILATION, Compilation.TRUE.getValue());
+            tag.setField(FieldKey.ALBUM_ARTIST, "Various Artists");
+            tag.setField(FieldKey.DISC_NO, track.cd);
+            tag.deleteField(FieldKey.COVER_ART);
+            af.commit();
+        } catch (CannotReadException e) {
+            e.printStackTrace();
+        } catch (TagException e) {
+            e.printStackTrace();
+        } catch (ReadOnlyFileException e) {
+            e.printStackTrace();
+        } catch (InvalidAudioFrameException e) {
+            e.printStackTrace();
+        } catch (CannotWriteException e) {
+            e.printStackTrace();
+        }
+
+        //File originalFile = new File(fileName);
+        //File newFile = new File(Setup.getInstance().getFullPath(Constants.Path.NEW) + File.separator + prefixFileName + originalFile.getName());
+        //System.out.println("New File " + newFile);
+        //if (track.artist.contains("Λ")){
+        //    id3v2Tag.setArtist(track.artist.replaceAll("Λ", "&"));
+        //}
+        //mp3file.save(newFile.getAbsolutePath());
+        //if (originalFile.delete()){
+         //   newFile.renameTo(originalFile);
+        //}
+        //else {
+          //  System.err.println("There was a problem deleting the file " + fileName);
+        //}*/
+    }
+
+    private void readMP3FileOld(AlbumInfo.Config album, AlbumInfo.Track track, String fileName, String prefixFileName) throws InvalidDataException, IOException, UnsupportedTagException, NotSupportedException {
+        Mp3FileExt mp3file = new Mp3FileExt(fileName);
+//        System.out.println("Length of this mp3 is: " + mp3file.getLengthInSeconds() + " seconds");
+        //       System.out.println("Bitrate: " + mp3file.getBitrate() + " kbps " + (mp3file.isVbr() ? "(VBR)" : "(CBR)"));
+        //       System.out.println("Sample rate: " + mp3file.getSampleRate() + " Hz");
+        //       System.out.println("Has ID3v2 tag?: " + (mp3file.hasId3v2Tag() ? "YES" : "NO"));
         ID3v2 id3v2Tag;
         if (mp3file.hasId3v2Tag()) {
             id3v2Tag = mp3file.getId3v2Tag();
@@ -206,10 +263,10 @@ public class MP3Processor extends BatchJobV2 {
         //}
         //mp3file.save(newFile.getAbsolutePath());
         //if (originalFile.delete()){
-         //   newFile.renameTo(originalFile);
+        //   newFile.renameTo(originalFile);
         //}
         //else {
-          //  System.err.println("There was a problem deleting the file " + fileName);
+        //  System.err.println("There was a problem deleting the file " + fileName);
         //}*/
         mp3file.save(newFile.getAbsolutePath());
     }

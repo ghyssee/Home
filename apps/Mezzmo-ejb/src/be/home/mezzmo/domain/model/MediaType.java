@@ -13,7 +13,7 @@ public enum MediaType {
     MP3(1), Video(4), Photo(2), Alles(7);
 
     private final int value;
-    private MediaType(int value) {
+    MediaType(int value) {
         this.value = value;
     }
     private static final Map lookup = new HashMap();

@@ -11,7 +11,7 @@ public enum PlaylistType {
     NORMAL(16), EXTERNAL(32), SMART(64), FOLDER(128);
 
     private final int value;
-    private PlaylistType(int value) {
+    PlaylistType(int value) {
         this.value = value;
     }
     private static final Map lookup = new HashMap();

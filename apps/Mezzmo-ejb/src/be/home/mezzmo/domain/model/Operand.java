@@ -14,7 +14,7 @@ public enum Operand {
     StartsWith(7);
 
     private final int value;
-    private Operand(int value) {
+    Operand(int value) {
         this.value = value;
     }
     private static final Map lookup = new HashMap();

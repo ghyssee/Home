@@ -11,7 +11,7 @@ public enum Sorting {
     Ascending(1), Descending(0);
 
     private final int value;
-    private Sorting(int value) {
+    Sorting(int value) {
         this.value = value;
     }
     private static final Map lookup = new HashMap();

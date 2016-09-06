@@ -1,10 +1,10 @@
 package be.home.main.mezzmo;
 
 import be.home.common.dao.jdbc.SQLiteJDBC;
+import be.home.mezzmo.domain.model.Compilation;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.MGOFileTO;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
-import be.home.model.AlbumInfo;
 import be.home.model.ConfigTO;
 import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
@@ -15,21 +15,23 @@ import be.home.common.main.BatchJobV2;
 import be.home.common.utils.JSONUtils;
 import be.home.domain.model.MP3Helper;
 import be.home.model.MP3Settings;
-import com.mpatric.mp3agic.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.CannotWriteException;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
+import org.jaudiotagger.tag.FieldDataInvalidException;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagException;
 
 import java.io.*;
 import java.nio.file.*;
+import java.sql.SQLException;
 import java.util.*;
 
 
@@ -45,7 +47,6 @@ public class SynchronizeRating extends BatchJobV2 {
     public static ConfigTO.Config config;
     public static final String MP3_SETTINGS = Setup.getInstance().getFullPath(Constants.Path.CONFIG) + File.separator +
             "MP3Settings.json";
-    public static final String INPUT_FILE = Setup.getInstance().getFullPath(Constants.Path.PROCESS) + File.separator + "Album.json";
     private static final Logger log = Logger.getLogger(SynchronizeRating.class);
 
     public static void main(String args[]) {
@@ -61,7 +62,7 @@ public class SynchronizeRating extends BatchJobV2 {
 
 
         SynchronizeRating instance = new SynchronizeRating();
-        instance.printHeader("ZipFiles " + VERSION, "=");
+        instance.printHeader("SyncrhonizeRatings " + VERSION, "=");
         try {
             config = instance.init();
             SQLiteJDBC.initialize();
@@ -78,8 +79,7 @@ public class SynchronizeRating extends BatchJobV2 {
 
     public void start() throws IOException {
 
-        AlbumInfo.Config album = (AlbumInfo.Config) JSONUtils.openJSON(INPUT_FILE, AlbumInfo.Config.class, "UTF-8");
-        MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSON(MP3_SETTINGS, MP3Settings.class);
+        MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSON(MP3_SETTINGS, MP3Settings.class, "UTF-8");
 
         MP3Helper helper = MP3Helper.getInstance();
         String mp3Dir = Setup.getInstance().getFullPath(Constants.Path.ALBUM) + File.separator + mp3Settings.album;
@@ -88,21 +88,12 @@ public class SynchronizeRating extends BatchJobV2 {
         Path path = Paths.get("r:\\My Music\\iPod");
         log.info ("Get List of MP3 files");
         listFiles(path, files);
-        for (Path file : files){
-            try {
-                readMP3File(file);
-            } catch (InvalidDataException e) {
-                e.printStackTrace();
-            } catch (UnsupportedTagException e) {
-                e.printStackTrace();
-            } catch (NotSupportedException e) {
-                e.printStackTrace();
-            }
+        for (Path file : files) {
+            readMP3File(file);
         }
-
     }
 
-    private void readMP3File(Path file) throws InvalidDataException, IOException, UnsupportedTagException, NotSupportedException {
+    private void readMP3File(Path file)throws IOException {
 
         AudioFile f = null;
         try {
@@ -123,14 +114,15 @@ public class SynchronizeRating extends BatchJobV2 {
             else {
                 int dbRating = fileTO.getRanking() == 0 ? 0 : (fileTO.getRanking());
                 if (rating != dbRating){
-                    if (rating < dbRating && rating == 0) {
-                        log.info("File: " + file.toString());
-                        log.info("Track: " + track);
-                        log.info("Artist: " + comp.getFileArtistTO().getArtist());
-                        log.info("Title: " + comp.getFileTO().getTitle());
-                        log.info("Album: " + comp.getFileAlbumTO().getName());
-                        log.info("Different Rating: " + "Rating MP3: " + rating + " / Rating DB: " + dbRating);
-                        log.info(StringUtils.repeat('=', 100));
+                    log.info("File: " + file.toString());
+                    log.info("Track: " + track);
+                    log.info("Artist: " + comp.getFileArtistTO().getArtist());
+                    log.info("Title: " + comp.getFileTO().getTitle());
+                    log.info("Album: " + comp.getFileAlbumTO().getName());
+                    log.info("Different Rating: " + "Rating MP3: " + rating + " / Rating DB: " + dbRating);
+                    log.info(StringUtils.repeat('=', 100));
+                    if (true) {
+                        getMezzmoService().updateRanking(fileTO.getId(), rating);
                     }
                 }
             }
@@ -142,34 +134,33 @@ public class SynchronizeRating extends BatchJobV2 {
             e.printStackTrace();
         } catch (InvalidAudioFrameException e) {
             e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
 
     }
 
     private int convertRating (String rating){
         int stars = 0;
-        switch (rating){
-            case "1":
+        if (StringUtils.isNotBlank(rating)) {
+            int newRating = Integer.parseInt(rating);
+            if (1 <= newRating && newRating < 64){
                 stars = 1;
-                break;
-            case "64":
+            }
+            else if (64 <= newRating && newRating < 128){
                 stars = 2;
-                break;
-            case "128":
+            }
+            else if (128 <= newRating && newRating < 196){
                 stars = 3;
-                break;
-            case "196":
+            }
+            else if (196 <= newRating && newRating < 255){
                 stars = 4;
-                break;
-            case "255":
+            }
+            else if (newRating >= 255){
                 stars = 5;
-                break;
+            }
         }
         return stars;
-    }
-
-    private AlbumInfo.Track findMP3File(AlbumInfo.Config album, int trackNumber){
-        return album.tracks.get(trackNumber-1);
     }
 
     public void listFiles(Path path, List<Path> files) {

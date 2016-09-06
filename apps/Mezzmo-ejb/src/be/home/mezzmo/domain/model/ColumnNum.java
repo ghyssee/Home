@@ -19,7 +19,7 @@ public enum ColumnNum {
 
     private int value;
     private ColumnType columnType;
-    private ColumnNum(int value, ColumnType number) {
+    ColumnNum(int value, ColumnType number) {
 
         this.value = value;
         this.columnType = number;

@@ -12,7 +12,7 @@ public enum LimitType {
     Items(0), Min(1), Hours(2);
 
     private final int value;
-    private LimitType(int value) {
+    LimitType(int value) {
         this.value = value;
     }
     private static final Map lookup = new HashMap();

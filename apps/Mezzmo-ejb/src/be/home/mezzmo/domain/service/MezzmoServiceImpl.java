@@ -92,6 +92,11 @@ public class MezzmoServiceImpl {
         return bo.insertPlaylist(playlist);
     }
 
+    public int updateRanking (int fileID, int ranking) throws SQLException {
+        MezzmoBO bo = new MezzmoBO();
+        return bo.updateRanking(fileID, ranking);
+    }
+
     public int cleanUpPlaylistSQL (Integer playlistId) {
         PlaylistBO bo = new PlaylistBO();
         return bo.cleanUpPlaylist(playlistId);

@@ -11,7 +11,7 @@ public enum OrderByColumn {
     AlbumSeries(13), Title(7), RandomShuffle(38), NoOrder(0);
 
     private final int value;
-    private OrderByColumn(int value) {
+    OrderByColumn(int value) {
         this.value = value;
     }
     private static final Map lookup = new HashMap();

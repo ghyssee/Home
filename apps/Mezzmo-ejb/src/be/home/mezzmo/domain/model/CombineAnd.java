@@ -12,7 +12,7 @@ public enum CombineAnd {
     AND(1), OR(0);
 
     private final int value;
-    private CombineAnd(int value) {
+    CombineAnd(int value) {
         this.value = value;
     }
     private static final Map lookup = new HashMap();
