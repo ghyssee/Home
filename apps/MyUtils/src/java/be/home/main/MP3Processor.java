@@ -157,20 +157,32 @@ public class MP3Processor extends BatchJobV2 {
         log.info("Finished processing MP3s");
     }
 
-    private void readMP3File(AlbumInfo.Config album, AlbumInfo.Track track, String fileName, String prefixFileName) throws InvalidDataException, IOException, UnsupportedTagException, NotSupportedException {
+    private void readMP3FileOld(AlbumInfo.Config album, AlbumInfo.Track track, String fileName, String prefixFileName) throws InvalidDataException, IOException, UnsupportedTagException, NotSupportedException {
         Mp3FileExt mp3file = new Mp3FileExt(fileName);
         File f = new File(fileName);
         AudioFile af = null;
         try {
             af = AudioFileIO.read(f);
             Tag tag = af.getTag();
+
+            tag.deleteField(FieldKey.TRACK);
             tag.setField(FieldKey.TRACK, MP3Helper.getInstance().formatTrack(album, track.track));
+            tag.deleteField(FieldKey.ARTIST);
             tag.setField(FieldKey.ARTIST, track.artist);
+            tag.deleteField(FieldKey.TITLE);
             tag.setField(FieldKey.TITLE, track.title);
+            tag.deleteField(FieldKey.ALBUM);
             tag.setField(FieldKey.ALBUM, album.album);
+            tag.deleteField(FieldKey.IS_COMPILATION);
             tag.setField(FieldKey.IS_COMPILATION, Compilation.TRUE.getValue());
+            tag.deleteField(FieldKey.ALBUM_ARTIST);
             tag.setField(FieldKey.ALBUM_ARTIST, "Various Artists");
-            tag.setField(FieldKey.DISC_NO, track.cd);
+            if (StringUtils.isBlank(track.cd)){
+                tag.deleteField(FieldKey.DISC_NO);
+            }
+            else {
+                tag.setField(FieldKey.DISC_NO, track.cd);
+            }
             tag.deleteField(FieldKey.COVER_ART);
             af.commit();
         } catch (CannotReadException e) {
@@ -187,7 +199,7 @@ public class MP3Processor extends BatchJobV2 {
 
     }
 
-    private void readMP3FileOld(AlbumInfo.Config album, AlbumInfo.Track track, String fileName, String prefixFileName) throws InvalidDataException, IOException, UnsupportedTagException, NotSupportedException {
+    private void readMP3File(AlbumInfo.Config album, AlbumInfo.Track track, String fileName, String prefixFileName) throws InvalidDataException, IOException, UnsupportedTagException, NotSupportedException {
         Mp3FileExt mp3file = new Mp3FileExt(fileName);
         ID3v2 id3v2Tag;
         if (mp3file.hasId3v2Tag()) {
