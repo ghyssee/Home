@@ -30,7 +30,7 @@ public class SQLiteUtils {
 
     public static long convertDateToLong(java.util.Date date){
         if (date != null) {
-            long longDate = date.getTime() / 1000;
+            long longDate = date.getTime();
             return longDate;
         }
         return 0;
