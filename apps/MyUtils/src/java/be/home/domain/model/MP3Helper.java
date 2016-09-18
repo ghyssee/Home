@@ -258,8 +258,10 @@ public class MP3Helper {
     public void checkTrack(AlbumInfo.Track track){
         // search for (Feat. xxx) or Feat. xxx or Feat xxx or (Feat xxx)
         String FEAT = ".*[\\(|\\[| ][Ff](ea)?t[.| ]";
-        String CLOSE_FEAT = "\\)|\\]";
-        checkTrackPattern(track, FEAT, CLOSE_FEAT);
+        String CLOSE_FEAT = "(?!^Edit\\))\\)|\\]";
+        if (!StringUtils.endsWith(track.title, "Edit)")) {
+            checkTrackPattern(track, FEAT, CLOSE_FEAT);
+        }
         //FEAT = ".*[\\(|\\[| ][Ff]t[.| ]";
         //CLOSE_FEAT = "";
         //checkTrackPattern(track, FEAT, CLOSE_FEAT);

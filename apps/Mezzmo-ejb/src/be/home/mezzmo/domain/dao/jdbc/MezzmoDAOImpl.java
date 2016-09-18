@@ -46,7 +46,7 @@ public class MezzmoDAOImpl extends MezzmoDB {
             " INNER JOIN MGOFileArtist ON (MGOFileArtist.ID = MGOFileArtistRelationship.ID)" +
             " INNER JOIN MGOAlbumArtistRelationship ON (MGOAlbumArtistRelationship.FileID = MGOFILE.id)" +
             " WHERE MGOFileExtension.data = 'mp3'" +
-            " AND MGOFile.Track = ?" +
+            " AND MGOFile.Track like ?" +
             " AND MGOFileArtist.data like ?" +
             " AND MGOFile.Title like ?" +
             " AND MGOFileAlbum.data like ?";

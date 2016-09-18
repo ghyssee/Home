@@ -46,7 +46,8 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
         instance.printHeader("ZipFiles " + VERSION, "=");
 
         try {
-            instance.start();
+           instance.start();
+           // instance.startTst();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -89,7 +90,16 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
         line = "01 - Loona.mp3Hitexplosion -  - Badam (Edit)";
         line = replacePattern(line, prefix, PatternType.PREFIX);
         line = replacePattern(line, suffix, PatternType.SUFFIX);
+        line = "Album: Future Trance Vol. 77 (2016)";
         System.out.println("line: " + line);
+        Pattern pattern = Pattern.compile("Album:(.*)");
+        Matcher matcher2 = pattern.matcher(line);
+        boolean tagFound = false;
+        if (matcher2.matches()) {
+            System.out.println("album found");
+        }
+
+
 
     }
 
@@ -222,7 +232,10 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
     }
 
     private boolean checkAlbumTag(MP3PreprocessorConfig mp3Config, AlbumInfo.Config album, String line){
+        // possible problem with UTF-8 BOM, than first characters are special and
+        // album is not found
         Pattern pattern = Pattern.compile(mp3Config.albumTag + "(.*)");
+
         Matcher matcher2 = pattern.matcher(line);
         boolean tagFound = false;
         if (matcher2.matches()) {
