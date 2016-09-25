@@ -1,126 +1,96 @@
 package be.home.main;
 
-import com.google.gson.Gson;
-import com.google.gson.stream.JsonReader;
-import org.apache.commons.io.FileUtils;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.SAXReader;
+import org.dom4j.io.XMLWriter;
+import org.dom4j.util.XMLErrorHandler;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.validation.SchemaFactory;
 import java.io.*;
-import java.lang.reflect.Field;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.nio.charset.Charset;
-import java.text.Normalizer;
-import java.util.ArrayList;
-import java.util.List;
+import java.net.URI;
 
 /**
  * Created by ghyssee on 20/02/2015.
  */
 public class HelloWorld {
-    public static void main(String args[]) throws IOException, NoSuchFieldException, IllegalAccessException {
+    public static void main(String args[]) throws SAXException, DocumentException, IOException, IllegalAccessException, NoSuchFieldException, ParserConfigurationException {
 
-        System.setProperty("file.encoding","UTF-8");
-        Field charset = Charset.class.getDeclaredField("defaultCharset");
-        charset.setAccessible(true);
-        charset.set(null,null);
 
-        System.out.println("Hello World");
-        String currentDir = System.getProperty("user.dir");
-        File file = new File("g:/My Music/iPod/Ultratop 50 20140104 04 Januari 2014/23 Anna Kendrick - Cups (Pitch Perfect's \"When I'm Gone\").mp3");
-        System.out.println(file.getName());
-        File folder = new File("g:/My Music/iPod/Ultratop 50 20140104 04 Januari 2014");
 
-        System.out.println(System.getProperty("file.encoding"));
-
-        File[] listOfFiles = folder.listFiles();
-        for (int i=0; i < listOfFiles.length; i++){
-            if (listOfFiles[i].getName().startsWith("23")){
-                System.out.println(listOfFiles[i].getName());
-                System.out.println(URLEncoder.encode(listOfFiles[i].getName(), "UTF-8"));
-                System.out.println(URLEncoder.encode( Normalizer.normalize(listOfFiles[i].getName(), Normalizer.Form.NFC), "UTF-8"));
-                //System.out.println(URLDecoder.decode(listOfFiles[i].getName()));
-                //System.out.println(normalizeUnicode(listOfFiles[i].getName()));
-                if (listOfFiles[i].exists()){
-                    System.out.println("EXIST");
-                }
-                else {
-                    System.out.println("NOT EXIST");
-                }
-            }
-        }
-
+        test();
 
     }
 
-    // Normalize to "Normalization Form Canonical Decomposition" (NFD)
-    protected static String normalizeUnicode(String str) {
-        Normalizer.Form form = Normalizer.Form.NFC;
-        if (!Normalizer.isNormalized(str, form)) {
-            return Normalizer.normalize(str, form);
-        }
-        return str;
+    private static void tmp() throws SAXException, DocumentException, IOException {
+        SAXReader reader = new SAXReader();
+
+        reader.setValidation(true);
+
+        // specify the schema to use
+        URI uri = new File("c:/reports/contacts.xsd").toURI();
+
+        String file = uri.toString();
+        reader.setProperty(
+                "http://apache.org/xml/properties/schema/external-noNamespaceSchemaLocation",
+                file
+        );
+        reader.setFeature("http://xml.org/sax/features/validation", true);
+        reader.setFeature("http://apache.org/xml/features/validation/schema", true );
+        //reader.setFeature("http://apache.org/xml/features/validation/schema-full-checking", true);
+
+        // add error handler which turns any errors into XML
+        XMLErrorHandler errorHandler = new XMLErrorHandler();
+        reader.setErrorHandler( errorHandler );
+
+        //HelloWorld m = new HelloWorld();
+        //reader.setEntityResolver(m);
+
+        //reader.setProperty("http://apache.org/xml/properties/schema/external-noNamespaceSchemaLocation", "http://example/url/contacts.xsd");
+        // parse the document
+        Document document = reader.read(new InputSource("C:\\reports\\contacts.xml"));
+
+
+        // output the errors XML
+        XMLWriter writer = new XMLWriter( OutputFormat.createPrettyPrint() );
+        writer.write( errorHandler.getErrors() );
     }
 
-    private static Config init(String filename) throws FileNotFoundException, UnsupportedEncodingException, IOException {
-        InputStream i = new FileInputStream(filename);
-        Reader reader = new InputStreamReader(i, "UTF-8");
-        JsonReader r = new JsonReader(reader);
-        Gson gson = new Gson();
-        Config config = gson.fromJson(r, Config.class);
-        r.close();
-        return config;
-    }
 
-    private class Log4J{
-        String config;
-        public String toString() {
-            StringBuilder b = new StringBuilder();
-            b.append("Log4J config : " + config + "\n");
-            return b.toString();
-        }
-    }
+        private static void test() throws IOException, NoSuchFieldException, IllegalAccessException, SAXException, ParserConfigurationException, DocumentException {
 
-    private class Wiki {
-        private String inputDir;
-        private String outputDir;
-        private String inputFile;
-        private String outputFile;
-        private String maxAppsFile;
+        SAXParserFactory factory = SAXParserFactory.newInstance();
 
-        public String toString() {
-            StringBuilder b = new StringBuilder();
-            b.append("Wiki inputDir : " + inputDir + "\n");
-            b.append("Wiki outputDir : " + outputDir + "\n");
-            b.append("Wiki inputFile : " + inputFile + "\n");
-            b.append("Wiki outputFile : " + outputFile + "\n");
-            b.append("Wiki maxAppsFile : " + maxAppsFile + "\n");
-            return b.toString();
-        }
-    }
+        SchemaFactory schemaFactory =
+                SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
 
-    private class Config {
-        private String logFile;
-        private Log4J log4J;
-        private Wiki wiki;
+        URI uri = new File("c:/reports/contacts.xsd").toURI();
 
+            String file = uri.toString();
 
-        public String toString() {
-            StringBuilder b = new StringBuilder();
-            b.append("logFile : " + logFile + "\n");
-            if (log4J != null){
-                b.append(log4J.toString());
-            }
-            else {
-                b.append("Parameter log4J does not exist in config file" + "\n");
-            }
-            if (wiki != null){
-                b.append(wiki.toString());
-            }
-            else {
-                b.append("Parameter wiki does not exist in config file" + "\n");
-            }
-            return b.toString();
-        }
+        SAXParser parser = factory.newSAXParser();
+
+        SAXReader reader = new SAXReader(parser.getXMLReader());
+            reader.setProperty(
+                    "http://apache.org/xml/properties/schema/external-noNamespaceSchemaLocation",
+                    file
+            );
+        reader.setValidation(true);
+            XMLErrorHandler errorHandler = new XMLErrorHandler();
+            reader.setErrorHandler( errorHandler );
+            reader.setFeature("http://xml.org/sax/features/validation", true);
+            reader.setFeature("http://apache.org/xml/features/validation/schema", true );
+        reader.read((new InputSource("C:\\reports\\contacts.xml")));
+            // output the errors XML
+            XMLWriter writer = new XMLWriter( OutputFormat.createPrettyPrint() );
+            writer.write( errorHandler.getErrors() );
     }
 
 }
