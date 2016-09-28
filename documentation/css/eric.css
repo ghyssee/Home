@@ -1,0 +1,25 @@
+body {
+    background-color: lightblue;
+}
+
+h1 {
+    color: navy;
+    margin-left: 20px;
+}
+
+table.displayTagTable {
+    border: 10px solid black;
+	border-collapse: collapse; 
+	width : 100%;
+	padding: 15px;
+}
+
+tr.displayTagTable {
+	color: black;
+}
+
+tr.displayTagTableHeader {
+    border-bottom: 1px solid black;
+	color: red;
+	padding: 15px;
+}

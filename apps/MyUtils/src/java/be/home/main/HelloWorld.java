@@ -44,7 +44,7 @@ public class HelloWorld {
         );
         reader.setFeature("http://xml.org/sax/features/validation", true);
         reader.setFeature("http://apache.org/xml/features/validation/schema", true );
-        //reader.setFeature("http://apache.org/xml/features/validation/schema-full-checking", true);
+        reader.setFeature("http://apache.org/xml/features/validation/schema-full-checking", true);
 
         // add error handler which turns any errors into XML
         XMLErrorHandler errorHandler = new XMLErrorHandler();

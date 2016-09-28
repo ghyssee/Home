@@ -17,12 +17,18 @@ public class DataBaseConfiguration {
         public String id;
         public String path;
         public String name;
+        public LinkDataBase linkDB;
+    }
+
+    public class LinkDataBase {
+        public String name;
+        public String alias;
     }
 
     public Map <String, DataBase> getMap(){
         Map <String, DataBase> map = new HashMap<String, DataBase>();
         for (DataBase db : databases){
-           map.put(db.id, db);
+            map.put(db.id, db);
         }
         return map;
     }

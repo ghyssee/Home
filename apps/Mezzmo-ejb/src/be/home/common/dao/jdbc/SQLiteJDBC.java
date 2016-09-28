@@ -41,6 +41,7 @@ public class SQLiteJDBC
             Class.forName("org.sqlite.JDBC");
             c = DriverManager.getConnection("jdbc:sqlite:" + file.getAbsolutePath());
             c.setAutoCommit(false);
+            linkDatabase(database, c);
             log.info("Opened database successfully");
         } catch ( Exception e ) {
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
@@ -59,6 +60,20 @@ public class SQLiteJDBC
         }
     }
 
+    public void linkDatabase (DataBaseConfiguration.DataBase db, Connection c) throws SQLException {
+        if (db.linkDB != null && db.linkDB.name != null) {
+            PreparedStatement stmt = c.prepareStatement("ATTACH database ? AS ?");
+            boolean autoCommit = c.getAutoCommit();
+            stmt.setString(1, db.path + db.linkDB.name);
+            log.info("Attaching DB " + db.linkDB.name + " with Alias " + db.linkDB.alias);
+            stmt.setString(2, db.linkDB.alias);
+            c.setAutoCommit(true);
+            stmt.execute();
+            c.setAutoCommit(autoCommit);
+            stmt.close();
+        }
+    }
+
     public static String getColumns(String[] columns){
         String col = "";
         for (int i=0; i < columns.length; i++){
@@ -74,7 +89,6 @@ public class SQLiteJDBC
     }
     public static void initialize(){
         InputStream i = null;
-        //String localConfig = workingDir + "/config/localDatabases.json";
         File file = new File (Setup.getInstance().getFullPath(Constants.Path.LOCAL_CONFIG) + File.separator + "localDatabases.json");
         Map <String, DataBaseConfiguration.DataBase> map = new HashMap <String, DataBaseConfiguration.DataBase>();
         if (file.exists()){
@@ -82,7 +96,6 @@ public class SQLiteJDBC
             DataBaseConfiguration localConfig = (DataBaseConfiguration) JSONUtils.openJSON(file.getAbsolutePath(), DataBaseConfiguration.class);
             map = localConfig.getMap();
         }
-        //file = new File(workingDir + "/config/databases.json");
         file = new File(Setup.getInstance().getFullPath(Constants.Path.CONFIG) + File.separator + "databases.json");
         log.debug("Master Database Configuration File found: " + file.getAbsolutePath());
         config = (DataBaseConfiguration) JSONUtils.openJSON(file.getAbsolutePath(), DataBaseConfiguration.class);

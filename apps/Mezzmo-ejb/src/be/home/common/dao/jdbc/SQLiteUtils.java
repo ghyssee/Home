@@ -13,6 +13,14 @@ public class SQLiteUtils {
         return null;
     }
 
+    public static java.util.Date convertiPodToDate(Long f){
+        if (f != null && f.longValue() != 0) {
+            java.util.Date date = new java.util.Date(f);
+            return date;
+        }
+        return null;
+    }
+
     public static java.util.Date convertStringToDate(String strDate){
         if (strDate != null){
             long longDate = 0L;
