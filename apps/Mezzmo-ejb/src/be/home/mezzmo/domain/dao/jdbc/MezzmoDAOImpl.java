@@ -93,6 +93,18 @@ public class MezzmoDAOImpl extends MezzmoDB {
             " AND MGOFile.FileTitle like ?" +
             ")";
 
+    private static final String FILE_SYNC_PLAYCOUNT = "UPDATE MGOFile " +
+            " SET PlayCount = ? " +
+            " WHERE FileTitle = ? " +
+            " AND ID IN (" +
+            " SELECT FileID FROM MGOFileAlbumRelationship" +
+            " INNER JOIN MGOFile ON (MGOFileAlbumRelationship.FileID = MGOFile.ID)" +
+            " INNER JOIN MGOFileAlbum ON (MGOFileAlbum.ID = MGOFileAlbumRelationship.ID)" +
+            " WHERE 1=1" +
+            " AND MGOFileAlbum.data like ?" +
+            " AND MGOFile.FileTitle like ?" +
+            ")";
+
     private static final String LIST_ALBUMS = "SELECT DISTINCT MGOFileAlbum.data AS ALBUMNAME," +
                                 " MGOAlbumArtist.data AS ALBUMARTISTNAME," +
                                 " MGOFileAlbum.id AS ALBUMID," +
@@ -334,6 +346,46 @@ public class MezzmoDAOImpl extends MezzmoDB {
         //System.out.println("Number of rows retrieved: " + list.size());
     }
 
+    public int synchronizePlayCount(String fileID, String album, int playCount) throws SQLException {
+        //System.out.println("Get List of Mp3's for specific FileTitle");
+        PreparedStatement stmt = null;
+        List<MGOFileTO> list = new ArrayList<MGOFileTO>();
+        Connection c = null;
+        int rec = 0;
+        try {
+            c = getInstance().getConnection();
+
+            //stmt = c.createStatement();
+            stmt = c.prepareStatement(FILE_UPDATE_PLAYCOUNT);
+            int idx = 1;
+            stmt.setInt(idx++, playCount);
+            stmt.setString(idx++, fileID);
+            stmt.setInt(idx++, playCount);
+            stmt.setString(idx++, album == null ? "%" : album);
+            stmt.setString(idx++, fileID);
+            //System.out.println(FILE_SELECT_TITLE);
+            rec =  stmt.executeUpdate();
+            c.commit();
+        }
+        catch (SQLException e ) {
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            if (c != null) {
+                try {
+                    System.err.println("Transaction is being rolled back");
+                    c.rollback();
+                } catch(SQLException excep) {
+                    System.err.println( excep.getClass().getName() + ": " + excep.getMessage() );
+                }
+            }
+        } finally {
+            if (stmt != null) {
+                stmt.close();
+            }
+        }
+        return rec;
+        //System.out.println("Number of rows retrieved: " + list.size());
+    }
+
     public List<MGOFileAlbumCompositeTO> getMP3FilesWithPlayCount(TransferObject to)
     {
         //System.out.println("Get List of Mp3's for specific FileTitle");
@@ -525,6 +577,7 @@ public class MezzmoDAOImpl extends MezzmoDB {
                 fileTO.setId(rs.getInt("FILEID"));
                 fileTO.setRanking(rs.getInt("RANKING"));
                 fileTO.setPlayCount(rs.getInt("PLAYCOUNT"));
+                fileTO.setDateLastPlayed(SQLiteUtils.convertToDate(rs.getLong("DATELASTPLAYED")));
                 counter++;
             }
             rs.close();

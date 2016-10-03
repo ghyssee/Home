@@ -27,6 +27,11 @@ public class MezzmoServiceImpl {
         return bo.updatePlayCount(fileID, album, playCount, dateLastPlayed);
     }
 
+    public int synchronizePlayCount(String fileID, String album, int playCount) throws SQLException {
+        MezzmoBO bo = new MezzmoBO();
+        return bo.synchronizePlayCount(fileID, album, playCount);
+    }
+
     public List<MGOFileTO> findMP3Files(MGOFileAlbumCompositeTO compSearchTO){
         MezzmoBO bo = new MezzmoBO();
         return bo.findMP3Files(compSearchTO);

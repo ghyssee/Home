@@ -25,6 +25,9 @@ public class MezzmoBO extends BusinessObject {
         return getMezzmoDAO().updatePlayCount(fileID, album, playCount, dateLastPlayed);
     }
 
+    public int synchronizePlayCount(String fileID, String album, int playCount) throws SQLException {
+        return getMezzmoDAO().synchronizePlayCount(fileID, album, playCount);
+    }
     public List<MGOFileTO> findMP3Files(MGOFileAlbumCompositeTO compSearchTO){
         List<MGOFileTO> list = getMezzmoDAO().getFiles(compSearchTO);
         return list;

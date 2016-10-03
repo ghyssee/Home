@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -71,19 +72,38 @@ public class SynchronizeIPodPlayCount extends BatchJobV2{
 
     }
 
-    public void synchronize(String base, String filename){
+    public void synchronize(String base, String filename) {
 
         List <MGOFileAlbumCompositeTO> list = getIPodService().getListPlayCount();
         //getMezzmoService().updatePlayCount()
+        int errors = 0;
         for (MGOFileAlbumCompositeTO comp : list ){
             List record = new ArrayList();
             MGOFileTO fileTO = comp.getFileTO();
             MGOFileTO foundFileTO = getMezzmoService().findByTitleAndAlbum(comp);
             if (foundFileTO == null){
                 log.error("Following File Not Found In The Mezzmo DB: " + getFileTitle(comp));
+                errors++;
             }
             else {
+                int playCount = foundFileTO.getPlayCount() + fileTO.getPlayCount();
+                System.out.println("FileTitle: " + getFileTitle(comp));
+                System.out.println("Playcount: " + foundFileTO.getPlayCount() + " => " + playCount);
+                try {
+                    int count = getMezzmoService().updatePlayCount(getFileTitle(comp), comp.getFileAlbumTO().getName(), playCount, comp.getFileTO().getDateLastPlayed());
+                    if (count != 1){
+                        log.error("Problem updating file " + getFileTitle(comp) + " with playcount " + playCount);
+                        errors++;
+                        getMezzmoService().updatePlayCount(getFileTitle(comp), comp.getFileAlbumTO().getName(), playCount, comp.getFileTO().getDateLastPlayed());
+                    }
+                } catch (SQLException e) {
+                    log.error("Problem updating file " + getFileTitle(comp) + " with playcount " + playCount);
+                    errors++;
+                }
             }
+        }
+        if (errors > 0){
+            log.error("Number of errors found: " + errors);
         }
 
     }
