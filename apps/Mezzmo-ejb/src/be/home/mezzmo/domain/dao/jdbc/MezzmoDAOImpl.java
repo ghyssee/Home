@@ -524,6 +524,7 @@ public class MezzmoDAOImpl extends MezzmoDB {
                 fileTO = new MGOFileTO();
                 fileTO.setId(rs.getInt("FILEID"));
                 fileTO.setRanking(rs.getInt("RANKING"));
+                fileTO.setPlayCount(rs.getInt("PLAYCOUNT"));
                 counter++;
             }
             rs.close();

@@ -24,6 +24,10 @@ public class IPodBO extends BusinessObject {
         return getIPodDAO().listPlayCount();
     }
 
+    public int resetPlayCount(Long pid, int playCount) {
+        return getIPodDAO().updatePlayCount(pid, playCount);
+    }
+
     public IPodDAOImpl getIPodDAO(){
         return new IPodDAOImpl();
     }

@@ -1,5 +1,9 @@
 package be.home.common.dao.jdbc;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
 /**
  * Created by ghyssee on 25/04/2016.
  */
@@ -13,10 +17,15 @@ public class SQLiteUtils {
         return null;
     }
 
-    public static java.util.Date convertiPodToDate(Long f){
+    public static java.util.Date convertiPodDateToDate(Long f){
         if (f != null && f.longValue() != 0) {
-            java.util.Date date = new java.util.Date(f);
-            return date;
+            Date date = new Date(f*1000);
+            Calendar calendar = GregorianCalendar.getInstance();
+            calendar.setTime(date);
+            calendar.add(Calendar.YEAR, 31);
+            calendar.add(Calendar.HOUR, -23);
+
+            return calendar.getTime();
         }
         return null;
     }
@@ -39,7 +48,7 @@ public class SQLiteUtils {
     public static long convertDateToLong(java.util.Date date){
         if (date != null) {
             long longDate = date.getTime();
-            return longDate;
+            return longDate/1000;
         }
         return 0;
     }

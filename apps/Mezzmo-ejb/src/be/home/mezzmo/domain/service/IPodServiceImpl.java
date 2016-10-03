@@ -20,6 +20,11 @@ public class IPodServiceImpl {
         return bo.listPlayCount();
     }
 
+    public int resetPlayCount(Long pid, int playCount){
+        IPodBO bo = new IPodBO();
+        return bo.resetPlayCount(pid, playCount);
+    }
+
     public synchronized static IPodServiceImpl getInstance() {
         if(instance == null) {
             instance = new IPodServiceImpl();

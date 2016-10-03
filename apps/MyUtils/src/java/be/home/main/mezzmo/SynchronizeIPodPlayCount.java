@@ -18,10 +18,12 @@ import be.home.model.ConfigTO;
 import be.home.common.configuration.Setup;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -30,12 +32,13 @@ import java.util.*;
 public class SynchronizeIPodPlayCount extends BatchJobV2{
 
     public static IPodServiceImpl iPodService = null;
+    public static MezzmoServiceImpl mezzmoService = null;
 
     public static Log4GE log4GE;
     public static ConfigTO.Config config;
     private static final Logger log = Logger.getLogger(MezzmoPlaylists.class);
     public static final String MP3_PLAYLIST = "H:/Shared/Mijn Muziek/Eric/playlist";
-    public static final String[] FILE_HEADER_MAPPING = {"FileTitle", "PlayCount", "File", "DateLastPlayed", "Album"};
+    public static final String[] FILE_HEADER_MAPPING = {"FileTitle", "PlayCount", "File", "DateLastPlayed", "Album", "DateLastPlayedText"};
 
     public static void main(String args[]) {
 
@@ -62,15 +65,30 @@ public class SynchronizeIPodPlayCount extends BatchJobV2{
         log.info("OneDrive Path: " + base);
         base += "\\Muziek\\Export\\";
 
-        //export(base, "MezzmoDB.PlayCount.V12.csv");
-        Long f = 484936688L;
-        if (f != null && f.longValue() != 0) {
-            java.util.Date date = new java.util.Date(f);
-            System.out.println(date);
+        export(base, "iPodDB.PlayCount.csv");
+        synchronize(base, "iPodDB.PlayCount.csv");
 
+
+    }
+
+    public void synchronize(String base, String filename){
+
+        List <MGOFileAlbumCompositeTO> list = getIPodService().getListPlayCount();
+        //getMezzmoService().updatePlayCount()
+        for (MGOFileAlbumCompositeTO comp : list ){
+            List record = new ArrayList();
+            MGOFileTO fileTO = comp.getFileTO();
+            MGOFileTO foundFileTO = getMezzmoService().findByTitleAndAlbum(comp);
+            if (foundFileTO == null){
+                log.error("Following File Not Found In The Mezzmo DB: " + getFileTitle(comp));
+            }
+            else {
+            }
         }
 
     }
+
+
 
     public void export(String base, String filename){
 
@@ -107,17 +125,34 @@ public class SynchronizeIPodPlayCount extends BatchJobV2{
 
     }
 
+    private String formatTrack(MGOFileTO fileTO){
+        String track = String.format("%02d", fileTO.getTrack());
+        if (fileTO.getDisc() > 0){
+            track = String.format("%d", fileTO.getDisc());
+        }
+        return track;
+    }
+
+    private String getFileTitle(MGOFileAlbumCompositeTO comp){
+        String fileTitle = formatTrack(comp.getFileTO()) + " " + comp.getFileArtistTO().getArtist() + " - " +
+               comp.getFileTO().getTitle();
+        return fileTitle;
+
+    }
+
     public void writeToExportFile( List<MGOFileAlbumCompositeTO> list, CSVPrinter csvFilePrinter) throws IOException {
         //{"FileTitle", "PlayCount", "File", "DateLastPlayed", "Album"};
         for (MGOFileAlbumCompositeTO comp : list ){
             List record = new ArrayList();
             MGOFileTO fileTO = comp.getFileTO();
-            String fileTitle = fileTO.getTrack() + " " + comp.getFileArtistTO().getArtist() + " - " + fileTO.getTitle();
-            record.add(fileTitle);
+            record.add(getFileTitle(comp));
             record.add(comp.getFileTO().getPlayCount());
             record.add("");
             record.add(SQLiteUtils.convertDateToLong(comp.getFileTO().getDateLastPlayed()));
             record.add(comp.getFileAlbumTO().getName());
+            String pattern = "dd/MM/yyyy HH:mm:ss";
+            SimpleDateFormat format = new SimpleDateFormat(pattern);
+            record.add(format.format(comp.getFileTO().getDateLastPlayed()));
             csvFilePrinter.printRecord(record);
         }
 
@@ -131,5 +166,12 @@ public class SynchronizeIPodPlayCount extends BatchJobV2{
         return iPodService;
     }
 
+    public static MezzmoServiceImpl getMezzmoService(){
+
+        if (mezzmoService == null) {
+            return MezzmoServiceImpl.getInstance();
+        }
+        return mezzmoService;
+    }
 }
 
