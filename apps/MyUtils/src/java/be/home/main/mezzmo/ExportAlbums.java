@@ -73,14 +73,9 @@ public class ExportAlbums extends BatchJobV2{
         String pdfFileName = "C:/reports/ListOfAlbums.pdf";
         String htmlFile = "C:/reports/Albums.html";
         Map hm = new HashMap();
-        //hm.put("ID", "123");
-        //hm.put("DATENAME", "April 2006");
         List<MGOFileAlbumCompositeTO> list = getMezzmoService().getAlbums(new TransferObject());
-        //List<MGOFileAlbumCompositeTO> listTracks = getMezzmoService().getAlbumTracks(new TransferObject());
         log.info("Getting cover arts of the albums");
         for (MGOFileAlbumCompositeTO comp : list){
-            //comp.getFileAlbumTO().setCoverArt(Setup.getInstance().getFullPath(Constants.Path.RESOURCES) + "folder.jpg");
-            //comp.getFileAlbumTO().setCoverArt("C:/My Programs/OneDrive/Config/Java/Resources/folder.jpg");
             MGOFileTO fileTO = getMezzmoService().findCoverArt(comp.getFileAlbumTO().getId());
             comp.getFileAlbumTO().setCoverArt(getCoverArtFile(fileTO.getFile()));
             log.debug("Album: " + comp.getFileAlbumTO().getName());
@@ -105,7 +100,6 @@ public class ExportAlbums extends BatchJobV2{
         String path = file.getParentFile().getPath();
         File coverArt = new File(path + File.separator + "folder.jpg");
         if (!coverArt.exists()){
-            //coverArt = new File("C:/My Programs/OneDrive/Config/Java/Resources/folder.jpg");
             coverArt = new File(Setup.getInstance().getFullPath(Constants.Path.RESOURCES) + File.separator + "folder.jpg");
         }
         return coverArt.toString();

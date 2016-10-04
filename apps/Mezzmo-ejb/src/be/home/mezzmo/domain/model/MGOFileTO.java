@@ -7,7 +7,7 @@ import java.util.Date;
  */
 public class MGOFileTO {
 
-    private int id;
+    private Long id;
     private int typeUID;
     private String file;
     private String dateAdded;
@@ -71,11 +71,11 @@ public class MGOFileTO {
     private int contentRatingID;
     private String sortTitle;
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

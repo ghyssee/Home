@@ -7,6 +7,7 @@ import be.home.common.exceptions.MultipleOccurencesException;
 import be.home.common.model.TransferObject;
 import be.home.mezzmo.domain.model.*;
 import org.apache.log4j.Logger;
+import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -51,10 +52,6 @@ public class MezzmoDAOImpl extends MezzmoDB {
             " AND MGOFile.Title like ?" +
             " AND MGOFileAlbum.data like ?";
 
-    private static final String FILE_SELECT_TITLE_OLD = "SELECT " + getColumns(COLUMNS_FILE) + " FROM MGOFile " +
-            " WHERE 1=1" +
-            " AND MGOFile.FileTitle like ?"; //"'Ultratop 50 2015%'";
-
     private static final String FILE_SELECT_TITLE = "SELECT " + getColumns(COLUMNS) + " FROM MGOFileAlbumRelationship " +
             " INNER JOIN MGOFile ON (MGOFileAlbumRelationship.FileID = MGOFile.ID)" +
             " INNER JOIN MGOFileAlbum ON (MGOFileAlbum.ID = MGOFileAlbumRelationship.ID)" +
@@ -95,15 +92,7 @@ public class MezzmoDAOImpl extends MezzmoDB {
 
     private static final String FILE_SYNC_PLAYCOUNT = "UPDATE MGOFile " +
             " SET PlayCount = ? " +
-            " WHERE FileTitle = ? " +
-            " AND ID IN (" +
-            " SELECT FileID FROM MGOFileAlbumRelationship" +
-            " INNER JOIN MGOFile ON (MGOFileAlbumRelationship.FileID = MGOFile.ID)" +
-            " INNER JOIN MGOFileAlbum ON (MGOFileAlbum.ID = MGOFileAlbumRelationship.ID)" +
-            " WHERE 1=1" +
-            " AND MGOFileAlbum.data like ?" +
-            " AND MGOFile.FileTitle like ?" +
-            ")";
+            " WHERE ID = ?";
 
     private static final String LIST_ALBUMS = "SELECT DISTINCT MGOFileAlbum.data AS ALBUMNAME," +
                                 " MGOAlbumArtist.data AS ALBUMARTISTNAME," +
@@ -246,7 +235,7 @@ public class MezzmoDAOImpl extends MezzmoDB {
                 MGOFileAlbumCompositeTO fileAlbumComposite = new MGOFileAlbumCompositeTO();
                 MGOFileTO fileTO = fileAlbumComposite.getFileTO();
                 MGOFileAlbumTO fileAlbumTO = fileAlbumComposite.getFileAlbumTO();
-                fileTO.setId(rs.getInt("FILEID"));
+                fileTO.setId(rs.getLong("FILEID"));
                 fileTO.setFile(rs.getString("FILE"));
                 fileTO.setFileTitle(rs.getString("FILETITLE"));
                 fileTO.setPlayCount(rs.getInt("PLAYCOUNT"));
@@ -289,7 +278,7 @@ public class MezzmoDAOImpl extends MezzmoDB {
             ResultSet rs = stmt.executeQuery();
             while ( rs.next() ) {
                 MGOFileTO fileTO = new MGOFileTO();
-                fileTO.setId(rs.getInt("FILEID"));
+                fileTO.setId(rs.getLong("FILEID"));
                 fileTO.setFile(rs.getString("FILE"));
                 fileTO.setPlayCount(rs.getInt("PLAYCOUNT"));
                 fileTO.setRanking(rs.getInt("RANKING"));
@@ -306,6 +295,17 @@ public class MezzmoDAOImpl extends MezzmoDB {
     }
 
     public int updatePlayCount(String fileID, String album, int playCount, java.util.Date dateLastPlayed) throws SQLException {
+
+        Object[] params = {playCount, SQLiteUtils.convertDateToLong(dateLastPlayed), fileID, playCount,
+                           album == null ? "%" : album, fileID
+                          };
+        return getInstance().getJDBCTemplate().update(FILE_SYNC_PLAYCOUNT, params);
+
+
+    }
+
+    public int updatePlayCountOld(String fileID, String album, int playCount, java.util.Date dateLastPlayed) throws SQLException {
+
         //System.out.println("Get List of Mp3's for specific FileTitle");
         PreparedStatement stmt = null;
         List<MGOFileTO> list = new ArrayList<MGOFileTO>();
@@ -319,46 +319,6 @@ public class MezzmoDAOImpl extends MezzmoDB {
             int idx = 1;
             stmt.setInt(idx++, playCount);
             stmt.setLong(idx++, SQLiteUtils.convertDateToLong(dateLastPlayed));
-            stmt.setString(idx++, fileID);
-            stmt.setInt(idx++, playCount);
-            stmt.setString(idx++, album == null ? "%" : album);
-            stmt.setString(idx++, fileID);
-            //System.out.println(FILE_SELECT_TITLE);
-            rec =  stmt.executeUpdate();
-            c.commit();
-        }
-    catch (SQLException e ) {
-        System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-        if (c != null) {
-            try {
-                System.err.println("Transaction is being rolled back");
-                c.rollback();
-            } catch(SQLException excep) {
-                System.err.println( excep.getClass().getName() + ": " + excep.getMessage() );
-            }
-        }
-    } finally {
-        if (stmt != null) {
-            stmt.close();
-        }
-    }
-        return rec;
-        //System.out.println("Number of rows retrieved: " + list.size());
-    }
-
-    public int synchronizePlayCount(String fileID, String album, int playCount) throws SQLException {
-        //System.out.println("Get List of Mp3's for specific FileTitle");
-        PreparedStatement stmt = null;
-        List<MGOFileTO> list = new ArrayList<MGOFileTO>();
-        Connection c = null;
-        int rec = 0;
-        try {
-            c = getInstance().getConnection();
-
-            //stmt = c.createStatement();
-            stmt = c.prepareStatement(FILE_UPDATE_PLAYCOUNT);
-            int idx = 1;
-            stmt.setInt(idx++, playCount);
             stmt.setString(idx++, fileID);
             stmt.setInt(idx++, playCount);
             stmt.setString(idx++, album == null ? "%" : album);
@@ -386,19 +346,21 @@ public class MezzmoDAOImpl extends MezzmoDB {
         //System.out.println("Number of rows retrieved: " + list.size());
     }
 
+    public int synchronizePlayCount(Long fileID, int playCount) throws SQLException {
+        Object[] params = {playCount, fileID};
+        return getInstance().getJDBCTemplate().update(FILE_SYNC_PLAYCOUNT, params);
+    }
+
     public List<MGOFileAlbumCompositeTO> getMP3FilesWithPlayCount(TransferObject to)
     {
-        //System.out.println("Get List of Mp3's for specific FileTitle");
         PreparedStatement stmt = null;
         List<MGOFileAlbumCompositeTO> list = new ArrayList<MGOFileAlbumCompositeTO>();
         try {
             Connection c = getInstance().getConnection();
 
-            //stmt = c.createStatement();
             stmt = c.prepareStatement(FILE_PLAYCOUNT);
             stmt.setLong(1, to.getIndex());
             stmt.setLong(2, to.getLimit());
-            //System.out.println(FILE_SELECT_TITLE);
             ResultSet rs = stmt.executeQuery();
             while ( rs.next() ) {
                 MGOFileAlbumCompositeTO fileAlbumComposite = new MGOFileAlbumCompositeTO();
@@ -422,38 +384,29 @@ public class MezzmoDAOImpl extends MezzmoDB {
             to.setEndOfList(true);
         }
         to.addIndex(list.size());
-        //System.out.println("Number of rows retrieved: " + list.size());
         return list;
     }
 
     public List<MGOFileAlbumCompositeTO> getAlbums(TransferObject to)
     {
-        PreparedStatement stmt = null;
-        List<MGOFileAlbumCompositeTO> list = new ArrayList<MGOFileAlbumCompositeTO>();
-        try {
-            Connection c = getInstance().getConnection();
-
-            stmt = c.prepareStatement(LIST_ALBUMS);
-            ResultSet rs = stmt.executeQuery();
-            while ( rs.next() ) {
-                MGOFileAlbumCompositeTO fileAlbumComposite = new MGOFileAlbumCompositeTO();
-                MGOFileAlbumTO fileAlbumTO = fileAlbumComposite.getFileAlbumTO();
-                MGOAlbumArtistTO albumArtistTO = fileAlbumComposite.getAlbumArtistTO();
-                MGOFileTO fileTO = fileAlbumComposite.getFileTO();
-                fileTO.setYear(rs.getInt("YEAR"));
-                fileAlbumTO.setName(rs.getString("ALBUMNAME"));
-                fileAlbumTO.setId(rs.getInt("ALBUMID"));
-                albumArtistTO.setName(rs.getString("ALBUMARTISTNAME"));
-                list.add(fileAlbumComposite);
-            }
-            rs.close();
-            stmt.close();
-        } catch ( Exception e ) {
-            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-            System.exit(0);
-        }
+        List<MGOFileAlbumCompositeTO> list  = getInstance().getJDBCTemplate().query(LIST_ALBUMS, new AlbumRowMapper());
         return list;
     }
+
+    public class AlbumRowMapper implements RowMapper {
+        public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+            MGOFileAlbumCompositeTO fileAlbumComposite = new MGOFileAlbumCompositeTO();
+            MGOFileAlbumTO fileAlbumTO = fileAlbumComposite.getFileAlbumTO();
+            MGOAlbumArtistTO albumArtistTO = fileAlbumComposite.getAlbumArtistTO();
+            MGOFileTO fileTO = fileAlbumComposite.getFileTO();
+            fileTO.setYear(rs.getInt("YEAR"));
+            fileAlbumTO.setName(rs.getString("ALBUMNAME"));
+            fileAlbumTO.setId(rs.getInt("ALBUMID"));
+            albumArtistTO.setName(rs.getString("ALBUMARTISTNAME"));
+            return fileAlbumComposite;
+        }
+    }
+
 
     public List<MGOFileAlbumCompositeTO> getAlbumTracks(TransferObject to)
     {
@@ -499,7 +452,7 @@ public class MezzmoDAOImpl extends MezzmoDB {
             while ( rs.next() ) {
                 MGOFileAlbumCompositeTO fileAlbumComposite = new MGOFileAlbumCompositeTO();
                 MGOFileTO fileTO = fileAlbumComposite.getFileTO();
-                fileTO.setId(rs.getInt("FILE_ID"));
+                fileTO.setId(rs.getLong("FILE_ID"));
                 fileTO.setFileTitle(rs.getString("FILETITLE"));
                 fileTO.setFile(rs.getString("FILE"));
                 fileTO.setTitle(rs.getString("TITLE"));
@@ -538,7 +491,7 @@ public class MezzmoDAOImpl extends MezzmoDB {
                     break;
                 }
                 fileTO = new MGOFileTO();
-                fileTO.setId(rs.getInt("FILEID"));
+                fileTO.setId(rs.getLong("FILEID"));
                 counter++;
             }
             rs.close();
@@ -574,7 +527,7 @@ public class MezzmoDAOImpl extends MezzmoDB {
                     break;
                 }
                 fileTO = new MGOFileTO();
-                fileTO.setId(rs.getInt("FILEID"));
+                fileTO.setId(rs.getLong("FILEID"));
                 fileTO.setRanking(rs.getInt("RANKING"));
                 fileTO.setPlayCount(rs.getInt("PLAYCOUNT"));
                 fileTO.setDateLastPlayed(SQLiteUtils.convertToDate(rs.getLong("DATELASTPLAYED")));
@@ -655,7 +608,7 @@ public class MezzmoDAOImpl extends MezzmoDB {
             while ( rs.next() ) {
                 MGOFileAlbumCompositeTO fileAlbumComposite = new MGOFileAlbumCompositeTO();
                 MGOFileTO fileTO = fileAlbumComposite.getFileTO();
-                fileTO.setId(rs.getInt("FILE_ID"));
+                fileTO.setId(rs.getLong("FILE_ID"));
                 fileTO.setFileTitle(rs.getString("FILETITLE"));
                 fileTO.setFile(rs.getString("FILE"));
                 fileTO.setTitle(rs.getString("TITLE"));
@@ -679,7 +632,7 @@ public class MezzmoDAOImpl extends MezzmoDB {
         return list;
     }
 
-    public int updateRanking(int fileID, int ranking) throws SQLException {
+    public int updateRanking(Long fileID, int ranking) throws SQLException {
         //System.out.println("Get List of Mp3's for specific FileTitle");
         PreparedStatement stmt = null;
         List<MGOFileTO> list = new ArrayList<MGOFileTO>();

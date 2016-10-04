@@ -9,7 +9,10 @@ import be.home.common.model.DataBaseConfiguration;
 import be.home.common.utils.JSONUtils;
 import be.home.common.utils.WinUtils;
 import org.apache.log4j.Logger;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
+import javax.sql.DataSource;
 import java.io.*;
 import java.sql.*;
 import java.util.*;
@@ -19,12 +22,13 @@ public class SQLiteJDBC
     public static DataBaseConfiguration config = null;
     public static Map <String, DataBaseConfiguration.DataBase> dbMap = new HashMap <String, DataBaseConfiguration.DataBase>();
     protected Connection c = null;
+    protected JdbcTemplate jdbcTemplate = null;
     private static final Logger log = Logger.getLogger(SQLiteJDBC.class);
 
     protected SQLiteJDBC() {
     }
 
-    public void openDatabase(String db){
+    public void openDatabase(String db)  {
 
         DataBaseConfiguration.DataBase database = getDatabase(db);
         if (database == null){
@@ -37,6 +41,8 @@ public class SQLiteJDBC
         }
         log.info("DB: " + file.getAbsolutePath());
 
+        /*
+
         try {
             Class.forName("org.sqlite.JDBC");
             c = DriverManager.getConnection("jdbc:sqlite:" + file.getAbsolutePath());
@@ -46,12 +52,32 @@ public class SQLiteJDBC
         } catch ( Exception e ) {
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
             System.exit(0);
-        }
+        }*/
+
+        /* Spring */
+        SingleConnectionDataSource dataSource = jdbcDataSource();
+        dataSource.setUrl("jdbc:sqlite:" + file.getAbsolutePath());
+        jdbcTemplate = new JdbcTemplate(dataSource);
+        linkDatabase(database, jdbcTemplate);
+
         log.info("Initializing done");
     }
 
-    public Connection getConnection(){
-        return c;
+    public SingleConnectionDataSource jdbcDataSource() {
+        SingleConnectionDataSource ds = new SingleConnectionDataSource();
+        ds.setDriverClassName("org.sqlite.JDBC");
+        ds.setUrl("jdbc:sqlite:stats.db");
+        return ds;
+    }
+
+    public Connection getConnection() throws SQLException {
+
+        Connection con= jdbcTemplate.getDataSource().getConnection();
+        return con;
+    }
+
+    public JdbcTemplate getJDBCTemplate(){
+        return jdbcTemplate;
     }
 
     public void commit() throws SQLException {
@@ -60,7 +86,14 @@ public class SQLiteJDBC
         }
     }
 
-    public void linkDatabase (DataBaseConfiguration.DataBase db, Connection c) throws SQLException {
+    public void linkDatabase (DataBaseConfiguration.DataBase db, JdbcTemplate jdbcTemplate)  {
+        if (db.linkDB != null && db.linkDB.name != null) {
+            Object[] params = {db.path + db.linkDB.name, db.linkDB.alias};
+            jdbcTemplate.update("ATTACH database ? AS ?", params);
+        }
+    }
+
+    public void linkDatabaseOld (DataBaseConfiguration.DataBase db, Connection c) throws SQLException {
         if (db.linkDB != null && db.linkDB.name != null) {
             PreparedStatement stmt = c.prepareStatement("ATTACH database ? AS ?");
             boolean autoCommit = c.getAutoCommit();

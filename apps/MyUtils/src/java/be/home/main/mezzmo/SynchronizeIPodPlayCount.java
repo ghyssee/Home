@@ -75,10 +75,11 @@ public class SynchronizeIPodPlayCount extends BatchJobV2{
     public void synchronize(String base, String filename) {
 
         List <MGOFileAlbumCompositeTO> list = getIPodService().getListPlayCount();
-        //getMezzmoService().updatePlayCount()
         int errors = 0;
+        if (list == null || list.size() == 0){
+            log.warn("Nothing To Synchronize!!!");
+        }
         for (MGOFileAlbumCompositeTO comp : list ){
-            List record = new ArrayList();
             MGOFileTO fileTO = comp.getFileTO();
             MGOFileTO foundFileTO = getMezzmoService().findByTitleAndAlbum(comp);
             if (foundFileTO == null){
@@ -90,11 +91,16 @@ public class SynchronizeIPodPlayCount extends BatchJobV2{
                 System.out.println("FileTitle: " + getFileTitle(comp));
                 System.out.println("Playcount: " + foundFileTO.getPlayCount() + " => " + playCount);
                 try {
-                    int count = getMezzmoService().updatePlayCount(getFileTitle(comp), comp.getFileAlbumTO().getName(), playCount, comp.getFileTO().getDateLastPlayed());
+                    int count = getMezzmoService().synchronizePlayCount(foundFileTO.getId(), playCount);
                     if (count != 1){
                         log.error("Problem updating file " + getFileTitle(comp) + " with playcount " + playCount);
                         errors++;
-                        getMezzmoService().updatePlayCount(getFileTitle(comp), comp.getFileAlbumTO().getName(), playCount, comp.getFileTO().getDateLastPlayed());
+                    }
+                    else {
+                        count = getIPodService().resetPlayCount(new Long(comp.getFileTO().getId()), 0);
+                        if (count != 1){
+                            log.error("Problem resetting playcount for DB iPod And File " + getFileTitle(comp) + " with playcount " + playCount);
+                        }
                     }
                 } catch (SQLException e) {
                     log.error("Problem updating file " + getFileTitle(comp) + " with playcount " + playCount);

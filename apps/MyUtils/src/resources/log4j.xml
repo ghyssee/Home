@@ -56,7 +56,10 @@
     <!-- Print only messages of level warn or above in the package com.foo -->
     <level value="warn"/> 
   </logger>
-  <root> 
+ <logger name="org.springframework">
+    <level value="warn"/> 
+  </logger>
+ <root> 
     <priority value ="debug" /> 
         <appender-ref ref="stderr" />
         <appender-ref ref="stdout" />

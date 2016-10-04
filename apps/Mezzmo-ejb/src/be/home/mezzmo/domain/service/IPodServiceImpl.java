@@ -1,7 +1,6 @@
 package be.home.mezzmo.domain.service;
 
 import be.home.mezzmo.domain.bo.IPodBO;
-import be.home.mezzmo.domain.dao.jdbc.IPodDAOImpl;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 
 import java.util.List;
