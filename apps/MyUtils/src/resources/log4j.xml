@@ -59,6 +59,9 @@
  <logger name="org.springframework">
     <level value="warn"/> 
   </logger>
+ <logger name="net.sf.jasperreports">
+    <level value="warn"/> 
+  </logger>
  <root> 
     <priority value ="debug" /> 
         <appender-ref ref="stderr" />
