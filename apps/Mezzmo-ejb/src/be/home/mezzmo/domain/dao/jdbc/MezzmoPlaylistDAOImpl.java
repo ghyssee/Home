@@ -4,6 +4,7 @@ import be.home.common.dao.jdbc.MezzmoDB;
 import be.home.common.dao.jdbc.SQLiteUtils;
 import be.home.common.exceptions.MultipleOccurencesException;
 import be.home.mezzmo.domain.model.*;
+import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -23,6 +24,7 @@ public class MezzmoPlaylistDAOImpl extends MezzmoDB {
                                                 "INNER JOIN MGOPlaylist AS PL2 ON (PL2.ID = PL.ParentID) " +
                                                 "WHERE PL.Name LIKE ? " +
                                                 "AND PL.Type = ?";
+
     private static final String[] COLUMNS = {"Name", "Type", "Description", "ParentID",
             "Author", "Icon", "File", "TraverseFolder",
             "FolderPath", "Filter", "DynamicTreeToken", "RunTime",
@@ -58,7 +60,25 @@ public class MezzmoPlaylistDAOImpl extends MezzmoDB {
         }
     }
 
-    public List<MGOPlaylistTO> findPlaylist(MGOPlaylistTO playlist){
+    public class PlayListRowMapper implements RowMapper
+    {
+        public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+            MGOPlaylistTO playlistTO = new MGOPlaylistTO();
+            playlistTO.setID(getInteger(rs, "ID"));
+            playlistTO.setName(rs.getString("NAME"));
+            playlistTO.setParentID(getInteger(rs, "PARENTID"));
+            playlistTO.setParentName(rs.getString("PARENTNAME"));
+            return playlistTO;
+        }
+
+    }
+
+    public List<MGOPlaylistTO> findPlaylist(MGOPlaylistTO playlist) {
+        Object[] params = {playlist.getName(), playlist.getType()};
+        List<MGOPlaylistTO> list = getInstance().getJDBCTemplate().query(FIND_PLAYLIST, new PlayListRowMapper(), params);
+        return list;
+
+ /*
         PreparedStatement stmt = null;
         List<MGOPlaylistTO> list = new ArrayList <MGOPlaylistTO> ();
         try {
@@ -82,10 +102,40 @@ public class MezzmoPlaylistDAOImpl extends MezzmoDB {
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
             System.exit(0);
         }
-        return list;
+        return list;*/
     }
 
     public int insertPlaylist(MGOPlaylistTO playlist) {
+        Object[] params = {playlist.getName(),
+                playlist.getType(),
+                playlist.getDescription(),
+                playlist.getParentID(),
+                playlist.getAuthor(),
+                playlist.getIcon(),
+                playlist.getFile(),
+                playlist.getTraverseFolder(),
+                playlist.getFolderPath(),
+                playlist.getFilter(),
+                playlist.getDynamicTreeToken(),
+                playlist.getRunTime(),
+                playlist.getStreamNum(),
+                playlist.getOrderByColumn(),
+                playlist.getOrderByDirection(),
+                playlist.getLimitBy(),
+                playlist.getCombineAnd(),
+                playlist.getLimitType(),
+                playlist.getPlaylistOrder(),
+                playlist.getMediaType(),
+                playlist.getThumbnailID(),
+                playlist.getThumbnailAuthor(),
+                playlist.getContentRatingID(),
+                playlist.getBackdropArtworkID(),
+                playlist.getDisplayTitleFormat()
+                };
+        return getInstance().getJDBCTemplate().update(INSERT_PLAYLIST, params);
+    }
+
+    public int insertPlaylistOld(MGOPlaylistTO playlist) {
         //System.out.println("Get List of Mp3's for specific FileTitle");
         PreparedStatement stmt = null;
         List<MGOFileTO> list = new ArrayList<MGOFileTO>();
@@ -193,38 +243,7 @@ public class MezzmoPlaylistDAOImpl extends MezzmoDB {
     }
 
     public int cleanUpPlaylistSQL(Integer playlistId) {
-        PreparedStatement stmt = null;
-        Connection c = null;
-        int rec = 0;
-        try {
-            c = getInstance().getConnection();
-
-            //stmt = c.createStatement();
-            stmt = c.prepareStatement(CLEANUP_PLAYLIST_SQL);
-            int idx = 1;
-
-            setInteger(stmt, idx++, playlistId);
-            rec = stmt.executeUpdate();
-            c.commit();
-        } catch (SQLException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            if (c != null) {
-                try {
-                    System.err.println("Transaction is being rolled back");
-                    c.rollback();
-                } catch (SQLException excep) {
-                    System.err.println(excep.getClass().getName() + ": " + excep.getMessage());
-                }
-            }
-        } finally {
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException excep) {
-                    System.err.println(excep.getClass().getName() + ": " + excep.getMessage());
-                }
-            }
-            return rec;
-        }
+        Object[] params = {playlistId};
+        return getInstance().getJDBCTemplate().update(CLEANUP_PLAYLIST_SQL, params);
     }
 }
