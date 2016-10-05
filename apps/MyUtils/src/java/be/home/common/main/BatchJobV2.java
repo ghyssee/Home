@@ -20,11 +20,11 @@ public abstract class BatchJobV2 {
 
     private static final Logger log = setLogFile();
     public static String workingDir = System.getProperty("user.dir");
-    // private String paramIniFile = workingDir + "/config/config.json";
 
     private static Logger setLogFile(){
         String logFile = Setup.getInstance().getFullPath(Constants.Path.LOG) + File.separator + "MyUtlis.log";
         System.setProperty("logfile.name", logFile);
+        System.setProperty("p6spy.config.logfile", Setup.getInstance().getFullPath(Constants.Path.LOG) + File.separator + "P6Spy.log");
         // disable logging of jaudiotagger API
         java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.OFF);
         Logger log = Logger.getLogger(BatchJobV2.class);
@@ -35,7 +35,6 @@ public abstract class BatchJobV2 {
     public Map <String,String> validateParams(String[] args, ParamTO paramArray []) {
         Map <String,String> params = initParams(args, paramArray);
             if (paramArray != null){
-                //printParameterList(requiredParams);
                 for (int i = 0; i < paramArray.length; i++) {
                     if (paramArray[i].isRequired()) {
                         String value = params.get(paramArray[i].getId().toUpperCase());
@@ -92,7 +91,6 @@ public abstract class BatchJobV2 {
                     log.info(logMessage);
                 }
             }
-            //System.out.println(requiredParams[i].getDescription());
         }
         log.info(StringUtils.repeat("=", maxLength + lengthRequired + maxLengthDescription));
         System.exit(1);
@@ -128,50 +126,7 @@ public abstract class BatchJobV2 {
         return params;
     }
 
-    private Map <String,String> initParamsOld(String args[], ParamTO requiredParams []){
-
-        Map <String,String> params = new HashMap ();
-        String key = null;
-        String value = null;
-
-        if (args != null){
-            for (int i=0; i < args.length; i++){
-                if ((i%2) == 0){
-
-                }
-                String cmds[] = args[i].split(" -");
-                System.out.println(" args length : " + args.length);
-                if (cmds == null){
-                    printParameterList("Invalid argument : " + args[i] + "\n" + "Key And Value should be seperated by a SPACE", requiredParams);
-                }
-                else {
-                    for (int j=0; j < cmds.length; j++){
-                        String param[] = cmds[j].split("=");
-                        System.out.println(" args[i] = " +  args[i]);
-                        System.out.println(" cmds[j] = " +  cmds[j]);
-                        if (param == null || param.length != 2){
-                            printParameterList("Invalid argument : " + args[i] + "\n" + "Key And Value should be seperated by a SPACE", requiredParams);
-                        }
-                        else {
-                            params.put(param[0].toUpperCase(), param[1]);
-                        }
-                    }
-                }
-            }
-        }
-        return params;
-    }
-
-    public void invalidParam() {
-        throw new IllegalArgumentException(
-                "Missing argument(s) ; correct usage is : "
-                        + "-DiniFile=<location of ini file>"
-                        + "-Dbatch=<batchtype>");
-
-    }
-
-    public ConfigTO.Config init() throws FileNotFoundException, UnsupportedEncodingException, IOException {
-        //Setup.getInstance().init();
+    public ConfigTO.Config init() throws IOException {
         String paramIniFile = Setup.getInstance().getFullPath(Constants.Path.CONFIG) + File.separator + "config.json";
         File iniFile = new File(paramIniFile);
         if (!iniFile.exists()){

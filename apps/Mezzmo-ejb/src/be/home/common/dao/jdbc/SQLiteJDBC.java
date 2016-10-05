@@ -12,7 +12,6 @@ import org.apache.log4j.Logger;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
-import javax.sql.DataSource;
 import java.io.*;
 import java.sql.*;
 import java.util.*;
@@ -56,7 +55,7 @@ public class SQLiteJDBC
 
         /* Spring */
         SingleConnectionDataSource dataSource = jdbcDataSource();
-        dataSource.setUrl("jdbc:sqlite:" + file.getAbsolutePath());
+        dataSource.setUrl("jdbc:p6spy:sqlite:" + file.getAbsolutePath());
         jdbcTemplate = new JdbcTemplate(dataSource);
         linkDatabase(database, jdbcTemplate);
 
@@ -65,8 +64,8 @@ public class SQLiteJDBC
 
     public SingleConnectionDataSource jdbcDataSource() {
         SingleConnectionDataSource ds = new SingleConnectionDataSource();
-        ds.setDriverClassName("org.sqlite.JDBC");
-        ds.setUrl("jdbc:sqlite:stats.db");
+        //ds.setDriverClassName("org.sqlite.JDBC");
+        ds.setDriverClassName("com.p6spy.engine.spy.P6SpyDriver");
         return ds;
     }
 

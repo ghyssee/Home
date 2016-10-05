@@ -587,11 +587,9 @@ public class MezzmoDAOImpl extends MezzmoDB {
         try {
             Connection c = getInstance().getConnection();
 
-            //stmt.
             String query = LIST_CUSTOM;
             String orClause = "(MGOFileAlbum.data like ? AND MGOFile.ranking > ? AND MGOAlbumArtist.data like ? AND MGOFile.playcount < 2) ";
             query = QueryBuilder.buildOrCondition(query, orClause, albums);
-            log.debug("Custom Playlist Query: " + query);
             stmt = c.prepareStatement(query);
             int index = 1;
             for (MGOFileAlbumCompositeTO album : albums){

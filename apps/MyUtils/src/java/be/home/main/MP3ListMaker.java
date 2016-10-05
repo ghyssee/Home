@@ -19,7 +19,6 @@ public class MP3ListMaker extends BatchJobV2 {
     public static ConfigTO.Config config;
     private static String LIST_TITLE = "List 2016 V2.txt";
     private static String BASE_DIR = "r:/My Music/iPod";
-    //private static String BASE_DIR = "g:/My Music/ultratop";
     private static String DESTINATION_DIR = WinUtils.getOneDrivePath() + File.separator+ "Muziek/Lists/";
     private static String FILTER = "Ultratop 50 2016";
 
@@ -28,8 +27,6 @@ public class MP3ListMaker extends BatchJobV2 {
         MP3ListMaker instance = new MP3ListMaker();
         try {
             config = instance.init();
-            System.out.println(config.toString());
-            System.out.println(config.log4J);
             instance.start();
 
         } catch (Exception e) {
@@ -53,11 +50,9 @@ public class MP3ListMaker extends BatchJobV2 {
         File destinationFile = new File(DESTINATION_DIR + LIST_TITLE);
         PrintWriter writer = null;
         try {
-            //writer = new PrintWriter(destinationFile);
             writer= new PrintWriter(new OutputStreamWriter(new FileOutputStream(destinationFile),
                     StandardCharsets.UTF_8), true);
             File folder = new File(BASE_DIR);
-            //BufferedWriter writer = new BufferedWriter(new PrintWriter(destinationFile));
             if (folder.isDirectory()) {
                 File[] listOfFiles = folder.listFiles();
                 Arrays.sort(listOfFiles);
