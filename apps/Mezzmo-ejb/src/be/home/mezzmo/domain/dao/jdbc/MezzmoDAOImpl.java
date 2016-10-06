@@ -274,88 +274,27 @@ public class MezzmoDAOImpl extends MezzmoDB {
 
     public List<MGOFileAlbumCompositeTO> getCustomPlayListSongs(List <MGOFileAlbumCompositeTO> albums, int limit)
     {
-        PreparedStatement stmt = null;
-        Statement st = null;
-        List<MGOFileAlbumCompositeTO> list = new ArrayList<MGOFileAlbumCompositeTO>();
-        try {
-            Connection c = getInstance().getConnection();
+        String query = LIST_CUSTOM;
+        String orClause = "(MGOFileAlbum.data like ? AND MGOFile.ranking > ? AND MGOAlbumArtist.data like ? AND MGOFile.playcount < 2) ";
+        query = QueryBuilder.buildOrCondition(query, orClause, albums);
 
-            String query = LIST_CUSTOM;
-            String orClause = "(MGOFileAlbum.data like ? AND MGOFile.ranking > ? AND MGOAlbumArtist.data like ? AND MGOFile.playcount < 2) ";
-            query = QueryBuilder.buildOrCondition(query, orClause, albums);
-            stmt = c.prepareStatement(query);
-            int index = 1;
-            for (MGOFileAlbumCompositeTO album : albums){
-                stmt.setString(index++, album.getFileAlbumTO().getName());
-                stmt.setLong(index++, 0);
-                String albumArtist = album.getAlbumArtistTO().getName();
-                if (albumArtist != null){
-                    System.out.println("albumArtist " + albumArtist);
-                }
-                stmt.setString(index++, albumArtist == null ? "%" : albumArtist);
-            }
-            stmt.setInt(index++, limit);
-            ResultSet rs = stmt.executeQuery();
-            while ( rs.next() ) {
-                MGOFileAlbumCompositeTO fileAlbumComposite = new MGOFileAlbumCompositeTO();
-                MGOFileTO fileTO = fileAlbumComposite.getFileTO();
-                fileTO.setId(rs.getLong("FILE_ID"));
-                fileTO.setFileTitle(rs.getString("FILETITLE"));
-                fileTO.setFile(rs.getString("FILE"));
-                fileTO.setTitle(rs.getString("TITLE"));
-                fileTO.setPlayCount(rs.getInt("PLAYCOUNT"));
-                fileTO.setDuration(rs.getInt("DURATION"));
-
-                MGOFileArtistTO fileArtistTO = fileAlbumComposite.getFileArtistTO();
-                fileArtistTO.setArtist(rs.getString("ARTIST"));
-
-                MGOFileAlbumTO fileAlbum = fileAlbumComposite.getFileAlbumTO();
-                fileAlbum.setName(rs.getString("ALBUM"));
-
-                list.add(fileAlbumComposite);
-            }
-            rs.close();
-            stmt.close();
-        } catch ( Exception e ) {
-            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-            System.exit(0);
+        List params = new ArrayList();
+        for (MGOFileAlbumCompositeTO album : albums){
+            params.add(album.getFileAlbumTO().getName());
+            params.add(0L);
+            String albumArtist = album.getAlbumArtistTO().getName();
+            params.add(albumArtist == null ? "%" : albumArtist);
         }
+        params.add(limit);
+
+        List<MGOFileAlbumCompositeTO>  list = getInstance().getJDBCTemplate().query(query, new MezzmoRowMappers.CustomAlbumRowMapper(), params.toArray());
         return list;
+
     }
 
     public int updateRanking(Long fileID, int ranking) throws SQLException {
-        //System.out.println("Get List of Mp3's for specific FileTitle");
-        PreparedStatement stmt = null;
-        List<MGOFileTO> list = new ArrayList<MGOFileTO>();
-        Connection c = null;
-        int rec = 0;
-        try {
-            c = getInstance().getConnection();
-
-            //stmt = c.createStatement();
-            stmt = c.prepareStatement(FILE_UPDATE_RATING);
-            int idx = 1;
-            stmt.setInt(idx++, ranking);
-            stmt.setLong(idx++, fileID);
-            rec =  stmt.executeUpdate();
-            c.commit();
-        }
-        catch (SQLException e ) {
-            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-            if (c != null) {
-                try {
-                    System.err.println("Transaction is being rolled back");
-                    c.rollback();
-                } catch(SQLException excep) {
-                    System.err.println( excep.getClass().getName() + ": " + excep.getMessage() );
-                }
-            }
-        } finally {
-            if (stmt != null) {
-                stmt.close();
-            }
-        }
-        return rec;
+        Object[] params = {ranking, fileID};
+        return getInstance().getJDBCTemplate().update(FILE_UPDATE_RATING, params);
     }
 
 
