@@ -1,5 +1,6 @@
 package be.home.mezzmo.domain.dao.jdbc;
 
+import be.home.common.dao.jdbc.SQLiteUtils;
 import be.home.mezzmo.domain.model.*;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -17,6 +18,23 @@ public class MezzmoRowMappers {
             fileTO.setFile(rs.getString("FILE"));
             fileTO.setPlayCount(rs.getInt("PLAYCOUNT"));
             fileTO.setRanking(rs.getInt("RANKING"));
+            fileTO.setDateLastPlayed(SQLiteUtils.convertToDate(rs.getLong("DATELASTPLAYED")));
+            return fileTO;
+        }
+    }
+
+    public static class FileIdRowMapper implements RowMapper {
+        public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+            MGOFileTO fileTO = new MGOFileTO();
+            fileTO.setId(rs.getLong("FILEID"));
+            return fileTO;
+        }
+    }
+
+    public static class FileNameRowMapper implements RowMapper {
+        public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+            MGOFileTO fileTO = new MGOFileTO();
+            fileTO.setFile(rs.getString("FILE"));
             return fileTO;
         }
     }
@@ -68,5 +86,20 @@ public class MezzmoRowMappers {
             playlistTO.setID(rs.getInt("PLAYLIST_ID"));
             return fileAlbumComposite;
         }
+    }
+
+        public static class FileAlbumPlayCountMapper implements RowMapper {
+            public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+                MGOFileAlbumCompositeTO fileAlbumComposite = new MGOFileAlbumCompositeTO();
+                MGOFileTO fileTO = fileAlbumComposite.getFileTO();
+                MGOFileAlbumTO fileAlbumTO = fileAlbumComposite.getFileAlbumTO();
+                fileTO.setFileTitle(rs.getString("FILETITLE"));
+                fileTO.setPlayCount(rs.getInt("PLAYCOUNT"));
+                fileTO.setFile(rs.getString("FILE"));
+                Long f= rs.getLong("DATELASTPLAYED");
+                fileTO.setDateLastPlayed(SQLiteUtils.convertToDate(f));
+                fileAlbumTO.setName(rs.getString("ALBUMNAME"));
+                return fileAlbumComposite;
+            }
     }
 }

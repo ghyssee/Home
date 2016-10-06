@@ -218,48 +218,6 @@ public class MezzmoDAOImpl extends MezzmoDB {
 
     }
 
-    public int updatePlayCountOld(String fileID, String album, int playCount, java.util.Date dateLastPlayed) throws SQLException {
-
-        //System.out.println("Get List of Mp3's for specific FileTitle");
-        PreparedStatement stmt = null;
-        List<MGOFileTO> list = new ArrayList<MGOFileTO>();
-        Connection c = null;
-        int rec = 0;
-        try {
-            c = getInstance().getConnection();
-
-            //stmt = c.createStatement();
-            stmt = c.prepareStatement(FILE_UPDATE_PLAYCOUNT);
-            int idx = 1;
-            stmt.setInt(idx++, playCount);
-            stmt.setLong(idx++, SQLiteUtils.convertDateToLong(dateLastPlayed));
-            stmt.setString(idx++, fileID);
-            stmt.setInt(idx++, playCount);
-            stmt.setString(idx++, album == null ? "%" : album);
-            stmt.setString(idx++, fileID);
-            //System.out.println(FILE_SELECT_TITLE);
-            rec =  stmt.executeUpdate();
-            c.commit();
-        }
-        catch (SQLException e ) {
-            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-            if (c != null) {
-                try {
-                    System.err.println("Transaction is being rolled back");
-                    c.rollback();
-                } catch(SQLException excep) {
-                    System.err.println( excep.getClass().getName() + ": " + excep.getMessage() );
-                }
-            }
-        } finally {
-            if (stmt != null) {
-                stmt.close();
-            }
-        }
-        return rec;
-        //System.out.println("Number of rows retrieved: " + list.size());
-    }
-
     public int synchronizePlayCount(Long fileID, int playCount) throws SQLException {
         Object[] params = {playCount, fileID};
         return getInstance().getJDBCTemplate().update(FILE_SYNC_PLAYCOUNT, params);
@@ -267,33 +225,8 @@ public class MezzmoDAOImpl extends MezzmoDB {
 
     public List<MGOFileAlbumCompositeTO> getMP3FilesWithPlayCount(TransferObject to)
     {
-        PreparedStatement stmt = null;
-        List<MGOFileAlbumCompositeTO> list = new ArrayList<MGOFileAlbumCompositeTO>();
-        try {
-            Connection c = getInstance().getConnection();
-
-            stmt = c.prepareStatement(FILE_PLAYCOUNT);
-            stmt.setLong(1, to.getIndex());
-            stmt.setLong(2, to.getLimit());
-            ResultSet rs = stmt.executeQuery();
-            while ( rs.next() ) {
-                MGOFileAlbumCompositeTO fileAlbumComposite = new MGOFileAlbumCompositeTO();
-                MGOFileTO fileTO = fileAlbumComposite.getFileTO();
-                MGOFileAlbumTO fileAlbumTO = fileAlbumComposite.getFileAlbumTO();
-                fileTO.setFileTitle(rs.getString("FILETITLE"));
-                fileTO.setPlayCount(rs.getInt("PLAYCOUNT"));
-                fileTO.setFile(rs.getString("FILE"));
-                Long f= rs.getLong("DATELASTPLAYED");
-                fileTO.setDateLastPlayed(SQLiteUtils.convertToDate(f));
-                fileAlbumTO.setName(rs.getString("ALBUMNAME"));
-                list.add(fileAlbumComposite);
-            }
-            rs.close();
-            stmt.close();
-        } catch ( Exception e ) {
-            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-            System.exit(0);
-        }
+        Object[] params = {to.getIndex(), to.getLimit()};
+        List<MGOFileAlbumCompositeTO> list  = getInstance().getJDBCTemplate().query(FILE_PLAYCOUNT, new MezzmoRowMappers.FileAlbumPlayCountMapper(), params);
         if (list.size() == 0 || list.size() < to.getLimit()){
             to.setEndOfList(true);
         }
@@ -321,109 +254,21 @@ public class MezzmoDAOImpl extends MezzmoDB {
 
     }
 
-    public MGOFileTO findByFile(String file){
-        MGOFileTO fileTO = null;
-        PreparedStatement stmt = null;
-        boolean error = false;
-        try {
-            Connection c = getInstance().getConnection();
-
-            //stmt = c.createStatement();
-            stmt = c.prepareStatement(FIND_BY_FILE);
-            stmt.setString(1, file);
-            ResultSet rs = stmt.executeQuery();
-            int counter = 0;
-            while ( rs.next() ) {
-                if (counter > 0){
-                    error = true;
-                    break;
-                }
-                fileTO = new MGOFileTO();
-                fileTO.setId(rs.getLong("FILEID"));
-                counter++;
-            }
-            rs.close();
-            stmt.close();
-        } catch ( Exception e ) {
-            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-            System.exit(0);
-        }
-        if (error){
-            throw new MultipleOccurencesException("FILE: " + file);
-        }
+    public MGOFileTO findByFile(String file) {
+        Object[] params = {file};
+        MGOFileTO fileTO = (MGOFileTO) getInstance().getJDBCTemplate().queryForObject(FIND_BY_FILE, new MezzmoRowMappers.FileIdRowMapper(), params);
         return fileTO;
     }
 
     public MGOFileTO findByTitleAndAlbum(MGOFileAlbumCompositeTO comp){
-        MGOFileTO fileTO = null;
-        PreparedStatement stmt = null;
-        boolean error = false;
-        try {
-            Connection c = getInstance().getConnection();
-
-            stmt = c.prepareStatement(FILE_FIND_TAGINFO);
-            int index = 1;
-            stmt.setLong(index++, comp.getFileTO().getTrack());
-            stmt.setString(index++, comp.getFileArtistTO().getArtist());
-            stmt.setString(index++, comp.getFileTO().getTitle());
-            stmt.setString(index++, comp.getFileAlbumTO().getName());
-            ResultSet rs = stmt.executeQuery();
-            int counter = 0;
-            while ( rs.next() ) {
-                if (counter > 0){
-                    error = true;
-                    break;
-                }
-                fileTO = new MGOFileTO();
-                fileTO.setId(rs.getLong("FILEID"));
-                fileTO.setRanking(rs.getInt("RANKING"));
-                fileTO.setPlayCount(rs.getInt("PLAYCOUNT"));
-                fileTO.setDateLastPlayed(SQLiteUtils.convertToDate(rs.getLong("DATELASTPLAYED")));
-                counter++;
-            }
-            rs.close();
-            stmt.close();
-        } catch ( Exception e ) {
-            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-            System.exit(0);
-        }
-        if (error){
-            throw new MultipleOccurencesException("FILE: " + comp.getFileTO().getTrack() + "/" +
-                    comp.getFileArtistTO().getArtist() + "/" + comp.getFileTO().getTitle());
-        }
+        Object[] params = {comp.getFileTO().getTrack(), comp.getFileArtistTO().getArtist(), comp.getFileTO().getTitle(), comp.getFileAlbumTO().getName() };
+        MGOFileTO fileTO = (MGOFileTO) getInstance().getJDBCTemplate().queryForObject(FILE_FIND_TAGINFO, new MezzmoRowMappers.FileRowMapper(), params);
         return fileTO;
     }
 
     public MGOFileTO findCoverArt(int albumId){
-        MGOFileTO fileTO = null;
-        PreparedStatement stmt = null;
-        boolean error = false;
-        try {
-            Connection c = getInstance().getConnection();
-
-            //stmt = c.createStatement();
-            stmt = c.prepareStatement(FIND_COVER_ART);
-            stmt.setInt(1, albumId);
-            ResultSet rs = stmt.executeQuery();
-            int counter = 0;
-            while ( rs.next() ) {
-                if (counter > 0){
-                    error = true;
-                    break;
-                }
-                fileTO = new MGOFileTO();
-                fileTO.setFile(rs.getString("FILE"));
-                counter++;
-            }
-            rs.close();
-            stmt.close();
-        } catch ( Exception e ) {
-            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-            System.exit(0);
-        }
-        if (error){
-            throw new MultipleOccurencesException("AlbumId: " + albumId);
-        }
+        Object[] params = {albumId };
+        MGOFileTO fileTO = (MGOFileTO) getInstance().getJDBCTemplate().queryForObject(FIND_COVER_ART, new MezzmoRowMappers.FileNameRowMapper(), params);
         return fileTO;
     }
 
