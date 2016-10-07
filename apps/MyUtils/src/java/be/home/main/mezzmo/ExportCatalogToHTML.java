@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.tools.generic.EscapeTool;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -70,6 +71,8 @@ public class ExportCatalogToHTML extends BatchJobV2{
 
         List<MGOFileAlbumCompositeTO> list = getMezzmoService().getAlbumTracks(new TransferObject());
         for (MGOFileAlbumCompositeTO comp : list){
+            String firstChar = comp.getFileAlbumTO().getName().substring(0,1);
+            /*
             List<MGOFileAlbumCompositeTO> songs = getMezzmoService().getSongsAlbum(new Long(comp.getFileAlbumTO().getId()));
             System.out.println("ALBUM:" + comp.getFileAlbumTO().getName());
             if (songs != null && songs.size() > 0) {
@@ -80,28 +83,30 @@ public class ExportCatalogToHTML extends BatchJobV2{
             else {
                 System.err.println("Problem finding this album");
             }
+            */
+        }
+        String outputFile = "c:/reports/a.html";
+        try {
+            export(list, outputFile);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-    public void export(List list, String outputFile) throws IOException {
+    public void export(List<MGOFileAlbumCompositeTO> list, String outputFile) throws IOException {
         Properties p = new Properties();
         p.setProperty("file.resource.loader.path", Setup.getInstance().getFullPath(Constants.Path.VELOCITY));
-
-        String filename = config.mezzmo.base + File.separator + config.mezzmo.playlist.path;
-        Path outputFolder = Paths.get(filename);
-        if (Files.notExists(outputFolder)){
-            outputFolder = Paths.get(Setup.getInstance().getFullPath(Constants.Path.PLAYLIST));
-        }
-        log.info("PlayList folder: " + outputFolder.toString());
 
         VelocityEngine ve = new VelocityEngine();
         ve.init(p);
         /*  next, get the Template  */
-        Template t = ve.getTemplate( "Top20.vm" );
+        Template t = ve.getTemplate( "music/Album.htm" );
         /*  create a context and add data */
         VelocityContext context = new VelocityContext();
         context.put("list", list);
-        Path file = Paths.get( outputFolder + File.separator + outputFile);
+        context.put("esc", new EscapeTool());
+        //Path file = Paths.get( outputFolder + File.separator + outputFile);
+        Path file = Paths.get(outputFile);
         BufferedWriter writer = null;
         try {
             writer = Files.newBufferedWriter(file, Charset.defaultCharset());
