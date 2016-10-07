@@ -114,10 +114,32 @@ public class MezzmoRowMappers {
                 fileTO.setFileTitle(rs.getString("FILETITLE"));
                 fileTO.setPlayCount(rs.getInt("PLAYCOUNT"));
                 fileTO.setFile(rs.getString("FILE"));
-                Long f= rs.getLong("DATELASTPLAYED");
+                Long f = rs.getLong("DATELASTPLAYED");
                 fileTO.setDateLastPlayed(SQLiteUtils.convertToDate(f));
                 fileAlbumTO.setName(rs.getString("ALBUMNAME"));
                 return fileAlbumComposite;
             }
-    }
+        }
+
+        public static class SongsAlbumRowMapper implements RowMapper {
+            public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+                MGOFileAlbumCompositeTO fileAlbumComposite = new MGOFileAlbumCompositeTO();
+                MGOFileAlbumTO fileAlbumTO = fileAlbumComposite.getFileAlbumTO();
+                MGOAlbumArtistTO albumArtistTO = fileAlbumComposite.getAlbumArtistTO();
+                MGOFileArtistTO artistTO = fileAlbumComposite.getFileArtistTO();
+                MGOFileTO fileTO = fileAlbumComposite.getFileTO();
+                fileTO.setId(rs.getLong("FILEID"));
+                fileTO.setFile(rs.getString("FILE"));
+                fileTO.setPlayCount(rs.getInt("PLAYCOUNT"));
+                fileTO.setTitle(rs.getString("TITLE"));
+                artistTO.setArtist(rs.getString("ARTIST"));
+                fileTO.setDuration(rs.getInt("DURATION"));
+                fileTO.setDisc(rs.getInt("DISC"));
+                fileTO.setTrack(rs.getInt("TRACK"));
+                fileTO.setRanking(rs.getInt("RANKING"));
+                Long f= rs.getLong("DATELASTPLAYED");
+                fileTO.setDateLastPlayed(SQLiteUtils.convertToDate(f));
+                return fileAlbumComposite;
+            }
+        }
 }

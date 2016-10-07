@@ -32,6 +32,13 @@ public class MezzmoDAOImpl extends MezzmoDB {
     private static final String COLUMNS_ALBUMS[] = {"MGOFile.ID as FILEID", "MGOFile.File as FILE",
             "MGOFile.PlayCount as PLAYCOUNT", "MGOFile.Ranking as RANKING"};
 
+    private static final String COLUMNS_MP3[] = {"MGOFile.ID as FILEID", "MGOFile.File as FILE",
+            "MGOFile.Title as TITLE",
+            "MGOFile.PlayCount as PLAYCOUNT", "MGOFile.Ranking as RANKING",
+            "MGOFileArtist.DATA as ARTIST", "MGOFile.Duration as DURATION",
+            "MGOFile.disc as DISC",
+            "MGOFile.Track as TRACK", "MGOFile.Ranking as RANKING",
+            "MGOFile.DateLastPlayed as DATELASTPLAYED"};
 
     private static final String FILEALBUM_SELECT = "SELECT " + getColumns(COLUMNS) + " FROM MGOFileAlbumRelationship " +
             " INNER JOIN MGOFile ON (MGOFileAlbumRelationship.FileID = MGOFile.ID)" +
@@ -182,6 +189,17 @@ public class MezzmoDAOImpl extends MezzmoDB {
             " SET Ranking = ? " +
             " WHERE ID = ?";
 
+    private static final String FIND_SONGS_ALBUM = "SELECT " + getColumns(COLUMNS_MP3) +
+            " FROM MGOFile " +
+            "INNER JOIN MGOFileExtension ON (MGOFileExtension.ID = MGOFILE.extensionID) " +
+            "INNER JOIN MGOFileArtist ON (MGOFileArtist.ID = MGOFileArtistRelationship.ID) " +
+            "INNER JOIN MGOFileArtistRelationship ON (MGOFileArtistRelationship.FileID = MGOFILE.ID) " +
+            "INNER JOIN MGOFileAlbumRelationship ON (MGOFileAlbumRelationship.FileID = MGOFILE.ID) " +
+            "INNER JOIN MGOFileAlbum ON (MGOFileAlbum.ID = MGOFileAlbumRelationship.ID) " +
+            "WHERE  MGOFileAlbum.id = ? " +
+            "AND MGOFileExtension.data = 'mp3' " +
+            "ORDER BY MGOFile.disc, MGOFile.track";
+
     private static final Logger log = Logger.getLogger(MezzmoDAOImpl.class);
 
 
@@ -288,6 +306,16 @@ public class MezzmoDAOImpl extends MezzmoDB {
         params.add(limit);
 
         List<MGOFileAlbumCompositeTO>  list = getInstance().getJDBCTemplate().query(query, new MezzmoRowMappers.CustomAlbumRowMapper(), params.toArray());
+        return list;
+
+    }
+
+    public List<MGOFileAlbumCompositeTO> getSongsAlbum(Long albumId)
+    {
+        String query = FIND_SONGS_ALBUM;
+        Object[] params = {albumId};
+
+        List<MGOFileAlbumCompositeTO>  list = getInstance().getJDBCTemplate().query(query, new MezzmoRowMappers.SongsAlbumRowMapper(), params);
         return list;
 
     }

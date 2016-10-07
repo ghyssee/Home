@@ -117,6 +117,11 @@ public class MezzmoServiceImpl {
         return bo.findByTitleAndAlbum(comp);
     }
 
+    public List<MGOFileAlbumCompositeTO> getSongsAlbum(Long albumId) {
+        MezzmoBO bo = new MezzmoBO();
+        return bo.getSongsAlbum(albumId);
+    }
+
     public synchronized static MezzmoServiceImpl getInstance() {
         if(instance == null) {
             instance = new MezzmoServiceImpl();

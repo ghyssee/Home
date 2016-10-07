@@ -88,6 +88,10 @@ public class MezzmoBO extends BusinessObject {
         return getMezzmoDAO().updateRanking(fileID, ranking);
     }
 
+    public List<MGOFileAlbumCompositeTO> getSongsAlbum(Long albumId) {
+        return getMezzmoDAO().getSongsAlbum(albumId);
+    }
+
     public MezzmoDAOImpl getMezzmoDAO(){
         return new MezzmoDAOImpl();
     }
