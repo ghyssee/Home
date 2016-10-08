@@ -133,8 +133,7 @@ public class MezzmoDAOImpl extends MezzmoDB {
             " WHERE 1=1" +
             " AND MGOFileExtension.data = 'mp3'" +
             " GROUP BY ALBUMNAME, ALBUMARTISTNAME, ALBUMID" +
-            " ORDER BY MGOFileAlbum.data" +
-            " LIMIT 0,1000";
+            " ORDER BY MGOFileAlbum.data";
 
     private static final String LIST_TOP20 = "SELECT FileTitle AS FILETITLE, PlayCount AS PLAYCOUNT, Title AS TITLE, FA.DATA AS ARTIST, PLL.ID AS PLAYLIST_ID, MGoFile.ID AS FILE_ID, MGOFile.File AS FILE, MGOFile.duration AS DURATION" +
                                              " FROM MGOPlaylist_To_File AS PLF" +

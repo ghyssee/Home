@@ -1,11 +1,12 @@
 package be.home.common.utils;
 
+import java.time.LocalTime;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.Calendar;
 
-public class DateUtils {
+public class DateUtils  {
 
 	public static final String YYYYMMDD = "yyyyMMdd";
 	private static final Locale CURRENT_LOCALE = new Locale("nl", "BE");
@@ -40,4 +41,14 @@ public class DateUtils {
 
 	}
 
+	public String convertSecToMin (Object t) {
+		Integer i = (Integer) t;
+        int nSecondTime = i.intValue();
+        if (nSecondTime < 3600){
+			return LocalTime.MIN.plusMinutes(nSecondTime).toString();
+		}
+		else {
+			return LocalTime.MIN.plusSeconds(nSecondTime).toString();
+		}
+	}
 }
