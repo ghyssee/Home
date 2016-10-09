@@ -5,11 +5,12 @@ package be.home.mezzmo.domain.model;
  */
 public class MGOFileAlbumCompositeTO {
 
-    MGOFileTO fileTO;
-    MGOFileAlbumTO fileAlbumTO;
-    MGOAlbumArtistTO albumArtistTO;
-    MGOPlaylistTO playlistTO;
-    MGOFileArtistTO fileArtistTO;
+    private MGOFileTO fileTO;
+    private MGOFileAlbumTO fileAlbumTO;
+    private MGOAlbumArtistTO albumArtistTO;
+    private MGOPlaylistTO playlistTO;
+    private MGOFileArtistTO fileArtistTO;
+    private String filename = null;
 
     public MGOFileAlbumCompositeTO() {
         fileTO = new MGOFileTO();
@@ -58,5 +59,13 @@ public class MGOFileAlbumCompositeTO {
 
     public void setFileArtistTO(MGOFileArtistTO fileArtistTO) {
         this.fileArtistTO = fileArtistTO;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
 }

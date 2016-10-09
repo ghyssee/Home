@@ -60,11 +60,13 @@ public class MezzmoRowMappers {
             MGOAlbumArtistTO albumArtistTO = fileAlbumComposite.getAlbumArtistTO();
             MGOFileArtistTO artistTO = fileAlbumComposite.getFileArtistTO();
             MGOFileTO fileTO = fileAlbumComposite.getFileTO();
-            fileTO.setTrack(rs.getInt("TRACK"));
-            fileTO.setTitle(rs.getString("TITLE"));
-            artistTO.setArtist(rs.getString("ARTIST"));
+            fileTO.setYear(rs.getInt("YEAR"));
+            //fileTO.setTrack(rs.getInt("TRACK"));
+            //fileTO.setTitle(rs.getString("TITLE"));
+            //artistTO.setArtist(rs.getString("ARTIST"));
             fileAlbumTO.setName(rs.getString("ALBUMNAME"));
             fileAlbumTO.setId(rs.getInt("ALBUMID"));
+            albumArtistTO.setId(rs.getInt("ALBUMARTISTID"));
             albumArtistTO.setName(rs.getString("ALBUMARTISTNAME"));
             return fileAlbumComposite;
         }

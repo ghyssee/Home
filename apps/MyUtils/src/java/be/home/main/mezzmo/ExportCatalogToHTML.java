@@ -100,30 +100,18 @@ public class ExportCatalogToHTML extends BatchJobV2{
             if (!found){
                 others.add(comp);
             }
-            list = null;
-            /*
-            List<MGOFileAlbumCompositeTO> songs = getMezzmoService().getSongsAlbum(new Long(comp.getFileAlbumTO().getId()));
-            System.out.println("ALBUM:" + comp.getFileAlbumTO().getName());
-            if (songs != null && songs.size() > 0) {
-                for (MGOFileAlbumCompositeTO song : songs) {
-                    System.out.println(song.getFileTO().getDisc() + "" + song.getFileTO().getTrack() + " " + song.getFileArtistTO().getArtist() + " - " + song.getFileTO().getTitle());
-                }
-            }
-            else {
-                System.err.println("Problem finding this album");
-            }
-            */
         }
         int idx = 1;
         for (HTMLSettings.Group group : htmlSettings.export.groups){
             log.info("Processing group " + group.from + "-" + group.to);
             String filename = "c:/reports/Music/Albums/" + group.from + "_" + group.to + ".html";
             try {
-                //export(group.list, filename);
                 for (MGOFileAlbumCompositeTO comp : group.list){
+                    comp.setFilename("s" + idx + ".html");
                     processAlbumSongs(comp, idx);
                     idx++;
                 }
+                export(group.list, filename);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -132,12 +120,13 @@ public class ExportCatalogToHTML extends BatchJobV2{
 
 
     public void processAlbumSongs(MGOFileAlbumCompositeTO comp, int idx) throws IOException {
-        List<MGOFileAlbumCompositeTO> songs = getMezzmoService().getSongsAlbum(new Long(comp.getFileAlbumTO().getId()));
+        List<MGOFileAlbumCompositeTO> songs = getMezzmoService().getSongsAlbum(new Long(comp.getFileAlbumTO().getId()),
+                                                                               new Long(comp.getAlbumArtistTO().getId()));
         System.out.println("ALBUM:" + comp.getFileAlbumTO().getName());
         if (songs != null && songs.size() > 0) {
-            String filename = "c:/reports/Music/Songs/s" + idx + ".html";
+            String filename = "c:/reports/Music/Songs/" + comp.getFilename();
             try {
-                exportAlbumSongs(songs, filename);
+                exportAlbumSongs(comp, songs, filename);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -148,7 +137,7 @@ public class ExportCatalogToHTML extends BatchJobV2{
 
     }
 
-    public void export(List<MGOFileAlbumCompositeTO> list, String outputFile) throws Exception {
+    public void export(List<MGOFileAlbumCompositeTO> list, String outputFile) throws IOException {
         Properties p = new Properties();
         p.setProperty("file.resource.loader.path", Setup.getInstance().getFullPath(Constants.Path.VELOCITY));
 
@@ -158,17 +147,13 @@ public class ExportCatalogToHTML extends BatchJobV2{
         Template t = ve.getTemplate( "music/Album.htm" );
         /*  create a context and add data */
         VelocityContext context = new VelocityContext();
-        context.put("esc",new DateUtils());
+        context.put("esc",new EscapeTool());
         context.put("list", list);
-        //context.put("du", new DateUtils());
-        //Path file = Paths.get( outputFolder + File.separator + outputFile);
         Path file = Paths.get(outputFile);
         BufferedWriter writer = null;
         try {
             writer = Files.newBufferedWriter(file, Charset.defaultCharset());
             t.merge(context, writer);
-        } catch (IOException e) {
-            e.printStackTrace();
         } finally {
             if (writer != null){
                 writer.flush();
@@ -178,7 +163,7 @@ public class ExportCatalogToHTML extends BatchJobV2{
         }
     }
 
-    public void exportAlbumSongs(List<MGOFileAlbumCompositeTO> list, String outputFile) throws Exception {
+    public void exportAlbumSongs(MGOFileAlbumCompositeTO comp, List<MGOFileAlbumCompositeTO> list, String outputFile) throws Exception {
         Properties p = new Properties();
         p.setProperty("file.resource.loader.path", Setup.getInstance().getFullPath(Constants.Path.VELOCITY));
 
@@ -188,10 +173,11 @@ public class ExportCatalogToHTML extends BatchJobV2{
         Template t = ve.getTemplate( "music/Song.htm" );
         /*  create a context and add data */
         VelocityContext context = new VelocityContext();
+
+        context.put("album", comp);
         context.put("list", list);
         context.put("esc", new EscapeTool());
         context.put("du", new DateUtils());
-        //Path file = Paths.get( outputFolder + File.separator + outputFile);
         Path file = Paths.get(outputFile);
         BufferedWriter writer = null;
         try {
