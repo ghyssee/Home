@@ -204,6 +204,19 @@ public class MezzmoDAOImpl extends MezzmoDB {
             "AND MGOFileExtension.data = 'mp3' " +
             "ORDER BY MGOFile.disc, MGOFile.track";
 
+    private static final String FIND_LAST_PLAYED = "SELECT " + getColumns(COLUMNS_MP3) +
+            " FROM MGOFile " +
+            "INNER JOIN MGOFileExtension ON (MGOFileExtension.ID = MGOFILE.extensionID) " +
+            "INNER JOIN MGOFileArtist ON (MGOFileArtist.ID = MGOFileArtistRelationship.ID) " +
+            "INNER JOIN MGOFileArtistRelationship ON (MGOFileArtistRelationship.FileID = MGOFILE.ID) " +
+            "INNER JOIN MGOFileAlbumRelationship ON (MGOFileAlbumRelationship.FileID = MGOFILE.ID) " +
+            "INNER JOIN MGOFileAlbum ON (MGOFileAlbum.ID = MGOFileAlbumRelationship.ID) " +
+            "INNER JOIN MGOAlbumArtistRelationship ON (MGOAlbumArtistRelationship.fileID = MGOFileAlbumRelationship.fileID) " +
+            "INNER JOIN MGOAlbumArtist ON (MGOAlbumArtist.ID = MGOAlbumArtistRelationship.ID) " +
+            "WHERE MGOFileExtension.data = 'mp3' " +
+            "ORDER BY mgofile.datelastplayed DESC " +
+            "LIMIT 0,100 ";
+
     private static final Logger log = Logger.getLogger(MezzmoDAOImpl.class);
 
 
@@ -320,6 +333,14 @@ public class MezzmoDAOImpl extends MezzmoDB {
         Object[] params = {albumId, albumArtistId};
 
         List<MGOFileAlbumCompositeTO>  list = getInstance().getJDBCTemplate().query(query, new MezzmoRowMappers.SongsAlbumRowMapper(), params);
+        return list;
+
+    }
+
+    public List<MGOFileAlbumCompositeTO> getLastPlayed()
+    {
+        String query = FIND_LAST_PLAYED;
+        List<MGOFileAlbumCompositeTO>  list = getInstance().getJDBCTemplate().query(query, new MezzmoRowMappers.SongsAlbumRowMapper());
         return list;
 
     }

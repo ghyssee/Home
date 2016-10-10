@@ -122,6 +122,11 @@ public class MezzmoServiceImpl {
         return bo.getSongsAlbum(albumId, albumArtistId);
     }
 
+    public List<MGOFileAlbumCompositeTO> getLastPlayed() {
+        MezzmoBO bo = new MezzmoBO();
+        return bo.getLastPlayed();
+    }
+
     public synchronized static MezzmoServiceImpl getInstance() {
         if(instance == null) {
             instance = new MezzmoServiceImpl();

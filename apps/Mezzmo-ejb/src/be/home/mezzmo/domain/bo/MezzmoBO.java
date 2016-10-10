@@ -92,6 +92,10 @@ public class MezzmoBO extends BusinessObject {
         return getMezzmoDAO().getSongsAlbum(albumId, albumArtistId);
     }
 
+    public List<MGOFileAlbumCompositeTO> getLastPlayed() {
+        return getMezzmoDAO().getLastPlayed();
+    }
+
     public MezzmoDAOImpl getMezzmoDAO(){
         return new MezzmoDAOImpl();
     }
