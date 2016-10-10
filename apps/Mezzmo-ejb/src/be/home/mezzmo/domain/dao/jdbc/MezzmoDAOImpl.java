@@ -38,6 +38,7 @@ public class MezzmoDAOImpl extends MezzmoDB {
             "MGOFileArtist.DATA as ARTIST", "MGOFile.Duration as DURATION",
             "MGOFile.disc as DISC",
             "MGOFile.Track as TRACK", "MGOFile.Ranking as RANKING",
+            "MGOFileAlbum.ID as ALBUMID", "MGOFileAlbum.Data as ALBUMNAME",
             "MGOFile.DateLastPlayed as DATELASTPLAYED"};
 
     private static final String FILEALBUM_SELECT = "SELECT " + getColumns(COLUMNS) + " FROM MGOFileAlbumRelationship " +

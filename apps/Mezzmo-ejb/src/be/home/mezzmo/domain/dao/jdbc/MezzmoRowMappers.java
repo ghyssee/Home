@@ -127,6 +127,8 @@ public class MezzmoRowMappers {
             public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
                 MGOFileAlbumCompositeTO fileAlbumComposite = new MGOFileAlbumCompositeTO();
                 MGOFileAlbumTO fileAlbumTO = fileAlbumComposite.getFileAlbumTO();
+                fileAlbumTO.setName(rs.getString("ALBUMNAME"));
+                fileAlbumTO.setId(rs.getInt("ALBUMID"));
                 MGOAlbumArtistTO albumArtistTO = fileAlbumComposite.getAlbumArtistTO();
                 MGOFileArtistTO artistTO = fileAlbumComposite.getFileArtistTO();
                 MGOFileTO fileTO = fileAlbumComposite.getFileTO();
