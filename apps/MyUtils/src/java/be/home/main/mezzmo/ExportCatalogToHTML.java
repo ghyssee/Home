@@ -104,29 +104,35 @@ public class ExportCatalogToHTML extends BatchJobV2{
         int idx = 1;
         for (HTMLSettings.Group group : htmlSettings.export.groups){
             log.info("Processing group " + group.from + "-" + group.to);
-            String filename = "c:/reports/Music/Albums/" + group.from + "_" + group.to + ".html";
+            group.setFilename("Albums/" + group.from + "_" + group.to + ".html");
             try {
                 for (MGOFileAlbumCompositeTO comp : group.list){
                     comp.setFilename("s" + idx + ".html");
-                    processAlbumSongs(comp, idx);
+                    processAlbumSongs(comp);
                     idx++;
                 }
-                export(group.list, filename);
+                export(group.list, group.getFilename());
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+        String filename = "c:/reports/Music/index.html";
+        try {
+            exportIndex(htmlSettings.export.groups, filename);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
-    public void processAlbumSongs(MGOFileAlbumCompositeTO comp, int idx) throws IOException {
+    public void processAlbumSongs(MGOFileAlbumCompositeTO comp) throws IOException {
         List<MGOFileAlbumCompositeTO> songs = getMezzmoService().getSongsAlbum(new Long(comp.getFileAlbumTO().getId()),
                                                                                new Long(comp.getAlbumArtistTO().getId()));
         System.out.println("ALBUM:" + comp.getFileAlbumTO().getName());
         if (songs != null && songs.size() > 0) {
-            String filename = "c:/reports/Music/Songs/" + comp.getFilename();
+            String file = "c:/reports/Music/Songs/" + comp.getFilename();
             try {
-                exportAlbumSongs(comp, songs, filename);
+                exportAlbumSongs(comp, songs, file);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -135,6 +141,36 @@ public class ExportCatalogToHTML extends BatchJobV2{
             System.err.println("Problem finding this album");
         }
 
+    }
+
+    public void exportIndex(List<HTMLSettings.Group> list, String outputFile) throws IOException {
+        for (HTMLSettings.Group group : list){
+            System.out.println(group.from);
+        }
+
+        Properties p = new Properties();
+        p.setProperty("file.resource.loader.path", Setup.getInstance().getFullPath(Constants.Path.VELOCITY));
+
+        VelocityEngine ve = new VelocityEngine();
+        ve.init(p);
+        /*  next, get the Template  */
+        Template t = ve.getTemplate( "music/Index.htm" );
+        /*  create a context and add data */
+        VelocityContext context = new VelocityContext();
+        context.put("esc",new EscapeTool());
+        context.put("list", list);
+        Path file = Paths.get(outputFile);
+        BufferedWriter writer = null;
+        try {
+            writer = Files.newBufferedWriter(file, Charset.defaultCharset());
+            t.merge(context, writer);
+        } finally {
+            if (writer != null){
+                writer.flush();
+                writer.close();
+                log.info("Index created: " + file.toString());
+            }
+        }
     }
 
     public void export(List<MGOFileAlbumCompositeTO> list, String outputFile) throws IOException {
@@ -149,7 +185,7 @@ public class ExportCatalogToHTML extends BatchJobV2{
         VelocityContext context = new VelocityContext();
         context.put("esc",new EscapeTool());
         context.put("list", list);
-        Path file = Paths.get(outputFile);
+        Path file = Paths.get("c:/reports/Music/" + outputFile);
         BufferedWriter writer = null;
         try {
             writer = Files.newBufferedWriter(file, Charset.defaultCharset());
