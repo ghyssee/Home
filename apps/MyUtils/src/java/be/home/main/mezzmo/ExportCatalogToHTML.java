@@ -99,7 +99,7 @@ public class ExportCatalogToHTML extends BatchJobV2{
         int idx = 1;
         for (HTMLSettings.Group group : htmlSettings.export.groups){
             log.info("Processing group " + group.from + "-" + group.to);
-            group.setFilename(group.from + "_" + group.to + ".html");
+            group.setFilename("Albums/" + group.from + "_" + group.to + ".html");
             try {
                 for (MGOFileAlbumCompositeTO comp : group.list){
                     comp.setFilename("s" + idx + ".html");
@@ -177,8 +177,7 @@ public class ExportCatalogToHTML extends BatchJobV2{
         VelocityContext context = new VelocityContext();
         context.put("esc",new EscapeTool());
         context.put("list", list);
-        context.put("page", outputFile);
-        Path file = Paths.get("c:/reports/Music/Albums/" + outputFile);
+        Path file = Paths.get("c:/reports/Music/" + outputFile);
         BufferedWriter writer = null;
         try {
             writer = Files.newBufferedWriter(file, Charset.defaultCharset());
