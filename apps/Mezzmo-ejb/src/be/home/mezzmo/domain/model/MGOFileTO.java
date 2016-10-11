@@ -16,7 +16,7 @@ public class MGOFileTO {
     private String title;
     private int extensionID;
     private int resolved;
-    private int  artistID;
+    private int artistID;
     private int albumID;
     private int genreID;
     private int year;

@@ -3,8 +3,6 @@ package be.home.main.mezzmo;
 import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
 import be.home.common.dao.jdbc.SQLiteJDBC;
-import be.home.common.dao.jdbc.SQLiteUtils;
-import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 import be.home.common.model.TransferObject;
 import be.home.common.utils.DateUtils;
@@ -14,23 +12,20 @@ import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.model.ConfigTO;
 import be.home.model.HTMLSettings;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.tools.generic.DateTool;
 import org.apache.velocity.tools.generic.EscapeTool;
 
 import java.io.*;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -104,7 +99,7 @@ public class ExportCatalogToHTML extends BatchJobV2{
         int idx = 1;
         for (HTMLSettings.Group group : htmlSettings.export.groups){
             log.info("Processing group " + group.from + "-" + group.to);
-            group.setFilename("Albums/" + group.from + "_" + group.to + ".html");
+            group.setFilename(group.from + "_" + group.to + ".html");
             try {
                 for (MGOFileAlbumCompositeTO comp : group.list){
                     comp.setFilename("s" + idx + ".html");
@@ -144,9 +139,6 @@ public class ExportCatalogToHTML extends BatchJobV2{
     }
 
     public void exportIndex(List<HTMLSettings.Group> list, String outputFile) throws IOException {
-        for (HTMLSettings.Group group : list){
-            System.out.println(group.from);
-        }
 
         Properties p = new Properties();
         p.setProperty("file.resource.loader.path", Setup.getInstance().getFullPath(Constants.Path.VELOCITY));
@@ -185,7 +177,8 @@ public class ExportCatalogToHTML extends BatchJobV2{
         VelocityContext context = new VelocityContext();
         context.put("esc",new EscapeTool());
         context.put("list", list);
-        Path file = Paths.get("c:/reports/Music/" + outputFile);
+        context.put("page", outputFile);
+        Path file = Paths.get("c:/reports/Music/Albums/" + outputFile);
         BufferedWriter writer = null;
         try {
             writer = Files.newBufferedWriter(file, Charset.defaultCharset());
@@ -212,8 +205,10 @@ public class ExportCatalogToHTML extends BatchJobV2{
 
         context.put("album", comp);
         context.put("list", list);
+        context.put("date",new DateTool());
         context.put("esc", new EscapeTool());
         context.put("du", new DateUtils());
+        context.put("su", new StringUtils());
         Path file = Paths.get(outputFile);
         BufferedWriter writer = null;
         try {

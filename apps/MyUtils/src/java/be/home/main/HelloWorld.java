@@ -1,5 +1,6 @@
 package be.home.main;
 
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.io.OutputFormat;
@@ -24,8 +25,8 @@ public class HelloWorld {
     public static void main(String args[]) throws SAXException, DocumentException, IOException, IllegalAccessException, NoSuchFieldException, ParserConfigurationException {
 
 
-
-        test();
+        StringUtils su = new StringUtils();
+        System.out.println("TEST: " + su.repeat("ab", 0) + "TEST");
 
     }
 
