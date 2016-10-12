@@ -180,7 +180,7 @@ public class MP3Processor extends BatchJobV2 {
             if (StringUtils.isBlank(track.cd)){
                 tag.deleteField(FieldKey.DISC_NO);
             }
-            else {
+            else if (album.total > 1) {
                 tag.setField(FieldKey.DISC_NO, track.cd);
             }
             tag.deleteField(FieldKey.COVER_ART);
@@ -228,7 +228,12 @@ public class MP3Processor extends BatchJobV2 {
         id3v2Tag.setArtist(track.artist);
         id3v2Tag.setTitle(track.title);
         id3v2Tag.clearAlbumImage();
-        id3v2Tag.setPartOfSet(track.cd);
+        if (album.total > 1) {
+            id3v2Tag.setPartOfSet(track.cd);
+        }
+        else {
+            id3v2Tag.clearFrameSet(AbstractID3v2Tag.ID_PART_OF_SET);
+        }
 
         mp3file.setId3v2Tag(id3v2Tag);
         File originalFile = new File(fileName);
