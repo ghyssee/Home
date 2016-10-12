@@ -12,6 +12,8 @@ public class MGOFileAlbumCompositeTO {
     private MGOFileArtistTO fileArtistTO;
     private String filename = null;
 
+    private boolean currentlyPlaying = false;
+
     public MGOFileAlbumCompositeTO() {
         fileTO = new MGOFileTO();
         fileAlbumTO = new MGOFileAlbumTO();
@@ -68,4 +70,14 @@ public class MGOFileAlbumCompositeTO {
     public void setFilename(String filename) {
         this.filename = filename;
     }
+
+    public boolean isCurrentlyPlaying() {
+        return currentlyPlaying;
+    }
+
+    public void setCurrentlyPlaying(boolean currentlyPlaying) {
+        this.currentlyPlaying = currentlyPlaying;
+    }
+
+
 }

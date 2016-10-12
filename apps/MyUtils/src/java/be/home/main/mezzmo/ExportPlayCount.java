@@ -112,7 +112,7 @@ public class ExportPlayCount extends BatchJobV2{
             record.add(comp.getFileTO().getFileTitle());
             record.add(comp.getFileTO().getPlayCount());
             record.add(comp.getFileTO().getFile());
-            record.add(SQLiteUtils.convertDateToLong(comp.getFileTO().getDateLastPlayed()));
+            record.add(SQLiteUtils.convertDateToString(comp.getFileTO().getDateLastPlayed()));
             record.add(comp.getFileAlbumTO().getName());
             csvFilePrinter.printRecord(record);
         }

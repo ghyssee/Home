@@ -2,13 +2,17 @@ package be.home.main.mezzmo;
 
 import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
+import be.home.common.dao.jdbc.MezzmoDB;
 import be.home.common.dao.jdbc.SQLiteJDBC;
+import be.home.common.dao.jdbc.SQLiteUtils;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.DateUtils;
+import be.home.common.utils.JSONUtils;
 import be.home.common.utils.WinUtils;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.model.ConfigTO;
+import be.home.model.MP3Settings;
 import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -36,13 +40,22 @@ public class LastPlayedSongs extends BatchJobV2{
     public static ConfigTO.Config config;
     private static final Logger log = Logger.getLogger(ExportCatalogToHTML.class);
 
-    public static void main(String args[]) {
+    public static void main(String args[]) throws InterruptedException {
 
         LastPlayedSongs instance = new LastPlayedSongs();
+        final String MP3_SETTINGS = Setup.getInstance().getFullPath(Constants.Path.CONFIG) + File.separator +
+                "MP3Settings.json";
+        MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSON(MP3_SETTINGS, MP3Settings.class, "UTF-8");
+
         try {
             config = instance.init();
             SQLiteJDBC.initialize(workingDir);
-            instance.run();
+            do {
+                instance.run();
+                long sleep = mp3Settings.lastPlayedSleep*1000;
+                Thread.sleep(sleep);
+            }
+            while (true);
         }
         catch (FileNotFoundException e){
             e.printStackTrace();
@@ -58,7 +71,6 @@ public class LastPlayedSongs extends BatchJobV2{
 
         String base = WinUtils.getOneDrivePath();
         log.info("OneDrive Path: " + base);
-        //System.out.println(ConvertSecondToHHMMSSString(250));
         process();
 
 
@@ -67,8 +79,12 @@ public class LastPlayedSongs extends BatchJobV2{
     public void process() {
         List<MGOFileAlbumCompositeTO> list = getMezzmoService().getLastPlayed();
         String filename = "c:/reports/Music/LastPlayed.html";
+        int rec = 1;
         for (MGOFileAlbumCompositeTO comp : list){
-            System.out.println(isCurrentlyPlaying(comp));
+            if (rec == 1) {
+                comp.setCurrentlyPlaying(true);
+                rec++;
+            }
         }
         try {
             export(list, filename);
@@ -88,7 +104,6 @@ public class LastPlayedSongs extends BatchJobV2{
         Template t = ve.getTemplate( "LastPlayed.vm" );
         /*  create a context and add data */
         VelocityContext context = new VelocityContext();
-        context.put("active", false);
         context.put("date",new DateTool());
         context.put("esc",new EscapeTool());
         context.put("du",new DateUtils());
@@ -102,7 +117,7 @@ public class LastPlayedSongs extends BatchJobV2{
             if (writer != null){
                 writer.flush();
                 writer.close();
-                log.info("Index created: " + file.toString());
+                log.info("LastPlayed created: " + file.toString());
             }
         }
     }
@@ -124,11 +139,8 @@ public class LastPlayedSongs extends BatchJobV2{
         Calendar cal = Calendar.getInstance();
         cal.setTime(lastPlayed);
         cal.add(Calendar.SECOND, song.getFileTO().getDuration());
-        System.out.println(cal.getTime());
-        System.out.println(lastPlayed.after(currDate));
-        Date tst = new Date(1475514259*1000);
-        System.out.println("tst = " + tst);
-        return false;
+        lastPlayed = cal.getTime();
+        return lastPlayed.after(currDate);
     }
 
 }

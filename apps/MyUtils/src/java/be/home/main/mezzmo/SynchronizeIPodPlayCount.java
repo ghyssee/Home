@@ -1,24 +1,17 @@
 package be.home.main.mezzmo;
 
-import be.home.common.constants.Constants;
 import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.dao.jdbc.SQLiteUtils;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
-import be.home.common.model.TransferObject;
 import be.home.common.utils.DateUtils;
-import be.home.common.utils.JSONUtils;
 import be.home.common.utils.WinUtils;
-import be.home.mezzmo.domain.bo.PlaylistBO;
 import be.home.mezzmo.domain.model.*;
 import be.home.mezzmo.domain.service.IPodServiceImpl;
-import be.home.mezzmo.domain.service.MediaMonkeyServiceImpl;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.model.ConfigTO;
-import be.home.common.configuration.Setup;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.*;
@@ -174,7 +167,7 @@ public class SynchronizeIPodPlayCount extends BatchJobV2{
             record.add(getFileTitle(comp));
             record.add(comp.getFileTO().getPlayCount());
             record.add("");
-            record.add(SQLiteUtils.convertDateToLong(comp.getFileTO().getDateLastPlayed()));
+            record.add(SQLiteUtils.convertDateToString(comp.getFileTO().getDateLastPlayed()));
             record.add(comp.getFileAlbumTO().getName());
             String pattern = "dd/MM/yyyy HH:mm:ss";
             SimpleDateFormat format = new SimpleDateFormat(pattern);

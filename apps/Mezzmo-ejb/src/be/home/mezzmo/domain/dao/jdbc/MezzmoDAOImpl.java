@@ -3,11 +3,9 @@ package be.home.mezzmo.domain.dao.jdbc;
 import be.home.common.dao.jdbc.MezzmoDB;
 import be.home.common.dao.jdbc.QueryBuilder;
 import be.home.common.dao.jdbc.SQLiteUtils;
-import be.home.common.exceptions.MultipleOccurencesException;
 import be.home.common.model.TransferObject;
 import be.home.mezzmo.domain.model.*;
 import org.apache.log4j.Logger;
-import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -216,7 +214,7 @@ public class MezzmoDAOImpl extends MezzmoDB {
             "INNER JOIN MGOAlbumArtist ON (MGOAlbumArtist.ID = MGOAlbumArtistRelationship.ID) " +
             "WHERE MGOFileExtension.data = 'mp3' " +
             "ORDER BY mgofile.datelastplayed DESC " +
-            "LIMIT 0,100 ";
+            "LIMIT 0,50 ";
 
     private static final Logger log = Logger.getLogger(MezzmoDAOImpl.class);
 
@@ -246,10 +244,10 @@ public class MezzmoDAOImpl extends MezzmoDB {
 
     public int updatePlayCount(String fileID, String album, int playCount, java.util.Date dateLastPlayed) throws SQLException {
 
-        Object[] params = {playCount, SQLiteUtils.convertDateToLong(dateLastPlayed), fileID, playCount,
+        Object[] params = {playCount, SQLiteUtils.convertDateToString(dateLastPlayed), fileID, playCount,
                            album == null ? "%" : album, fileID
                           };
-        return getInstance().getJDBCTemplate().update(FILE_SYNC_PLAYCOUNT, params);
+        return getInstance().getJDBCTemplate().update(FILE_UPDATE_PLAYCOUNT, params);
 
 
     }

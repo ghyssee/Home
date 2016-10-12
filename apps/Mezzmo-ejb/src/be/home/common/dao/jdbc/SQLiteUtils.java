@@ -45,12 +45,15 @@ public class SQLiteUtils {
         return null;
     }
 
-    public static long convertDateToLong(java.util.Date date){
+    /* date should be converted to String
+       because SQLite doesn't handle the Long/Int very well when updating it with JDBC
+     */
+    public static String convertDateToString(java.util.Date date){
         if (date != null) {
             long longDate = date.getTime();
-            return longDate/1000;
+            return String.valueOf(longDate/1000000);
         }
-        return 0;
+        return null;
     }
 
 
