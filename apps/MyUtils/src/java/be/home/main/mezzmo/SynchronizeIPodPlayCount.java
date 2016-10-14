@@ -57,15 +57,15 @@ public class SynchronizeIPodPlayCount extends BatchJobV2{
 
         String base = WinUtils.getOneDrivePath();
         log.info("OneDrive Path: " + base);
-        base += "\\Muziek\\Export\\";
+        base += "/Muziek/Export/iPod/";
 
-        export(base, "iPodDB.PlayCount.csv");
-        synchronize(base, "iPodDB.PlayCount.csv");
+        export(base, "iPodDB.PlayCount");
+        synchronize();
 
 
     }
 
-    public void synchronize(String base, String filename) {
+    public void synchronize() {
 
         List <MGOFileAlbumCompositeTO> list = getIPodService().getListPlayCount();
         int errors = 0;
@@ -113,7 +113,7 @@ public class SynchronizeIPodPlayCount extends BatchJobV2{
 
         List <MGOFileAlbumCompositeTO> list = getIPodService().getListPlayCount();
         Writer fileWriter = null;
-        File exportFile = new File(base + "MP3SongsWithPlay." + DateUtils.formatDate(new Date(), DateUtils.YYYYMMDDHHMMSS) + ".csv");
+        File exportFile = new File(base + filename + "." + DateUtils.formatDate(new Date(), DateUtils.YYYYMMDDHHMMSS) + ".csv");
         CSVPrinter csvFilePrinter = null;
         CSVFormat csvFileFormat = CSVFormat.DEFAULT.withHeader(FILE_HEADER_MAPPING);
         FileOutputStream outputStream = null;

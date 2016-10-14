@@ -51,7 +51,7 @@ public class SQLiteUtils {
     public static String convertDateToString(java.util.Date date){
         if (date != null) {
             long longDate = date.getTime();
-            return String.valueOf(longDate/1000000);
+            return String.valueOf(longDate/1000);
         }
         return null;
     }
