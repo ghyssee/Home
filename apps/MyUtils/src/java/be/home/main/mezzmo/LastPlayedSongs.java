@@ -78,11 +78,17 @@ public class LastPlayedSongs extends BatchJobV2{
 
     public void process() {
         List<MGOFileAlbumCompositeTO> list = getMezzmoService().getLastPlayed();
-        String filename = "c:/reports/Music/LastPlayed.html";
+        String base = "c:/reports/Music/";
+        String filename =  base + "LastPlayedSongs.html";
         int rec = 1;
         for (MGOFileAlbumCompositeTO comp : list){
             if (rec == 1) {
-                comp.setCurrentlyPlaying(true);
+                comp.setCurrentlyPlaying(isCurrentlyPlaying(comp));
+                try {
+                    exportLastPlayed(comp, base + "LastPlayed.html");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 rec++;
             }
         }
@@ -90,6 +96,34 @@ public class LastPlayedSongs extends BatchJobV2{
             export(list, filename);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void exportLastPlayed(MGOFileAlbumCompositeTO comp, String outputFile) throws IOException {
+        Properties p = new Properties();
+        p.setProperty("file.resource.loader.path", Setup.getInstance().getFullPath(Constants.Path.VELOCITY));
+
+        VelocityEngine ve = new VelocityEngine();
+        ve.init(p);
+        /*  next, get the Template  */
+        Template t = ve.getTemplate( "LastPlayed.vm" );
+        /*  create a context and add data */
+        VelocityContext context = new VelocityContext();
+        context.put("date",new DateTool());
+        context.put("esc",new EscapeTool());
+        context.put("du",new DateUtils());
+        context.put("song", comp);
+        Path file = Paths.get(outputFile);
+        BufferedWriter writer = null;
+        try {
+            writer = Files.newBufferedWriter(file, Charset.defaultCharset());
+            t.merge(context, writer);
+        } finally {
+            if (writer != null){
+                writer.flush();
+                writer.close();
+                log.info("LastPlayed created: " + file.toString());
+            }
         }
     }
 
@@ -101,7 +135,7 @@ public class LastPlayedSongs extends BatchJobV2{
         VelocityEngine ve = new VelocityEngine();
         ve.init(p);
         /*  next, get the Template  */
-        Template t = ve.getTemplate( "LastPlayed.vm" );
+        Template t = ve.getTemplate( "LastPlayedSongs.vm" );
         /*  create a context and add data */
         VelocityContext context = new VelocityContext();
         context.put("date",new DateTool());
