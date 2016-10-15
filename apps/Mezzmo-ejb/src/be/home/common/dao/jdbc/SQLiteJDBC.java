@@ -42,7 +42,7 @@ public class SQLiteJDBC
 
         /*
 
-        try {
+        try {t
             Class.forName("org.sqlite.JDBC");
             c = DriverManager.getConnection("jdbc:sqlite:" + file.getAbsolutePath());
             c.setAutoCommit(false);
@@ -55,7 +55,11 @@ public class SQLiteJDBC
 
         /* Spring */
         SingleConnectionDataSource dataSource = jdbcDataSource();
-        dataSource.setUrl("jdbc:p6spy:sqlite:" + file.getAbsolutePath());
+        String url = "";
+        if (config.sqlLogging.enabled){
+            url = "p6spy:";
+        }
+        dataSource.setUrl("jdbc:" + url + "sqlite:" + file.getAbsolutePath());
         jdbcTemplate = new JdbcTemplate(dataSource);
         linkDatabase(database, jdbcTemplate);
 
@@ -65,7 +69,12 @@ public class SQLiteJDBC
     public SingleConnectionDataSource jdbcDataSource() {
         SingleConnectionDataSource ds = new SingleConnectionDataSource();
         //ds.setDriverClassName("org.sqlite.JDBC");
-        ds.setDriverClassName("com.p6spy.engine.spy.P6SpyDriver");
+        if (config.sqlLogging.enabled) {
+            ds.setDriverClassName("com.p6spy.engine.spy.P6SpyDriver");
+        }
+        else {
+            ds.setDriverClassName("org.sqlite.JDBC");
+        }
         return ds;
     }
 
@@ -123,15 +132,20 @@ public class SQLiteJDBC
         InputStream i = null;
         File file = new File (Setup.getInstance().getFullPath(Constants.Path.LOCAL_CONFIG) + File.separator + "localDatabases.json");
         Map <String, DataBaseConfiguration.DataBase> map = new HashMap <String, DataBaseConfiguration.DataBase>();
+        DataBaseConfiguration localConfig = null;
         if (file.exists()){
             log.debug("Local Database Configuration File found: " + file.getAbsolutePath());
-            DataBaseConfiguration localConfig = (DataBaseConfiguration) JSONUtils.openJSON(file.getAbsolutePath(), DataBaseConfiguration.class);
+            localConfig = (DataBaseConfiguration) JSONUtils.openJSON(file.getAbsolutePath(), DataBaseConfiguration.class);
             map = localConfig.getMap();
         }
         file = new File(Setup.getInstance().getFullPath(Constants.Path.CONFIG) + File.separator + "databases.json");
         log.debug("Master Database Configuration File found: " + file.getAbsolutePath());
         config = (DataBaseConfiguration) JSONUtils.openJSON(file.getAbsolutePath(), DataBaseConfiguration.class);
         List <DataBaseConfiguration.DataBase> newList = new ArrayList<DataBaseConfiguration.DataBase>();
+        if (localConfig != null && localConfig.sqlLogging != null){
+            config.sqlLogging = localConfig.sqlLogging;
+        }
+        log.info("SQL Logging = " + config.sqlLogging.enabled);
         for (DataBaseConfiguration.DataBase db : config.databases) {
             DataBaseConfiguration.DataBase tmpDB = null;
             if (map.containsKey(db.id)) {

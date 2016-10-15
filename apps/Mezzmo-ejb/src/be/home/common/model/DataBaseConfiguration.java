@@ -11,7 +11,12 @@ import java.util.Map;
 public class DataBaseConfiguration {
 
         public String defaultPath;
+        public Enabled sqlLogging;
         public List <DataBase> databases = new ArrayList <DataBase>();
+
+    public class Enabled {
+        public boolean enabled;
+    }
 
     public class DataBase{
         public String id;
