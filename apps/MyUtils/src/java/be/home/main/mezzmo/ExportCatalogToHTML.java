@@ -146,7 +146,7 @@ public class ExportCatalogToHTML extends BatchJobV2{
         VelocityEngine ve = new VelocityEngine();
         ve.init(p);
         /*  next, get the Template  */
-        Template t = ve.getTemplate( "music/Index.htm" );
+        Template t = ve.getTemplate( "music/MusicCatalog.htm" );
         /*  create a context and add data */
         VelocityContext context = new VelocityContext();
         context.put("esc",new EscapeTool());
