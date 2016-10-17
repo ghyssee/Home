@@ -111,7 +111,7 @@ public class ExportCatalogToHTML extends BatchJobV2{
                 e.printStackTrace();
             }
         }
-        String filename = "c:/reports/Music/index.html";
+        String filename = "c:/reports/Music/MusicCatalog.html";
         try {
             exportIndex(htmlSettings.export.groups, filename);
         } catch (IOException e) {

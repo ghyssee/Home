@@ -51,4 +51,10 @@ public class DateUtils  {
 			return LocalTime.MIN.plusSeconds(nSecondTime).toString();
 		}
 	}
+
+	public static Long getSecondsBetween(Date first, Date second){
+		return (first.getTime() - second.getTime())/ 1000;
+	}
+
+
 }

@@ -2,13 +2,10 @@ package be.home.main.mezzmo;
 
 import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
-import be.home.common.dao.jdbc.MezzmoDB;
 import be.home.common.dao.jdbc.SQLiteJDBC;
-import be.home.common.dao.jdbc.SQLiteUtils;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.DateUtils;
 import be.home.common.utils.JSONUtils;
-import be.home.common.utils.WinUtils;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.model.ConfigTO;
@@ -38,7 +35,7 @@ public class LastPlayedSongs extends BatchJobV2{
     public static MezzmoServiceImpl mezzmoService = null;
 
     public static ConfigTO.Config config;
-    private static final Logger log = Logger.getLogger(ExportCatalogToHTML.class);
+    private static final Logger log = Logger.getLogger(LastPlayedSongs.class);
 
     public static void main(String args[]) throws InterruptedException {
 
@@ -50,6 +47,7 @@ public class LastPlayedSongs extends BatchJobV2{
         try {
             config = instance.init();
             SQLiteJDBC.initialize(workingDir);
+            log.info("Batch started: " + log.getName());
             do {
                 instance.run();
                 long sleep = mp3Settings.lastPlayedSleep*1000;
@@ -62,15 +60,12 @@ public class LastPlayedSongs extends BatchJobV2{
         } catch (IOException e) {
             e.printStackTrace();
         }
+        log.info("Batch ended: " + log.getName());
 
     }
 
     @Override
     public void run() {
-        final String batchJob = "Export Catalog";
-
-        String base = WinUtils.getOneDrivePath();
-        log.info("OneDrive Path: " + base);
         process();
 
 
@@ -81,11 +76,17 @@ public class LastPlayedSongs extends BatchJobV2{
         String base = "c:/reports/Music/";
         String filename =  base + "LastPlayedSongs.html";
         int rec = 1;
+        long refresh = 60L;
         for (MGOFileAlbumCompositeTO comp : list){
             if (rec == 1) {
+                //long ms = (new Date().getTime()) - comp.getFileTO().getDuration()*1000 - 11*60*1000;
+                //Date dd = new Date(ms);
+                //comp.getFileTO().setDateLastPlayed(dd);
                 comp.setCurrentlyPlaying(isCurrentlyPlaying(comp));
+                refresh = getRefreshTime(comp);
+                log.info("Refresh: " + getRefreshTime(comp));
                 try {
-                    exportLastPlayed(comp, base + "LastPlayed.html");
+                    exportLastPlayed(comp, base + "LastPlayed.html", refresh);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -93,13 +94,17 @@ public class LastPlayedSongs extends BatchJobV2{
             }
         }
         try {
-            export(list, filename);
+            export(list, filename, refresh);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void exportLastPlayed(MGOFileAlbumCompositeTO comp, String outputFile) throws IOException {
+    private void setRefreshTime(VelocityContext context, long refresh){
+        context.put("refresh", refresh);
+    }
+
+    public void exportLastPlayed(MGOFileAlbumCompositeTO comp, String outputFile, long refresh) throws IOException {
         Properties p = new Properties();
         p.setProperty("file.resource.loader.path", Setup.getInstance().getFullPath(Constants.Path.VELOCITY));
 
@@ -113,6 +118,7 @@ public class LastPlayedSongs extends BatchJobV2{
         context.put("esc",new EscapeTool());
         context.put("du",new DateUtils());
         context.put("song", comp);
+        setRefreshTime(context, refresh);
         Path file = Paths.get(outputFile);
         BufferedWriter writer = null;
         try {
@@ -128,7 +134,7 @@ public class LastPlayedSongs extends BatchJobV2{
     }
 
 
-    public void export(List<MGOFileAlbumCompositeTO> list, String outputFile) throws IOException {
+    public void export(List<MGOFileAlbumCompositeTO> list, String outputFile, long refresh) throws IOException {
         Properties p = new Properties();
         p.setProperty("file.resource.loader.path", Setup.getInstance().getFullPath(Constants.Path.VELOCITY));
 
@@ -142,6 +148,7 @@ public class LastPlayedSongs extends BatchJobV2{
         context.put("esc",new EscapeTool());
         context.put("du",new DateUtils());
         context.put("list", list);
+        setRefreshTime(context, refresh);
         Path file = Paths.get(outputFile);
         BufferedWriter writer = null;
         try {
@@ -175,6 +182,37 @@ public class LastPlayedSongs extends BatchJobV2{
         cal.add(Calendar.SECOND, song.getFileTO().getDuration());
         lastPlayed = cal.getTime();
         return lastPlayed.after(currDate);
+    }
+
+    private long getRefreshTime(MGOFileAlbumCompositeTO song){
+        Date lastPlayed = song.getFileTO().getDateLastPlayed();
+        long seconds = 90L;
+        if (lastPlayed != null) {
+            Date currDate = new Date();
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(lastPlayed);
+            cal.add(Calendar.SECOND, song.getFileTO().getDuration());
+            lastPlayed = cal.getTime();
+            long secBetween = DateUtils.getSecondsBetween(lastPlayed, currDate);
+            if (song.isCurrentlyPlaying()) {
+                seconds = secBetween / 2;
+                seconds = Math.max(seconds, 5L);
+                seconds = Math.min(seconds, 60L);
+            }
+            else if (secBetween >= -60){
+                // played a song in the last minute
+                seconds = 5L;
+            }
+            else if (secBetween >= -600){
+                // played a song in the last 10 minutes
+                seconds = 15L;
+            }
+            else {
+                // lats played song is more than 10 minutes aggo
+                seconds = 60L;
+            }
+        }
+        return seconds;
     }
 
 }
