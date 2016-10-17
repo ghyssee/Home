@@ -1,5 +1,7 @@
 <?php
-$str = file_get_contents('/My Programs/OneDrive/Config/Java/MP3Settings.json');
+$oneDrivePath = getOneDrivePath();
+$mp3Settings = $oneDrivePath . '/Config/Java/MP3Settings.json';
+$str = file_get_contents($mp3Settings);
 $json = json_decode($str);
 
 function println ($string_message) {

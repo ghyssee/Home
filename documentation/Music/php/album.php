@@ -14,8 +14,10 @@ println($oneDrive);
 ?>
 
 <form action="albumSave.php" method="post">
-Album: <input type="text" name="album" value="<?php print $json->album; ?>"><br>
-E-mail: <input type="text" name="email"><br>
+<table>
+<tr><td>Album</td><td><input size="100" type="text" name="album" value="<?php print $json->album; ?>"></td></tr>
+<tr><td>E-mail</td><td><input size="50" type="text" name="email"></td></tr>
+</table>
 <input type="submit">
 </form>
 
