@@ -20,6 +20,7 @@ if(isset($_POST['mp3Preprocessor'])){
 	assignField($mp3PreprocessorObj->cdTag, "cdTag");
 	assignField($mp3PreprocessorObj->prefix, "prefix");
 	assignField($mp3PreprocessorObj->suffix, "suffix");
+	assignField($mp3PreprocessorObj->activeConfiguration, "activeConfiguration");
 	$save = true;
 	if (empty($mp3PreprocessorObj->albumTag)) {
 		println ('AlbumTag is either empty, or not set at all');

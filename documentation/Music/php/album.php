@@ -66,14 +66,38 @@ println($oneDrive);
   // Use simple foreach to generate the options
   
   foreach($array as $key => $value) {
-    if ($value->id == $default){
-		println( "<option value=\"$value->id selected\">$value->id</option>");
+    
+	$selected = "";
+	if ($value->id == $default){
+		//echo "<option value=\"$value->id\" selected>$value->id</option>";
+		$selected = " selected";
 	}
-	else {
-		println( "<option value=\"$value->id\">$value->id</option>");
-	}
+	//else {
+		echo "<option value=\"$value->id\"" . $selected . ">" . getConfigurationText($value->config) . "</option>";
+	//}
    }
-   echo "</select>";
+    echo "</select>";
+}
+
+function getConfigurationText($array){
+
+	$desc = "";
+	foreach($array as $key2 => $config) {
+	   if (isset($config->type)){
+		//$desc = $desc . (empty($desc) ? '' : ' - ') . $config->type;
+		$desc = $desc . (empty($desc) ? '' : ' ') . $config->type;
+	   }
+	   if (isset($config->splitter)){
+		//$desc = $desc . " " . $config->type;
+		$desc = $desc . " " . $config->splitter;
+	   }
+	   if (!empty($config->duration)){
+		   $desc = $desc . " (duration TRUE)";
+	   }
+   }
+   return $desc;
+   
+
 }
  
 ?>
