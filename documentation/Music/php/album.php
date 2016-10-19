@@ -73,6 +73,20 @@ th {
 <div class="emptySpace"></div>
 
 <form action="albumSave.php" method="post">
+<h1>MediaMonkey Configuration</h1>
+<div class="horizontalLine">.</div>
+
+<table style="width:60%" class="inlineTable">
+<tr><td>Base</td><td><input size="100" type="text" name="mediaMonkeyBase" value="<?php print $mp3SettingsObj->mediaMonkey->base; ?>"></td></tr>
+<tr><td>Playlist Path</td><td><input size="100" type="text" name="mediaMonkeyPlaylistPath" value="<?php print $mp3SettingsObj->mediaMonkey->playlist->path; ?>"></td></tr>
+</table>
+<table style="width:30%" class="inlineTable">
+<tr><td><button name="mp3Settings" value="saveMM">Save</button></td></tr>
+</table>
+</form>
+<div class="emptySpace"></div>
+
+<form action="albumSave.php" method="post">
 <h1>MP3Preprocessor Configuration</h1>
 <div class="horizontalLine">.</div>
 

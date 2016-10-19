@@ -35,4 +35,10 @@ public class MP3Settings {
         public String top20;
 
     }
+
+    public class MediaMonkey {
+        public String base;
+        public Playlist playlist;
+    }
+
 }
