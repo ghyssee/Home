@@ -11,6 +11,7 @@ import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.mezzmo.domain.util.Utils;
 import be.home.model.ConfigTO;
+import be.home.model.MP3Settings;
 import be.home.model.Playlist;
 import org.apache.log4j.Logger;
 
@@ -30,6 +31,8 @@ public class MakeCustomPlaylists extends BatchJobV2{
     public static Log4GE log4GE;
     public static ConfigTO.Config config;
     private static final Logger log = Logger.getLogger(MakeCustomPlaylists.class);
+    private static final String MP3_SETTINGS = Setup.getInstance().getFullPath(Constants.Path.CONFIG) + File.separator +
+            "MP3Settings.json";
 
     public static void main(String args[]) {
 
@@ -85,6 +88,9 @@ public class MakeCustomPlaylists extends BatchJobV2{
     }
 
     private void processPlayList(Playlist playlist) throws IOException {
+
+        MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSON(MP3_SETTINGS, MP3Settings.class, "UTF-8");
+
         log.info("Processing PlayList " + playlist.name);
         List <MGOFileAlbumCompositeTO> albums = new ArrayList();
         int i=0;
@@ -123,12 +129,12 @@ public class MakeCustomPlaylists extends BatchJobV2{
             for (MGOFileAlbumCompositeTO comp : list) {
                 System.out.println(comp.getFileTO().getFile());
                 System.out.println(comp.getFileAlbumTO().getName());
-                comp.getFileTO().setFile(mezzmoUtils.relativizeFile(comp.getFileTO().getFile(), config.mezzmo));
+                comp.getFileTO().setFile(mezzmoUtils.relativizeFile(comp.getFileTO().getFile(), mp3Settings.mezzmo));
 
             }
             if (list.size() > 0) {
                 PlayList pl = new PlayList();
-                pl.make(list, config.mezzmo.base + File.separator + config.mezzmo.playlist.path, playlist.id + PlayList.EXTENSION);
+                pl.make(list, mp3Settings.mezzmo.base + File.separator + mp3Settings.mezzmo.playlist.path, playlist.id + PlayList.EXTENSION);
             } else {
                 log.warn("No songs found for playlist " + playlist.name);
             }

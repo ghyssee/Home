@@ -4,6 +4,7 @@ import be.home.common.constants.Constants;
 import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
+import be.home.common.utils.JSONUtils;
 import be.home.common.utils.WinUtils;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.MGOFileTO;
@@ -11,6 +12,7 @@ import be.home.mezzmo.domain.service.MediaMonkeyServiceImpl;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.model.ConfigTO;
 import be.home.common.configuration.Setup;
+import be.home.model.MP3Settings;
 import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -35,6 +37,8 @@ public class MakeTop20 extends BatchJobV2{
     public static ConfigTO.Config config;
     private static final Logger log = Logger.getLogger(ExportPlayCount.class);
     public static final String MP3_PLAYLIST = "H:/Shared/Mijn Muziek/Eric/playlist";
+    private static final String MP3_SETTINGS = Setup.getInstance().getFullPath(Constants.Path.CONFIG) + File.separator +
+            "MP3Settings.json";
 
     public static void main(String args[]) {
 
@@ -73,6 +77,9 @@ public class MakeTop20 extends BatchJobV2{
     public void makeTop20() throws IOException {
 
 
+        MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSON(MP3_SETTINGS, MP3Settings.class, "UTF-8");
+
+
         /* based on Mezzmo DB
         List <MGOFileAlbumCompositeTO> list = getMezzmoService().getTop20();
         for (MGOFileAlbumCompositeTO comp : list){
@@ -101,7 +108,7 @@ public class MakeTop20 extends BatchJobV2{
             System.out.println("pathBase: " + pathBase.toString());
             System.out.println("pathAbsolute: " + pathAbsolute.toString());
             Path iPodBase = Paths.get(DRIVE + ":" + File.separator + config.mediaMonkey.base);
-            Path mezzmoBase = Paths.get(config.mezzmo.base + File.separator + "Eric");
+            Path mezzmoBase = Paths.get(mp3Settings.mezzmo.base + File.separator + "Eric");
             System.out.println("iPodBase: " + iPodBase.toString());
             System.out.println("MezzmoBase: " + mezzmoBase.toString());
             String file = pathAbsolute.toString().replace(iPodBase.toString(), mezzmoBase.toString());
@@ -120,7 +127,7 @@ public class MakeTop20 extends BatchJobV2{
             comp.getFileTO().setDuration(duration);
         }
         if (list2.size() > 0){
-            writePlaylist(list2, config.mezzmo.playlist.top20);
+            writePlaylist(mp3Settings, list2, mp3Settings.mezzmo.playlist.top20);
         }
         else {
             log.warn("No MP3 files found for the playlist");
@@ -128,11 +135,11 @@ public class MakeTop20 extends BatchJobV2{
 
     }
 
-    private void writePlaylist(List <MGOFileAlbumCompositeTO> list, String outputFile) throws IOException {
+    private void writePlaylist(MP3Settings mp3Settings, List <MGOFileAlbumCompositeTO> list, String outputFile) throws IOException {
         Properties p = new Properties();
         p.setProperty("file.resource.loader.path", Setup.getInstance().getFullPath(Constants.Path.VELOCITY));
 
-        String filename = config.mezzmo.base + File.separator + config.mezzmo.playlist.path;
+        String filename = mp3Settings.mezzmo.base + File.separator + mp3Settings.mezzmo.playlist.path;
         Path outputFolder = Paths.get(filename);
         if (Files.notExists(outputFolder)){
             outputFolder = Paths.get(Setup.getInstance().getFullPath(Constants.Path.PLAYLIST));

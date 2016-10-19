@@ -41,10 +41,6 @@ public class ConfigTO {
         public String path;
         public String top20;
     }
-    public class Mezzmo {
-        public String base;
-        public Playlist playlist;
-    }
 
     public class MediaMonkey {
         public String base;
@@ -101,7 +97,6 @@ public class ConfigTO {
         public Log4J log4J;
         public Wiki wiki;
         public Movies movies;
-        public Mezzmo mezzmo;
         public MediaMonkey mediaMonkey;
         public List <Parts> parts = new ArrayList <Parts>();
 

@@ -15,25 +15,67 @@ println($oneDrive);
    float: left;
 }
 .emptySpace {
-	height:100px
+	height:80px
 }
+.horizontalLine {
+    width: 95%
+    font-size: 1px;
+    color: rgba(0, 0, 0, 0);
+    line-height: 1px;
+
+    background-color: grey;
+    margin-top: -6px;
+    margin-bottom: 10px;
+}
+th {
+	text-align:left;
+}
+
 </style>
 
 <form action="albumSave.php" method="post">
 <h1>Album Configuration</h1>
-<hr>
+<div class="horizontalLine">.</div>
 <table style="width:60%" class="inlineTable">
 <tr><td>Album</td><td><input size="100" type="text" name="album" value="<?php print $mp3SettingsObj->album; ?>"></td></tr>
 </table>
 <table style="width:30%" class="inlineTable">
-<tr><td><input type="submit" name="mp3Settings" value="save"></td></tr>
+<tr><td><button name="mp3Settings" value="saveAlbum">Save</button></td></tr>
+</table>
+<div class="emptySpace"></div>
+</form>
+
+<form action="albumSave.php" method="post">
+<h1>Mezzmo Configuration</h1>
+<div class="horizontalLine">.</div>
+<table style="width:60%" class="inlineTable">
+<tr><td>Base</td><td><input size="100" type="text" name="mezzmoBase" value="<?php print $mp3SettingsObj->mezzmo->base; ?>"></td></tr>
+</table>
+<table style="width:30%" class="inlineTable">
+<tr><td><button name="mp3Settings" value="saveMezzmo">Save</button></td></tr>
+</table>
+<div class="emptySpace"></div>
+</form>
+
+<form action="albumSave.php" method="post">
+<h1>iPod Configuration</h1>
+<div class="horizontalLine">.</div>
+
+<table style="width:60%" class="inlineTable">
+<tr><td>Update Rating<input type="checkbox" name="updateRating" 
+                            value="<?php print $mp3SettingsObj->synchronizer->updateRating; ?>" <?php setCheckbox($mp3SettingsObj->synchronizer->updateRating) ?>>
+</td></tr>
+</table>
+<table style="width:30%" class="inlineTable">
+<tr><td><button name="mp3Settings" value="saveiPod">Save</button></td></tr>
 </table>
 </form>
 <div class="emptySpace"></div>
 
 <form action="albumSave.php" method="post">
 <h1>MP3Preprocessor Configuration</h1>
-<hr>
+<div class="horizontalLine">.</div>
+
 <table style="width:60%" class="inlineTable">
 <tr><td>AlbumTag</td><td><input size="50" type="text" name="albumTag" value="<?php print $mp3PreprocessorObj->albumTag; ?>"></td></tr>
 <tr><td>CdTag</td><td><input size="50" type="text" name="cdTag" value="<?php print $mp3PreprocessorObj->cdTag; ?>"></td></tr>
@@ -42,10 +84,62 @@ println($oneDrive);
 <tr><td>Active Configuration</td><td><?php generateSelectFromArray($mp3PreprocessorObj->configurations, $mp3PreprocessorObj->activeConfiguration); ?></td></tr>
 </table>
 <table style="width:30%" class="inlineTable">
-<tr><td><input type="submit" name="mp3Preprocessor" value="save"></td></tr>
+<tr><td><button name="mp3Preprocessor" value="save">Save</button></td></tr>
 </table>
 <div class="emptySpace"></div>
 <br><br>
+</form>
+<div class="emptySpace"></div>
+
+<form action="albumSave.php" method="post">
+<h1>MP3Prettifier Configuration</h1>
+<hr>
+<h3>General</h3>
+<table style="width:60%" class="inlineTable">
+<tr><td>Old Word</td><td><input size="50" type="text" name="oldWord" value=""></td></tr>
+<tr><td>New Word</td><td><input size="50" type="text" name="newWord" value=""></td></tr>
+</table>
+<table style="width:30%" class="inlineTable">
+<tr><td><button name="mp3Prettifier" value="SaveGlobalWord">Save Word</button></td></tr>
+</table>
+<div class="emptySpace"></div>
+
+<h3>Artist Word</h3>
+<table style="width:60%" class="inlineTable">
+<tr><td>Old Word</td><td><input size="50" type="text" name="artistOldWord" value=""></td></tr>
+<tr><td>New Word</td><td><input size="50" type="text" name="artistNewWord" value=""></td></tr>
+</table>
+<table style="width:30%" class="inlineTable">
+<tr><td><button name="mp3Prettifier" value="saveArtistWord">Save Word</button></td></tr>
+</table>
+<div class="emptySpace"></div>
+
+<h3>Artist Name</h3>
+<table style="width:60%" class="inlineTable">
+<tr><td>Old Artist Name</td><td><input size="50" type="text" name="artistNameOldWord" value=""></td></tr>
+<tr><td>New Aritst Name</td><td><input size="50" type="text" name="artistNameNewWord" value=""></td></tr>
+</table>
+<table style="width:30%" class="inlineTable">
+<tr><td><button name="mp3Prettifier" value="saveArtistName">Save Name</button></td></tr>
+</table>
+<div class="emptySpace"></div>
+
+<h3>Song Title</h3>
+<table style="width:60%" class="inlineTable">
+<tr><td>Old Song Title</td><td><input size="50" type="text" name="songTitleOldWord" value=""></td></tr>
+<tr><td>New Song Title</td><td><input size="50" type="text" name="songTitleNewWord" value=""></td></tr>
+</table>
+<table style="width:30%" class="inlineTable">
+<tr><td><button name="mp3Prettifier" value="saveSongTitle">Save Title</button></td></tr>
+</table>
+<div class="emptySpace"></div>
+
+<br><br>
+</form>
+
+</body>
+</html> 
+
 <?php 
  foreach($mp3PreprocessorObj->configurations as $key => $configuration) {
 	/*println($configuration->id);
@@ -61,20 +155,15 @@ println($oneDrive);
  }
  
  function generateSelectFromArray($array, $default){
-  // echo your opening Select
   echo "<select name=\"activeConfiguration\">";
-  // Use simple foreach to generate the options
   
   foreach($array as $key => $value) {
     
-	$selected = "";
-	if ($value->id == $default){
-		//echo "<option value=\"$value->id\" selected>$value->id</option>";
-		$selected = " selected";
-	}
-	//else {
+		$selected = "";
+		if ($value->id == $default){
+			$selected = " selected";
+		}
 		echo "<option value=\"$value->id\"" . $selected . ">" . getConfigurationText($value->config) . "</option>";
-	//}
    }
     echo "</select>";
 }
@@ -84,11 +173,9 @@ function getConfigurationText($array){
 	$desc = "";
 	foreach($array as $key2 => $config) {
 	   if (isset($config->type)){
-		//$desc = $desc . (empty($desc) ? '' : ' - ') . $config->type;
 		$desc = $desc . (empty($desc) ? '' : ' ') . $config->type;
 	   }
 	   if (isset($config->splitter)){
-		//$desc = $desc . " " . $config->type;
 		$desc = $desc . " " . $config->splitter;
 	   }
 	   if (!empty($config->duration)){
@@ -96,12 +183,6 @@ function getConfigurationText($array){
 	   }
    }
    return $desc;
-   
-
 }
  
 ?>
-</form>
-
-</body>
-</html> 

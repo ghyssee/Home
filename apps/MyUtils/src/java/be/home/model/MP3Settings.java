@@ -9,6 +9,7 @@ public class MP3Settings {
 
     public Synchronizer synchronizer;
     public Rating rating;
+    public Mezzmo mezzmo;
 
     public class Synchronizer{
         public String startDirectory;
@@ -21,5 +22,17 @@ public class MP3Settings {
         public int rating3;
         public int rating4;
         public int rating5;
+    }
+
+    public class Mezzmo {
+        public String base;
+        public Playlist playlist;
+
+    }
+
+    public class Playlist {
+        public String path;
+        public String top20;
+
     }
 }
