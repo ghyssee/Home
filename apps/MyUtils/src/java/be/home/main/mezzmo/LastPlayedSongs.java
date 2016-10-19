@@ -49,9 +49,12 @@ public class LastPlayedSongs extends BatchJobV2{
             SQLiteJDBC.initialize(workingDir);
             log.info("Batch started: " + log.getName());
             do {
-                instance.run();
-                long sleep = mp3Settings.lastPlayedSleep*1000;
-                Thread.sleep(sleep);
+                long sleep = instance.start();
+                //long sleep = mp3Settings.lastPlayedSleep*1000;
+                sleep = sleep - 5;
+                sleep = Math.max(sleep, 3);
+                log.info("Sleepig for " + sleep + " seconds");
+                Thread.sleep(sleep*1000);
             }
             while (true);
         }
@@ -64,14 +67,17 @@ public class LastPlayedSongs extends BatchJobV2{
 
     }
 
-    @Override
-    public void run() {
-        process();
+    public long start() {
+        return process();
 
 
     }
 
-    public void process() {
+    public void run(){
+
+    }
+
+    public long process() {
         List<MGOFileAlbumCompositeTO> list = getMezzmoService().getLastPlayed();
         String base = "c:/reports/Music/";
         String filename =  base + "LastPlayedSongs.html";
@@ -86,7 +92,8 @@ public class LastPlayedSongs extends BatchJobV2{
                 refresh = getRefreshTime(comp);
                 log.info("Refresh: " + getRefreshTime(comp));
                 try {
-                    exportLastPlayed(comp, base + "LastPlayed.html", refresh);
+                    exportLastPlayed(comp, base + "LastPlayed.html", "LastPlayed.vm", refresh);
+                    exportLastPlayed(comp, base + "LastPlayedV2.html", "LastPlayedV2.vm", refresh);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -98,20 +105,21 @@ public class LastPlayedSongs extends BatchJobV2{
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return refresh;
     }
 
     private void setRefreshTime(VelocityContext context, long refresh){
         context.put("refresh", refresh);
     }
 
-    public void exportLastPlayed(MGOFileAlbumCompositeTO comp, String outputFile, long refresh) throws IOException {
+    public void exportLastPlayed(MGOFileAlbumCompositeTO comp, String outputFile, String template, long refresh) throws IOException {
         Properties p = new Properties();
         p.setProperty("file.resource.loader.path", Setup.getInstance().getFullPath(Constants.Path.VELOCITY));
 
         VelocityEngine ve = new VelocityEngine();
         ve.init(p);
         /*  next, get the Template  */
-        Template t = ve.getTemplate( "LastPlayed.vm" );
+        Template t = ve.getTemplate( template );
         /*  create a context and add data */
         VelocityContext context = new VelocityContext();
         context.put("date",new DateTool());
