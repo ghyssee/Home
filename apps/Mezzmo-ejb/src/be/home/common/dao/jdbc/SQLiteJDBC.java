@@ -138,7 +138,7 @@ public class SQLiteJDBC
             localConfig = (DataBaseConfiguration) JSONUtils.openJSON(file.getAbsolutePath(), DataBaseConfiguration.class);
             map = localConfig.getMap();
         }
-        file = new File(Setup.getInstance().getFullPath(Constants.Path.CONFIG) + File.separator + "databases.json");
+        file = new File(Setup.getInstance().getFullPath(Constants.Path.CONFIG) + "databases.json");
         log.debug("Master Database Configuration File found: " + file.getAbsolutePath());
         config = (DataBaseConfiguration) JSONUtils.openJSON(file.getAbsolutePath(), DataBaseConfiguration.class);
         List <DataBaseConfiguration.DataBase> newList = new ArrayList<DataBaseConfiguration.DataBase>();

@@ -85,7 +85,7 @@ public class MP3Processor extends BatchJobV2 {
         MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSON(MP3_SETTINGS, MP3Settings.class);
 
         MP3Helper helper = MP3Helper.getInstance();
-        String mp3Dir = Setup.getInstance().getFullPath(Constants.Path.ALBUM) + File.separator + mp3Settings.album;
+        String mp3Dir = Setup.getInstance().getFullPath(Constants.Path.ALBUM) + mp3Settings.album;
         log.info("Album Directory: " + mp3Dir);
 
         album.album = helper.prettifyAlbum(album.album);
