@@ -16,7 +16,7 @@ function readJSON($file){
 }
 
 function writeJSON($json, $file){
-	file_put_contents($file . ".NEW", json_encode($json, JSON_PRETTY_PRINT + JSON_UNESCAPED_SLASHES));
+	file_put_contents($file, json_encode($json, JSON_PRETTY_PRINT + JSON_UNESCAPED_SLASHES));
 }
 
 function assignField(&$field, $value){
@@ -50,5 +50,15 @@ function getOneDrivePath() {
 	}
 	return $oneDrive;
 }
+
+function execInBackground($cmd) {
+    if (substr(php_uname(), 0, 7) == "Windows"){
+        pclose(popen('start /B "" "'. $cmd . '"', "r")); 
+    }
+    else {
+        exec($cmd . " > /dev/null &");  
+    }
+}
+
 ?>
 

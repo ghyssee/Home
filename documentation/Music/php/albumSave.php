@@ -39,6 +39,9 @@ if(isset($_POST['mp3Settings'])){
 	else if ($button == "saveiPod"){
 		saveiPod($file, $mp3SettingsObj);
 	}
+	else if ($button == "saveMM"){
+		saveMediaMonkey($file, $mp3SettingsObj);
+	}
 
 }
 
@@ -68,11 +71,11 @@ function saveMP3Preprocessor($file, $mp3PreprocessorObj){
 	assignField($mp3PreprocessorObj->activeConfiguration, "activeConfiguration");
 	$save = true;
 	if (empty($mp3PreprocessorObj->albumTag)) {
-		println ('AlbumTag is either empty, or not set at all');
+		printErrorMessage ('AlbumTag is either empty, or not set at all',  'errorMessage');
 		$save = false;
 	}
 	if (empty($mp3PreprocessorObj->cdTag)) {
-		println ('cdTag is either empty, or not set at all');
+		printErrorMessage ('cdTag is either empty, or not set at all',  'errorMessage');
 		$save = false;
 	}
 	if ($save) {
@@ -85,7 +88,7 @@ function saveAlbum($file, $mp3Settings){
 	assignField($mp3Settings->album, "album");
 	$save = true;
 	if (empty($mp3Settings->album)) {
-		println ('Album is either empty, or not set at all');
+		printErrorMessage ('Album is either empty, or not set at all',  'errorMessage');
 		$save = false;
 	}
 	if ($save) {
@@ -98,7 +101,7 @@ function saveMezzmo($file, $mp3Settings){
 	assignField($mp3Settings->mezzmo->base, "mezzmoBase");
 	$save = true;
 	if (empty($mp3Settings->mezzmo->base)) {
-		println ('Mezzmo Base Directory is either empty, or not set at all');
+		printErrorMessage ('Mezzmo Base Directory is either empty, or not set at all',  'errorMessage');
 		$save = false;
 	}
 	if ($save) {
@@ -111,6 +114,30 @@ function saveiPod($file, $mp3Settings){
 	assignCheckbox($mp3SettingsObj->synchronizer->updateRating, "updateRating");
 	writeJSON($mp3SettingsObj, $file);
 	println ('Contents saved to ' . $file);
+}
+
+function saveMediaMonkey($file, $mp3Settings){
+	assignField($mp3Settings->mediaMonkey->base, "mediaMonkeyBase");
+	assignField($mp3Settings->mediaMonkey->playlist->path, "mediaMonkeyPlaylistPath");
+	assignField($mp3Settings->mediaMonkey->playlist->top20, "mediaMonkeyTop20");
+	
+	$save = true;
+	if (empty($mp3Settings->mediaMonkey->base)) {
+		printErrorMessage ('MediaMonkey Base Directory is either empty, or not set at all', 'errorMessage');
+		$save = false;
+	}
+	if (empty($mp3Settings->mediaMonkey->playlist->path)) {
+		printErrorMessage ('MediaMonkey Playlist Directory is either empty, or not set at all', 'errorMessage');
+		$save = false;
+	}
+	if (empty($mp3Settings->mediaMonkey->playlist->top20)) {
+		printErrorMessage ('MediaMonkey Playlist Top 20 Name is either empty, or not set at all', 'errorMessage');
+		$save = false;
+	}
+	if ($save) {
+		writeJSON($mp3Settings, $file);
+		println ('Contents saved to ' . $file);
+	}
 }
 
 function saveGlobalWord($file, $mp3PrettifierObj){

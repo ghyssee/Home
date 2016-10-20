@@ -30,6 +30,9 @@ println($oneDrive);
 th {
 	text-align:left;
 }
+.descriptionColumn {
+   width:20%;
+}
 
 </style>
 
@@ -79,6 +82,7 @@ th {
 <table style="width:60%" class="inlineTable">
 <tr><td>Base</td><td><input size="100" type="text" name="mediaMonkeyBase" value="<?php print $mp3SettingsObj->mediaMonkey->base; ?>"></td></tr>
 <tr><td>Playlist Path</td><td><input size="100" type="text" name="mediaMonkeyPlaylistPath" value="<?php print $mp3SettingsObj->mediaMonkey->playlist->path; ?>"></td></tr>
+<tr><td>Top 20 Name</td><td><input size="100" type="text" name="mediaMonkeyTop20" value="<?php print $mp3SettingsObj->mediaMonkey->playlist->top20; ?>"></td></tr>
 </table>
 <table style="width:30%" class="inlineTable">
 <tr><td><button name="mp3Settings" value="saveMM">Save</button></td></tr>
@@ -110,8 +114,8 @@ th {
 <hr>
 <h3>General</h3>
 <table style="width:60%" class="inlineTable">
-<tr><td>Old Word</td><td><input size="50" type="text" name="oldWord" value=""></td></tr>
-<tr><td>New Word</td><td><input size="50" type="text" name="newWord" value=""></td></tr>
+<tr><td class="descriptionColumn">Old Word</td><td><input size="50" type="text" name="oldWord" value=""></td></tr>
+<tr><td style="width:10%">New Word</td><td><input size="50" type="text" name="newWord" value=""></td></tr>
 </table>
 <table style="width:30%" class="inlineTable">
 <tr><td><button name="mp3Prettifier" value="SaveGlobalWord">Save Word</button></td></tr>
@@ -120,8 +124,8 @@ th {
 
 <h3>Artist Word</h3>
 <table style="width:60%" class="inlineTable">
-<tr><td>Old Word</td><td><input size="50" type="text" name="artistOldWord" value=""></td></tr>
-<tr><td>New Word</td><td><input size="50" type="text" name="artistNewWord" value=""></td></tr>
+<tr><td class="descriptionColumn">Old Word</td><td><input size="50" type="text" name="artistOldWord" value=""></td></tr>
+<tr><td class="descriptionColumn">New Word</td><td><input size="50" type="text" name="artistNewWord" value=""></td></tr>
 </table>
 <table style="width:30%" class="inlineTable">
 <tr><td><button name="mp3Prettifier" value="saveArtistWord">Save Word</button></td></tr>
@@ -130,8 +134,8 @@ th {
 
 <h3>Artist Name</h3>
 <table style="width:60%" class="inlineTable">
-<tr><td>Old Artist Name</td><td><input size="50" type="text" name="artistNameOldWord" value=""></td></tr>
-<tr><td>New Aritst Name</td><td><input size="50" type="text" name="artistNameNewWord" value=""></td></tr>
+<tr><td class="descriptionColumn">Old Artist Name</td><td><input size="50" type="text" name="artistNameOldWord" value=""></td></tr>
+<tr><td class="descriptionColumn">New Aritst Name</td><td><input size="50" type="text" name="artistNameNewWord" value=""></td></tr>
 </table>
 <table style="width:30%" class="inlineTable">
 <tr><td><button name="mp3Prettifier" value="saveArtistName">Save Name</button></td></tr>
@@ -140,8 +144,8 @@ th {
 
 <h3>Song Title</h3>
 <table style="width:60%" class="inlineTable">
-<tr><td>Old Song Title</td><td><input size="50" type="text" name="songTitleOldWord" value=""></td></tr>
-<tr><td>New Song Title</td><td><input size="50" type="text" name="songTitleNewWord" value=""></td></tr>
+<tr><td class="descriptionColumn">Old Song Title</td><td><input size="50" type="text" name="songTitleOldWord" value=""></td></tr>
+<tr><td class="descriptionColumn">New Song Title</td><td><input size="50" type="text" name="songTitleNewWord" value=""></td></tr>
 </table>
 <table style="width:30%" class="inlineTable">
 <tr><td><button name="mp3Prettifier" value="saveSongTitle">Save Title</button></td></tr>
@@ -163,7 +167,7 @@ th {
 	
 	foreach($configuration->config as $key2 => $config) {
 	   if (isset($config->splitter)){
-		/*println($config->splitter);*/
+		//println($config->splitter);
 	   }
    }
  }

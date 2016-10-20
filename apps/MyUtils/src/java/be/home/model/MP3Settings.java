@@ -5,11 +5,11 @@ package be.home.model;
  */
 public class MP3Settings {
     public String album;
-    public int lastPlayedSleep;
 
     public Synchronizer synchronizer;
     public Rating rating;
     public Mezzmo mezzmo;
+    public MediaMonkey mediaMonkey;
 
     public class Synchronizer{
         public String startDirectory;

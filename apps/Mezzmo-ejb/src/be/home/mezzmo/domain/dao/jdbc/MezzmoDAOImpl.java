@@ -34,7 +34,7 @@ public class MezzmoDAOImpl extends MezzmoDB {
             "MGOFile.Title as TITLE",
             "MGOFile.PlayCount as PLAYCOUNT", "MGOFile.Ranking as RANKING",
             "MGOFileArtist.DATA as ARTIST", "MGOFile.Duration as DURATION",
-            "MGOFile.disc as DISC",
+            "MGOFile.disc as DISC", "MGOFile.FileTitle as FILETITLE",
             "MGOFile.Track as TRACK", "MGOFile.Ranking as RANKING",
             "MGOFileAlbum.ID as ALBUMID", "MGOFileAlbum.Data as ALBUMNAME",
             "MGOFile.DateLastPlayed as DATELASTPLAYED"};

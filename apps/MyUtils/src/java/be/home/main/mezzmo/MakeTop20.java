@@ -104,10 +104,10 @@ public class MakeTop20 extends BatchJobV2{
             // get relative path
             String DRIVE = "I";
             Path pathAbsolute = Paths.get(DRIVE + comp.getFileTO().getFile());
-            Path pathBase = Paths.get(DRIVE + ":" + File.separator + config.mediaMonkey.base + File.separator + config.mediaMonkey.playlist.path);
+            Path pathBase = Paths.get(DRIVE + ":" + File.separator + mp3Settings.mediaMonkey.base + File.separator + mp3Settings.mediaMonkey.playlist.path);
             System.out.println("pathBase: " + pathBase.toString());
             System.out.println("pathAbsolute: " + pathAbsolute.toString());
-            Path iPodBase = Paths.get(DRIVE + ":" + File.separator + config.mediaMonkey.base);
+            Path iPodBase = Paths.get(DRIVE + ":" + File.separator + mp3Settings.mediaMonkey.base);
             Path mezzmoBase = Paths.get(mp3Settings.mezzmo.base + File.separator + "Eric");
             System.out.println("iPodBase: " + iPodBase.toString());
             System.out.println("MezzmoBase: " + mezzmoBase.toString());

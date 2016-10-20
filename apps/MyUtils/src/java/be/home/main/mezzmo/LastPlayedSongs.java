@@ -40,9 +40,6 @@ public class LastPlayedSongs extends BatchJobV2{
     public static void main(String args[]) throws InterruptedException {
 
         LastPlayedSongs instance = new LastPlayedSongs();
-        final String MP3_SETTINGS = Setup.getInstance().getFullPath(Constants.Path.CONFIG) + File.separator +
-                "MP3Settings.json";
-        MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSON(MP3_SETTINGS, MP3Settings.class, "UTF-8");
 
         try {
             config = instance.init();
@@ -93,7 +90,7 @@ public class LastPlayedSongs extends BatchJobV2{
                 log.info("Refresh: " + getRefreshTime(comp));
                 try {
                     exportLastPlayed(comp, base + "LastPlayed.html", "LastPlayed.vm", refresh);
-                    exportLastPlayed(comp, base + "LastPlayedV2.html", "LastPlayedV2.vm", refresh);
+                    exportLastPlayed(comp, base + "LastPlayedScroll.html", "LastPlayedScroll.vm", refresh);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -216,7 +213,7 @@ public class LastPlayedSongs extends BatchJobV2{
                 seconds = 15L;
             }
             else {
-                // lats played song is more than 10 minutes aggo
+                // lats played song is more than 10 minutes ago
                 seconds = 60L;
             }
         }

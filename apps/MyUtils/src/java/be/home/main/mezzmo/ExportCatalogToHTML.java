@@ -59,22 +59,50 @@ public class ExportCatalogToHTML extends BatchJobV2{
     public void run() {
         final String batchJob = "Export Catalog";
 
-        String base = WinUtils.getOneDrivePath();
-        log.info("OneDrive Path: " + base);
-        //System.out.println(ConvertSecondToHHMMSSString(250));
         process();
-
 
     }
 
     public void process(){
-        processAlbums();
+        HTMLSettings htmlSettings = (HTMLSettings) JSONUtils.openJSON(
+                Setup.getInstance().getFullPath(Constants.Path.CONFIG) + File.separator + "HTML.json", HTMLSettings.class);
+        try {
+            processMenu(htmlSettings, "c:/reports/Music/index.html");
+        } catch (IOException e) {
+            log.error(e);
+        }
+        processAlbums(htmlSettings);
 
     }
 
-    public void processAlbums() {
-        HTMLSettings htmlSettings = (HTMLSettings) JSONUtils.openJSON(
-                Setup.getInstance().getFullPath(Constants.Path.CONFIG) + File.separator + "HTML.json", HTMLSettings.class);
+    public void processMenu(HTMLSettings htmlSettings, String outputFile) throws IOException {
+        Properties p = new Properties();
+        p.setProperty("file.resource.loader.path", Setup.getInstance().getFullPath(Constants.Path.VELOCITY));
+
+        VelocityEngine ve = new VelocityEngine();
+        ve.init(p);
+        /*  next, get the Template  */
+        Template t = ve.getTemplate( "music/Index.htm" );
+        /*  create a context and add data */
+        VelocityContext context = new VelocityContext();
+        context.put("esc",new EscapeTool());
+        context.put("menuItems", htmlSettings.menu.menuItems);
+        Path file = Paths.get(outputFile);
+        BufferedWriter writer = null;
+        try {
+            writer = Files.newBufferedWriter(file, Charset.defaultCharset());
+            t.merge(context, writer);
+        } finally {
+            if (writer != null){
+                writer.flush();
+                writer.close();
+                log.info("Index created: " + file.toString());
+            }
+        }
+    }
+
+
+        public void processAlbums(HTMLSettings htmlSettings) {
         List<MGOFileAlbumCompositeTO> list = getMezzmoService().getAlbumTracks(new TransferObject());
         List<MGOFileAlbumCompositeTO> others = new ArrayList<MGOFileAlbumCompositeTO>();
         for (MGOFileAlbumCompositeTO comp : list){
@@ -113,7 +141,7 @@ public class ExportCatalogToHTML extends BatchJobV2{
         }
         String filename = "c:/reports/Music/MusicCatalog.html";
         try {
-            exportIndex(htmlSettings.export.groups, filename);
+            exportAlbumIndex(htmlSettings.export.groups, filename);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -138,7 +166,7 @@ public class ExportCatalogToHTML extends BatchJobV2{
 
     }
 
-    public void exportIndex(List<HTMLSettings.Group> list, String outputFile) throws IOException {
+    public void exportAlbumIndex(List<HTMLSettings.Group> list, String outputFile) throws IOException {
 
         Properties p = new Properties();
         p.setProperty("file.resource.loader.path", Setup.getInstance().getFullPath(Constants.Path.VELOCITY));
@@ -146,7 +174,7 @@ public class ExportCatalogToHTML extends BatchJobV2{
         VelocityEngine ve = new VelocityEngine();
         ve.init(p);
         /*  next, get the Template  */
-        Template t = ve.getTemplate( "music/Index.htm" );
+        Template t = ve.getTemplate( "music/MusicCatalog.htm" );
         /*  create a context and add data */
         VelocityContext context = new VelocityContext();
         context.put("esc",new EscapeTool());
@@ -160,7 +188,7 @@ public class ExportCatalogToHTML extends BatchJobV2{
             if (writer != null){
                 writer.flush();
                 writer.close();
-                log.info("Index created: " + file.toString());
+                log.info("Album Catalog created: " + file.toString());
             }
         }
     }

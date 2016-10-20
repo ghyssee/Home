@@ -46,6 +46,34 @@ public class HTMLSettings {
     public class Export {
         public List<Group> groups;
     }
+
+    public class Menu {
+        public List<MenuItem> menuItems;
+    }
+
+    public class MenuItem {
+        String description;
+        String href;
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+        public String getHref() {
+            return href;
+        }
+
+        public void setHref(String href) {
+            this.href = href;
+        }
+    }
+
     public Export export;
+    public Menu menu;
+
 
 }

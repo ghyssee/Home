@@ -136,6 +136,7 @@ public class MezzmoRowMappers {
                 fileTO.setFile(rs.getString("FILE"));
                 fileTO.setPlayCount(rs.getInt("PLAYCOUNT"));
                 fileTO.setTitle(rs.getString("TITLE"));
+                fileTO.setFileTitle(rs.getString("FILETITLE"));
                 artistTO.setArtist(rs.getString("ARTIST"));
                 fileTO.setDuration(rs.getInt("DURATION"));
                 fileTO.setDisc(rs.getInt("DISC"));

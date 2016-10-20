@@ -122,13 +122,10 @@ public class MakeCustomPlaylists extends BatchJobV2{
         else {
             log.warn("No albums found ");
         }
-        log.info("albums " + albums.toString());
         if (albums != null && albums.size() > 0) {
             List<MGOFileAlbumCompositeTO> list = getMezzmoService().getCustomPlayListSongs(albums, playlist.limit);
             Utils mezzmoUtils = new Utils();
             for (MGOFileAlbumCompositeTO comp : list) {
-                System.out.println(comp.getFileTO().getFile());
-                System.out.println(comp.getFileAlbumTO().getName());
                 comp.getFileTO().setFile(mezzmoUtils.relativizeFile(comp.getFileTO().getFile(), mp3Settings.mezzmo));
 
             }
