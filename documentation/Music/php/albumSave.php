@@ -111,8 +111,8 @@ function saveMezzmo($file, $mp3Settings){
 }
 
 function saveiPod($file, $mp3Settings){
-	assignCheckbox($mp3SettingsObj->synchronizer->updateRating, "updateRating");
-	writeJSON($mp3SettingsObj, $file);
+	assignCheckbox($mp3Settings->synchronizer->updateRating, "updateRating");
+	writeJSON($mp3Settings, $file);
 	println ('Contents saved to ' . $file);
 }
 
