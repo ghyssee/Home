@@ -60,5 +60,18 @@ function execInBackground($cmd) {
     }
 }
 
+function execInBackground2($cmd) {
+    if (substr(php_uname(), 0, 7) == "Windows"){
+		$handle = popen('start /B "" "'. $cmd . '"', "r");
+		//echo "'$handle'; " . gettype($handle) . "\n";
+		$read = fread($handle, 20960);
+		println($read);
+		pclose($handle);
+    }
+    else {
+        exec($cmd . " > /dev/null &");  
+    }
+}
+
 ?>
 
