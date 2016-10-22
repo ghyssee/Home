@@ -65,7 +65,7 @@ function execInBackground2($cmd) {
 		$handle = popen('start /B "" "'. $cmd . '"', "r");
 		//echo "'$handle'; " . gettype($handle) . "\n";
 		$read = fread($handle, 20960);
-		println($read);
+		println(nl2br($read));
 		pclose($handle);
     }
     else {

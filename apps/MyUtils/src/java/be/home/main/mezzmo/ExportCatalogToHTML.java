@@ -67,7 +67,7 @@ public class ExportCatalogToHTML extends BatchJobV2{
         HTMLSettings htmlSettings = (HTMLSettings) JSONUtils.openJSON(
                 Setup.getInstance().getFullPath(Constants.Path.CONFIG) + File.separator + "HTML.json", HTMLSettings.class);
         try {
-            processMenu(htmlSettings, "c:/reports/Music/index.html");
+            processMenu(htmlSettings, "c:/reports/index.html");
         } catch (IOException e) {
             log.error(e);
         }
@@ -101,8 +101,7 @@ public class ExportCatalogToHTML extends BatchJobV2{
         }
     }
 
-
-        public void processAlbums(HTMLSettings htmlSettings) {
+    public void processAlbums(HTMLSettings htmlSettings) {
         List<MGOFileAlbumCompositeTO> list = getMezzmoService().getAlbumTracks(new TransferObject());
         List<MGOFileAlbumCompositeTO> others = new ArrayList<MGOFileAlbumCompositeTO>();
         for (MGOFileAlbumCompositeTO comp : list){

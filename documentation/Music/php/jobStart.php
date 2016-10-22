@@ -51,6 +51,9 @@ if(isset($_POST['start'])){
 		if ($job->type == "MYUTILS"){
 			$cmd = $oneDrivePath . $jobsObj->myUtils->path . $cmd;
 		}
+		if ($job->type == "SERVICE"){
+			$cmd = $oneDrivePath . "/scripts/desktopi5/lnk/" . $cmd . ".lnk";
+		}
 		println("Cmd: " . $cmd);
 		execInBackground2($cmd);
 		println("Job started in background");
