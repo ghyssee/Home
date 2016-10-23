@@ -26,26 +26,34 @@ $jobsObj = readJSON($oneDrivePath . '/Config/Java/Jobs.json');
 th {
 	text-align:left;
 }
-.descriptionColumn {
-   width:20%;
+.columnDescription {
+   width:80%;
 }
-
 </style>
 
 <form action="jobStart.php" method="post">
 <h1>List Of Jobs</h1>
 <div class="horizontalLine">.</div>
 
- <table>
 <?php 
- foreach($jobsObj->list as $key => $job) {
-	echo "<tr>";
-	echo "<td>" . $job->description . "</td>";
-	echo '<td><button name="start" value="' . $job->id . '">Start</button></td>';
-	echo "</tr>";
+ foreach($jobsObj->list as $key => $groups) {
+	echo "<h3>" . $groups->title . "</h3>";
+	echo "<table>";
+	foreach($groups->jobs as $key => $job) {
+		echo "<tr>";
+		echo '<td class="columnDescription">' . $job->description . "</td>";
+			echo "\n";
+		echo '<td><button name="' . $groups->id . '" value="' . $job->id . '">Start</button></td>';
+			echo "\n";
+		if (isset($job->stop)){
+		    echo '<td><button name="' . "DELETE" . '" value="' . $job->stop . '">Stop</button></td>';
+			echo "\n";
+		}
+		echo "</tr>";
+    }
+	echo "</table>\n";
  }
 ?>
-</table>
 </body>
 </form>
 

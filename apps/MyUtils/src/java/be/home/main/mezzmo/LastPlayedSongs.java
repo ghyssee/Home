@@ -10,6 +10,7 @@ import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.model.ConfigTO;
 import be.home.model.MP3Settings;
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -37,10 +38,24 @@ public class LastPlayedSongs extends BatchJobV2{
     public static ConfigTO.Config config;
     private static final Logger log = Logger.getLogger(LastPlayedSongs.class);
 
-    public static void main(String args[]) throws InterruptedException {
+    public static void main(String args[]) throws IOException {
 
         LastPlayedSongs instance = new LastPlayedSongs();
-
+        //File file = new File();
+        String tmpFile = "c:/My Data/tmp/Java/" + instance.getClass().getSimpleName() + ".pid";
+        File file = new File(tmpFile);
+        if (file.exists()) {
+            String pid= FileUtils.readFileToString(file);
+            log.error("BathJob Already Running...");
+            return;
+        }
+        FileUtils.writeStringToFile(file, getPID());
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            public void run() {
+                System.out.println("doing some cleanup");
+                cleanUp(file);
+            }
+        }));
         try {
             config = instance.init();
             SQLiteJDBC.initialize(workingDir);
@@ -51,17 +66,29 @@ public class LastPlayedSongs extends BatchJobV2{
                 sleep = sleep - 5;
                 sleep = Math.max(sleep, 3);
                 log.info("Sleepig for " + sleep + " seconds");
-                Thread.sleep(sleep*1000);
+                try {
+                    Thread.sleep(sleep*1000);
+                } catch (InterruptedException e) {
+                    cleanUp(file);
+                }
             }
-            while (true);
+            while (true && file.exists());
+            cleanUp(file);
         }
         catch (FileNotFoundException e){
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         log.info("Batch ended: " + log.getName());
 
+    }
+
+    private static void cleanUp(File file){
+        if (file.exists()){
+            file.delete();
+        }
     }
 
     public long start() {
@@ -219,6 +246,23 @@ public class LastPlayedSongs extends BatchJobV2{
         }
         return seconds;
     }
+
+
+
+    public static String getPID() {
+        String processName = java.lang.management.ManagementFactory.getRuntimeMXBean().getName();
+        if (processName != null && processName.length() > 0) {
+            try {
+                return processName.split("@")[0];
+            }
+            catch (Exception e) {
+                return "";
+            }
+        }
+
+        return "";
+    }
+
 
 }
 

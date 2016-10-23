@@ -16,6 +16,7 @@
 	<description>My Apps</description>
 
 	<modules>
+		<module>MyWeb</module>
 		<module>MyUtils</module>
 		<module>JMSUtility</module>
 		<module>../TestUtils</module>

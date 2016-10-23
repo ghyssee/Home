@@ -3,7 +3,7 @@
 
 <?php
 include("config.php");
-$jobsObj = readJSON($oneDrivePath . '/Config/Java/Jobs.json');
+$jobsObj = initSave($oneDrivePath . '/Config/Java/Jobs.json');
 ?>
 
 <style>
@@ -26,9 +26,6 @@ $jobsObj = readJSON($oneDrivePath . '/Config/Java/Jobs.json');
 th {
 	text-align:left;
 }
-.descriptionColumn {
-   width:20%;
-}
 .errorMessage {
    color: red;
    font-weight: bolder;
@@ -41,10 +38,33 @@ th {
 <h1>Start Job</h1>
 <div class="horizontalLine">.</div>
 
-<?php 
-if(isset($_POST['start'])){
-	$button = $_POST['start'];
-	$job = findJob ($jobsObj->list, $button);
+<?php
+ foreach($jobsObj->list as $key => $groups) {
+    if(isset($_POST[$groups->id])){
+		println("Group Found: " . $groups->id);
+		$button = $_POST[$groups->id];
+		processJob($jobsObj, $oneDrivePath, $groups->jobs, $button);
+		break;
+	}
+ }
+	if (isset($_POST["DELETE"])){
+		$file = $_POST["DELETE"];
+		deleteFile($file);
+	}
+ 
+ function deleteFile($file){
+	$tmpFile = "c:/My Data/tmp/java/" . $file;
+	if (file_exists($tmpFile)){
+		println("Deleting file " . $tmpFile);
+		unlink ($tmpFile);
+	}
+	else {
+		println("Job Not Running: " . $file);
+	}
+ }
+ 
+ function processJob($jobsObj, $oneDrivePath, $group, $id){
+	$job = findJob ($group, $id);
 	if (!empty($job)){
 		println("Starting job " . $job->description);
 		$cmd = $job->cmd;
@@ -59,18 +79,16 @@ if(isset($_POST['start'])){
 		println("Job started in background");
 	}
 	else {
-		printErrorMessage("Job Not Found: " . $button, "errorMessage");
+		printErrorMessage("Job Not Found: " . $id, "errorMessage");
 	}
-}
-
+ }
+ 
 function findJob ($array, $jobId){
    foreach($array as $key => $job) {
 		if ($job->id == $jobId) {
 			return $job;
 		}
-   }
-      
-	
+   }	
 }
 
 ?>
