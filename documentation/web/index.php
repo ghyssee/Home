@@ -20,7 +20,7 @@
 }
 .title {
  font-family:Verdana;
- font-size:20pt; 
+ font-size:40px; 
  font-weight: bold; 
  color:black;
 }

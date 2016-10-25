@@ -86,7 +86,8 @@ function goMenu(){
 	println('<a href="' . $menuObj->root->href . '">' . $menuObj->root->description . '</a>');
 }
 
-class Month extends SplEnum {
+class Month {
+//extends SplEnum {
     const __default = self::January;
     
     const January = 1;
