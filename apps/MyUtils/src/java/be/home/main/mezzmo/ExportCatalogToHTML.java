@@ -94,7 +94,7 @@ public class ExportCatalogToHTML extends BatchJobV2{
         int idx = 1;
         for (HTMLSettings.Group group : htmlSettings.export.groups){
             log.info("Processing group " + group.from + "-" + group.to);
-            group.setFilename("Music/Albums/" + group.from + "_" + group.to + ".html");
+            group.setFilename(Setup.getPath(Constants.Path.WEB_MUSIC_ALBUMS) + File.separator + group.from + "_" + group.to + ".html");
             try {
                 for (MGOFileAlbumCompositeTO comp : group.list){
                     comp.setFilename("s" + idx + ".html");
@@ -120,7 +120,7 @@ public class ExportCatalogToHTML extends BatchJobV2{
                                                                                new Long(comp.getAlbumArtistTO().getId()));
         System.out.println("ALBUM:" + comp.getFileAlbumTO().getName());
         if (songs != null && songs.size() > 0) {
-            String file = Setup.getFullPath(Constants.Path.WEB) + "/Music/Songs/" + comp.getFilename();
+            String file = Setup.getFullPath(Constants.Path.WEB_MUSIC_SONGS) + File.separator + comp.getFilename();
             try {
                 exportAlbumSongs(comp, songs, file);
             } catch (Exception e) {
@@ -172,7 +172,7 @@ public class ExportCatalogToHTML extends BatchJobV2{
         VelocityContext context = new VelocityContext();
         context.put("esc",new EscapeTool());
         context.put("list", list);
-        Path file = Paths.get(Setup.getFullPath(Constants.Path.WEB) + File.separator + outputFile);
+        Path file = Paths.get(Setup.getFullPath(Constants.Path.WEB_MUSIC) + File.separator + outputFile);
         BufferedWriter writer = null;
         try {
             writer = Files.newBufferedWriter(file, Charset.defaultCharset());

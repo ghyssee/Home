@@ -56,6 +56,12 @@ public class Setup {
 
     }
 
+    public static String getPath(String type) {
+        Map<String, Object> tmp = (Map<String, Object>) map.get(type);
+        return (String) tmp.get("path");
+
+    }
+
 
 
 }

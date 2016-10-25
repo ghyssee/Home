@@ -49,5 +49,8 @@ public interface Constants {
         public static final String MAIN_LOG = "mainLog";
         public static final String LOG = "log";
         public static final String WEB = "web";
+        public static final String WEB_MUSIC = "webMusic";
+        public static final String WEB_MUSIC_ALBUMS = "webMusicAlbums";
+        public static final String WEB_MUSIC_SONGS = "webMusicSongs";
     }
 }

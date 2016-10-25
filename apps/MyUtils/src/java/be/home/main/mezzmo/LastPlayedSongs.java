@@ -52,7 +52,7 @@ public class LastPlayedSongs extends BatchJobV2{
         FileUtils.writeStringToFile(file, getPID());
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             public void run() {
-                System.out.println("doing some cleanup");
+                log.info("doing some cleanup");
                 cleanUp(file);
             }
         }));
@@ -103,7 +103,7 @@ public class LastPlayedSongs extends BatchJobV2{
 
     public long process() {
         List<MGOFileAlbumCompositeTO> list = getMezzmoService().getLastPlayed();
-        String base = "c:/reports/Music/";
+        String base = Setup.getFullPath(Constants.Path.WEB_MUSIC) + File.separator;
         String filename =  base + "LastPlayedSongs.html";
         int rec = 1;
         long refresh = 60L;
