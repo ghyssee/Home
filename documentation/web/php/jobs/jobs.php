@@ -2,7 +2,7 @@
 <body>
 
 <?php
-include("config.php");
+include("../config.php");
 $jobsObj = readJSON($oneDrivePath . '/Config/Java/Jobs.json');
 ?>
 
@@ -37,22 +37,23 @@ th {
 
 <?php 
  foreach($jobsObj->list as $key => $groups) {
-	echo "<h3>" . $groups->title . "</h3>";
-	echo "<table>";
+	printh( "<h3>" . $groups->title . "</h3>");
+	printh("<table>");
 	foreach($groups->jobs as $key => $job) {
-		echo "<tr>";
-		echo '<td class="columnDescription">' . $job->description . "</td>";
-			echo "\n";
-		echo '<td><button name="' . $groups->id . '" value="' . $job->id . '">Start</button></td>';
-			echo "\n";
+		printh("<tr>");
+		printh('<td class="columnDescription">' . $job->description . "</td>");
+		printh('<td><button name="' . $groups->id . '" value="' . $job->id . '">Start</button></td>');
 		if (isset($job->stop)){
-		    echo '<td><button name="' . "DELETE" . '" value="' . $job->stop . '">Stop</button></td>';
-			echo "\n";
+		    printh('<td><button name="' . "DELETE" . '" value="' . $job->stop . '">Stop</button></td>');
 		}
-		echo "</tr>";
+		printh("</tr>");
     }
-	echo "</table>\n";
+	printh("</table>");
  }
+?>
+<br>
+<?php
+	goMenu();
 ?>
 </body>
 </form>

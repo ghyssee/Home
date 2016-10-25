@@ -2,7 +2,7 @@
 <body>
 
 <?php
-include("config.php");
+include("../config.php");
 $jobsObj = initSave($oneDrivePath . '/Config/Java/Jobs.json');
 ?>
 
@@ -92,6 +92,11 @@ function findJob ($array, $jobId){
 }
 
 ?>
+<br>
+<script>
+    document.write('<a href="' + document.referrer + '">Go Back</a>');
+</script>
+
 </body>
 
 </html>

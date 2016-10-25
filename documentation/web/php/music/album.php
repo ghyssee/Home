@@ -2,7 +2,7 @@
 <body>
 
 <?php
-include("config.php");
+include("../config.php");
 $mp3SettingsObj = readJSON($oneDrivePath . '/Config/Java/MP3Settings.json');
 $mp3PreprocessorObj = readJSON($oneDrivePath . '/Config/Java/MP3Preprocessor.json');
 
@@ -153,8 +153,12 @@ th {
 <div class="emptySpace"></div>
 
 <br><br>
-</form>
 
+<?php
+	goMenu();
+?>
+
+</form>
 </body>
 </html> 
 

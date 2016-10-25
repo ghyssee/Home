@@ -1,7 +1,7 @@
 <html>
 <body>
 <?php
-include("config.php");
+include("../config.php");
 ?>
 <style>
 .emptySpace {
@@ -248,6 +248,8 @@ function wordExist($wordObj, $oldWord){
 ?>
 <div class="emptySpace"></div>
 
-<a href="album.php">Config Album</a>
+<script>
+    document.write('<a href="' + document.referrer + '">Go Back</a>');
+</script>
 </body>
 </html> 

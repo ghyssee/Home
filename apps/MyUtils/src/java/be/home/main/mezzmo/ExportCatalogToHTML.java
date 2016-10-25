@@ -7,7 +7,6 @@ import be.home.common.main.BatchJobV2;
 import be.home.common.model.TransferObject;
 import be.home.common.utils.DateUtils;
 import be.home.common.utils.JSONUtils;
-import be.home.common.utils.WinUtils;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.model.ConfigTO;
@@ -66,39 +65,8 @@ public class ExportCatalogToHTML extends BatchJobV2{
     public void process(){
         HTMLSettings htmlSettings = (HTMLSettings) JSONUtils.openJSON(
                 Setup.getInstance().getFullPath(Constants.Path.CONFIG) + File.separator + "HTML.json", HTMLSettings.class);
-        try {
-            processMenu(htmlSettings, "c:/reports/index.html");
-        } catch (IOException e) {
-            log.error(e);
-        }
         processAlbums(htmlSettings);
 
-    }
-
-    public void processMenu(HTMLSettings htmlSettings, String outputFile) throws IOException {
-        Properties p = new Properties();
-        p.setProperty("file.resource.loader.path", Setup.getInstance().getFullPath(Constants.Path.VELOCITY));
-
-        VelocityEngine ve = new VelocityEngine();
-        ve.init(p);
-        /*  next, get the Template  */
-        Template t = ve.getTemplate( "music/Index.htm" );
-        /*  create a context and add data */
-        VelocityContext context = new VelocityContext();
-        context.put("esc",new EscapeTool());
-        context.put("menuItems", htmlSettings.menu.menuItems);
-        Path file = Paths.get(outputFile);
-        BufferedWriter writer = null;
-        try {
-            writer = Files.newBufferedWriter(file, Charset.defaultCharset());
-            t.merge(context, writer);
-        } finally {
-            if (writer != null){
-                writer.flush();
-                writer.close();
-                log.info("Index created: " + file.toString());
-            }
-        }
     }
 
     public void processAlbums(HTMLSettings htmlSettings) {
@@ -126,7 +94,7 @@ public class ExportCatalogToHTML extends BatchJobV2{
         int idx = 1;
         for (HTMLSettings.Group group : htmlSettings.export.groups){
             log.info("Processing group " + group.from + "-" + group.to);
-            group.setFilename("Albums/" + group.from + "_" + group.to + ".html");
+            group.setFilename("Music/Albums/" + group.from + "_" + group.to + ".html");
             try {
                 for (MGOFileAlbumCompositeTO comp : group.list){
                     comp.setFilename("s" + idx + ".html");
@@ -138,7 +106,7 @@ public class ExportCatalogToHTML extends BatchJobV2{
                 e.printStackTrace();
             }
         }
-        String filename = "c:/reports/Music/MusicCatalog.html";
+        String filename = Setup.getFullPath(Constants.Path.WEB) + "/Music/MusicCatalog.html";
         try {
             exportAlbumIndex(htmlSettings.export.groups, filename);
         } catch (IOException e) {
@@ -152,7 +120,7 @@ public class ExportCatalogToHTML extends BatchJobV2{
                                                                                new Long(comp.getAlbumArtistTO().getId()));
         System.out.println("ALBUM:" + comp.getFileAlbumTO().getName());
         if (songs != null && songs.size() > 0) {
-            String file = "c:/reports/Music/Songs/" + comp.getFilename();
+            String file = Setup.getFullPath(Constants.Path.WEB) + "/Music/Songs/" + comp.getFilename();
             try {
                 exportAlbumSongs(comp, songs, file);
             } catch (Exception e) {
@@ -204,7 +172,7 @@ public class ExportCatalogToHTML extends BatchJobV2{
         VelocityContext context = new VelocityContext();
         context.put("esc",new EscapeTool());
         context.put("list", list);
-        Path file = Paths.get("c:/reports/Music/" + outputFile);
+        Path file = Paths.get(Setup.getFullPath(Constants.Path.WEB) + File.separator + outputFile);
         BufferedWriter writer = null;
         try {
             writer = Files.newBufferedWriter(file, Charset.defaultCharset());

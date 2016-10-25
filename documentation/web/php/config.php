@@ -2,6 +2,14 @@
 $oneDrivePath = getOneDrivePath();
 
 function println ($string_message) {
+    echo "$string_message" . "<br>" . PHP_EOL;
+}
+
+function printh ($string_message) {
+    echo "$string_message" . PHP_EOL;
+}
+
+function println_old ($string_message) {
     $_SERVER['SERVER_PROTOCOL'] ? print "$string_message<br />" : print "$string_message\n";
 }
 
@@ -72,6 +80,29 @@ function execInBackground2($cmd) {
         exec($cmd . " > /dev/null &");  
     }
 }
+
+function goMenu(){
+	$menuObj = readJSON(getOneDrivePath() . '/Config/Java/Menu.json');
+	println('<a href="' . $menuObj->root->href . '">' . $menuObj->root->description . '</a>');
+}
+
+class Month extends SplEnum {
+    const __default = self::January;
+    
+    const January = 1;
+    const February = 2;
+    const March = 3;
+    const April = 4;
+    const May = 5;
+    const June = 6;
+    const July = 7;
+    const August = 8;
+    const September = 9;
+    const October = 10;
+    const November = 11;
+    const December = 12;
+}
+
 
 ?>
 
