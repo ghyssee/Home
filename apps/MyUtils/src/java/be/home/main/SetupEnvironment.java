@@ -52,6 +52,9 @@ public class SetupEnvironment extends BatchJobV2 {
         FileUtils.checkDirectory(setup.getFullPath(Constants.Path.RESOURCES));
         // this directory will normally automatically be created by Log4J
         FileUtils.checkDirectory(setup.getFullPath(Constants.Path.LOG));
+        FileUtils.checkDirectory(setup.getFullPath(Constants.Path.WEB_MUSIC_ALBUMS));
+        FileUtils.checkDirectory(setup.getFullPath(Constants.Path.WEB_MUSIC_SONGS));
+        FileUtils.checkDirectory(setup.getFullPath(Constants.Path.TMP));
 
     }
 
