@@ -20,7 +20,7 @@
 }
 .title {
  font-family:Verdana;
- font-size:20pt; 
+ font-size:40px; 
  font-weight: bold; 
  color:black;
 }
@@ -71,7 +71,6 @@ a { text-decoration: none; }
   padding: 0;
   display: inline-block;
   position: relative;
-  font-size: 17px;
   color: #def1f0;
 }
 
@@ -82,6 +81,7 @@ a { text-decoration: none; }
   display: inline-block;
   outline: 0;
   font-weight: 400;
+  font-size: 40px;
 }
 
 .navigation li:hover ul.dropdown { display: block; }
@@ -89,7 +89,7 @@ a { text-decoration: none; }
 .navigation li ul.dropdown {
   position: absolute;
   display: none;
-  width: 300px;
+  width: 400px;
   background: #00695b;
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
   padding-top: 0;
@@ -107,6 +107,7 @@ a { text-decoration: none; }
   display: block;
   border-bottom: 1px solid #005c4d;
   font-weight: 400;
+  font-size: 20px;
 }
 
 .navigation li ul.dropdown li:last-child a { border-bottom: none; }
@@ -251,6 +252,12 @@ a { text-decoration: none; }
 </head>
 
 <body>
+
+<?php
+include("apps/php/config.php");
+$menuObj = readJSON($oneDrivePath . '/Config/Java/Menu2.json');
+?>
+
 <div class="title centered heightHeader">
 Eric's Menu
 </div>
@@ -259,28 +266,27 @@ Eric's Menu
     <nav>
       <div class="navigation">
         <ul>
-          <li><a href="">Home</a></li>
-          <li><a href="">Films</a></li>
-          <li><a href="#" tabindex="1">Configuratie<span class="arrow-down"></span></a>
-            <ul class="dropdown">
-              <li><a href="">Settings</a></li>
-              <li><a href="">MP3 Preprocessor Settings</a></li>
-            </ul>
-          </li>
-          <li><a href="#" tabindex="1">Muziek<span class="arrow-down"></span></a>
-            <ul class="dropdown">
-              <li><a href="">Catalogus</a></li>
-              <li><a href="Music/LastPlayedSongs.html">50 Laatst Afgespeelde Liedjes</a></li>
-              <li><a href="">Laatst Afgespeelde Liedje</a></li>
-              <li><a href="">Laatst Afgespeelde Liedje (Scroll)</a></li>
-            </ul>
-          </li>
-        </ul>
-      </div>
-      <div class="nav_bg">
-        <div class="nav_bar"> <span></span> <span></span> <span></span> </div>
-      </div>
-    </nav>
+			<?php
+			foreach($menuObj->menu->menuItems as $key => $menuItem) {
+				if (isset($menuItem->menuItems)){
+					printh ('<li><a href="#" tabindex="1">' . $menuItem->description . '<span class="arrow-down"></span></a>');
+					printh( '<ul class="dropdown">');
+					foreach($menuItem->menuItems as $key => $menuItem) {
+						printh( '<li><a href="' . $menuItem->href . '">' . $menuItem->description . '</a></li>');
+					}
+					printh('</ul>');
+				}
+				else {
+					printh( '<li><a href="' . $menuItem->href . '">' . $menuItem->description . '</a></li>');
+				}
+			}
+			?>
+       </ul>
+    </div>
+    <div class="nav_bg">
+      <div class="nav_bar"> <span></span> <span></span> <span></span> </div>
+    </div>
+  </nav>
 <script src="Music/js/jquery-3.1.1.js"></script> 
 <script>
 $(document).ready(function(){
