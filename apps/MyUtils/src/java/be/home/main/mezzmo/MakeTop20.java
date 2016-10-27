@@ -5,6 +5,7 @@ import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.JSONUtils;
+import be.home.common.utils.VelocityUtils;
 import be.home.common.utils.WinUtils;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.MGOFileTO;
@@ -136,8 +137,7 @@ public class MakeTop20 extends BatchJobV2{
     }
 
     private void writePlaylist(MP3Settings mp3Settings, List <MGOFileAlbumCompositeTO> list, String outputFile) throws IOException {
-        Properties p = new Properties();
-        p.setProperty("file.resource.loader.path", Setup.getInstance().getFullPath(Constants.Path.VELOCITY));
+        VelocityUtils vu = new VelocityUtils();
 
         String filename = mp3Settings.mezzmo.base + File.separator + mp3Settings.mezzmo.playlist.path;
         Path outputFolder = Paths.get(filename);
@@ -146,26 +146,13 @@ public class MakeTop20 extends BatchJobV2{
         }
         log.info("PlayList folder: " + outputFolder.toString());
 
-        VelocityEngine ve = new VelocityEngine();
-        ve.init(p);
-        /*  next, get the Template  */
-        Template t = ve.getTemplate( "Top20.vm" );
-        /*  create a context and add data */
         VelocityContext context = new VelocityContext();
         context.put("list", list);
-        Path file = Paths.get( outputFolder + File.separator + outputFile);
-        BufferedWriter writer = null;
-        try {
-            writer = Files.newBufferedWriter(file, Charset.defaultCharset());
-            t.merge(context, writer);
-        }
-        finally {
-            if (writer != null){
-                    writer.flush();
-                    writer.close();
-                    log.info("PlayList created: " + file.toString());
-            }
-        }
+
+        outputFile = outputFolder + File.separator + outputFile;
+
+        vu.makeFile("Top20.vm", outputFile, context);
+        log.info("PlayList created: " + outputFile);
     }
 
     public static MezzmoServiceImpl getMezzmoService(){
