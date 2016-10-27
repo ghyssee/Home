@@ -11,6 +11,12 @@ public class MP3Settings {
     public Mezzmo mezzmo;
     public MediaMonkey mediaMonkey;
 
+    public LastPlayedSong getLastPlayedSong() {
+        return lastPlayedSong;
+    }
+
+    public LastPlayedSong lastPlayedSong;
+
     public class Synchronizer{
         public String startDirectory;
         public boolean updateRating;
@@ -39,6 +45,37 @@ public class MP3Settings {
     public class MediaMonkey {
         public String base;
         public Playlist playlist;
+    }
+
+    public class LastPlayedSong {
+        public int number;
+        public String scrollBackgroundColor;
+        public String scrollColor;
+
+        public int getNumber() {
+            return number;
+        }
+
+        public void setNumber(int number) {
+            this.number = number;
+        }
+
+        public String getScrollBackgroundColor() {
+            return scrollBackgroundColor;
+        }
+
+        public void setScrollBackgroundColor(String scrollBackgroundColor) {
+            this.scrollBackgroundColor = scrollBackgroundColor;
+        }
+
+        public String getScrollColor() {
+            return scrollColor;
+        }
+
+        public void setScrollColor(String scrollColor) {
+            this.scrollColor = scrollColor;
+        }
+
     }
 
 }

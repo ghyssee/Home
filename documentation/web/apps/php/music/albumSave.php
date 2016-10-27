@@ -42,7 +42,9 @@ if(isset($_POST['mp3Settings'])){
 	else if ($button == "saveMM"){
 		saveMediaMonkey($file, $mp3SettingsObj);
 	}
-
+	else if ($button == "saveLastPlayed"){
+		saveLastPlayed($file, $mp3SettingsObj);
+	}
 }
 
 if(isset($_POST['mp3Prettifier'])){
@@ -139,6 +141,27 @@ function saveMediaMonkey($file, $mp3Settings){
 		println ('Contents saved to ' . $file);
 	}
 }
+
+function saveLastPlayed($file, $mp3Settings){
+	assignField($value, "number");
+	assignField($mp3Settings->lastPlayedSong->scrollColor, "scrollColor");
+	assignField($mp3Settings->lastPlayedSong->scrollBackgroundColor, "scrollBackgroundColor");
+	$intNumber = intval($value);
+	$save = true;
+	if ($intNumber <= 0) {
+		printErrorMessage ('Number must be an integer and greater than 0',  'errorMessage');
+		$save = false;
+	}
+	else {
+		$mp3Settings->lastPlayedSong->number = $intNumber;
+	}
+	if ($save) {
+		writeJSON($mp3Settings, $file);
+		println ('Contents saved to ' . $file);
+	}
+}
+
+
 
 function saveGlobalWord($file, $mp3PrettifierObj){
 	println("<h1>Global Word</h1>");

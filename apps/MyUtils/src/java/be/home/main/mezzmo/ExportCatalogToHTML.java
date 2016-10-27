@@ -7,6 +7,7 @@ import be.home.common.main.BatchJobV2;
 import be.home.common.model.TransferObject;
 import be.home.common.utils.DateUtils;
 import be.home.common.utils.JSONUtils;
+import be.home.common.utils.VelocityUtils;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.model.ConfigTO;
@@ -77,8 +78,8 @@ public class ExportCatalogToHTML extends BatchJobV2{
             boolean found = false;
             for (HTMLSettings.Group group : htmlSettings.export.groups){
                 if (firstChar.substring(0, group.from.length()).compareTo(group.from) >= 0 && firstChar.substring(0,group.to.length()).compareTo(group.to) <= 0){
-                    System.out.println(comp.getFileAlbumTO().getName());
-                    System.out.println("Group found:" + group.from + "/" + group.to);
+                    log.info(comp.getFileAlbumTO().getName());
+                    log.info("Group found:" + group.from + "/" + group.to);
                     if (group.list == null){
                         group.list = new ArrayList<MGOFileAlbumCompositeTO>();
                     }
@@ -118,7 +119,7 @@ public class ExportCatalogToHTML extends BatchJobV2{
     public void processAlbumSongs(MGOFileAlbumCompositeTO comp) throws IOException {
         List<MGOFileAlbumCompositeTO> songs = getMezzmoService().getSongsAlbum(new Long(comp.getFileAlbumTO().getId()),
                                                                                new Long(comp.getAlbumArtistTO().getId()));
-        System.out.println("ALBUM:" + comp.getFileAlbumTO().getName());
+        log.info("ALBUM:" + comp.getFileAlbumTO().getName());
         if (songs != null && songs.size() > 0) {
             String file = Setup.getFullPath(Constants.Path.WEB_MUSIC_SONGS) + File.separator + comp.getFilename();
             try {
@@ -128,94 +129,45 @@ public class ExportCatalogToHTML extends BatchJobV2{
             }
         }
         else {
-            System.err.println("Problem finding this album");
+            log.error("Problem finding this album");
         }
 
     }
 
     public void exportAlbumIndex(List<HTMLSettings.Group> list, String outputFile) throws IOException {
 
-        Properties p = new Properties();
-        p.setProperty("file.resource.loader.path", Setup.getInstance().getFullPath(Constants.Path.VELOCITY));
+        VelocityUtils vu = new VelocityUtils();
 
-        VelocityEngine ve = new VelocityEngine();
-        ve.init(p);
-        /*  next, get the Template  */
-        Template t = ve.getTemplate( "music/MusicCatalog.htm" );
         /*  create a context and add data */
         VelocityContext context = new VelocityContext();
         context.put("esc",new EscapeTool());
         context.put("list", list);
-        Path file = Paths.get(outputFile);
-        BufferedWriter writer = null;
-        try {
-            writer = Files.newBufferedWriter(file, Charset.defaultCharset());
-            t.merge(context, writer);
-        } finally {
-            if (writer != null){
-                writer.flush();
-                writer.close();
-                log.info("Album Catalog created: " + file.toString());
-            }
-        }
+        vu.makeFile("music/MusicCatalog.htm", outputFile, context);
+        log.info("Album Catalog created: " + outputFile);
     }
 
     public void export(List<MGOFileAlbumCompositeTO> list, String outputFile) throws IOException {
-        Properties p = new Properties();
-        p.setProperty("file.resource.loader.path", Setup.getInstance().getFullPath(Constants.Path.VELOCITY));
+        VelocityUtils vu = new VelocityUtils();
+        outputFile = Setup.getFullPath(Constants.Path.WEB_MUSIC) + File.separator + outputFile;
 
-        VelocityEngine ve = new VelocityEngine();
-        ve.init(p);
-        /*  next, get the Template  */
-        Template t = ve.getTemplate( "music/Album.htm" );
-        /*  create a context and add data */
         VelocityContext context = new VelocityContext();
         context.put("esc",new EscapeTool());
         context.put("list", list);
-        Path file = Paths.get(Setup.getFullPath(Constants.Path.WEB_MUSIC) + File.separator + outputFile);
-        BufferedWriter writer = null;
-        try {
-            writer = Files.newBufferedWriter(file, Charset.defaultCharset());
-            t.merge(context, writer);
-        } finally {
-            if (writer != null){
-                writer.flush();
-                writer.close();
-                log.info("PlayList created: " + file.toString());
-            }
-        }
+        vu.makeFile("music/Album.htm", outputFile, context);
+        log.info("Album File created: " + outputFile);
     }
 
     public void exportAlbumSongs(MGOFileAlbumCompositeTO comp, List<MGOFileAlbumCompositeTO> list, String outputFile) throws Exception {
-        Properties p = new Properties();
-        p.setProperty("file.resource.loader.path", Setup.getInstance().getFullPath(Constants.Path.VELOCITY));
-
-        VelocityEngine ve = new VelocityEngine();
-        ve.init(p);
-        /*  next, get the Template  */
-        Template t = ve.getTemplate( "music/Song.htm" );
-        /*  create a context and add data */
+        VelocityUtils vu = new VelocityUtils();
         VelocityContext context = new VelocityContext();
-
         context.put("album", comp);
         context.put("list", list);
         context.put("date",new DateTool());
         context.put("esc", new EscapeTool());
         context.put("du", new DateUtils());
         context.put("su", new StringUtils());
-        Path file = Paths.get(outputFile);
-        BufferedWriter writer = null;
-        try {
-            writer = Files.newBufferedWriter(file, Charset.defaultCharset());
-            t.merge(context, writer);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (writer != null){
-                writer.flush();
-                writer.close();
-            }
-        }
+        vu.makeFile("music/Song.htm", outputFile, context);
+        log.info("Song File created: " + outputFile);
     }
 
     public static MezzmoServiceImpl getMezzmoService(){

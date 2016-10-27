@@ -5,6 +5,7 @@
 include("../config.php");
 $mp3SettingsObj = readJSON($oneDrivePath . '/Config/Java/MP3Settings.json');
 $mp3PreprocessorObj = readJSON($oneDrivePath . '/Config/Java/MP3Preprocessor.json');
+$htmlObj = readJSON($oneDrivePath . '/Config/Java/HTML.json');
 
 $oneDrive = getOneDrivePath();
 println($oneDrive);
@@ -37,6 +38,9 @@ th {
 </style>
 
 <form action="albumSave.php" method="post">
+<?php
+	goMenu();
+?>
 <h1>Album Configuration</h1>
 <div class="horizontalLine">.</div>
 <table style="width:60%" class="inlineTable">
@@ -103,6 +107,23 @@ th {
 </table>
 <table style="width:30%" class="inlineTable">
 <tr><td><button name="mp3Preprocessor" value="save">Save</button></td></tr>
+</table>
+<div class="emptySpace"></div>
+<br><br>
+</form>
+<div class="emptySpace"></div>
+
+<form action="albumSave.php" method="post">
+<h1>LastPlayed Configuration</h1>
+<div class="horizontalLine">.</div>
+
+<table style="width:60%" class="inlineTable">
+<tr><td>Number</td><td><input size="50" type="text" name="number" value="<?php print $mp3SettingsObj->lastPlayedSong->number; ?>"></td></tr>
+<tr><td>Scroll Color</td><td><?php generateSelectFromArray2($htmlObj->colors, "scrollColor", $mp3SettingsObj->lastPlayedSong->scrollColor); ?></td></tr>
+<tr><td>Scroll Background Color</td><td><?php generateSelectFromArray2($htmlObj->colors, "scrollBackgroundColor", $mp3SettingsObj->lastPlayedSong->scrollBackgroundColor); ?></td></tr>
+</table>
+<table style="width:30%" class="inlineTable">
+<tr><td><button name="mp3Settings" value="saveLastPlayed">Save</button></td></tr>
 </table>
 <div class="emptySpace"></div>
 <br><br>
@@ -186,6 +207,20 @@ th {
 			$selected = " selected";
 		}
 		echo "<option value=\"$value->id\"" . $selected . ">" . getConfigurationText($value->config) . "</option>";
+   }
+    echo "</select>";
+}
+
+ function generateSelectFromArray2($array, $field, $default){
+  echo '<select name="' . $field . '">';
+  
+  foreach($array as $key => $value) {
+    
+		$selected = "";
+		if ($value->code == $default){
+			$selected = " selected";
+		}
+		echo "<option value=\"$value->code\"" . $selected . ">" . $value->description . "</option>";
    }
     echo "</select>";
 }

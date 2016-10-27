@@ -35,7 +35,7 @@ public interface Constants {
         public static final String BASEDIR = "mp3Processor";
         public static final String ALBUM = "album";
         public static final String TMP = "tmp";
-        public static final String JAVA = "java";
+        public static final String TMP_JAVA = "tmpjava";
         public static final String PREPROCESS = "preprocess";
         public static final String PROCESS = "process";
         public static final String NEW = "new";

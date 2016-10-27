@@ -6,27 +6,21 @@ import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.DateUtils;
 import be.home.common.utils.JSONUtils;
+import be.home.common.utils.VelocityUtils;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.model.ConfigTO;
 import be.home.model.MP3Settings;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
-import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.tools.generic.DateTool;
 import org.apache.velocity.tools.generic.EscapeTool;
 
 import java.io.*;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * Created by ghyssee on 9/02/2016.
@@ -37,17 +31,29 @@ public class LastPlayedSongs extends BatchJobV2{
 
     public static ConfigTO.Config config;
     private static final Logger log = Logger.getLogger(LastPlayedSongs.class);
+    private static final String MP3_SETTINGS = Setup.getInstance().getFullPath(Constants.Path.CONFIG) + File.separator +
+            "MP3Settings.json";
 
     public static void main(String args[]) throws IOException {
 
         LastPlayedSongs instance = new LastPlayedSongs();
-        //File file = new File();
-        String tmpFile = "c:/My Data/tmp/Java/" + instance.getClass().getSimpleName() + ".pid";
+        String tmpFile = Setup.getInstance().getFullPath(Constants.Path.TMP_JAVA) + File.separator +
+                         instance.getClass().getSimpleName() + ".pid";
         File file = new File(tmpFile);
         if (file.exists()) {
-            String pid= FileUtils.readFileToString(file);
-            log.error("BathJob Already Running...");
-            return;
+            //String pid= FileUtils.readFileToString(file);
+            long ms = new Date().getTime();
+            long fms = file.lastModified();
+            long diffSeconds = (ms-fms) / 1000;
+            log.info("BathJob Running... Last Runtime: " + diffSeconds + " seconds ago");
+            if (diffSeconds > 300){
+                // more than 5 minutes ago, so it shouldn't be running anymore
+                file.delete();
+            }
+            else {
+                log.error("BathJob Already Running...");
+                return;
+            }
         }
         FileUtils.writeStringToFile(file, getPID());
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
@@ -68,6 +74,7 @@ public class LastPlayedSongs extends BatchJobV2{
                 log.info("Sleepig for " + sleep + " seconds");
                 try {
                     Thread.sleep(sleep*1000);
+                    FileUtils.touch(file);
                 } catch (InterruptedException e) {
                     cleanUp(file);
                 }
@@ -93,8 +100,6 @@ public class LastPlayedSongs extends BatchJobV2{
 
     public long start() {
         return process();
-
-
     }
 
     public void run(){
@@ -102,24 +107,23 @@ public class LastPlayedSongs extends BatchJobV2{
     }
 
     public long process() {
-        List<MGOFileAlbumCompositeTO> list = getMezzmoService().getLastPlayed();
+        MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSON(MP3_SETTINGS, MP3Settings.class, "UTF-8");
+        log.info("Number of last played songs to show: " + mp3Settings.lastPlayedSong.number);
+        List<MGOFileAlbumCompositeTO> list = getMezzmoService().getLastPlayed(mp3Settings.lastPlayedSong.number);
         String base = Setup.getFullPath(Constants.Path.WEB_MUSIC) + File.separator;
         String filename =  base + "LastPlayedSongs.html";
         int rec = 1;
         long refresh = 60L;
         for (MGOFileAlbumCompositeTO comp : list){
             if (rec == 1) {
-                //long ms = (new Date().getTime()) - comp.getFileTO().getDuration()*1000 - 11*60*1000;
-                //Date dd = new Date(ms);
-                //comp.getFileTO().setDateLastPlayed(dd);
                 comp.setCurrentlyPlaying(isCurrentlyPlaying(comp));
                 refresh = getRefreshTime(comp);
                 log.info("Refresh: " + getRefreshTime(comp));
                 try {
-                    exportLastPlayed(comp, base + "LastPlayed.html", "LastPlayed.vm", refresh);
-                    exportLastPlayed(comp, base + "LastPlayedScroll.html", "LastPlayedScroll.vm", refresh);
+                    exportLastPlayed(mp3Settings, comp, base + "LastPlayed.html", "LastPlayed.vm", refresh);
+                    exportLastPlayed(mp3Settings, comp, base + "LastPlayedScroll.html", "LastPlayedScroll.vm", refresh);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    log.error(e);
                 }
                 rec++;
             }
@@ -127,7 +131,7 @@ public class LastPlayedSongs extends BatchJobV2{
         try {
             export(list, filename, refresh);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e);
         }
         return refresh;
     }
@@ -136,63 +140,33 @@ public class LastPlayedSongs extends BatchJobV2{
         context.put("refresh", refresh);
     }
 
-    public void exportLastPlayed(MGOFileAlbumCompositeTO comp, String outputFile, String template, long refresh) throws IOException {
-        Properties p = new Properties();
-        p.setProperty("file.resource.loader.path", Setup.getInstance().getFullPath(Constants.Path.VELOCITY));
+    public void exportLastPlayed(MP3Settings mp3Settings, MGOFileAlbumCompositeTO comp, String outputFile, String template, long refresh) throws IOException {
+        VelocityUtils vu = new VelocityUtils();
 
-        VelocityEngine ve = new VelocityEngine();
-        ve.init(p);
-        /*  next, get the Template  */
-        Template t = ve.getTemplate( template );
-        /*  create a context and add data */
         VelocityContext context = new VelocityContext();
+        context.put("lastPlayedSong", mp3Settings.getLastPlayedSong());
         context.put("date",new DateTool());
         context.put("esc",new EscapeTool());
         context.put("du",new DateUtils());
         context.put("song", comp);
         setRefreshTime(context, refresh);
-        Path file = Paths.get(outputFile);
-        BufferedWriter writer = null;
-        try {
-            writer = Files.newBufferedWriter(file, Charset.defaultCharset());
-            t.merge(context, writer);
-        } finally {
-            if (writer != null){
-                writer.flush();
-                writer.close();
-                log.info("LastPlayed created: " + file.toString());
-            }
-        }
+        vu.makeFile(template, outputFile, context);
+        log.info("LastPlayed created: " + outputFile);
     }
 
 
     public void export(List<MGOFileAlbumCompositeTO> list, String outputFile, long refresh) throws IOException {
-        Properties p = new Properties();
-        p.setProperty("file.resource.loader.path", Setup.getInstance().getFullPath(Constants.Path.VELOCITY));
 
-        VelocityEngine ve = new VelocityEngine();
-        ve.init(p);
-        /*  next, get the Template  */
-        Template t = ve.getTemplate( "LastPlayedSongs.vm" );
-        /*  create a context and add data */
+        VelocityUtils vu = new VelocityUtils();
+
         VelocityContext context = new VelocityContext();
         context.put("date",new DateTool());
         context.put("esc",new EscapeTool());
         context.put("du",new DateUtils());
         context.put("list", list);
         setRefreshTime(context, refresh);
-        Path file = Paths.get(outputFile);
-        BufferedWriter writer = null;
-        try {
-            writer = Files.newBufferedWriter(file, Charset.defaultCharset());
-            t.merge(context, writer);
-        } finally {
-            if (writer != null){
-                writer.flush();
-                writer.close();
-                log.info("LastPlayed created: " + file.toString());
-            }
-        }
+        vu.makeFile("LastPlayedSongs.vm", outputFile, context);
+        log.info("LastPlayed created: " + outputFile);
     }
 
     public static MezzmoServiceImpl getMezzmoService(){

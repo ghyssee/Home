@@ -256,6 +256,7 @@ a { text-decoration: none; }
 <?php
 include("apps/php/config.php");
 $menuObj = readJSON($oneDrivePath . '/Config/Java/Menu2.json');
+$mp3SettingsObj = readJSON($oneDrivePath . '/Config/Java/MP3Settings.json');
 ?>
 
 <div class="title centered heightHeader">
@@ -272,12 +273,12 @@ Eric's Menu
 					printh ('<li><a href="#" tabindex="1">' . $menuItem->description . '<span class="arrow-down"></span></a>');
 					printh( '<ul class="dropdown">');
 					foreach($menuItem->menuItems as $key => $menuItem) {
-						printh( '<li><a href="' . $menuItem->href . '">' . $menuItem->description . '</a></li>');
+						printh( '<li><a href="' . $menuItem->href . '">' . getDescription($menuItem) . '</a></li>');
 					}
 					printh('</ul>');
 				}
 				else {
-					printh( '<li><a href="' . $menuItem->href . '">' . $menuItem->description . '</a></li>');
+					printh( '<li><a href="' . $menuItem->href . '">' . getDescription($menuItem) . '</a></li>');
 				}
 			}
 			?>
@@ -298,3 +299,10 @@ $(document).ready(function(){
 </script>
 </body>
 </html>
+<?php
+	function getDescription($menuItem){
+		$description = $menuItem->description;
+		$description = str_replace("%NumberOfSongs%", $GLOBALS['mp3SettingsObj']->lastPlayedSong->number, $description);
+		return $description;
+	}
+?>

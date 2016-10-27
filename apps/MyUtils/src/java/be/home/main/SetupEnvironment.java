@@ -54,7 +54,7 @@ public class SetupEnvironment extends BatchJobV2 {
         FileUtils.checkDirectory(setup.getFullPath(Constants.Path.LOG));
         FileUtils.checkDirectory(setup.getFullPath(Constants.Path.WEB_MUSIC_ALBUMS));
         FileUtils.checkDirectory(setup.getFullPath(Constants.Path.WEB_MUSIC_SONGS));
-        FileUtils.checkDirectory(setup.getFullPath(Constants.Path.TMP));
+        FileUtils.checkDirectory(setup.getFullPath(Constants.Path.TMP_JAVA));
 
     }
 

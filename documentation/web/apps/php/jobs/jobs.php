@@ -32,6 +32,9 @@ th {
 </style>
 
 <form action="jobStart.php" method="post">
+<?php
+	goMenu();
+?>
 <h1>List Of Jobs</h1>
 <div class="horizontalLine">.</div>
 

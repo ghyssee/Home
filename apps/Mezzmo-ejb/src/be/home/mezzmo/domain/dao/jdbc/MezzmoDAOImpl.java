@@ -214,7 +214,7 @@ public class MezzmoDAOImpl extends MezzmoDB {
             "INNER JOIN MGOAlbumArtist ON (MGOAlbumArtist.ID = MGOAlbumArtistRelationship.ID) " +
             "WHERE MGOFileExtension.data = 'mp3' " +
             "ORDER BY mgofile.datelastplayed DESC " +
-            "LIMIT 0,50 ";
+            "LIMIT 0,? ";
 
     private static final Logger log = Logger.getLogger(MezzmoDAOImpl.class);
 
@@ -336,10 +336,11 @@ public class MezzmoDAOImpl extends MezzmoDB {
 
     }
 
-    public List<MGOFileAlbumCompositeTO> getLastPlayed()
+    public List<MGOFileAlbumCompositeTO> getLastPlayed(int number)
     {
         String query = FIND_LAST_PLAYED;
-        List<MGOFileAlbumCompositeTO>  list = getInstance().getJDBCTemplate().query(query, new MezzmoRowMappers.SongsAlbumRowMapper());
+        Object[] params = {number};
+        List<MGOFileAlbumCompositeTO>  list = getInstance().getJDBCTemplate().query(query, new MezzmoRowMappers.SongsAlbumRowMapper(), params);
         return list;
 
     }
