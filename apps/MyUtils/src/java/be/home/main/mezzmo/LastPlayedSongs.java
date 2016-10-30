@@ -74,7 +74,9 @@ public class LastPlayedSongs extends BatchJobV2{
                 log.info("Sleepig for " + sleep + " seconds");
                 try {
                     Thread.sleep(sleep*1000);
-                    FileUtils.touch(file);
+                    if (file.exists()) {
+                        FileUtils.touch(file);
+                    }
                 } catch (InterruptedException e) {
                     cleanUp(file);
                 }
@@ -201,7 +203,7 @@ public class LastPlayedSongs extends BatchJobV2{
             lastPlayed = cal.getTime();
             long secBetween = DateUtils.getSecondsBetween(lastPlayed, currDate);
             if (song.isCurrentlyPlaying()) {
-                seconds = secBetween / 2;
+                seconds = (secBetween > 10) ? (secBetween-5) : 5;
                 seconds = Math.max(seconds, 5L);
                 seconds = Math.min(seconds, 60L);
             }
@@ -214,7 +216,7 @@ public class LastPlayedSongs extends BatchJobV2{
                 seconds = 15L;
             }
             else {
-                // lats played song is more than 10 minutes ago
+                // last played song is more than 10 minutes ago
                 seconds = 60L;
             }
         }

@@ -3,9 +3,13 @@
 
 <?php
 include("../config.php");
+include("../model/HTML.php");
+include("../html/config.php");
 $mp3SettingsObj = readJSON($oneDrivePath . '/Config/Java/MP3Settings.json');
 $mp3PreprocessorObj = readJSON($oneDrivePath . '/Config/Java/MP3Preprocessor.json');
 $htmlObj = readJSON($oneDrivePath . '/Config/Java/HTML.json');
+session_start(); 
+$_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
 ?>
 
 <style>
@@ -31,21 +35,36 @@ th {
 .descriptionColumn {
    width:20%;
 }
-
+.errorMessage {
+   color: red;
+   font-weight: bolder;
+   font-size: 20px;
+   
+}
 </style>
 
 <?php
 	goMenu();
+	$HTML_SETTINGS = 'htmlSettings';
+	if (isset($_SESSION["color"])){
+		$color = $_SESSION["color"];
+	}
+	else {
+		$color = new Color();
+	}
+	unset($_SESSION["color"]);
 ?>
 <h1>Settings</h1>
 <div class="horizontalLine">.</div>
 <form action="settingsSave.php" method="post">
 <table style="width:60%" class="inlineTable">
-<tr><td>Omschrijving</td><td><input size="50" type="text" name="colorDescription" value=""></td></tr>
-<tr><td>Kleur Code</td><td><input size="30" type="text" name="colorCode" value=""></td></tr>
+<?php errorCheck($HTML_SETTINGS, "description"); ?>
+<tr><td>Omschrijving</td><td><?php inputBox("colorDescription", $color->description, 50); ?></td></tr>
+<?php errorCheck($HTML_SETTINGS, "code"); ?>
+<tr><td>Kleur Code</td><td><?php inputBox("colorCode", $color->code, 30); ?></td></tr>
 </table>
 <table style="width:30%" class="inlineTable">
-<tr><td><button name="htmlSettings" value="addColor">Add</button></td></tr>
+<tr><td><?php button($HTML_SETTINGS, "addColor", "add"); ?></td></tr>
 </table>
 <div class="emptySpace"></div>
 </form>
@@ -54,12 +73,13 @@ th {
 <br><br>
 <?php
 	goMenu();
+	unset($_SESSION["errors"]);
 ?>
-</form>
 </body>
 </html> 
 
 <?php 
+ 
  
  function generateSelectFromArray2($array, $field, $default){
   echo '<select name="' . $field . '">';

@@ -104,6 +104,19 @@ class Month {
     const December = 12;
 }
 
+function objectExist ($array, $field, $value, $caseSensitive = true){
+
+	foreach($array as $key => $obj) {
+		if ($caseSensitive){
+			return strcmp($obj->{$field}, $value) == 0;
+		}
+		else {
+			return strcasecmp($obj->{$field}, $value) == 0;
+		}
+	}
+	return false;
+}
+
 
 ?>
 
