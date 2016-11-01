@@ -108,10 +108,14 @@ function objectExist ($array, $field, $value, $caseSensitive = true){
 
 	foreach($array as $key => $obj) {
 		if ($caseSensitive){
-			return strcmp($obj->{$field}, $value) == 0;
+			if (strcmp($obj->{$field}, $value) == 0){
+				return true;
+			}
 		}
 		else {
-			return strcasecmp($obj->{$field}, $value) == 0;
+			if (strcasecmp($obj->{$field}, $value) == 0){
+				return true;
+			}
 		}
 	}
 	return false;

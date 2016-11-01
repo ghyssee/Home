@@ -2,8 +2,6 @@
 include("../config.php");
 include("../model/HTML.php");
 include("../html/config.php");
-?>
-<?php
 session_start(); 
 if(isset($_POST['htmlSettings'])){
 	$button = $_POST['htmlSettings'];
@@ -14,30 +12,28 @@ if(isset($_POST['htmlSettings'])){
 	}
 }
 
-function addColor($file){
+function addColor(String $file){
 
-	println("<h1>HTML Color</h1>");
 	$htmlObj = initSave($file);
 	$color = new Color();
 
 	assignField($color->description, "colorDescription");
 	assignField($color->code, "colorCode");
 	$save = true;
-	//$color = new Color($description, $code);
-	$errors = array();
 	if (empty($color->description)) {
-		addError('htmlSettings', 'description', "Color Description can't be empty");
+		addError('description', "Color Description can't be empty");
 		$save = false;
 	}
 	if (empty($color->code)) {
-		addError('htmlSettings', 'code', "Color code can't be empty");
+		addError('code', "Color code can't be empty");
 		$save = false;
 	}
-	if (objectExist($htmlObj->colors, "code", $color->code, false)){
-		addError('htmlSettings','code', "Color Code already exist: " . $color->code);
+	elseif (objectExist($htmlObj->colors, "code", $color->code, false)){
+		addError('code', "Color Code already exist: " . $color->code);
 		$save = false;
 	}
 	if ($save) {
+	    println("<h1>HTML Color</h1>");
 		array_push ($htmlObj->colors, $color);
 		println ('Contents saved to ' . $file);
 		//writeJSON($htmlObj, $file);

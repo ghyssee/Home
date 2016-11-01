@@ -45,26 +45,24 @@ th {
 
 <?php
 	goMenu();
-	$HTML_SETTINGS = 'htmlSettings';
 	if (isset($_SESSION["color"])){
 		$color = $_SESSION["color"];
 	}
 	else {
 		$color = new Color();
 	}
-	unset($_SESSION["color"]);
 ?>
 <h1>Settings</h1>
 <div class="horizontalLine">.</div>
 <form action="settingsSave.php" method="post">
 <table style="width:60%" class="inlineTable">
-<?php errorCheck($HTML_SETTINGS, "description"); ?>
+<?php errorCheck("description"); ?>
 <tr><td>Omschrijving</td><td><?php inputBox("colorDescription", $color->description, 50); ?></td></tr>
-<?php errorCheck($HTML_SETTINGS, "code"); ?>
+<?php errorCheck("code"); ?>
 <tr><td>Kleur Code</td><td><?php inputBox("colorCode", $color->code, 30); ?></td></tr>
 </table>
 <table style="width:30%" class="inlineTable">
-<tr><td><?php button($HTML_SETTINGS, "addColor", "add"); ?></td></tr>
+<tr><td><?php button("htmlSettings", "addColor", "add"); ?></td></tr>
 </table>
 <div class="emptySpace"></div>
 </form>
@@ -74,6 +72,7 @@ th {
 <?php
 	goMenu();
 	unset($_SESSION["errors"]);
+	unset($_SESSION["color"]);
 ?>
 </body>
 </html> 

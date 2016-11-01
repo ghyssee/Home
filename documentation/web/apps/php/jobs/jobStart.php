@@ -26,12 +26,6 @@ $jobsObj = initSave($oneDrivePath . '/Config/Java/Jobs.json');
 th {
 	text-align:left;
 }
-.errorMessage {
-   color: red;
-   font-weight: bolder;
-   font-size: 20px;
-   
-}
 
 </style>
 

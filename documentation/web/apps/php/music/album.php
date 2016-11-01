@@ -3,6 +3,7 @@
 
 <?php
 include("../config.php");
+include("../html/config.php");
 $mp3SettingsObj = readJSON($oneDrivePath . '/Config/Java/MP3Settings.json');
 $mp3PreprocessorObj = readJSON($oneDrivePath . '/Config/Java/MP3Preprocessor.json');
 $htmlObj = readJSON($oneDrivePath . '/Config/Java/HTML.json');
@@ -119,8 +120,14 @@ th {
 
 <table style="width:60%" class="inlineTable">
 <tr><td>Number</td><td><input size="50" type="text" name="number" value="<?php print $mp3SettingsObj->lastPlayedSong->number; ?>"></td></tr>
-<tr><td>Scroll Color</td><td><?php generateSelectFromArray2($htmlObj->colors, "scrollColor", $mp3SettingsObj->lastPlayedSong->scrollColor); ?></td></tr>
-<tr><td>Scroll Background Color</td><td><?php generateSelectFromArray2($htmlObj->colors, "scrollBackgroundColor", $mp3SettingsObj->lastPlayedSong->scrollBackgroundColor); ?></td></tr>
+<tr><td>Scroll Color</td><td><?php
+		generateSelectFromArray2($htmlObj->colors, "scrollColor", $mp3SettingsObj->lastPlayedSong->scrollColor);
+		//comboBox($htmlObj->colors, new Input(array('name'=>"scrollBackgroundColor",
+		//	                                       'value'=>$mp3SettingsObj->lastPlayedSong->scrollBackgroundColor)));
+		?>
+	</td></tr>
+<tr><td>Scroll Background Color</td><td><?php generateSelectFromArray2($htmlObj->colors, "scrollBackgroundColor",
+			$mp3SettingsObj->lastPlayedSong->scrollBackgroundColor); ?></td></tr>
 </table>
 <table style="width:30%" class="inlineTable">
 <tr><td><button name="mp3Settings" value="saveLastPlayed">Save</button></td></tr>

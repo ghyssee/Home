@@ -51,6 +51,7 @@ public class MP3Settings {
         public int number;
         public String scrollBackgroundColor;
         public String scrollColor;
+        public boolean scrollShowAlbum;
 
         public int getNumber() {
             return number;
@@ -74,6 +75,14 @@ public class MP3Settings {
 
         public void setScrollColor(String scrollColor) {
             this.scrollColor = scrollColor;
+        }
+
+        public boolean isScrollShowAlbum() {
+            return scrollShowAlbum;
+        }
+
+        public void setScrollShowAlbum(boolean scrollShowAlbum) {
+            this.scrollShowAlbum = scrollShowAlbum;
         }
 
     }

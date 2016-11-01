@@ -1,22 +1,8 @@
-<html>
-<body>
 <?php
 include("../config.php");
-?>
-<style>
-.emptySpace {
-	height:100px
-}
-.errorMessage {
-   color: red;
-   font-weight: bolder;
-   font-size: 20px;
-   
-}
-</style>
-<h1>Save Settings</h1>
-
-<?php
+include("../model/HTML.php");
+include("../html/config.php");
+session_start(); 
 if(isset($_POST['mp3Preprocessor'])){
 	$button = $_POST['mp3Preprocessor'];
 	$file = $oneDrivePath . '/Config/Java/MP3Preprocessor.json';
@@ -30,62 +16,35 @@ if(isset($_POST['mp3Preprocessor'])){
 
 function addSplitter($file){
 
-	println("<h1>MP3Preprocessor Splitter</h1>");
 	$mp3PreprocesorObj = initSave($file);
+	$splitter = new Splitter();
 
-	assignField($id, "splitterId");
-	assignField($splitter, "splitter");
+	assignField($splitter->id, "splitterId");
+	assignField($splitter->pattern, "pattern");
 	$save = true;
-	if (empty($id)) {
-		printErrorMessage ("Splitter Id can't be empty", "errorMessage");
+	if (empty($splitter->id)) {
+		addError('id', "Splitter Id can't be empty");
 		$save = false;
 	}
-	if (empty($splitter)) {
-		printErrorMessage ("Splitter can't be empty", "errorMessage");
+	if (empty($splitter->pattern)) {
+		addError('pattern', "Pattern can't be empty");
 		$save = false;
 	}
-	else if (objectExist($mp3PreprocesorObj->splitters, "pattern", $splitter, false)){
-			printErrorMessage ("Splitter already exist: " . $splitter, "errorMessage");
+	elseif (objectExist($mp3PreprocesorObj->splitters, "pattern", $splitter->pattern, false)){
+			addError('pattern', "Splitter already exist: " . $splitter->pattern);
 			$save = false;
 	}
 	if ($save) {
-		array_push ($mp3PreprocesorObj->splitters, new Splitter($id, $splitter));
+		println("<h1>MP3Preprocessor Splitter</h1>");
+		array_push ($mp3PreprocesorObj->splitters, $splitter->pattern);
 		println ('Contents saved to ' . $file);
-		writeJSON($mp3PreprocesorObj, $file);
+		//writeJSON($mp3PreprocesorObj, $file);
+	}
+	else{
+		$_SESSION["splitter"] = $splitter;
+		header("Location: " . $_SESSION["previous_location"]);
+		exit();
 	}
 }
 
-class Splitter
-{
-  public $id;
-  public $pattern;
-
-  public function __construct($id, $pattern)
-  {
-    $this->id = $id;    
-    $this->pattern = $pattern;
-  }
-}
-
-class Config
-{
-  public $type;
-  public $splitter;
-  public $duration;
-
-  public function __construct($type, $splitter, $duration)
-  {
-    $this->type = $type;    
-    $this->splitter = $splitter;
-	$this->duration = $duration;
-  }
-}
-
 ?>
-<div class="emptySpace"></div>
-
-<script>
-    document.write('<a href="' + document.referrer + '">Go Back</a>');
-</script>
-</body>
-</html> 

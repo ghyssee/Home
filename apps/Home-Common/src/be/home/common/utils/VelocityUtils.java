@@ -5,8 +5,6 @@ import be.home.common.constants.Constants;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.tools.generic.DateTool;
-import org.apache.velocity.tools.generic.EscapeTool;
 
 import java.io.BufferedWriter;
 import java.io.IOException;

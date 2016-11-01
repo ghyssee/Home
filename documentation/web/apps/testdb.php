@@ -1,8 +1,33 @@
 <?php
-echo print_r($array);
-echo "<br>";
-echo phpversion();
-$dbHandle = sqlite_open("c:/My Data/Mezzmo.db");
+//$dbHandle = sqlite_open("c:/My Data/Mezzmo.db");
+//_test(array('item'=>"test", 'css'=>"default"));
+$myTst = new MyTest(array('id'=>"100", 'name'=>"patternId"));
+echo "xxx" . $myTst->id;
+echo "yyy" . $myTst->name;
+
+function _test($array){
+    $obj = (object) $array;
+    var_dump($array);
+    echo $obj->item;
+}
+
+class MyTest
+{
+    public $id;
+    public $pattern;
+    public $name;
+    public $field;
+    public $value;
+
+
+    public function __construct($array)
+    {
+        $keys = array_keys($array);
+        foreach($keys as $key => $tst) {
+            $this->{$tst} = $array[$tst];
+        }
+    }
+}
 
 
 function sqlite_open($location)
