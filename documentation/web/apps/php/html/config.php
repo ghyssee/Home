@@ -1,6 +1,6 @@
 <?php
 
- function inputBox($name, $value, $size){
+ function inputBox2($name, $value, $size){
  echo '<input size="' . $size . '" type="text" name="' . $name . '"" value="' . $value . '">';
  }
 
@@ -10,6 +10,7 @@ class Input
     public $id;
     public $value;
     public $default;
+    public $size;
 
     public function __construct($array)
     {
@@ -20,7 +21,12 @@ class Input
     }
 }
 
-function comboBox($array, Input $input){
+function inputBox(Input $input){
+    //<input size="50" type="text" name="albumTag" value="<?php print $mp3PreprocessorObj->albumTag;
+    echo '<input size="' . $input->size . '" type="text" name="' . $input->name . '" value="' . $input->value . '">';
+}
+
+function comboBox($array, $id, $value, Input $input){
     echo '<select name="' . $input->name . '">';
 
     foreach($array as $key => $item) {

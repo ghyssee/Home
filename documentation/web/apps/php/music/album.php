@@ -100,10 +100,29 @@ th {
 <div class="horizontalLine">.</div>
 
 <table style="width:60%" class="inlineTable">
-<tr><td>AlbumTag</td><td><input size="50" type="text" name="albumTag" value="<?php print $mp3PreprocessorObj->albumTag; ?>"></td></tr>
-<tr><td>CdTag</td><td><input size="50" type="text" name="cdTag" value="<?php print $mp3PreprocessorObj->cdTag; ?>"></td></tr>
-<tr><td>Prefix</td><td><input size="50" type="text" name="prefix" value="<?php print $mp3PreprocessorObj->prefix; ?>"></td></tr>
-<tr><td>Suffix</td><td><input size="50" type="text" name="suffix" value="<?php print $mp3PreprocessorObj->suffix; ?>"></td></tr>
+<tr><td>AlbumTag</td><td><?php inputBox(new Input(array('name'=>"albumTag",
+                                                        'size'=>50,
+                                                        'value'=>$mp3PreprocessorObj->albumTag)));
+        ?>
+    </td></tr>
+<tr><td>CdTag</td><td>
+        <?php inputBox(new Input(array('name'=>"cdTag",
+                                       'size'=>50,
+                                       'value'=>$mp3PreprocessorObj->cdTag)));
+        ?>
+    </td></tr>
+<tr><td>Prefix</td><td>
+        <?php inputBox(new Input(array('name'=>"prefix",
+            'size'=>50,
+            'value'=>$mp3PreprocessorObj->prefix)));
+        ?>
+    </td></tr>
+<tr><td>Suffix</td><td>
+        <?php inputBox(new Input(array('name'=>"suffix",
+            'size'=>50,
+            'value'=>$mp3PreprocessorObj->suffix)));
+        ?>
+    </td></tr>
 <tr><td>Active Configuration</td><td><?php generateSelectFromArray($mp3PreprocessorObj->configurations, $mp3PreprocessorObj->activeConfiguration); ?></td></tr>
 </table>
 <table style="width:30%" class="inlineTable">
@@ -119,15 +138,27 @@ th {
 <div class="horizontalLine">.</div>
 
 <table style="width:60%" class="inlineTable">
-<tr><td>Number</td><td><input size="50" type="text" name="number" value="<?php print $mp3SettingsObj->lastPlayedSong->number; ?>"></td></tr>
-<tr><td>Scroll Color</td><td><?php
-		generateSelectFromArray2($htmlObj->colors, "scrollColor", $mp3SettingsObj->lastPlayedSong->scrollColor);
-		//comboBox($htmlObj->colors, new Input(array('name'=>"scrollBackgroundColor",
-		//	                                       'value'=>$mp3SettingsObj->lastPlayedSong->scrollBackgroundColor)));
+<tr><td>Number</td><td>
+        <?php inputBox(new Input(array('name'=>"number",
+            'size'=>5,
+            'value'=>$mp3SettingsObj->lastPlayedSong->number)));
+        ?>
+    </td></tr>
+<tr><td>Scroll Color</td><td>
+		<?php
+		comboBox($htmlObj->colors, "code", "description",
+			     new Input(array('name'=>"scrollColor",
+					             'default'=>$mp3SettingsObj->lastPlayedSong->scrollColor)));
 		?>
 	</td></tr>
-<tr><td>Scroll Background Color</td><td><?php generateSelectFromArray2($htmlObj->colors, "scrollBackgroundColor",
-			$mp3SettingsObj->lastPlayedSong->scrollBackgroundColor); ?></td></tr>
+<tr><td>Scroll Background Color</td><td>
+		<?php
+		comboBox($htmlObj->colors, "code", "description",
+			new Input(array('name'=>"scrollBackgroundColor",
+                            'default'=>$mp3SettingsObj->lastPlayedSong->scrollBackgroundColor)));
+	     ?>
+
+	</td></tr>
 </table>
 <table style="width:30%" class="inlineTable">
 <tr><td><button name="mp3Settings" value="saveLastPlayed">Save</button></td></tr>
@@ -214,20 +245,6 @@ th {
 			$selected = " selected";
 		}
 		echo "<option value=\"$value->id\"" . $selected . ">" . getConfigurationText($value->config) . "</option>";
-   }
-    echo "</select>";
-}
-
- function generateSelectFromArray2($array, $field, $default){
-  echo '<select name="' . $field . '">';
-  
-  foreach($array as $key => $value) {
-    
-		$selected = "";
-		if ($value->code == $default){
-			$selected = " selected";
-		}
-		echo "<option value=\"$value->code\"" . $selected . ">" . $value->description . "</option>";
    }
     echo "</select>";
 }
