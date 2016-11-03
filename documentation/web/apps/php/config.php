@@ -43,12 +43,6 @@ function initSave($file){
 	return $obj;
 }
 
-function setCheckBox($value){
-	if ($value) {
-		echo " checked";
-	}
-}
-
 function getOneDrivePath() {
 	$Wshshell= new COM('WScript.Shell');
 	try {

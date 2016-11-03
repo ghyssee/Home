@@ -9,7 +9,6 @@ $mp3PreprocessorObj = readJSON($oneDrivePath . '/Config/Java/MP3Preprocessor.jso
 $htmlObj = readJSON($oneDrivePath . '/Config/Java/HTML.json');
 
 $oneDrive = getOneDrivePath();
-println($oneDrive);
 ?>
 
 <style>
@@ -17,7 +16,13 @@ println($oneDrive);
    float: left;
 }
 .emptySpace {
-	height:80px
+     height:80px;
+ }
+.buttonDiv {
+    height: 80px;
+    display: flex;
+    align-items: center;
+    text-align: right;
 }
 .horizontalLine {
     width: 95%
@@ -44,77 +49,114 @@ th {
 ?>
 <h1>Album Configuration</h1>
 <div class="horizontalLine">.</div>
-<table style="width:60%" class="inlineTable">
-<tr><td>Album</td><td><input size="100" type="text" name="album" value="<?php print $mp3SettingsObj->album; ?>"></td></tr>
+<table>
+<tr><td>Album</td>
+    <td>
+        <?php inputBox(new Input(array('name'=>"album",
+            'size'=>100,
+            'value'=>$mp3SettingsObj->album)));
+        ?>
+    </td></tr>
 </table>
-<table style="width:30%" class="inlineTable">
-<tr><td><button name="mp3Settings" value="saveAlbum">Save</button></td></tr>
-</table>
-<div class="emptySpace"></div>
+<div class="buttonDiv">
+    <?php button(new Input(array('name'=>"mp3Settings",
+        'value'=>'saveAlbum',
+        'text'=>'Save')));
+    ?>
+</div>
 </form>
 
 <form action="albumSave.php" method="post">
 <h1>Mezzmo Configuration</h1>
 <div class="horizontalLine">.</div>
-<table style="width:60%" class="inlineTable">
-<tr><td>Base</td><td><input size="100" type="text" name="mezzmoBase" value="<?php print $mp3SettingsObj->mezzmo->base; ?>"></td></tr>
+<table>
+<tr><td>Base</td><td>
+        <?php inputBox(new Input(array('name'=>"mezzmoBase",
+            'size'=>100,
+            'value'=>$mp3SettingsObj->mezzmo->base)));
+        ?>
+</td></tr>
 </table>
-<table style="width:30%" class="inlineTable">
-<tr><td><button name="mp3Settings" value="saveMezzmo">Save</button></td></tr>
-</table>
-<div class="emptySpace"></div>
+<div class="buttonDiv">
+    <?php button(new Input(array('name'=>"mp3Settings",
+        'value'=>'saveMezzmo',
+        'text'=>'Save')));
+    ?>
+</div>
 </form>
 
 <form action="albumSave.php" method="post">
 <h1>iPod Configuration</h1>
 <div class="horizontalLine">.</div>
 
-<table style="width:60%" class="inlineTable">
-<tr><td>Update Rating<input type="checkbox" name="updateRating" 
-                            value="<?php print $mp3SettingsObj->synchronizer->updateRating; ?>" <?php setCheckbox($mp3SettingsObj->synchronizer->updateRating) ?>>
+<table>
+<tr><td>Update Rating
+        <?php checkBox(new Input(array('name'=>"updateRating",
+                                       'value'=>$mp3SettingsObj->synchronizer->updateRating)));
+        ?>
 </td></tr>
 </table>
-<table style="width:30%" class="inlineTable">
-<tr><td><button name="mp3Settings" value="saveiPod">Save</button></td></tr>
-</table>
+<div class="buttonDiv">
+    <?php button(new Input(array('name'=>"mp3Settings",
+        'value'=>'saveiPod',
+        'text'=>'Save')));
+    ?>
+</div>
 </form>
-<div class="emptySpace"></div>
 
 <form action="albumSave.php" method="post">
 <h1>MediaMonkey Configuration</h1>
 <div class="horizontalLine">.</div>
 
-<table style="width:60%" class="inlineTable">
-<tr><td>Base</td><td><input size="100" type="text" name="mediaMonkeyBase" value="<?php print $mp3SettingsObj->mediaMonkey->base; ?>"></td></tr>
-<tr><td>Playlist Path</td><td><input size="100" type="text" name="mediaMonkeyPlaylistPath" value="<?php print $mp3SettingsObj->mediaMonkey->playlist->path; ?>"></td></tr>
-<tr><td>Top 20 Name</td><td><input size="100" type="text" name="mediaMonkeyTop20" value="<?php print $mp3SettingsObj->mediaMonkey->playlist->top20; ?>"></td></tr>
+<table>
+<tr><td>Base</td><td>
+        <?php inputBox(new Input(array('name'=>"mediaMonkeyBase",
+            'size'=>100,
+            'value'=>$mp3SettingsObj->mediaMonkey->base)));
+        ?>
+</td></tr>
+<tr><td>Playlist Path</td><td>
+    <?php inputBox(new Input(array('name'=>"mediaMonkeyPlaylistPath",
+        'size'=>100,
+        'value'=>$mp3SettingsObj->mediaMonkey->playlist->path)));
+    ?>
+</td></tr>
+<tr><td>Top 20 Name</td><td>
+        <?php inputBox(new Input(array('name'=>"mediaMonkeyTop20",
+            'size'=>100,
+            'value'=>$mp3SettingsObj->mediaMonkey->playlist->top20)));
+        ?>
+    </td></tr>
 </table>
-<table style="width:30%" class="inlineTable">
-<tr><td><button name="mp3Settings" value="saveMM">Save</button></td></tr>
-</table>
+<div class="buttonDiv">
+    <?php button(new Input(array('name'=>"mp3Settings",
+        'value'=>'saveMM',
+        'text'=>'Save')));
+    ?>
+</div>
 </form>
-<div class="emptySpace"></div>
 
 <form action="albumSave.php" method="post">
 <h1>MP3Preprocessor Configuration</h1>
 <div class="horizontalLine">.</div>
 
-<table style="width:60%" class="inlineTable">
-<tr><td>AlbumTag</td><td><?php inputBox(new Input(array('name'=>"albumTag",
-                                                        'size'=>50,
-                                                        'value'=>$mp3PreprocessorObj->albumTag)));
+<table>
+<tr><td>AlbumTag</td><td>
+        <?php inputBox(new Input(array('name'=>"albumTag",
+                                       'size'=>50,
+                                       'value'=>$mp3PreprocessorObj->albumTag)));
         ?>
-    </td></tr>
+</td></tr>
 <tr><td>CdTag</td><td>
         <?php inputBox(new Input(array('name'=>"cdTag",
                                        'size'=>50,
                                        'value'=>$mp3PreprocessorObj->cdTag)));
         ?>
-    </td></tr>
+</td></tr>
 <tr><td>Prefix</td><td>
         <?php inputBox(new Input(array('name'=>"prefix",
-            'size'=>50,
-            'value'=>$mp3PreprocessorObj->prefix)));
+                                       'size'=>50,
+                                       'value'=>$mp3PreprocessorObj->prefix)));
         ?>
     </td></tr>
 <tr><td>Suffix</td><td>
@@ -122,16 +164,16 @@ th {
             'size'=>50,
             'value'=>$mp3PreprocessorObj->suffix)));
         ?>
-    </td></tr>
+</td></tr>
 <tr><td>Active Configuration</td><td><?php generateSelectFromArray($mp3PreprocessorObj->configurations, $mp3PreprocessorObj->activeConfiguration); ?></td></tr>
 </table>
-<table style="width:30%" class="inlineTable">
-<tr><td><button name="mp3Preprocessor" value="save">Save</button></td></tr>
-</table>
-<div class="emptySpace"></div>
-<br><br>
+<div class="buttonDiv">
+    <?php button(new Input(array('name'=>"mp3Preprocessor",
+        'value'=>'save',
+        'text'=>'Save')));
+    ?>
+</div>
 </form>
-<div class="emptySpace"></div>
 
 <form action="albumSave.php" method="post">
 <h1>LastPlayed Configuration</h1>
@@ -143,75 +185,111 @@ th {
             'size'=>5,
             'value'=>$mp3SettingsObj->lastPlayedSong->number)));
         ?>
-    </td></tr>
+</td></tr>
 <tr><td>Scroll Color</td><td>
 		<?php
 		comboBox($htmlObj->colors, "code", "description",
 			     new Input(array('name'=>"scrollColor",
 					             'default'=>$mp3SettingsObj->lastPlayedSong->scrollColor)));
 		?>
-	</td></tr>
+</td></tr>
 <tr><td>Scroll Background Color</td><td>
 		<?php
 		comboBox($htmlObj->colors, "code", "description",
 			new Input(array('name'=>"scrollBackgroundColor",
                             'default'=>$mp3SettingsObj->lastPlayedSong->scrollBackgroundColor)));
 	     ?>
-
-	</td></tr>
+</td></tr>
 </table>
-<table style="width:30%" class="inlineTable">
-<tr><td><button name="mp3Settings" value="saveLastPlayed">Save</button></td></tr>
-</table>
-<div class="emptySpace"></div>
-<br><br>
+    <div class="buttonDiv">
+        <?php button(new Input(array('name'=>"mp3Settings",
+            'value'=>'saveLastPlayed',
+            'text'=>'Save')));
+        ?>
+    </div>
 </form>
-<div class="emptySpace"></div>
 
 <form action="albumSave.php" method="post">
 <h1>MP3Prettifier Configuration</h1>
 <hr>
 <h3>General</h3>
-<table style="width:60%" class="inlineTable">
-<tr><td class="descriptionColumn">Old Word</td><td><input size="50" type="text" name="oldWord" value=""></td></tr>
-<tr><td style="width:10%">New Word</td><td><input size="50" type="text" name="newWord" value=""></td></tr>
+<table>
+<tr><td class="descriptionColumn">Old Word</td><td>
+        <?php inputBox(new Input(array('name'=>"oldWord",
+            'size'=>50)));
+        ?>
+<tr><td style="width:10%">New Word</td><td>
+            <?php inputBox(new Input(array('name'=>"newWord",
+                'size'=>50)));
+            ?>
+</td></tr>
 </table>
-<table style="width:30%" class="inlineTable">
-<tr><td><button name="mp3Prettifier" value="SaveGlobalWord">Save Word</button></td></tr>
-</table>
-<div class="emptySpace"></div>
+    <div class="buttonDiv">
+        <?php button(new Input(array('name'=>"mp3Prettifier",
+            'value'=>'SaveGlobalWord',
+            'text'=>'Save Word')));
+        ?>
+    </div>
 
 <h3>Artist Word</h3>
-<table style="width:60%" class="inlineTable">
-<tr><td class="descriptionColumn">Old Word</td><td><input size="50" type="text" name="artistOldWord" value=""></td></tr>
-<tr><td class="descriptionColumn">New Word</td><td><input size="50" type="text" name="artistNewWord" value=""></td></tr>
-</table>
-<table style="width:30%" class="inlineTable">
-<tr><td><button name="mp3Prettifier" value="saveArtistWord">Save Word</button></td></tr>
-</table>
-<div class="emptySpace"></div>
+
+    <table>
+        <tr><td class="descriptionColumn">Old Word</td><td>
+                <?php inputBox(new Input(array('name'=>"artistOldWord",
+                    'size'=>50)));
+                ?>
+        <tr><td style="width:10%">New Word</td><td>
+                <?php inputBox(new Input(array('name'=>"artistNewWord",
+                    'size'=>50)));
+                ?>
+            </td></tr>
+    </table>
+    <div class="buttonDiv">
+        <?php button(new Input(array('name'=>"mp3Prettifier",
+            'value'=>'saveArtistWord',
+            'text'=>'Save Word')));
+        ?>
+    </div>
 
 <h3>Artist Name</h3>
-<table style="width:60%" class="inlineTable">
-<tr><td class="descriptionColumn">Old Artist Name</td><td><input size="50" type="text" name="artistNameOldWord" value=""></td></tr>
-<tr><td class="descriptionColumn">New Aritst Name</td><td><input size="50" type="text" name="artistNameNewWord" value=""></td></tr>
-</table>
-<table style="width:30%" class="inlineTable">
-<tr><td><button name="mp3Prettifier" value="saveArtistName">Save Name</button></td></tr>
-</table>
-<div class="emptySpace"></div>
+
+    <table>
+        <tr><td class="descriptionColumn">Old Artist Name</td><td>
+                <?php inputBox(new Input(array('name'=>"artistNameOldWord",
+                    'size'=>50)));
+                ?>
+        <tr><td style="width:10%">New Aritst Name</td><td>
+                <?php inputBox(new Input(array('name'=>"artistNameNewWord",
+                    'size'=>50)));
+                ?>
+            </td></tr>
+    </table>
+    <div class="buttonDiv">
+        <?php button(new Input(array('name'=>"mp3Prettifier",
+            'value'=>'saveArtistName',
+            'text'=>'Save Name')));
+        ?>
+    </div>
 
 <h3>Song Title</h3>
-<table style="width:60%" class="inlineTable">
-<tr><td class="descriptionColumn">Old Song Title</td><td><input size="50" type="text" name="songTitleOldWord" value=""></td></tr>
-<tr><td class="descriptionColumn">New Song Title</td><td><input size="50" type="text" name="songTitleNewWord" value=""></td></tr>
-</table>
-<table style="width:30%" class="inlineTable">
-<tr><td><button name="mp3Prettifier" value="saveSongTitle">Save Title</button></td></tr>
-</table>
-<div class="emptySpace"></div>
 
-<br><br>
+    <table>
+        <tr><td class="descriptionColumn">Old Song Title</td><td>
+                <?php inputBox(new Input(array('name'=>"songTitleOldWord",
+                    'size'=>50)));
+                ?>
+        <tr><td style="width:10%">New Song Title</td><td>
+                <?php inputBox(new Input(array('name'=>"songTitleNewWord",
+                    'size'=>50)));
+                ?>
+            </td></tr>
+    </table>
+    <div class="buttonDiv">
+        <?php button(new Input(array('name'=>"mp3Prettifier",
+            'value'=>'saveSongTitle',
+            'text'=>'Save Title')));
+        ?>
+    </div>
 
 <?php
 	goMenu();
@@ -221,20 +299,8 @@ th {
 </body>
 </html> 
 
-<?php 
- foreach($mp3PreprocessorObj->configurations as $key => $configuration) {
-	/*println($configuration->id);
-	println("Count: " . count($configuration->config));
-	*/
-    /*println("<option value='1000'>1000</option>");*/
-	
-	foreach($configuration->config as $key2 => $config) {
-	   if (isset($config->splitter)){
-		//println($config->splitter);
-	   }
-   }
- }
- 
+<?php
+
  function generateSelectFromArray($array, $default){
   echo "<select name=\"activeConfiguration\">";
   

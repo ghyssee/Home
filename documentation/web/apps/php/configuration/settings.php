@@ -13,7 +13,14 @@ $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
 ?>
 
 <style>
-.inlineTable {
+.buttonDiv {
+    height: 80px;
+    display: flex;
+    align-items: center;
+    text-align: right;
+}
+
+    .inlineTable {
    float: left;
 }
 .emptySpace {
@@ -55,20 +62,30 @@ th {
 <h1>Settings</h1>
 <div class="horizontalLine">.</div>
 <form action="settingsSave.php" method="post">
-<table style="width:60%" class="inlineTable">
+<table>
 <?php errorCheck("description"); ?>
-<tr><td>Omschrijving</td><td><?php inputBox("colorDescription", $color->description, 50); ?></td></tr>
+<tr><td>Omschrijving</td><td>
+        <?php inputBox(new Input(array('name'=>"colorDescription",
+            'size'=>50,
+            "value"=>$color->description)));
+        ?>
+    </td></tr>
 <?php errorCheck("code"); ?>
-<tr><td>Kleur Code</td><td><?php inputBox("colorCode", $color->code, 30); ?></td></tr>
+<tr><td>Kleur Code</td><td>
+        <?php inputBox(new Input(array('name'=>"colorCode",
+                                       'size'=>30,
+                                       '"value'=>$color->code)));
+        ?>
+    </td></tr>
 </table>
-<table style="width:30%" class="inlineTable">
-<tr><td><?php button("htmlSettings", "addColor", "add"); ?></td></tr>
-</table>
-<div class="emptySpace"></div>
+    <div class="buttonDiv">
+        <?php button(new Input(array('name'=>"htmlSettings",
+            'value'=>'addColor',
+            'text'=>'add')));
+        ?>
+    </div>
 </form>
 
-<div class="emptySpace"></div>
-<br><br>
 <?php
 	goMenu();
 	unset($_SESSION["errors"]);

@@ -12,7 +12,7 @@ if(isset($_POST['htmlSettings'])){
 	}
 }
 
-function addColor(String $file){
+function addColor($file){
 
 	$htmlObj = initSave($file);
 	$color = new Color();
