@@ -8,6 +8,7 @@ class Input
     public $default;
     public $size;
     public $text;
+    public $required;
 
     public function __construct($array)
     {
