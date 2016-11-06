@@ -161,6 +161,7 @@ public class M3uMakerV2 extends BatchJobV2 {
     private String getUniqueSong(String song){
         String tmpSong = song.toUpperCase();
         tmpSong = tmpSong.replace(" FEAT. ", " & ").replace(" FEAT ", " & ").replace(" FT. ", " & ").replace(" FT ", " & ");
+        tmpSong = tmpSong.replace(" MET ", " & ").replace(" FEAT ", " & ").replace(" FT. ", " & ").replace(" FT ", " & ");
         tmpSong = tmpSong.replace("[BE]", "");
         tmpSong = tmpSong.replace(" VS. ", " VS ");
         tmpSong = tmpSong.replace("MR. ", "MR ");

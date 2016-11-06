@@ -9,6 +9,9 @@ class Input
     public $size;
     public $text;
     public $required;
+    public $method;
+    // $methodArg = property name of an element from the comboBox $array Argument
+    public $methodArg;
 
     public function __construct($array)
     {
@@ -37,7 +40,15 @@ function comboBox($array, $id, $value, Input $input){
         if ($item->{$id} ==  $input->default){
             $selected = " selected";
         }
-        echo '<option value="' . $item->{$id} . '"' . $selected . ">" . $item->{$value} . "</option>";
+        echo '<option value="' . $item->{$id} . '"' . $selected . ">";
+        if (!empty($input->method)){
+            $function = new ReflectionFunction($input->method);
+            echo $function->invoke($item->{$input->methodArg});
+        }
+        else {
+            echo $item->{$value};
+        }
+        echo '</option>';
     }
     echo "</select>";
     echo PHP_EOL;
@@ -59,26 +70,6 @@ function button(Input $input){
     echo '</button>';
     echo PHP_EOL;
 }
-
-function comboBox2($array, $name, $id, $value, $default = ""){
-	echo '<select name="' . $name . '">';
-
-	foreach($array as $key => $item) {
-
-		$selected = "";
-		if ($item->{$id} == $default){
-			$selected = " selected";
-		}
-		echo '<option value="' . $item->{$id} . '"' . $selected . ">" . $item->{$value} . "</option>";
-	}
-	echo "</select>";
-    echo PHP_EOL;
-}
- 
- function button2 ($name, $value, $text){
-  echo '<button name="' . $name . '" value="' . $value . '">' . $text . '</button>';
-     echo PHP_EOL;
- }
 
  function errorCheck($key){
 	if (isset($_SESSION["errors"])){

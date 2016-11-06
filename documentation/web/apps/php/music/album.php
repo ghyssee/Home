@@ -201,7 +201,18 @@ $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
         </tr>
         <tr>
             <td>Active Configuration</td>
-            <td><?php generateSelectFromArray($mp3PreprocessorObj->configurations, $mp3PreprocessorObj->activeConfiguration); ?></td>
+            <td>
+                <?php
+                //generateSelectFromArray($mp3PreprocessorObj->configurations, $mp3PreprocessorObj->activeConfiguration);
+
+                comboBox($mp3PreprocessorObj->configurations, "id", "id",
+                    new Input(array('name' => "activeConfiguration",
+                        'method' => 'getConfigurationText',
+                        'methodArg' => 'config',
+                        'default' => $mp3PreprocessorObj->activeConfiguration)));
+
+                ?>
+            </td>
         </tr>
     </table>
     <div class="buttonDiv">
@@ -384,9 +395,8 @@ function generateSelectFromArray($array, $default)
 
 function getConfigurationText($array)
 {
-
     $desc = "";
-    foreach ($array as $key2 => $config) {
+    foreach ($array as $key => $config) {
         if (isset($config->type)) {
             $desc = $desc . (empty($desc) ? '' : ' ') . $config->type;
         }

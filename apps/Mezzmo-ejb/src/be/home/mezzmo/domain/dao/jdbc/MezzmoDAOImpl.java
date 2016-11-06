@@ -85,7 +85,7 @@ public class MezzmoDAOImpl extends MezzmoDB {
     private static final String FILE_UPDATE_PLAYCOUNT = "UPDATE MGOFile " +
             " SET PlayCount = ? " +
             " ,DateLastPlayed = ? " +
-            " WHERE FileTitle = ? " +
+            " WHERE FileTitle like ? " +
             " AND PlayCount < ? " +
             " AND ID IN (" +
             " SELECT FileID FROM MGOFileAlbumRelationship" +
