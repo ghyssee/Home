@@ -49,10 +49,16 @@ public class Setup {
             while (parent != null);
         }
         if (StringUtils.isNotBlank(path)){
-            path = path.replace("%ONEDRIVE%", WinUtils.getOneDrivePath());
-            path = path.replace("%HOST%", NetUtils.getHostName());
+            path = replaceEnvironmentVariables(path);
         }
         return path;
+
+    }
+
+    public static String replaceEnvironmentVariables(String var){
+        var = var.replace("%ONEDRIVE%", WinUtils.getOneDrivePath());
+        var = var.replace("%HOST%", NetUtils.getHostName());
+        return var;
 
     }
 

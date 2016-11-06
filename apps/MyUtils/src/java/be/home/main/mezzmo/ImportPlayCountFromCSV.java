@@ -1,15 +1,19 @@
 package be.home.main.mezzmo;
 
+import be.home.common.configuration.Setup;
+import be.home.common.constants.Constants;
 import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.dao.jdbc.SQLiteUtils;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
+import be.home.common.utils.JSONUtils;
 import be.home.common.utils.WinUtils;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.MGOFileAlbumTO;
 import be.home.mezzmo.domain.model.MGOFileTO;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.model.ConfigTO;
+import be.home.model.MP3Settings;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
@@ -69,25 +73,26 @@ public class ImportPlayCountFromCSV extends BatchJobV2{
         //log4GE.info("test");
         //log4GE.addColumn("Status", 20);
         //log4GE.printHeaders();
-        log.info("test");
-
-        String base = WinUtils.getOneDrivePath();
-        log.info("OneDrive Path: " + base);
-        base += "\\Muziek\\Export\\";
-
-        processCSV(base, "MP3Songs.ToDo.csv", UPDATE);
-        //processCSV(base, "export.csv", UPDATE);
-        //processCSV(base, "MP3Songs.Errors.20160514.1502.csv", UPDATE);
-
+        String MP3_SETTINGS = Setup.getInstance().getFullPath(Constants.Path.CONFIG) + File.separator +
+                "MP3Settings.json";
+        MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSON(MP3_SETTINGS, MP3Settings.class, "UTF-8");
+        String filename = mp3Settings.mezzmo.importF.base + File.separator + mp3Settings.mezzmo.importF.filename;
+        filename = Setup.replaceEnvironmentVariables(filename);
+        File file = new File(filename);
+        if (file.exists()) {
+            processCSV(file, UPDATE);
+        }
+        else {
+            log.error("Import File does not exist: " + file.getAbsolutePath());
+        }
     }
 
-    public void processCSV(String base, String fileName, boolean update) {
+    public void processCSV(File file, boolean update) {
         log.info(StringUtils.repeat('*', 100));
-        log.info("Processing CSV File: " + fileName);
+        log.info("Processing CSV File: " + file.getAbsolutePath());
         log.info(StringUtils.repeat('*', 100));
         FileReader fileReader = null;
         try {
-            File file = new File(base + fileName);
             FileInputStream stream = new FileInputStream(file);
             final Reader reader = new InputStreamReader(new BOMInputStream(stream), StandardCharsets.UTF_8);
             CSVFormat csvFileFormat = CSVFormat.DEFAULT.withHeader(FILE_HEADER_MAPPING);
@@ -109,7 +114,8 @@ public class ImportPlayCountFromCSV extends BatchJobV2{
                     updateList.addAll(getListOfMP3FilesToUpdate(csvRecord.get("FileTitle"), csvRecord.get("File"), csvRecord.get("PlayCount"), album, csvRecord.get("DateLastPlayed"), errorList));
                 }
                 log.info("Nr Of Records in CSV File: " + counter);
-                listErrors(base, errorList, csvFileFormat);
+                log.info("Base:" + file.getParent());
+                listErrors(file.getParent(), errorList, csvFileFormat);
                 listPlayCounts(updateList);
                 if (update) {
                     updatePlayCounts(updateList);
@@ -239,7 +245,7 @@ public class ImportPlayCountFromCSV extends BatchJobV2{
             log.info(StringUtils.repeat('=', 100));
             log.info("Total: " + updateList.size());
             try {
-                String filename = basePath + "MP3Songs.Errors." + DateFormatUtils.format(new Date(), "yyyyMMdd.HHmm") + ".csv";
+                String filename = basePath + File.separator + "MP3Songs.Errors." + DateFormatUtils.format(new Date(), "yyyyMMdd.HHmm") + ".csv";
                 fileWriter = new FileWriter(filename);
                 csvFilePrinter = new CSVPrinter(fileWriter, csvFileFormat);
                 for (MGOFileAlbumCompositeTO fileAlbumCompositeTO : updateList) {

@@ -30,9 +30,15 @@ public class MP3Settings {
         public int rating5;
     }
 
+    public class Import {
+        public String base;
+        public String filename;
+    }
+
     public class Mezzmo {
         public String base;
         public Playlist playlist;
+        public Import importF;
 
     }
 

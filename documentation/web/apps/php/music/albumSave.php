@@ -101,9 +101,19 @@ function saveAlbum($file, $mp3Settings){
 
 function saveMezzmo($file, $mp3Settings){
 	assignField($mp3Settings->mezzmo->base, "mezzmoBase");
+	assignField($mp3Settings->mezzmo->importF->base, "importBase");
+	assignField($mp3Settings->mezzmo->importF->filename, "filename");
 	$save = true;
 	if (empty($mp3Settings->mezzmo->base)) {
 		printErrorMessage ('Mezzmo Base Directory is either empty, or not set at all',  'errorMessage');
+		$save = false;
+	}
+	if (empty($mp3Settings->mezzmo->importF->base)) {
+		printErrorMessage ('Mezzmo Import Base Directory is either empty, or not set at all',  'errorMessage');
+		$save = false;
+	}
+	if (empty($mp3Settings->mezzmo->importF->filename)) {
+		printErrorMessage ('Mezzmo Import Filename is either empty, or not set at all',  'errorMessage');
 		$save = false;
 	}
 	if ($save) {

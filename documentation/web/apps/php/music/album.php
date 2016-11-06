@@ -87,6 +87,24 @@ $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
                 ?>
             </td>
         </tr>
+        <tr>
+            <td>Import Base</td>
+            <td>
+                <?php inputBox(new Input(array('name' => "importBase",
+                    'size' => 100,
+                    'value' => $mp3SettingsObj->mezzmo->importF->base)));
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td>Import File</td>
+            <td>
+                <?php inputBox(new Input(array('name' => "filename",
+                    'size' => 50,
+                    'value' => $mp3SettingsObj->mezzmo->importF->filename)));
+                ?>
+            </td>
+        </tr>
     </table>
     <div class="buttonDiv">
         <?php button(new Input(array('name' => "mp3Settings",
