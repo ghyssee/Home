@@ -1,9 +1,12 @@
 <?php
 //$dbHandle = sqlite_open("c:/My Data/Mezzmo.db");
 //_test(array('item'=>"test", 'css'=>"default"));
-$myTst = new MyTest(array('id'=>"100", 'name'=>"patternId"));
-echo "xxx" . $myTst->id;
-echo "yyy" . $myTst->name;
+if (isset($_GET['user'])){
+    echo $_GET['user'];
+}
+else {
+    echo 'unknown user';
+}
 
 function _test($array){
     $obj = (object) $array;

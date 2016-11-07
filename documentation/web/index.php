@@ -1,3 +1,12 @@
+<?php 
+session_start();
+if (isset($_GET['user'])){
+    $_SESSION["user"] = $_GET['user'];
+}
+else {
+    $_SESSION["user"] = "guest";
+}
+?>
 <!doctype html>
 <html>
 <head>
@@ -268,12 +277,21 @@ Eric's Menu
       <div class="navigation">
         <ul>
 			<?php
+			$user = $_SESSION['user'];
 			foreach($menuObj->menu->menuItems as $key => $menuItem) {
 				if (isset($menuItem->menuItems)){
 					printh ('<li><a href="#" tabindex="1">' . $menuItem->description . '<span class="arrow-down"></span></a>');
 					printh( '<ul class="dropdown">');
 					foreach($menuItem->menuItems as $key => $menuItem) {
-						printh( '<li><a href="' . $menuItem->href . '">' . getDescription($menuItem) . '</a></li>');
+						$hasAccess = true;
+						if (isset($menuItem->user)){
+							if ($menuItem->user != $user){
+								$hasAccess = true;
+							}
+						}
+						if ($hasAccess){
+								printh( '<li><a href="' . $menuItem->href . '">' . getDescription($menuItem) . '</a></li>');
+						}
 					}
 					printh('</ul>');
 				}

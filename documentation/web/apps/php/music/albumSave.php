@@ -51,7 +51,7 @@ if(isset($_POST['mp3Prettifier'])){
 	$file = $oneDrivePath . '/Config/Java/MP3Prettifier.json';
 	$mp3PrettifierObj = initSave($file);
 	$button = $_POST['mp3Prettifier'];
-	if ($button == "SaveGlobalWord"){
+	if ($button == "saveGlobalWord"){
 		saveGlobalWord($file, $mp3PrettifierObj);
 	}
 	else if ($button == "saveArtistWord"){
