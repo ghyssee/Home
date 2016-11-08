@@ -24,7 +24,7 @@ function addSplitter($file)
     assignField($splitter->pattern, "pattern");
     $save = true;
     if (empty($splitter->id)) {
-        addError('id', "Splitter Id can't be empty");
+        addError('splitterId', "Splitter Id can't be empty");
         $save = false;
     }
     if (empty($splitter->pattern)) {

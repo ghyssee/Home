@@ -33,6 +33,7 @@ class Layout
     public $rows = 1;
     public $maxRows = 1;
     public $previousCol = 0;
+    public $errors;
 
     public function __construct($array)
     {
@@ -55,10 +56,16 @@ class Layout
     }
 
     function inputBox3(Input $input){
-        $html = "<td" . (empty($input->labelClass) ? '' : ' class="' . $input->labelClass . '"') . ">" . $input->label . "</td>" . PHP_EOL;
+
+        errorCheck($input->name, $this->errors);
+        $html = '';
+        $html .= "<td" . (empty($input->labelClass) ? '' : ' class="' . $input->labelClass . '"') . ">" . $input->label . "</td>" . PHP_EOL;
         $html .= "<td>";
         $html .= '<input size="' . $input->size . '" type="text" name="' . $input->name . '" value="' . $input->value . '">';
         $html .= "</td>" . PHP_EOL;
+        if (!empty($error)){
+            $html .= '</tr></table></td>';
+        }
         $this->addElement($input, $html);
     }
 
@@ -71,6 +78,38 @@ class Layout
         $html .= '>';
         $html .= "</td></tr>";
         $html .= PHP_EOL;
+        $this->addElement($input, $html);
+    }
+
+    /* $id    = fieldname that contains the id
+       $value = fieldname that contains the value that will be displayed on the screen
+       $input = a Class Object that contains the HTML Settings, like name of the select, the default value
+    */
+    function comboBox3($array, $id, $value, Input $input){
+        $html = "<tr>" . PHP_EOL;
+        $html .= "<td>" . $input->label . "</td>" . PHP_EOL;
+        $html .= "<td>";
+        $html .= '<select name="' . $input->name . '">';
+
+        foreach($array as $key => $item) {
+
+            $selected = "";
+            if ($item->{$id} ==  $input->default){
+                $selected = " selected";
+            }
+            $html .= '<option value="' . $item->{$id} . '"' . $selected . ">";
+            if (!empty($input->method)){
+                $function = new ReflectionFunction($input->method);
+                $html .= $function->invoke($item->{$input->methodArg});
+            }
+            else {
+                $html .= $item->{$value};
+            }
+            $html .= '</option>' . PHP_EOL;
+        }
+        $html .= "</select>";
+        $html .= "</td>" . PHP_EOL;;
+        $html .= "</tr>" . PHP_EOL;;
         $this->addElement($input, $html);
     }
 
@@ -203,14 +242,19 @@ function button(Input $input){
     echo PHP_EOL;
 }
 
- function errorCheck($key){
-	if (isset($_SESSION["errors"])){
+ function errorCheck($key, &$errors){
+	$html = '';
+     if (isset($_SESSION["errors"])){
 		$array = $_SESSION["errors"];
 		if (isset($array[$key])){
-			echo '<tr class="errorMessage"><td colspan=2>' . $array[$key] . '</td></tr>';
-            echo PHP_EOL;
+            //$html = '<td colspan="2"><table><tr>';
+            //$html .= '<td class="errorMessage" colspan=2>' . $array[$key] . "</td></tr><tr>";
+            $html = $array[$key];
+            array_push($errors, $html);
+            //$html .= PHP_EOL;
 		}
 	}
+     //return $html;
  }
  
  function addError($field, $message){

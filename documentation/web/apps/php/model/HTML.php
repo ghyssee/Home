@@ -1,5 +1,28 @@
 <?php
 
+class GlobalWord extends Word
+{
+}
+
+
+
+class Word
+{
+  public $oldWord;
+  public $newWord;
+
+  public function __construct()
+  {
+    $this->oldWord = '';
+    $this->newWord = '';
+  }
+  public function __construct_2($oldWord, $newWord)
+  {
+    $this->oldWord = $oldWord;
+    $this->newWord = $newWord;
+  }
+}
+
 class Color
 {
   public $description;

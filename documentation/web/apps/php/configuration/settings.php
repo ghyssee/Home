@@ -1,4 +1,7 @@
 <html>
+<head>
+    <link rel="stylesheet" type="text/css" href="../../css/stylesheet.css">
+</head>
 <body>
 
 <?php
@@ -13,45 +16,11 @@ $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
 ?>
 
 <style>
-    .buttonDiv {
-        height: 80px;
-        display: flex;
-        align-items: center;
-        text-align: right;
-    }
-
-    .inlineTable {
-        float: left;
-    }
-
-    .emptySpace {
-        height: 80px
-    }
-
-    .horizontalLine {
-        width: 95%
-        font-size: 1px;
-        color: rgba(0, 0, 0, 0);
-        line-height: 1px;
-
-        background-color: grey;
-        margin-top: -6px;
-        margin-bottom: 10px;
-    }
-
     th {
         text-align: left;
     }
-
     .descriptionColumn {
         width: 20%;
-    }
-
-    .errorMessage {
-        color: red;
-        font-weight: bolder;
-        font-size: 20px;
-
     }
 </style>
 
@@ -66,34 +35,24 @@ if (isset($_SESSION["color"])) {
 <h1>Settings</h1>
 <div class="horizontalLine">.</div>
 <form action="settingsSave.php" method="post">
-    <table>
-        <?php errorCheck("description"); ?>
-        <tr>
-            <td>Omschrijving</td>
-            <td>
-                <?php inputBox(new Input(array('name' => "colorDescription",
-                    'size' => 50,
-                    "value" => $color->description)));
-                ?>
-            </td>
-        </tr>
-        <?php errorCheck("code"); ?>
-        <tr>
-            <td>Kleur Code</td>
-            <td>
-                <?php inputBox(new Input(array('name' => "colorCode",
-                    'size' => 30,
-                    '"value' => $color->code)));
-                ?>
-            </td>
-        </tr>
-    </table>
-    <div class="buttonDiv">
-        <?php button(new Input(array('name' => "htmlSettings",
-            'value' => 'addColor',
-            'text' => 'add')));
-        ?>
-    </div>
+    <?php
+        //<?php errorCheck("description");
+        $layout = new Layout(array('numCols' => 1));
+    $layout->inputBox3(new Input(array('name' => "colorDescription",
+        'size' => 50,
+        'label' => 'Description',
+        'value' => $color->description)));
+        //<?php errorCheck("code");
+    $layout->inputBox3(new Input(array('name' => "colorCode",
+    'size' => 50,
+    'label' => 'Color Code',
+    'value' => $color->code)));
+    $layout->button2(new Input(array('name' => "htmlSettings",
+        'value' => 'addColor',
+        'text' => 'Add',
+        'colspan' => 2)));
+    $layout->close();
+    ?>
 </form>
 
 <?php

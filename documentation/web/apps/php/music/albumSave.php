@@ -2,6 +2,9 @@
 <body>
 <?php
 include("../config.php");
+include("../html/config.php");
+include("../model/HTML.php");
+session_start();
 ?>
 <style>
 .emptySpace {
@@ -14,7 +17,6 @@ include("../config.php");
    
 }
 </style>
-<h1>Album Configuration Saved Status</h1>
 
 <?php
 if(isset($_POST['mp3Preprocessor'])){
@@ -73,30 +75,25 @@ function saveMP3Preprocessor($file, $mp3PreprocessorObj){
 	assignField($mp3PreprocessorObj->activeConfiguration, "activeConfiguration");
 	$save = true;
 	if (empty($mp3PreprocessorObj->albumTag)) {
-		printErrorMessage ('AlbumTag is either empty, or not set at all',  'errorMessage');
+		addError ('albumTag', 'AlbumTag is either empty, or not set at all');
 		$save = false;
 	}
 	if (empty($mp3PreprocessorObj->cdTag)) {
-		printErrorMessage ('cdTag is either empty, or not set at all',  'errorMessage');
+		addError ('cdTag', 'cdTag is either empty, or not set at all');
 		$save = false;
 	}
-	if ($save) {
-		writeJSON($mp3PreprocessorObj, $file);
-		println ('Contents saved to ' . $file);
-	}
+	checkSave($save, 'mp3Preprocessor', $mp3PreprocessorObj, $file);
 }
 
 function saveAlbum($file, $mp3Settings){
 	assignField($mp3Settings->album, "album");
 	$save = true;
 	if (empty($mp3Settings->album)) {
-		printErrorMessage ('Album is either empty, or not set at all',  'errorMessage');
+		addError('album', "Album is either empty, or not set at all");
+		//printErrorMessage ('Album is either empty, or not set at all',  'errorMessage');
 		$save = false;
 	}
-	if ($save) {
-		writeJSON($mp3Settings, $file);
-		println ('Contents saved to ' . $file);
-	}
+	checkSave($save, 'mp3Settings', $mp3Settings, $file);
 }
 
 function saveMezzmo($file, $mp3Settings){
@@ -105,27 +102,23 @@ function saveMezzmo($file, $mp3Settings){
 	assignField($mp3Settings->mezzmo->importF->filename, "filename");
 	$save = true;
 	if (empty($mp3Settings->mezzmo->base)) {
-		printErrorMessage ('Mezzmo Base Directory is either empty, or not set at all',  'errorMessage');
+		addError ('mezzmoBase', 'Mezzmo Base Directory is either empty, or not set at all');
 		$save = false;
 	}
 	if (empty($mp3Settings->mezzmo->importF->base)) {
-		printErrorMessage ('Mezzmo Import Base Directory is either empty, or not set at all',  'errorMessage');
+		addError ('importBase', 'Mezzmo Import Base Directory is either empty, or not set at all');
 		$save = false;
 	}
 	if (empty($mp3Settings->mezzmo->importF->filename)) {
-		printErrorMessage ('Mezzmo Import Filename is either empty, or not set at all',  'errorMessage');
+		addError ('filename', 'Mezzmo Import Filename is either empty, or not set at all');
 		$save = false;
 	}
-	if ($save) {
-		writeJSON($mp3Settings, $file);
-		println ('Contents saved to ' . $file);
-	}
+	checkSave($save, 'mp3Settings', $mp3Settings, $file);
 }
 
 function saveiPod($file, $mp3Settings){
 	assignCheckbox($mp3Settings->synchronizer->updateRating, "updateRating");
-	writeJSON($mp3Settings, $file);
-	println ('Contents saved to ' . $file);
+    checkSave(true, 'mp3Settings', $mp3Settings, $file);
 }
 
 function saveMediaMonkey($file, $mp3Settings){
@@ -135,21 +128,18 @@ function saveMediaMonkey($file, $mp3Settings){
 	
 	$save = true;
 	if (empty($mp3Settings->mediaMonkey->base)) {
-		printErrorMessage ('MediaMonkey Base Directory is either empty, or not set at all', 'errorMessage');
+		addError ('mediaMonkeyBase', 'MediaMonkey Base Directory is either empty, or not set at all');
 		$save = false;
 	}
 	if (empty($mp3Settings->mediaMonkey->playlist->path)) {
-		printErrorMessage ('MediaMonkey Playlist Directory is either empty, or not set at all', 'errorMessage');
+		addError ('mediaMonkeyPlaylistPath', 'MediaMonkey Playlist Directory is either empty, or not set at all');
 		$save = false;
 	}
 	if (empty($mp3Settings->mediaMonkey->playlist->top20)) {
-		printErrorMessage ('MediaMonkey Playlist Top 20 Name is either empty, or not set at all', 'errorMessage');
+		addError ('mediaMonkeyTop20', 'MediaMonkey Playlist Top 20 Name is either empty, or not set at all');
 		$save = false;
 	}
-	if ($save) {
-		writeJSON($mp3Settings, $file);
-		println ('Contents saved to ' . $file);
-	}
+    checkSave($save, 'mp3Settings', $mp3Settings, $file);
 }
 
 function saveLastPlayed($file, $mp3Settings){
@@ -159,16 +149,13 @@ function saveLastPlayed($file, $mp3Settings){
 	$intNumber = intval($value);
 	$save = true;
 	if ($intNumber <= 0) {
-		printErrorMessage ('Number must be an integer and greater than 0',  'errorMessage');
+		addError ('number', 'Number must be an integer and greater than 0');
 		$save = false;
 	}
 	else {
 		$mp3Settings->lastPlayedSong->number = $intNumber;
 	}
-	if ($save) {
-		writeJSON($mp3Settings, $file);
-		println ('Contents saved to ' . $file);
-	}
+    checkSave($save, 'mp3Settings', $mp3Settings, $file);
 }
 
 
@@ -180,19 +167,18 @@ function saveGlobalWord($file, $mp3PrettifierObj){
 	assignField($newWord, "newWord");
 	$save = true;
 	if (empty($oldWord)) {
-		printErrorMessage ("Old Word can not be empty", "errorMessage");
+		addError ("oldWord", "Old Word can't be empty");
 		$save = false;
 	}
 	if (wordExist($mp3PrettifierObj->words, $oldWord)){
-		printErrorMessage ("Old Word " . $oldWord . " already exist", "errorMessage");
+        addError ("oldWord", "Old Word " . $oldWord . " already exist");
 		$save = false;
 	}
+    $wordObj = new Word($oldWord, $newWord);
 	if ($save) {
-		$wordObj = getWordClass($oldWord, $newWord);
-		array_push ($mp3PrettifierObj->words, $wordObj);
-		println ('Contents saved to ' . $file);
-		writeJSON($mp3PrettifierObj, $file);
+        array_push ($mp3PrettifierObj->words, $wordObj);
 	}
+    checkSave($save, 'mp3PrettifierGlobal', $mp3PrettifierObj, $file, $wordObj);
 }
 
 function saveArtistWord($file, $mp3PrettifierObj){
@@ -202,19 +188,18 @@ function saveArtistWord($file, $mp3PrettifierObj){
 	assignField($newWord, "artistNewWord");
 	$save = true;
 	if (empty($oldWord)) {
-		printErrorMessage ("Old Word can not be empty", "errorMessage");
+        addError ("artistOldWord", "Old Word can not be empty");
 		$save = false;
 	}
 	if (wordExist($mp3PrettifierObj->artist->words, $oldWord)){
-		printErrorMessage ("Old Word " . $oldWord . " already exist", "errorMessage");
+        addError ("artistOldWord", "Old Word " . $oldWord . " already exist");
 		$save = false;
 	}
+    $wordObj = new Word($oldWord, $newWord);
 	if ($save) {
-		$wordObj = getWordClass($oldWord, $newWord);
 		array_push ($mp3PrettifierObj->artist->words, $wordObj);
-		println ('Contents saved to ' . $file);
-		writeJSON($mp3PrettifierObj, $file);
 	}
+    checkSave($save, 'mp3PrettifierArtistWord', $mp3PrettifierObj, $file, $wordObj);
 }
 
 function saveArtistName($file, $mp3PrettifierObj){
@@ -224,19 +209,18 @@ function saveArtistName($file, $mp3PrettifierObj){
 	assignField($newWord, "artistNameNewWord");
 	$save = true;
 	if (empty($oldWord)) {
-		printErrorMessage ("Old Name can not be empty", "errorMessage");
+        addError ("artistNameOldWord", "Old Name can not be empty");
 		$save = false;
 	}
 	if (wordExist($mp3PrettifierObj->artist->names, $oldWord)){
-		printErrorMessage ("Old Name " . $oldWord . " already exist", "errorMessage");
+        addError ("artistNameOldWord", "Old Name " . $oldWord . " already exist");
 		$save = false;
 	}
+    $wordObj = new Word($oldWord, $newWord);
 	if ($save) {
-		$wordObj = getWordClass($oldWord, $newWord);
 		array_push ($mp3PrettifierObj->artist->names, $wordObj);
-		println ('Contents saved to ' . $file);
-		writeJSON($mp3PrettifierObj, $file);
 	}
+    checkSave($save, 'mp3PrettifierArtistName', $mp3PrettifierObj, $file, $wordObj);
 }
 
 function saveSongTitle($file, $mp3PrettifierObj){
@@ -246,26 +230,18 @@ function saveSongTitle($file, $mp3PrettifierObj){
 	assignField($newWord, "songTitleNewWord");
 	$save = true;
 	if (empty($oldWord)) {
-		printErrorMessage ("Old Song Title can not be empty", "errorMessage");
+		addError ("songTitleOldWord", "Old Song Title can not be empty");
 		$save = false;
 	}
 	if (wordExist($mp3PrettifierObj->song->replacements, $oldWord)){
-		printErrorMessage ("Old Song Title " . $oldWord . " already exist", "errorMessage");
+		addError ("songTitleOldWord", "Old Song Title " . $oldWord . " already exist");
 		$save = false;
 	}
+    $wordObj = new Word($oldWord, $newWord);
 	if ($save) {
-		$wordObj = getWordClass($oldWord, $newWord);
 		array_push ($mp3PrettifierObj->song->replacements, $wordObj);
-		println ('Contents saved to ' . $file);
-		writeJSON($mp3PrettifierObj, $file);
 	}
-}
-
-function getWordClass($oldWord, $newWord){
-	$wordObj = new StdClass();
-	$wordObj->oldWord = $oldWord;
-	$wordObj->newWord = $newWord;
-	return $wordObj;
+    checkSave($save, 'mp3PrettifierSongTitle', $mp3PrettifierObj, $file, $wordObj);
 }
 
 function wordExist($wordObj, $oldWord){
@@ -276,6 +252,24 @@ function wordExist($wordObj, $oldWord){
 		}
 	}
 	return false;
+}
+
+function checkSave($save, $key, $obj, $file, $returnObj)
+{
+	if ($save) {
+		echo '<h1>Album Configuration Saved Status</h1>' . PHP_EOL;
+		//writeJSON($obj, $file);
+		println('Contents saved to ' . $file);
+	} else {
+		if (isset($returnObj)){
+            $_SESSION[$key] = $returnObj;
+        }
+        else {
+            $_SESSION[$key] = $obj;
+        }
+		header("Location: " . $_SESSION["previous_location"]);
+		exit();
+	}
 }
 
 ?>

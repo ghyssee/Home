@@ -21,21 +21,21 @@ function addColor($file)
     assignField($color->code, "colorCode");
     $save = true;
     if (empty($color->description)) {
-        addError('description', "Color Description can't be empty");
+        addError('colorDescription', "Color Description can't be empty");
         $save = false;
     }
     if (empty($color->code)) {
-        addError('code', "Color code can't be empty");
+        addError('colorCode', "Color code can't be empty");
         $save = false;
     } elseif (objectExist($htmlObj->colors, "code", $color->code, false)) {
-        addError('code', "Color Code already exist: " . $color->code);
+        addError('colorCode', "Color Code already exist: " . $color->code);
         $save = false;
     }
     if ($save) {
         println("<h1>HTML Color</h1>");
         array_push($htmlObj->colors, $color);
         println('Contents saved to ' . $file);
-        //writeJSON($htmlObj, $file);
+        writeJSON($htmlObj, $file);
     } else {
         $_SESSION["color"] = $color;
         header("Location: " . $_SESSION["previous_location"]);
