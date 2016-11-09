@@ -1,4 +1,6 @@
 <?php
+$tabIndex = 1;
+$focus = false;
 
 class Input
 {
@@ -33,7 +35,8 @@ class Layout
     public $rows = 1;
     public $maxRows = 1;
     public $previousCol = 0;
-    public $errors;
+    public $errors = [];
+    public $errorClass = "errorMessage";
 
     public function __construct($array)
     {
@@ -55,13 +58,57 @@ class Layout
         $this->maxRows = max($this->rows, $this->maxRows);
     }
 
-    function inputBox3(Input $input){
+    function getClasses(Input $input, $hasError){
+        $class = ' class="';
+        $counter = 0;
+        if (!empty($input->labelClass)){
+            $class .= $input->labelClass;
+            $counter++;
+        }
+        if ($hasError){
+            $class .= ($counter > 0 ? ' ' : '') . $this->errorClass;
+            $counter++;
+        }
+        return $counter > 0 ? $class . '"' : '';
+    }
 
-        errorCheck($input->name, $this->errors);
+    function checkTabIndex(){
         $html = '';
-        $html .= "<td" . (empty($input->labelClass) ? '' : ' class="' . $input->labelClass . '"') . ">" . $input->label . "</td>" . PHP_EOL;
+        if ($this->numCols > 1){
+            $html .= ' tabindex="' . $GLOBALS['tabIndex'] . '"';
+            $GLOBALS['tabIndex']++;
+        }
+        return $html;
+    }
+
+    function checkAutofocus($hasError){
+        $html = '';
+        if (isset($_SESSION["errors"])){
+            if ($hasError && !$GLOBALS['focus']){
+                $html .= " autofocus";
+                $GLOBALS['focus'] = true;
+            }
+        }
+        else {
+            if (!$GLOBALS['focus']){
+                $html .= " autofocus";
+                $GLOBALS['focus'] = true;
+            }
+        }
+        return $html;
+    }
+
+    function inputBox(Input $input){
+
+        $hasError = errorCheck($input->name, $this->errors);
+        $html = '';
+        $html .= "<td" . $this->getClasses($input, $hasError) . ">" . $input->label;
+        $html .= $hasError ? " *" : "";
+        $html .= "</td>" . PHP_EOL;
         $html .= "<td>";
-        $html .= '<input size="' . $input->size . '" type="text" name="' . $input->name . '" value="' . $input->value . '">';
+        $html .= '<input size="' . $input->size . '" type="text" name="' . $input->name . '" value="' . $input->value . '"';
+        $html .= $this->checkTabIndex() . $this->checkAutofocus($hasError);
+        $html .= '>';
         $html .= "</td>" . PHP_EOL;
         if (!empty($error)){
             $html .= '</tr></table></td>';
@@ -69,13 +116,13 @@ class Layout
         $this->addElement($input, $html);
     }
 
-    function checkBox3(Input $input){
+    function checkBox(Input $input){
         $html = "<tr>" . PHP_EOL;
         $html .= "<td colspan='2'>" . $input->label;
         $html .= '<input type="checkbox" name="' . $input->name . '"';
         $html .= ' value="' . $input->value . '"';
         $html .= ($input->value ? " checked" : "");
-        $html .= '>';
+        $html .=  $this->checkTabIndex() .'>';
         $html .= "</td></tr>";
         $html .= PHP_EOL;
         $this->addElement($input, $html);
@@ -85,11 +132,11 @@ class Layout
        $value = fieldname that contains the value that will be displayed on the screen
        $input = a Class Object that contains the HTML Settings, like name of the select, the default value
     */
-    function comboBox3($array, $id, $value, Input $input){
+    function comboBox($array, $id, $value, Input $input){
         $html = "<tr>" . PHP_EOL;
         $html .= "<td>" . $input->label . "</td>" . PHP_EOL;
         $html .= "<td>";
-        $html .= '<select name="' . $input->name . '">';
+        $html .= '<select name="' . $input->name . '"' .  $this->checkTabIndex() . '>';
 
         foreach($array as $key => $item) {
 
@@ -118,19 +165,32 @@ class Layout
         $this->addElement($input, $html);
     }
 
-    function button2(Input $input){
+    function button(Input $input){
         $html = '<td class="buttonCell"' . ($input->colspan > 1 ? ' colspan="' . $input->colspan . '"' : '') . '>';
         $html .= '<button name="' . $input->name . '"';
         $html .= ' value="' . $input->value . '"';
-        $html .= '>';
+        $html .=  $this->checkTabIndex() . '>';
         $html .= $input->text;
         $html .= '</button>';
         $html .= "</td>" . PHP_EOL;
         $this->addElement($input, $html);
     }
 
+    public function printErrors()
+    {
+        if (!empty($this->errors)) {
+            echo '<h3 class="errorMessage">Errors Found</h3>' . PHP_EOL;
+            echo '<ul class="errorMessage">' . PHP_EOL;
+            foreach ($this->errors as $key => $value) {
+                echo "<li>" . $key . ": " . $value . "</li>" . PHP_EOL;
+            }
+            echo "</ul>" . PHP_EOL;
+        }
+    }
+
     public function close()
     {
+        $this->printErrors();
         //echo var_dump($this->elements);
         echo "<table>" . PHP_EOL;
         for ($x = 1; $x <= $this->rows; $x++) {
@@ -146,52 +206,12 @@ class Layout
     }
 }
 
-function inputBox(Input $input){
+function inputBoxOld(Input $input){
     echo '<input size="' . $input->size . '" type="text" name="' . $input->name . '" value="' . $input->value . '">';
     echo PHP_EOL;
 }
 
-function inputBox2(Input $input){
-    echo "<tr>" . PHP_EOL;
-    echo "<td>" . $input->label . "</td>" . PHP_EOL;
-    echo "<td>";
-    echo '<input size="' . $input->size . '" type="text" name="' . $input->name . '" value="' . $input->value . '">';
-    echo "</td>" . PHP_EOL;;
-    echo "</tr>" . PHP_EOL;;
-}
-
-/* $id    = fieldname that contains the id
-   $value = fieldname that contains the value that will be displayed on the screen
-   $input = a Class Object that contains the HTML Settings, like name of the select, the default value
-*/
-function comboBox2($array, $id, $value, Input $input){
-    echo "<tr>" . PHP_EOL;
-    echo "<td>" . $input->label . "</td>" . PHP_EOL;
-    echo "<td>";
-    echo '<select name="' . $input->name . '">';
-
-    foreach($array as $key => $item) {
-
-        $selected = "";
-        if ($item->{$id} ==  $input->default){
-            $selected = " selected";
-        }
-        echo '<option value="' . $item->{$id} . '"' . $selected . ">";
-        if (!empty($input->method)){
-            $function = new ReflectionFunction($input->method);
-            echo $function->invoke($item->{$input->methodArg});
-        }
-        else {
-            echo $item->{$value};
-        }
-        echo '</option>' . PHP_EOL;
-    }
-    echo "</select>";
-    echo "</td>" . PHP_EOL;;
-    echo "</tr>" . PHP_EOL;;
-}
-
-function comboBox($array, $id, $value, Input $input){
+function comboBoxOld($array, $id, $value, Input $input){
     echo '<select name="' . $input->name . '">';
 
     foreach($array as $key => $item) {
@@ -214,18 +234,7 @@ function comboBox($array, $id, $value, Input $input){
     echo PHP_EOL;
 }
 
-function checkBox2(Input $input){
-    echo "<tr>" . PHP_EOL;
-    echo "<td colspan='2'>" . $input->label;
-    echo '<input type="checkbox" name="' . $input->name . '"';
-    echo ' value="' . $input->value . '"';
-    echo ($input->value ? " checked" : "");
-    echo '>';
-    echo "</td></tr>";
-    echo PHP_EOL;
-}
-
-function checkBox(Input $input){
+function checkBoxOld(Input $input){
     echo '<input type="checkbox" name="' . $input->name . '"';
     echo ' value="' . $input->value . '"';
     echo ($input->value ? " checked" : "");
@@ -233,7 +242,7 @@ function checkBox(Input $input){
     echo PHP_EOL;
 }
 
-function button(Input $input){
+function buttonOld(Input $input){
     echo '<button name="' . $input->name . '"';
     echo ' value="' . $input->value . '"';
     echo '>';
@@ -250,11 +259,13 @@ function button(Input $input){
             //$html = '<td colspan="2"><table><tr>';
             //$html .= '<td class="errorMessage" colspan=2>' . $array[$key] . "</td></tr><tr>";
             $html = $array[$key];
-            array_push($errors, $html);
+            $errors[$key] = $html;
+            return true;
+            //array_push($errors, $html);
             //$html .= PHP_EOL;
 		}
 	}
-     //return $html;
+     return false;
  }
  
  function addError($field, $message){
@@ -269,4 +280,22 @@ function button(Input $input){
 	$_SESSION["errors"] = $errors;
  }
 
- ?>
+function checkSave($save, $key, $obj, $file, $returnObj = null)
+{
+    if ($save) {
+        echo '<h1>Album Configuration Saved Status</h1>' . PHP_EOL;
+        //writeJSON($obj, $file);
+        println('Contents saved to ' . $file);
+    } else {
+        if (isset($returnObj)){
+            $_SESSION[$key] = $returnObj;
+        }
+        else {
+            $_SESSION[$key] = $obj;
+        }
+        header("Location: " . $_SESSION["previous_location"]);
+        exit();
+    }
+}
+
+?>

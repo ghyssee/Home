@@ -39,15 +39,15 @@ if (isset($_SESSION["splitter"])) {
 <form action="mp3preprocessorSave.php" method="post">
     <?php
     $layout = new Layout(array('numCols' => 1));
-    $layout->inputBox3(new Input(array('name' => "splitterId",
+    $layout->inputBox(new Input(array('name' => "splitterId",
         'size' => 30,
         'label' => 'Id',
         'value' => $splitter->id)));
-    $layout->inputBox3(new Input(array('name' => "pattern",
+    $layout->inputBox(new Input(array('name' => "pattern",
         'size' => 30,
         'label' => 'Pattern',
         'value' => $splitter->pattern)));
-    $layout->button2(new Input(array('name' => "mp3Preprocessor",
+    $layout->button(new Input(array('name' => "mp3Preprocessor",
         'value' => 'addSplitter',
         'text' => 'Add',
         'colspan' => 2)));
@@ -59,18 +59,18 @@ if (isset($_SESSION["splitter"])) {
 <form action="mp3preprocessorSave.php" method="post">
     <?php
         $layout = new Layout(array('numCols' => 1));
-    $layout->comboBox3($mp3PreprocessorObj->fields, "id", "description",
+    $layout->comboBox($mp3PreprocessorObj->fields, "id", "description",
         new Input(array('name' => "scrollColor",
             'label' => 'Type',
             'default' => '')));
-    $layout->inputBox3(new Input(array('name' => "configSplitter",
+    $layout->inputBox(new Input(array('name' => "configSplitter",
         'size' => 30,
         'label' => 'Id',
         'value' => '')));
-    $layout->checkBox3(new Input(array('name' => "configDuration",
+    $layout->checkBox(new Input(array('name' => "configDuration",
         'label' => 'Remove Duration At End',
         'value' => true)));
-    $layout->button2(new Input(array('name' => "mp3Preprocessor",
+    $layout->button(new Input(array('name' => "mp3Preprocessor",
         'value' => 'addConfig',
         'text' => 'Add',
         'colspan' => 2)));

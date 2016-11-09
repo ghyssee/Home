@@ -24,33 +24,42 @@ $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
 
 <?php
 goMenu();
+$id = htmlspecialchars($_GET["id"]);
 if (isset($_SESSION["color"])) {
     $color = $_SESSION["color"];
 } else {
     $color = new Color();
+    $found = false;
+    foreach ($htmlObj-> colors as $key => $value){
+        if (strcmp($value->code, $id) == 0){
+            $color = $value;
+            $found = true;
+            break;
+        }
+    }
+    if (!$found){
+        exit('Code Not Found: ' . $id);
+    }
 }
 ?>
-<h1>Settings</h1>
+<h1>Edit Color</h1>
 <div class="horizontalLine">.</div>
-<form action="settingsSave.php" method="post">
+<form action="colorSave.php" method="post">
     <?php
-        //<?php errorCheck("description");
         $layout = new Layout(array('numCols' => 1));
     $layout->inputBox(new Input(array('name' => "colorDescription",
         'size' => 50,
         'label' => 'Description',
         'value' => $color->description)));
-        //<?php errorCheck("code");
     $layout->inputBox(new Input(array('name' => "colorCode",
     'size' => 50,
     'label' => 'Color Code',
-    'value' => $color->code)));
+    'value' => $id)));
     $layout->button(new Input(array('name' => "htmlSettings",
-        'value' => 'addColor',
-        'text' => 'Add',
+        'value' => 'edit',
+        'text' => 'Save',
         'colspan' => 2)));
     $layout->close();
-    echo build_table($htmlObj->colors);
     ?>
 </form>
 
@@ -61,31 +70,3 @@ unset($_SESSION["color"]);
 ?>
 </body>
 </html>
-
-<?php
-function build_table($array){
-    // start table
-    $html = '<table>';
-    // header row
-    $html .= '<tr>';
-    $html .= '<th>&nbsp;</TH>';
-    foreach($array[0] as $key=>$value){
-        $html .= '<th>' . $key . '</th>';
-    }
-    $html .= '</tr>';
-
-    // data rows
-    foreach( $array as $key=>$value){
-        $html .= '<tr>';
-        $html .= '<td>&nbsp;<a href="/catalog/apps/php/configuration/colorEdit.php?id=' . $value->code .'"><img src="/catalog/apps/images/edit.gif" border="0" alt="Wijzigen"></a></td>';
-        foreach($value as $key2=>$value2){
-            $html .= '<td>' . $value2 . '</td>';
-        }
-        $html .= '</tr>';
-    }
-
-    // finish table and return it
-
-    $html .= '</table>';
-    return $html;
-}
