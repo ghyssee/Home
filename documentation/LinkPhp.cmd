@@ -1,3 +1,3 @@
-cd "\Reports\web"
-mklink /D apps "c:\Projects\GitHub\Home\Documentation\web\apps"
+cd "\Reports"
+mklink /D web "c:\Projects\GitHub\Home\Documentation\web"
 pause
