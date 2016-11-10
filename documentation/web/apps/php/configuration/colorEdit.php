@@ -8,9 +8,10 @@
 include("../config.php");
 include("../model/HTML.php");
 include("../html/config.php");
+include("../bo/ColorBO.php");
 $htmlObj = readJSON($oneDrivePath . '/Config/Java/HTML.json');
 session_start();
-$_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
+$_SESSION['previous_location'] = getUrl();
 ?>
 
 <style>
@@ -25,26 +26,22 @@ $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
 <?php
 goMenu();
 $id = htmlspecialchars($_GET["id"]);
+$colorBO = new ColorBO();
 if (isset($_SESSION["color"])) {
     $color = $_SESSION["color"];
-} else {
-    $color = new Color();
-    $found = false;
-    foreach ($htmlObj-> colors as $key => $value){
-        if (strcmp($value->code, $id) == 0){
-            $color = $value;
-            $found = true;
-            break;
-        }
-    }
-    if (!$found){
-        exit('Code Not Found: ' . $id);
+    unset($_SESSION["color"]);
+}
+else {
+    $color = $colorBO->lookupColor($id);
+    if (empty ($color)){
+        exit('Id Not Found: ' . $id);
     }
 }
 ?>
 <h1>Edit Color</h1>
 <div class="horizontalLine">.</div>
-<form action="colorSave.php" method="post">
+<form action="settingsSave.php" method="post">
+    <input type="hidden" name="id" value="<?php echo $color->id ?>">
     <?php
         $layout = new Layout(array('numCols' => 1));
     $layout->inputBox(new Input(array('name' => "colorDescription",
@@ -54,9 +51,9 @@ if (isset($_SESSION["color"])) {
     $layout->inputBox(new Input(array('name' => "colorCode",
     'size' => 50,
     'label' => 'Color Code',
-    'value' => $id)));
+    'value' => $color->code)));
     $layout->button(new Input(array('name' => "htmlSettings",
-        'value' => 'edit',
+        'value' => 'saveColor',
         'text' => 'Save',
         'colspan' => 2)));
     $layout->close();
@@ -65,8 +62,6 @@ if (isset($_SESSION["color"])) {
 
 <?php
 goMenu();
-unset($_SESSION["errors"]);
-unset($_SESSION["color"]);
 ?>
 </body>
 </html>

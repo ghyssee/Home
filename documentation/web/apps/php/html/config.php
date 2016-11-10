@@ -185,11 +185,29 @@ class Layout
                 echo "<li>" . $key . ": " . $value . "</li>" . PHP_EOL;
             }
             echo "</ul>" . PHP_EOL;
+            unset($_SESSION["errors"]);
+        }
+    }
+
+    public function printInfo()
+    {
+        if (!empty($_SESSION["info"])) {
+            echo '<div class="infoMessage">';
+            echo '<h3>Info</h3>' . PHP_EOL;
+            echo '<ul>' . PHP_EOL;
+            foreach ($_SESSION["info"] as $key => $value) {
+                echo "<li>" . $key . ": " . $value . "</li>" . PHP_EOL;
+            }
+            echo "</ul>" . PHP_EOL;
+            echo '</div>' . PHP_EOL;
+            echo '<br>'. PHP_EOL;;
+            unset($_SESSION["info"]);
         }
     }
 
     public function close()
     {
+        $this->printInfo();
         $this->printErrors();
         //echo var_dump($this->elements);
         echo "<table>" . PHP_EOL;
@@ -279,6 +297,28 @@ function buttonOld(Input $input){
 	$errors[$field] = $message;
 	$_SESSION["errors"] = $errors;
  }
+
+function addInfo($field, $message){
+    if (!isset($_SESSION["info"])){
+        $info = array();
+    }
+    else {
+        $info = $_SESSION["info"];
+    }
+    $info[$field] = $message;
+    $_SESSION["info"] = $info;
+}
+
+function addClassToElement($element, $class)
+{
+    $html = '<' . $element . ' class="' ;
+    if (is_array($class)) {
+        $html .= implode(' ', $class);
+    } else {
+        $html .= $class . '"' . '>';
+    }
+    return $html;
+}
 
 function checkSave($save, $key, $obj, $file, $returnObj = null)
 {

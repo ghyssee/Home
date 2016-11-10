@@ -29,6 +29,16 @@ input[type=text]:focus, textarea:focus {
 	font-weight: bolder;
 }
 
+.infoMessage {
+	color: blue;
+	font-weight: bolder;
+	background-color: #FFFFFF;
+	padding: 3px 0px 3px 3px;
+	margin: 5px 1px 3px 0px;
+	border: 3px solid black;
+	box-shadow: 10px 10px 10px 0px grey;
+}
+
 .horizontalLine {
 	width: 95%
 	font-size: 1px;
@@ -139,3 +149,21 @@ opacity: .6;
 cursor:default;
 -webkit-user-select: none;
 }
+
+table.displayTable {
+border-collapse: collapse;
+border: 1px solid black;
+}
+
+th.displayTable {
+height:50px;
+}
+
+.displayTable th, .displayTable td {
+padding-left: 15px;
+padding-right: 15px;
+}
+
+.tabuler_data tr:nth-child(odd):hover td, tbody tr.odd:hover td {background:#8888ff;}
+.tabuler_data tr:nth-child(even):hover td, tbody tr.even:hover td {background:#8888ff;}
+.tabuler_data tr:nth-child(odd) td, tbody tr.odd td {background:#88ff88;}

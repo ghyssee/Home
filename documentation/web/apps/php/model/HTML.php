@@ -1,11 +1,5 @@
 <?php
 
-class GlobalWord extends Word
-{
-}
-
-
-
 class Word
 {
   public $oldWord;
@@ -25,9 +19,9 @@ class Word
 
 class Color
 {
+  public $id;
   public $description;
   public $code;
-
 
   public function __construct()
   {

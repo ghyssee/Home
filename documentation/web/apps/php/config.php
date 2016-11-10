@@ -80,6 +80,12 @@ function goMenu(){
 	println('<a href="' . $menuObj->root->href . '">' . $menuObj->root->description . '</a>');
 }
 
+function getUrl(){
+	$base_url = ( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']=='on' ? 'https' : 'http' ) . '://' .  $_SERVER['HTTP_HOST'];
+	$url = $base_url . $_SERVER["REQUEST_URI"];
+	return $url;
+}
+
 class Month {
 //extends SplEnum {
     const __default = self::January;

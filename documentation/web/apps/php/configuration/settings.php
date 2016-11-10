@@ -50,7 +50,11 @@ if (isset($_SESSION["color"])) {
         'text' => 'Add',
         'colspan' => 2)));
     $layout->close();
+    usort($htmlObj->colors, function ($a, $b){
+        return strcmp($a->description, $b->description);
+    });
     echo build_table($htmlObj->colors);
+
     ?>
 </form>
 
@@ -65,23 +69,28 @@ unset($_SESSION["color"]);
 <?php
 function build_table($array){
     // start table
-    $html = '<table>';
+    $class = "displayTable";
+    $html = addClassToElement("table", $class);
     // header row
+    $html .= "<thead>";
     $html .= '<tr>';
-    $html .= '<th>&nbsp;</TH>';
+    $html .= addClassToElement("th", $class) . '&nbsp;</th>';
     foreach($array[0] as $key=>$value){
         $html .= '<th>' . $key . '</th>';
     }
     $html .= '</tr>';
+    $html .= "</thead>";
 
     // data rows
     foreach( $array as $key=>$value){
-        $html .= '<tr>';
-        $html .= '<td>&nbsp;<a href="/catalog/apps/php/configuration/colorEdit.php?id=' . $value->code .'"><img src="/catalog/apps/images/edit.gif" border="0" alt="Wijzigen"></a></td>';
+        $html .= addClassToElement("tbody", "tabuler_data");
+        $html .= addClassToElement("tr", $class);
+        $html .= addClassToElement("td", $class) . '&nbsp;<a href="/catalog/apps/php/configuration/colorEdit.php?id=' . $value->id .'"><img src="/catalog/apps/images/edit.gif" border="0" alt="Wijzigen"></a></td>';
         foreach($value as $key2=>$value2){
-            $html .= '<td>' . $value2 . '</td>';
+            $html .= addClassToElement("td", $class) . $value2 . '</td>';
         }
         $html .= '</tr>';
+        $html .= "</tbody>";
     }
 
     // finish table and return it
