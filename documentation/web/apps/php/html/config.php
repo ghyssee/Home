@@ -16,6 +16,10 @@ class Input
     public $col = 1;
     public $colspan = 1;
     public $labelClass;
+    public $min;
+    public $max;
+    // inputBox type=text Or Number
+    public $type;
     // $methodArg = property name of an element from the comboBox $array Argument
     public $methodArg;
 
@@ -28,23 +32,64 @@ class Input
     }
 }
 
-class Layout
+class ToolBar extends FormLayout {
+    function button(Input $input){
+        $html = '<span class="toolbarButton2">';
+        $html .= '<button ' . 'class="formButton toolbarButton"' . ' name="' . $input->name . '"';
+        $html .= ' value="' . $input->value . '"';
+        $html .=  '>';
+        $html .= $input->text;
+        $html .= '</button>';
+        $html .= '</span>';
+        $html .= PHP_EOL;
+        $this->addElement($html);
+    }
+
+    function resetButton(){
+        $html = '<span class="toolbarButton2">';
+        $html .= '<input class="formButton toolbarButton" type="reset" value="Reset">';
+        $html .= '</span>';
+        $this->addElement($html);
+}
+
+    function addElement($html){
+        array_push ($this->elements, $html);
+    }
+
+
+    public function close()
+    {
+        echo '<div>';
+        foreach($this->elements as $value) {
+            echo $value .PHP_EOL;
+        }
+        echo '</div>';
+    }
+
+}
+
+abstract class FormLayout
 {
     public $numCols = 1;
-    public $elements;
-    public $rows = 1;
-    public $maxRows = 1;
-    public $previousCol = 0;
-    public $errors = [];
-    public $errorClass = "errorMessage";
-
+    public $elements = array();
     public function __construct($array)
     {
+        $this->key = getUniqueId();
         $keys = array_keys($array);
         foreach($keys as $key => $tst) {
             $this->{$tst} = $array[$tst];
         }
     }
+}
+
+class Layout extends FormLayout
+{
+    public $rows = 1;
+    public $maxRows = 1;
+    public $previousCol = 0;
+    public $errors = [];
+    public $errorClass = "errorMessage";
+    public $key;
 
     function addElement(Input $input, $html){
         if ($this->previousCol < $input->col){
@@ -81,6 +126,14 @@ class Layout
         return $html;
     }
 
+    function checkMinMax(Input $input){
+        $html = '';
+        if (!empty($input->min)){
+            $html .= ' min="' . $input->min . '"';
+        }
+        return $html;
+    }
+
     function checkAutofocus($hasError){
         $html = '';
         if (isset($_SESSION["errors"])){
@@ -100,13 +153,15 @@ class Layout
 
     function inputBox(Input $input){
 
+        $type = empty($input->type) ? 'text' : $input->type;
         $hasError = errorCheck($input->name, $this->errors);
         $html = '';
         $html .= "<td" . $this->getClasses($input, $hasError) . ">" . $input->label;
         $html .= $hasError ? " *" : "";
         $html .= "</td>" . PHP_EOL;
         $html .= "<td>";
-        $html .= '<input size="' . $input->size . '" type="text" name="' . $input->name . '" value="' . $input->value . '"';
+        $html .= '<input size="' . $input->size .  '"' . $this->checkMinMax($input) . ' type="' . $type . '"';
+        $html.= ' name="' . $input->name . '" value="' . $input->value . '"';
         $html .= $this->checkTabIndex() . $this->checkAutofocus($hasError);
         $html .= '>';
         $html .= "</td>" . PHP_EOL;
@@ -167,7 +222,7 @@ class Layout
 
     function button(Input $input){
         $html = '<td class="buttonCell"' . ($input->colspan > 1 ? ' colspan="' . $input->colspan . '"' : '') . '>';
-        $html .= '<button name="' . $input->name . '"';
+        $html .= '<button ' . 'class="formButton"' . ' name="' . $input->name . '"';
         $html .= ' value="' . $input->value . '"';
         $html .=  $this->checkTabIndex() . '>';
         $html .= $input->text;
@@ -207,6 +262,7 @@ class Layout
 
     public function close()
     {
+        echo '<input type="hidden" name="formKey" value="' . $this->key . '">';
         $this->printInfo();
         $this->printErrors();
         //echo var_dump($this->elements);
@@ -315,8 +371,9 @@ function addClassToElement($element, $class)
     if (is_array($class)) {
         $html .= implode(' ', $class);
     } else {
-        $html .= $class . '"' . '>';
+        $html .= $class;
     }
+    $html .= '"' . '>';
     return $html;
 }
 
@@ -337,5 +394,32 @@ function checkSave($save, $key, $obj, $file, $returnObj = null)
         exit();
     }
 }
+
+
+function checkSave2($save, $key, $obj, $file, $forward, $returnObj = null)
+{
+    if ($save) {
+        writeJSON($obj, $file);
+        if (isset($_POST['formKey'])) {
+            $formKey = $_POST['formKey'];
+        }
+        else {
+            $formKey = '';
+        }
+        addInfo($formKey, "Contents saved to ' . $file");
+        header("Location: " . $forward);
+    }
+    else {
+        if (isset($returnObj)){
+            $_SESSION[$key] = $returnObj;
+        }
+        else {
+            $_SESSION[$key] = $obj;
+        }
+        header("Location: " . $_SESSION["previous_location"]);
+    }
+    exit();
+}
+
 
 ?>

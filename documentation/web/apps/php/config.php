@@ -1,4 +1,5 @@
 <?php
+require_once ("utils/RandomStringGenerator.php");
 $oneDrivePath = getOneDrivePath();
 
 function println ($string_message) {
@@ -104,9 +105,15 @@ class Month {
     const December = 12;
 }
 
-function objectExist ($array, $field, $value, $caseSensitive = true){
+function objectExist ($array, $field, $value, $caseSensitive = true, $idField = null, $idValue = null){
 
 	foreach($array as $key => $obj) {
+
+		if (!empty($idField)){
+			if (strcmp($obj->{$idField}, $idValue) == 0){
+				continue;
+			}
+		}
 		if ($caseSensitive){
 			if (strcmp($obj->{$field}, $value) == 0){
 				return true;
@@ -119,6 +126,20 @@ function objectExist ($array, $field, $value, $caseSensitive = true){
 		}
 	}
 	return false;
+}
+use Utils\RandomStringGenerator;
+
+function getUniqueId(){
+
+// Create new instance of generator class.
+$generator = new RandomStringGenerator;
+
+// Set token length.
+$tokenLength = 32;
+
+// Call method to generate random string.
+$token = $generator->generate($tokenLength);
+    return $token;
 }
 
 

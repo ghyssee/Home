@@ -168,6 +168,9 @@ if (isset($_SESSION["mp3Preprocessor"])) {
     $layout->inputBox(new Input(array('name' => "number",
         'size' => 5,
         'label' => 'Number',
+        'type' => 'number',
+        'min' => '1',
+        'max' => '100',
         'value' => $mp3SettingsObj->lastPlayedSong->number)));
     $layout->comboBox($htmlObj->colors, "code", "description",
         new Input(array('name' => "scrollColor",

@@ -64,7 +64,7 @@ function saveMP3Preprocessor($file, $mp3PreprocessorObj){
 		addError ('cdTag', 'cdTag is either empty, or not set at all');
 		$save = false;
 	}
-	checkSave($save, 'mp3Preprocessor', $mp3PreprocessorObj, $file);
+	checkSave2($save, 'mp3Preprocessor', $mp3PreprocessorObj, $file, 'album.php');
 }
 
 function saveAlbum($file, $mp3Settings){
@@ -75,7 +75,7 @@ function saveAlbum($file, $mp3Settings){
 		//printErrorMessage ('Album is either empty, or not set at all',  'errorMessage');
 		$save = false;
 	}
-	checkSave($save, 'mp3Settings', $mp3Settings, $file);
+	checkSave2($save, 'mp3Settings', $mp3Settings, $file, 'album.php');
 }
 
 function saveMezzmo($file, $mp3Settings){
@@ -95,12 +95,12 @@ function saveMezzmo($file, $mp3Settings){
 		addError ('filename', 'Mezzmo Import Filename is either empty, or not set at all');
 		$save = false;
 	}
-	checkSave($save, 'mp3Settings', $mp3Settings, $file);
+	checkSave2($save, 'mp3Settings', $mp3Settings, $file, 'album.php');
 }
 
 function saveiPod($file, $mp3Settings){
 	assignCheckbox($mp3Settings->synchronizer->updateRating, "updateRating");
-    checkSave(true, 'mp3Settings', $mp3Settings, $file);
+    checkSave2(true, 'mp3Settings', $mp3Settings, $file, 'album.php');
 }
 
 function saveMediaMonkey($file, $mp3Settings){
@@ -121,7 +121,7 @@ function saveMediaMonkey($file, $mp3Settings){
 		addError ('mediaMonkeyTop20', 'MediaMonkey Playlist Top 20 Name is either empty, or not set at all');
 		$save = false;
 	}
-    checkSave($save, 'mp3Settings', $mp3Settings, $file);
+    checkSave2($save, 'mp3Settings', $mp3Settings, $file, 'album.php');
 }
 
 function saveLastPlayed($file, $mp3Settings){
@@ -137,7 +137,7 @@ function saveLastPlayed($file, $mp3Settings){
 	else {
 		$mp3Settings->lastPlayedSong->number = $intNumber;
 	}
-    checkSave($save, 'mp3Settings', $mp3Settings, $file);
+    checkSave2($save, 'mp3Settings', $mp3Settings, $file, 'album.php');
 }
 
 ?>

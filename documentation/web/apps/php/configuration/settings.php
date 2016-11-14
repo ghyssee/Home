@@ -2,7 +2,7 @@
 <head>
     <link rel="stylesheet" type="text/css" href="../../css/stylesheet.css">
 </head>
-<body>
+<body style="background">
 
 <?php
 include("../config.php");
@@ -14,9 +14,6 @@ $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
 ?>
 
 <style>
-    th {
-        text-align: left;
-    }
     .descriptionColumn {
         width: 20%;
     }
@@ -70,11 +67,14 @@ unset($_SESSION["color"]);
 function build_table($array){
     // start table
     $class = "displayTable";
-    $html = addClassToElement("table", $class);
+    $html = addClassToElement("table", array($class, 'displayTable-zebra', 'displayTable-horizontal', 'centerTable'));
     // header row
+    $html .= '<caption class="displayTable">Colors</caption>';
     $html .= "<thead>";
     $html .= '<tr>';
-    $html .= addClassToElement("th", $class) . '&nbsp;</th>';
+    $html .= '<th>' . '&nbsp;</th>';
+    $html .= '<th>' . '&nbsp;</th>';
+    //$html .= addClassToElement("th", $class) . '&nbsp;</th>';
     foreach($array[0] as $key=>$value){
         $html .= '<th>' . $key . '</th>';
     }
@@ -82,16 +82,19 @@ function build_table($array){
     $html .= "</thead>";
 
     // data rows
+    $html .= "<tbody>";
     foreach( $array as $key=>$value){
-        $html .= addClassToElement("tbody", "tabuler_data");
-        $html .= addClassToElement("tr", $class);
-        $html .= addClassToElement("td", $class) . '&nbsp;<a href="/catalog/apps/php/configuration/colorEdit.php?id=' . $value->id .'"><img src="/catalog/apps/images/edit.gif" border="0" alt="Wijzigen"></a></td>';
+            //addClassToElement("tbody", "tabuler_data");
+            //"<tbody>";
+        $html .=  '<tr>';//addClassToElement("tr", $class);
+        $html .= '<td>' . '&nbsp;<a href="/catalog/apps/php/configuration/colorEdit.php?id=' . $value->id .'"><img src="/catalog/apps/images/edit.gif" border="0" alt="Wijzigen"></a></td>';
+        $html .= '<td>' . '&nbsp;<a href="/catalog/apps/php/configuration/colorDelete.php?id=' . $value->id .'"><img src="/catalog/apps/images/delete.gif" border="0" alt="Verwijderen"></a></td>';
         foreach($value as $key2=>$value2){
-            $html .= addClassToElement("td", $class) . $value2 . '</td>';
+            $html .= '<td>' . $value2 . '</td>';
         }
         $html .= '</tr>';
-        $html .= "</tbody>";
     }
+    $html .= "</tbody>";
 
     // finish table and return it
 

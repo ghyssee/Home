@@ -14,6 +14,10 @@ if (isset($_POST['htmlSettings'])) {
         $file = $oneDrivePath . '/Config/Java/HTML.json';
         saveColor($file);
     }
+    if ($button == "back") {
+        header("Location: " . $_SESSION["form_location"]);
+        exit();
+    }
 }
 
 function addColor($file)
@@ -41,7 +45,7 @@ function addColor($file)
         $color->id = getUniqueId();
         array_push($htmlObj->colors, $color);
         writeJSON($htmlObj, $file);
-        header("Location: " . "settings.php");
+        header("Location: " . $_SESSION["previous_location"]);
     } else {
         $_SESSION["color"] = $color;
         header("Location: " . $_SESSION["previous_location"]);
@@ -69,10 +73,10 @@ function saveColor($file)
         $save = false;
     }
     if ($save) {
-        addInfo("Color", "Modifications were updated for id " . $color->id);
+        //addInfo("Color", "Modifications were updated for id " . $color->id);
         $colorBO = new ColorBO();
         $colorBO->saveColor($color);
-        header("Location: " . "settings.php");
+        header("Location: " . $_SESSION["form_location"]);
     }
     else {
         $_SESSION["color"] = $color;
