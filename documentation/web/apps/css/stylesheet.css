@@ -274,3 +274,20 @@ border-right: none;
 .centered {
  text-align: center;
 }
+
+/*
+ dialog box formatting style
+*/
+
+.myButtonStyle {
+}
+
+.ui-dialog .ui-dialog-buttonpane button {
+	margin: .5em .4em .5em 0;
+	cursor: pointer;
+	padding: 5px;
+	box-shadow: 10px 10px 10px 0px grey;
+	border: 1px solid #DDDDDD;
+ 	-moz-border-radius: 15px;
+ 	border-radius: 15px;
+}

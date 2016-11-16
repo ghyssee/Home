@@ -7,10 +7,21 @@ class Word
 
   public function __construct()
   {
+        $get_arguments       = func_get_args();
+        $number_of_arguments = func_num_args();
+        $method_name         = '__construct'.$number_of_arguments;
+
+        if (method_exists($this, $method_name)) {
+          call_user_func_array(array($this, $method_name), $get_arguments);
+        }
+  }
+
+  public function __construct1()
+  {
     $this->oldWord = '';
     $this->newWord = '';
   }
-  public function __construct_2($oldWord, $newWord)
+  public function __construct2($oldWord, $newWord)
   {
     $this->oldWord = $oldWord;
     $this->newWord = $newWord;

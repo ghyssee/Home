@@ -18,7 +18,7 @@ if (isset($_SESSION["mp3Settings"])) {
     $mp3SettingsObj = $_SESSION["mp3Settings"];
 }
 if (isset($_SESSION["mp3Preprocessor"])) {
-    $mp3SettingsObj = $_SESSION["mp3Preprocessor"];
+    $mp3PreprocessorObj = $_SESSION["mp3Preprocessor"];
 }
 ?>
 
@@ -36,11 +36,45 @@ if (isset($_SESSION["mp3Preprocessor"])) {
     }
 
 </style>
+<?php
+goMenu();
+?>
+<form action="albumSave.php" method="post">
+    <h1>MP3Preprocessor Configuration</h1>
+    <div class="horizontalLine">.</div>
+    <?php
+    $layout = new Layout(array('numCols' => 1));
+    $layout->inputBox(new Input(array('name' => "albumTag",
+        'size' => 50,
+        'label' => 'AlbumTag',
+        'value' => $mp3PreprocessorObj->albumTag)));
+    $layout->inputBox(new Input(array('name' => "cdTag",
+        'size' => 50,
+        'label' => 'CdTag',
+        'value' => $mp3PreprocessorObj->cdTag)));
+    $layout->inputBox(new Input(array('name' => "prefix",
+        'size' => 50,
+        'label' => 'Prefix',
+        'value' => $mp3PreprocessorObj->prefix)));
+    $layout->inputBox(new Input(array('name' => "suffix",
+        'size' => 50,
+        'label' => 'Suffix',
+        'value' => $mp3PreprocessorObj->suffix)));
+    $layout->comboBox($mp3PreprocessorObj->configurations, "id", "id",
+        new Input(array('name' => "activeConfiguration",
+            'label' => 'Active Configuration',
+            'method' => 'getConfigurationText',
+            'methodArg' => 'config',
+            'default' => $mp3PreprocessorObj->activeConfiguration)));
+    $layout->button(new Input(array('name' => "mp3Preprocessor",
+        'value' => 'save',
+        'text' => 'Save',
+        'colspan' => 2)));
+    $layout->close();
+    ?>
+</form>
 
 <form action="albumSave.php" method="post">
-    <?php
-    goMenu();
-    ?>
     <h1>Album Configuration</h1>
     <div class="horizontalLine">.</div>
     <?php
@@ -123,41 +157,6 @@ if (isset($_SESSION["mp3Preprocessor"])) {
     $layout->close();
     ?>
     </div>
-</form>
-
-<form action="albumSave.php" method="post">
-    <h1>MP3Preprocessor Configuration</h1>
-    <div class="horizontalLine">.</div>
-    <?php
-    $layout = new Layout(array('numCols' => 1));
-    $layout->inputBox(new Input(array('name' => "albumTag",
-        'size' => 50,
-        'label' => 'AlbumTag',
-        'value' => $mp3PreprocessorObj->albumTag)));
-    $layout->inputBox(new Input(array('name' => "cdTag",
-        'size' => 50,
-        'label' => 'CdTag',
-        'value' => $mp3PreprocessorObj->cdTag)));
-    $layout->inputBox(new Input(array('name' => "prefix",
-        'size' => 50,
-        'label' => 'Prefix',
-        'value' => $mp3PreprocessorObj->prefix)));
-    $layout->inputBox(new Input(array('name' => "suffix",
-        'size' => 50,
-        'label' => 'Suffix',
-        'value' => $mp3PreprocessorObj->suffix)));
-    $layout->comboBox($mp3PreprocessorObj->configurations, "id", "id",
-        new Input(array('name' => "activeConfiguration",
-            'label' => 'Active Configuration',
-            'method' => 'getConfigurationText',
-            'methodArg' => 'config',
-            'default' => $mp3PreprocessorObj->activeConfiguration)));
-    $layout->button(new Input(array('name' => "mp3Preprocessor",
-        'value' => 'save',
-        'text' => 'Save',
-        'colspan' => 2)));
-    $layout->close();
-    ?>
 </form>
 
 <form action="albumSave.php" method="post">

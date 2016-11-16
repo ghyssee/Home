@@ -25,6 +25,7 @@ public class MP3PreprocessorConfig {
     public Map<String, Pattern> splittersMap = null;
 
     public List <ConfigItem> configurations;
+    public String album;
     public String activeConfiguration;
     public String prefix;
     public String suffix;

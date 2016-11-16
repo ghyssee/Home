@@ -1,8 +1,55 @@
 <html>
 <head>
     <link rel="stylesheet" type="text/css" href="../../css/stylesheet.css">
+    <link rel="stylesheet" href="../../css/jquery-ui.css">
+    <script src="../../js/jquery-3.1.1.js"></script>
+    <script src="../../js/jquery-ui.js"></script>
 </head>
 <body style="background">
+<div id="dialog" title="Confirmation Required">
+Are you sure about this?
+</div>
+
+<script>
+    $(document).ready(function() {
+
+        $("#dialog").dialog({
+            modal: true,
+            bgiframe: true,
+            width: 500,
+            height: 200,
+            autoOpen: false
+        });
+
+
+        $(".confirmLink").click(function(e) {
+
+            e.preventDefault();
+            var theHREF = $(this).attr("href");
+
+            $("#dialog").dialog('option', 'buttons', {
+                "Confirm" : function() {
+                    window.location.href = theHREF;
+                },
+                "Cancel" : function() {
+                    $(this).dialog("close");
+                }
+            });
+
+            $("#dialog").dialog("open");
+
+        });
+
+    });
+</script>
+<style>
+    .ui-dialog-title{
+             font-size: 110% !important;
+             color: #FFFFFF !important;
+             background: blue;
+         }
+
+</style>
 
 <?php
 include("../config.php");
@@ -20,7 +67,14 @@ goMenu();
 <div class="horizontalLine">.</div>
 <?php
 addLink();
-echo build_table($htmlObj->colors);
+$layout = new Layout(array('numCols' => 1));
+$layout->displayTable($htmlObj->colors, new Input(array(
+    'title' => 'colors',
+    'id' => 'id',
+    'update' => 'Color.php?',
+    'delete' => 'ColorSave.php?')));
+$layout->close();
+//echo build_table($htmlObj->colors);
 addLink();
 goMenu();
 ?>
@@ -53,7 +107,7 @@ function build_table($array){
             //"<tbody>";
         $html .=  '<tr>';//addClassToElement("tr", $class);
         $html .= '<td>' . '&nbsp;<a href="/catalog/apps/php/view/Color.php?mode=U&id=' . $value->{'id'} .'"><img src="/catalog/apps/images/edit.gif" border="0" alt="Modify"></a></td>';
-        $html .= '<td>' . '&nbsp;<a href="/catalog/apps/php/view/Color.php?mode=D&id=' . $value->{'id'} .'"><img src="/catalog/apps/images/delete.gif" border="0" alt="Delete"></a></td>';
+        $html .= '<td>' . '&nbsp;<a class="confirmLink" href="/catalog/apps/php/view/ColorSave.php?mode=D&id=' . $value->{'id'} .'"><img src="/catalog/apps/images/delete.gif" border="0" alt="Delete"></a></td>';
         foreach($value as $key2=>$value2){
             $html .= '<td>' . $value2 . '</td>';
         }

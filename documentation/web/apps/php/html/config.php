@@ -18,6 +18,10 @@ class Input
     public $labelClass;
     public $min;
     public $max;
+    // used by displayTable
+    public $title;
+    public $update;
+    public $delete;
     // inputBox type=text Or Number
     public $type;
     // $methodArg = property name of an element from the comboBox $array Argument
@@ -278,6 +282,45 @@ class Layout extends FormLayout
         }
         echo "</table>" . PHP_EOL;
     }
+
+    public function displayTable($array, Input $input){
+        // start table
+        $class = "displayTable";
+        $html = addClassToElement("table", array($class, 'displayTable-zebra', 'displayTable-horizontal', 'centerTable'));
+        // header row
+        $html .= '<caption class="displayTable">' . $input->title . '</caption>'. PHP_EOL;;
+        $html .= "<thead>";
+        $html .= '<tr>';
+        $html .= '<th>' . '&nbsp;</th>';
+        $html .= '<th>' . '&nbsp;</th>';
+        foreach($array[0] as $key=>$value){
+            $html .= '<th>' . ucwords($key) . '</th>' . PHP_EOL;
+        }
+        $html .= '</tr>'. PHP_EOL;
+        $html .= "</thead>". PHP_EOL;;
+
+        // data rows
+        $html .= "<tbody>";
+        foreach( $array as $key=>$value){
+            $html .=  '<tr>';
+            if (!empty($input->update)){
+                $html .= '<td>' . '&nbsp;<a href="' . $input->update . 'mode=U&id=' . $value->{$input->id} .'"><img src="/catalog/apps/images/edit.gif" border="0" alt="Modify"></a></td>';
+            }
+            if (!empty($input->delete)){
+                $html .= '<td>' . '&nbsp;<a class="confirmLink" href="' . $input->delete . 'mode=D&id=' . $value->{$input->id} .'"><img src="/catalog/apps/images/delete.gif" border="0" alt="Delete"></a></td>';
+            }
+            foreach($value as $key2=>$value2){
+                $html .= '<td>' . $value2 . '</td>';
+            }
+            $html .= '</tr>' . PHP_EOL;
+        }
+        $html .= "</tbody>" . PHP_EOL;
+
+        // finish table and return it
+
+        $html .= '</table>'. PHP_EOL;
+        $this->addElement($input, $html);
+    }
 }
 
 function inputBoxOld(Input $input){
@@ -381,7 +424,7 @@ function checkSave($save, $key, $obj, $file, $returnObj = null)
 {
     if ($save) {
         echo '<h1>Album Configuration Saved Status</h1>' . PHP_EOL;
-        //writeJSON($obj, $file);
+        writeJSON($obj, $file);
         println('Contents saved to ' . $file);
     } else {
         if (isset($returnObj)){
@@ -406,7 +449,7 @@ function checkSave2($save, $key, $obj, $file, $forward, $returnObj = null)
         else {
             $formKey = '';
         }
-        addInfo($formKey, "Contents saved to ' . $file");
+        addInfo($key, "Contents saved to ' . $file");
         header("Location: " . $forward);
     }
     else {

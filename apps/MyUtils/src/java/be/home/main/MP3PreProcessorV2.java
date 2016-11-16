@@ -36,7 +36,6 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
     public static ConfigTO.Config config;
     private static final Logger log = Logger.getLogger(MP3PreProcessorV2.class);
 
-
     public static void main(String args[]) {
 
         String currentDir = System.getProperty("user.dir");

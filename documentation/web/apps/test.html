@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>jQuery UI Dialog - Modal message</title>
+  <link rel="stylesheet" href="js/jquery-ui.css">
+  <script src="js/jquery-3.1.1.js"></script>
+  <script src="js/jquery-ui.js"></script>
+</head>
+<body>
+
+<!-- 
+    -this is the actual dialog, yes, it is included in your html body, it is just hidden
+    -you can set the dialog title via the 'title' tag 
+-->
+<div id="dialog" title="Confirmation Required">
+  Are you sure about this?
+</div>
+
+<script>
+$(document).ready(function() {
+
+    $("#dialog").dialog({
+        modal: true,
+        bgiframe: true,
+        width: 500,
+        height: 200,
+        autoOpen: false
+    });
+
+
+    $(".confirmLink").click(function(e) {
+
+        e.preventDefault();
+        var theHREF = $(this).attr("href");
+
+        $("#dialog").dialog('option', 'buttons', {
+            "Confirm" : function() {
+                window.location.href = theHREF;
+            },
+            "Cancel" : function() {
+                $(this).dialog("close");
+            }
+        });
+
+        $("#dialog").dialog("open");
+
+    });
+
+});
+</script>
+<a class="confirmLink" href="/catalog">Catalog</a>
+
+
+</body>
+</html>

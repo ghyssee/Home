@@ -1,12 +1,3 @@
-<?php 
-session_start();
-if (isset($_GET['user'])){
-    $_SESSION["user"] = $_GET['user'];
-}
-else {
-    $_SESSION["user"] = "guest";
-}
-?>
 <!doctype html>
 <html>
 <head>
@@ -262,11 +253,7 @@ a { text-decoration: none; }
 
 <body>
 
-<?php
-include("apps/php/config.php");
-$menuObj = readJSON($oneDrivePath . '/Config/Java/Menu2.json');
-$mp3SettingsObj = readJSON($oneDrivePath . '/Config/Java/MP3Settings.json');
-?>
+
 
 <div class="title centered heightHeader">
 Eric's Menu
@@ -276,12 +263,29 @@ Eric's Menu
     <nav>
       <div class="navigation">
         <ul>
-			<?php
-			$user = $_SESSION['user'];
-			foreach($menuObj->menu->menuItems as $key => $menuItem) {
-                showMenuItems($user, $menuItem);
-			}
-			?>
+			<li><a href="">Home</a></li>
+<li><a href="#" tabindex="1">Configuration<span class="arrow-down"></span></a>
+<ul class="dropdown">
+<li><a href="apps/php/Music/album.php">Settings</a></li>
+<li class="navigation"><a href="#" tabindex="1">HTML Settings<span class="arrow-down"></span></a>
+<ul class="dropdown">
+<li><a href="apps/php/view/ColorList.php">Color Management</a></li>
+</ul>
+</li>
+<li><a href="apps/php/configuration/mp3preprocessor.php">MP3Preprocessor Settings</a></li>
+<li><a href="apps/php/configuration/mp3Prettifier.php">MP3Prettifier Settings</a></li>
+<li><a href="http://desktopi5:8080/sabnzbd">Sabnzbd</a></li>
+<li><a href="/dashboard/phpinfo.php">PHP Info</a></li>
+</ul>
+<li><a href="apps/php/jobs/jobs.php">Jobs</a></li>
+<li><a href="/catalog/movies">Film</a></li>
+<li><a href="#" tabindex="1">Muziek<span class="arrow-down"></span></a>
+<ul class="dropdown">
+<li><a href="apps/Music/MusicCatalog.html">Muziek Catalogus</a></li>
+<li><a href="apps/Music/LastPlayedSongs.html">50 Laatst Afgespeelde Liedjes</a></li>
+<li><a href="apps/Music/LastPlayed.html">Laatst Afgespeelde Liedje</a></li>
+<li><a href="apps/Music/LastPlayedScroll.html">Laatst Afgespeelde Liedje (Scroll)</a></li>
+</ul>
        </ul>
     </div>
     <div class="nav_bg">
@@ -299,37 +303,3 @@ $(document).ready(function(){
 </script>
 </body>
 </html>
-<?php
-function showMenuItems($user, $menuItem){
-  if (isset($menuItem->menuItems)){
-    printh ('<li><a href="#" tabindex="1">' . $menuItem->description . '<span class="arrow-down"></span></a>');
-    printh( '<ul class="dropdown">');
-    foreach($menuItem->menuItems as $key => $menuItem) {
-    //    if (isset($menuItem->menuItems)) {
-     //     showMenuItems($user, $menuItem);
-     //   }
-        //else {
-            $hasAccess = true;
-            if (isset($menuItem->user)) {
-              if ($menuItem->user != $user) {
-                $hasAccess = true;
-              }
-            }
-            if ($hasAccess) {
-              printh('<li><a href="' . $menuItem->href . '">' . getDescription($menuItem) . '</a></li>');
-            }
-        }
-    //}
-    printh('</ul>');
-  }
-  else {
-    printh( '<li><a href="' . $menuItem->href . '">' . getDescription($menuItem) . '</a></li>');
-  }
-}
-
-function getDescription($menuItem){
-		$description = $menuItem->description;
-		$description = str_replace("%NumberOfSongs%", $GLOBALS['mp3SettingsObj']->lastPlayedSong->number, $description);
-		return $description;
-	}
-?>

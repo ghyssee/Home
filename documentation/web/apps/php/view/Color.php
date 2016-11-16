@@ -9,6 +9,7 @@ include("../config.php");
 include("../model/HTML.php");
 include("../html/config.php");
 include("../bo/ColorBO.php");
+include("../form/FormUtils.php");
 $htmlObj = readJSON($oneDrivePath . '/Config/Java/HTML.json');
 session_start();
 $_SESSION['previous_location'] = getUrl();
@@ -25,7 +26,7 @@ $_SESSION['previous_location'] = getUrl();
 
 <?php
 goMenu();
-$formMode = getMode();
+$formMode = getFormMode();
 if ($formMode == 'U') {
     $id = htmlspecialchars($_GET["id"]);
     $colorBO = new ColorBO();
@@ -95,17 +96,3 @@ goMenu();
 ?>
 </body>
 </html>
-
-<?php
-    function getMode(){
-        if (isset($_GET['mode'])){
-            $formMode = htmlspecialchars($_GET['mode']);
-            return $formMode;
-        }
-        else {
-           exit('Form Mode Not Set!!!');
-        }
-        
-    }
-    
-    ?>

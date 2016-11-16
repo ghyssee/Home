@@ -3,20 +3,30 @@ include("../config.php");
 include("../model/HTML.php");
 include("../bo/ColorBO.php");
 include("../html/config.php");
+include("../form/FormUtils.php");
 session_start();
+$file = $oneDrivePath . '/Config/Java/HTML.json';
 if (isset($_POST['htmlSettings'])) {
     $button = $_POST['htmlSettings'];
     if ($button == "addColor") {
-        $file = $oneDrivePath . '/Config/Java/HTML.json';
         addColor($file);
     }
-    if ($button == "saveColor") {
-        $file = $oneDrivePath . '/Config/Java/HTML.json';
+    else if ($button == "saveColor") {
         saveColor($file);
     }
-    if ($button == "back") {
+    else if ($button == "back") {
         header("Location: " . $_SESSION["form_location"]);
         exit();
+    }
+}
+else {
+    $formMode = getFormMode();
+    if ($formMode == 'D') {
+        $id = htmlspecialchars($_GET["id"]);
+        if (empty($id)){
+            exit("ERROR_0001: Color Id was not set!!!");
+        }
+        deleteColor($id);
     }
 }
 
@@ -85,4 +95,14 @@ function saveColor($file)
      exit();
 }
 
+
+function deleteColor($id)
+{
+    $colorBO = new ColorBO();
+    if (!$colorBO->deleteColor($id)){
+        exit("ERROR_0002: Problem Deleting Color With ID: " + $id);
+    }
+    header("Location: " . $_SESSION["previous_location"]);
+    exit();
+}
 ?>
