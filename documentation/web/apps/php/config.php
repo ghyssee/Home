@@ -29,11 +29,15 @@ function writeJSON($json, $file){
 }
 
 function assignField(&$field, $value){
-   $field = $_POST[$value];
+   $field = htmlspecialchars($_POST[$value]);
 }
 
 function assignCheckbox(&$field, $value){
    $field = isset($_POST[$value]);
+}
+
+function write ($file, $text){
+	file_put_contents($file, $text . PHP_EOL, FILE_APPEND | LOCK_EX);
 }
 
 function initSave($file){

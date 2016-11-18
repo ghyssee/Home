@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+<head>
+<META http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<META http-equiv="expires" content="0">	 
+<META http-equiv="Pragma" content="no-cache">   	 
+    <link rel="stylesheet" type="text/css" href="apps/Themes/easyui/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="apps/Themes/easyui/icon.css">
+    <script type="text/javascript" src="apps/js/jquery-3.1.1.js"></script>
+    <script type="text/javascript" src="apps/js/jquery.easyui.min.js"></script>
+	
+</head>
+
+<body>
+    <div id="p" class="easyui-panel" style="width:500px;height:200px;padding:10px;"
+            title="My Panel" iconCls="icon-save" collapsible="true">
+        The panel content
+    </div>
+	    <input class="easyui-combobox" name="language"
+            data-options="
+                url:'combobox_data.json',
+                valueField:'id',
+                textField:'text',
+                panelHeight:'auto',
+                onSelect:function(record){
+                    alert(record.text)
+                }">
+    <h2>Basic CRUD Application</h2>
+    <p>Click the buttons on datagrid toolbar to do crud actions.</p>
+    
+    <table id="dg" title="My Users" class="easyui-datagrid" style="width:700px;height:250px"
+            url="get_users.php"
+            toolbar="#toolbar" pagination="true"
+            rownumbers="true" fitColumns="true" singleSelect="true">
+        <thead>
+            <tr>
+                <th field="firstname" width="50">First Name</th>
+                <th field="lastname" width="50">Last Name</th>
+                <th field="phone" width="50">Phone</th>
+                <th field="email" width="50">Email</th>
+            </tr>
+        </thead>
+		<tbody>
+            <tr><td>dd</td><td>dd</td><td>dd</td><td>dd</td>
+            </tr>
+		</tbody>
+    </table>
+    <div id="toolbar">
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newUser()">New User</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editUser()">Edit User</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="destroyUser()">Remove User</a>
+    </div>
+    
+    <div id="dlg" class="easyui-dialog" style="width:400px"
+            closed="true" buttons="#dlg-buttons">
+        <form id="fm" method="post" novalidate style="margin:0;padding:20px 50px">
+            <div style="margin-bottom:20px;font-size:14px;border-bottom:1px solid #ccc">User Information</div>
+            <div style="margin-bottom:10px">
+                <input name="firstname" class="easyui-textbox" required="true" label="First Name:" style="width:100%">
+            </div>
+            <div style="margin-bottom:10px">
+                <input name="lastname" class="easyui-textbox" required="true" label="Last Name:" style="width:100%">
+            </div>
+            <div style="margin-bottom:10px">
+                <input name="phone" class="easyui-textbox" required="true" label="Phone:" style="width:100%">
+            </div>
+            <div style="margin-bottom:10px">
+                <input name="email" class="easyui-textbox" required="true" validType="email" label="Email:" style="width:100%">
+            </div>
+        </form>
+    </div>
+    <div id="dlg-buttons">
+        <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="saveUser()" style="width:90px">Save</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')" style="width:90px">Cancel</a>
+    </div>
+</body>
+</html>
