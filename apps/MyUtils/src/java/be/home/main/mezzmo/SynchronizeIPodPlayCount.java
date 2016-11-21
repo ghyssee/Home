@@ -1,5 +1,7 @@
 package be.home.main.mezzmo;
 
+import be.home.common.configuration.Setup;
+import be.home.common.constants.Constants;
 import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.dao.jdbc.SQLiteUtils;
 import be.home.common.logging.Log4GE;
@@ -13,6 +15,7 @@ import be.home.model.ConfigTO;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.log4j.Logger;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -31,7 +34,9 @@ public class SynchronizeIPodPlayCount extends BatchJobV2{
     public static Log4GE log4GE;
     public static ConfigTO.Config config;
     private static final Logger log = Logger.getLogger(MezzmoPlaylists.class);
-    public static final String[] FILE_HEADER_MAPPING = {"FileTitle", "PlayCount", "File", "DateLastPlayed", "Album", "DateLastPlayedText"};
+    public static final String[] FILE_HEADER_MAPPING = {"FileTitle", "PlayCount", "File", "DateLastPlayed", "Album"};
+    public static final String[] SYNC_HEADER_MAPPING = {"FileTitle", "File", "OldPlayCount", "OldDateLastPlayed", "OldDateLastPlayedText",
+            "NewPlayCount", "NewDateLastPlayed", "NewDateLastPlayedText", "Album"};
 
     public static void main(String args[]) {
 
@@ -56,63 +61,104 @@ public class SynchronizeIPodPlayCount extends BatchJobV2{
 
         String base = WinUtils.getOneDrivePath();
         log.info("OneDrive Path: " + base);
-        base += "/Muziek/Export/iPod/";
+        base += "/Muziek/Export/iPod";
 
         export(base, "iPodDB.PlayCount");
-        synchronize();
+        synchronize(base, "iPodMezzmoSynced");
 
 
     }
 
-    public void synchronize() {
+    public void synchronize(String base, String filename) {
 
         List <MGOFileAlbumCompositeTO> list = getIPodService().getListPlayCount();
         int errors = 0;
         if (list == null || list.size() == 0){
             log.warn("Nothing To Synchronize!!!");
         }
-        for (MGOFileAlbumCompositeTO comp : list ){
-            MGOFileTO fileTO = comp.getFileTO();
-            MGOFileTO foundFileTO = getMezzmoService().findByTitleAndAlbum(comp);
-            if (foundFileTO == null){
-                log.error("Following File Not Found In The Mezzmo DB: " + getFileTitle(comp));
-                errors++;
+        File syncedFile = new File(base + File.separator + filename + "." + DateUtils.formatDate(new Date(), DateUtils.YYYYMMDDHHMMSS) + ".csv");
+        CSVPrinter csvFilePrinter = null;
+        CSVFormat csvFileFormat = CSVFormat.DEFAULT.withHeader(SYNC_HEADER_MAPPING);
+
+        Writer fileWriter = null;
+        FileOutputStream outputStream = null;
+        try {
+            outputStream = new FileOutputStream(syncedFile);
+            fileWriter = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
+            csvFilePrinter = new CSVPrinter(fileWriter, csvFileFormat);
+            errors = sync(list, csvFilePrinter);
+            if (errors > 0){
+                log.error("Number of errors found: " + errors);
             }
-            else {
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (fileWriter != null) {
+                try {
+                    fileWriter.flush();
+                    fileWriter.close();
+                    if (csvFilePrinter != null) {
+                        csvFilePrinter.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private int sync(List <MGOFileAlbumCompositeTO> list, CSVPrinter csvPrinter) {
+        int errors = 0;
+        for (MGOFileAlbumCompositeTO comp : list) {
+            MGOFileTO fileTO = comp.getFileTO();
+            MGOFileTO foundFileTO = null;
+            try {
+                foundFileTO = getMezzmoService().findByTitleAndAlbum(comp);
                 int playCount = foundFileTO.getPlayCount() + fileTO.getPlayCount();
                 System.out.println("FileTitle: " + getFileTitle(comp));
                 System.out.println("Playcount: " + foundFileTO.getPlayCount() + " => " + playCount);
+                Date lastUpdatedDate = DateUtils.max(foundFileTO.getDateLastPlayed(), comp.getFileTO().getDateLastPlayed());
+                if (lastUpdatedDate.equals(foundFileTO.getDateLastPlayed())){
+                    lastUpdatedDate = null;
+                }
                 try {
-                    int count = getMezzmoService().synchronizePlayCount(foundFileTO.getId(), playCount);
-                    if (count != 1){
+                    //int count = getMezzmoService().synchronizePlayCount(foundFileTO.getId(), playCount);
+                    int count = 1;
+                    if (count != 1) {
                         log.error("Problem updating file " + getFileTitle(comp) + " with playcount " + playCount);
                         errors++;
-                    }
-                    else {
-                        count = getIPodService().resetPlayCount(new Long(comp.getFileTO().getId()), 0);
-                        if (count != 1){
+                    } else {
+                        //count = getIPodService().resetPlayCount(new Long(comp.getFileTO().getId()), 0);
+                        count = 1;
+                        if (count != 1) {
                             log.error("Problem resetting playcount for DB iPod And File " + getFileTitle(comp) + " with playcount " + playCount);
-                        }
+                            errors++;
+                        } else {
+                            // everything ok
+                            writeResult( foundFileTO, comp, playCount, lastUpdatedDate, csvPrinter);                        }
                     }
-                } catch (SQLException e) {
+                    //} catch (SQLException e) {
+                    //  log.error("Problem updating file " + getFileTitle(comp) + " with playcount " + playCount);
+                    //errors++;
+                } catch (IOException e) {
                     log.error("Problem updating file " + getFileTitle(comp) + " with playcount " + playCount);
                     errors++;
                 }
             }
+            catch (EmptyResultDataAccessException ex){
+                errors++;
+                log.error("Problem updating file " + getFileTitle(comp));
+            }
         }
-        if (errors > 0){
-            log.error("Number of errors found: " + errors);
-        }
-
+        return errors;
     }
-
 
 
     public void export(String base, String filename){
 
         List <MGOFileAlbumCompositeTO> list = getIPodService().getListPlayCount();
         Writer fileWriter = null;
-        File exportFile = new File(base + filename + "." + DateUtils.formatDate(new Date(), DateUtils.YYYYMMDDHHMMSS) + ".csv");
+        File exportFile = new File(base + File.separator + filename + "." + DateUtils.formatDate(new Date(), DateUtils.YYYYMMDDHHMMSS) + ".csv");
         CSVPrinter csvFilePrinter = null;
         CSVFormat csvFileFormat = CSVFormat.DEFAULT.withHeader(FILE_HEADER_MAPPING);
         FileOutputStream outputStream = null;
@@ -142,6 +188,21 @@ public class SynchronizeIPodPlayCount extends BatchJobV2{
         }
 
     }
+
+    public void writeResult( MGOFileTO originalFile, MGOFileAlbumCompositeTO iPodFile, int newPlayCount, Date newDate, CSVPrinter csvFilePrinter) throws IOException {
+        // "FileTitle", "File", "OldPlayCount", "OldDateLastPlayed", "NewPlayCount", "NewDateLastPlayed", "Album"
+        List record = new ArrayList();
+        record.add(iPodFile.getFileTO().getFileTitle());
+        record.add(originalFile.getFile());
+        record.add(originalFile.getPlayCount());
+        record.add(originalFile.getDateLastPlayed());
+        record.add(newPlayCount);
+        record.add(newDate);
+        record.add(iPodFile.getFileAlbumTO().getName());
+        csvFilePrinter.printRecord(record);
+    }
+
+
 
     private String formatTrack(MGOFileTO fileTO){
         String track = String.format("%02d", fileTO.getTrack());
