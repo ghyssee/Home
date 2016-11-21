@@ -7,7 +7,6 @@ import be.home.common.dao.jdbc.SQLiteUtils;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.JSONUtils;
-import be.home.common.utils.WinUtils;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.MGOFileAlbumTO;
 import be.home.mezzmo.domain.model.MGOFileTO;
@@ -73,9 +72,8 @@ public class ImportPlayCountFromCSV extends BatchJobV2{
         //log4GE.info("test");
         //log4GE.addColumn("Status", 20);
         //log4GE.printHeaders();
-        String MP3_SETTINGS = Setup.getInstance().getFullPath(Constants.Path.CONFIG) + File.separator +
-                "MP3Settings.json";
-        MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSON(MP3_SETTINGS, MP3Settings.class, "UTF-8");
+        MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSON(Setup.getInstance().getFullPath(Constants.JSON.MP3SETTINGS),
+                MP3Settings.class, "UTF-8");
         String filename = mp3Settings.mezzmo.importF.base + File.separator + mp3Settings.mezzmo.importF.filename;
         filename = Setup.replaceEnvironmentVariables(filename);
         File file = new File(filename);

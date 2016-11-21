@@ -177,14 +177,24 @@ class Layout extends FormLayout
 
     function checkBox(Input $input){
         $html = "<tr>" . PHP_EOL;
-        $html .= "<td colspan='2'>" . $input->label;
+        $html .= "<td" . $this->setColSpan($input->colspan) . '>' . $input->label;
+        if ($input->colspan == 1){
+            $html .= '</td><td>';
+        }
         $html .= '<input type="checkbox" name="' . $input->name . '"';
         $html .= ' value="' . $input->value . '"';
         $html .= ($input->value ? " checked" : "");
         $html .=  $this->checkTabIndex() .'>';
-        $html .= "</td></tr>";
+        $html .= "</td>";
         $html .= PHP_EOL;
         $this->addElement($input, $html);
+    }
+
+    function setColSpan($span){
+        if (!empty($span)){
+            return " colspan='" . $span . "'";
+        }
+        return '';
     }
 
     /* $id    = fieldname that contains the id

@@ -58,7 +58,7 @@ public class ExportCatalogToHTML extends BatchJobV2{
 
     public void process(){
         HTMLSettings htmlSettings = (HTMLSettings) JSONUtils.openJSON(
-                Setup.getInstance().getFullPath(Constants.Path.CONFIG) + File.separator + "HTML.json", HTMLSettings.class);
+                Setup.getInstance().getFullPath(Constants.JSON.HTML), HTMLSettings.class);
         processAlbums(htmlSettings);
 
     }

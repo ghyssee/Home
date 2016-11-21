@@ -37,9 +37,6 @@ public class MakeTop20 extends BatchJobV2{
     public static Log4GE log4GE;
     public static ConfigTO.Config config;
     private static final Logger log = Logger.getLogger(ExportPlayCount.class);
-    public static final String MP3_PLAYLIST = "H:/Shared/Mijn Muziek/Eric/playlist";
-    private static final String MP3_SETTINGS = Setup.getInstance().getFullPath(Constants.Path.CONFIG) + File.separator +
-            "MP3Settings.json";
 
     public static void main(String args[]) {
 
@@ -78,8 +75,7 @@ public class MakeTop20 extends BatchJobV2{
     public void makeTop20() throws IOException {
 
 
-        MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSON(MP3_SETTINGS, MP3Settings.class, "UTF-8");
-
+        MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSON(Setup.getFullPath(Constants.JSON.MP3SETTINGS), MP3Settings.class, "UTF-8");
 
         /* based on Mezzmo DB
         List <MGOFileAlbumCompositeTO> list = getMezzmoService().getTop20();

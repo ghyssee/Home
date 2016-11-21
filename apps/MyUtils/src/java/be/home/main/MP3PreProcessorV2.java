@@ -104,7 +104,7 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
 
     public void start() throws IOException {
         MP3PreprocessorConfig mp3PreprocessorConfig = (MP3PreprocessorConfig) JSONUtils.openJSON(
-                Setup.getInstance().getFullPath(Constants.Path.CONFIG) + File.separator + "MP3Preprocessor.json", MP3PreprocessorConfig.class);
+                Setup.getInstance().getFullPath(Constants.JSON.MP3PREPROCESSOR), MP3PreprocessorConfig.class);
         MP3PreprocessorConfig.ConfigItem configItem = findConfiguration(mp3PreprocessorConfig.configurations, mp3PreprocessorConfig.activeConfiguration);
         if (configItem == null){
             throw new ApplicationException("Active Configuration not found: " + mp3PreprocessorConfig.activeConfiguration);

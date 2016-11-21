@@ -43,8 +43,6 @@ public class SynchronizeRating extends BatchJobV2 {
 
     public static Log4GE log4GE;
     public static ConfigTO.Config config;
-    public static final String MP3_SETTINGS = Setup.getInstance().getFullPath(Constants.Path.CONFIG) + File.separator +
-            "MP3Settings.json";
     private static final Logger log = Logger.getLogger(SynchronizeRating.class);
 
     public static void main(String args[]) {
@@ -69,7 +67,8 @@ public class SynchronizeRating extends BatchJobV2 {
 
     public void start() throws IOException {
 
-        MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSON(MP3_SETTINGS, MP3Settings.class, "UTF-8");
+        MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSON(Setup.getInstance().getFullPath(Constants.JSON.MP3SETTINGS),
+                MP3Settings.class, "UTF-8");
 
         MP3Helper helper = MP3Helper.getInstance();
         log.info("Start Directory: " + mp3Settings.synchronizer.startDirectory);

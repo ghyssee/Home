@@ -44,8 +44,6 @@ public class MP3Processor extends BatchJobV2 {
 
     public static Log4GE log4GE;
     public static ConfigTO.Config config;
-    public static final String MP3_SETTINGS = Setup.getInstance().getFullPath(Constants.Path.CONFIG) + File.separator +
-            "MP3Settings.json";
     public static final String INPUT_FILE = Setup.getInstance().getFullPath(Constants.Path.PROCESS) + File.separator + "Album.json";
     private static final Logger log = Logger.getLogger(MP3Processor.class);
 
@@ -82,7 +80,7 @@ public class MP3Processor extends BatchJobV2 {
     public void start() throws IOException {
 
         AlbumInfo.Config album = (AlbumInfo.Config) JSONUtils.openJSON(INPUT_FILE, AlbumInfo.Config.class, "UTF-8");
-        MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSON(MP3_SETTINGS, MP3Settings.class);
+        MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSON(Setup.getFullPath(Constants.JSON.MP3SETTINGS), MP3Settings.class);
 
         MP3Helper helper = MP3Helper.getInstance();
         String mp3Dir = Setup.getInstance().getFullPath(Constants.Path.ALBUM) + mp3Settings.album;

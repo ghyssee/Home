@@ -1,5 +1,3 @@
-<html>
-<body>
 <?php
 include("../config.php");
 include("../html/config.php");
@@ -25,8 +23,6 @@ if(isset($_POST['mp3Prettifier'])){
 }
 
 function saveGlobalWord($file, $mp3PrettifierObj){
-	println("<h1>Global Word</h1>");
-
 	assignField($oldWord, "oldWord");
 	assignField($newWord, "newWord");
 	$save = true;
@@ -42,12 +38,10 @@ function saveGlobalWord($file, $mp3PrettifierObj){
 	if ($save) {
         array_push ($mp3PrettifierObj->words, $wordObj);
 	}
-    checkSave($save, 'mp3PrettifierGlobal', $mp3PrettifierObj, $file, $wordObj);
+    checkSave2($save, 'mp3PrettifierGlobal', $mp3PrettifierObj, $file, $_SESSION['previous_location'], $wordObj);
 }
 
 function saveArtistWord($file, $mp3PrettifierObj){
-	println("<h1>Artist Word</h1>");
-
 	assignField($oldWord, "artistOldWord");
 	assignField($newWord, "artistNewWord");
 	$save = true;
@@ -63,12 +57,10 @@ function saveArtistWord($file, $mp3PrettifierObj){
 	if ($save) {
 		array_push ($mp3PrettifierObj->artist->words, $wordObj);
 	}
-    checkSave($save, 'mp3PrettifierArtistWord', $mp3PrettifierObj, $file, $wordObj);
+    checkSave2($save, 'mp3PrettifierArtistWord', $mp3PrettifierObj, $file, $_SESSION['previous_location'], $wordObj);
 }
 
 function saveArtistName($file, $mp3PrettifierObj){
-	println("<h1>Artist Name</h1>");
-
 	assignField($oldWord, "artistNameOldWord");
 	assignField($newWord, "artistNameNewWord");
 	$save = true;
@@ -84,14 +76,13 @@ function saveArtistName($file, $mp3PrettifierObj){
 	if ($save) {
 		array_push ($mp3PrettifierObj->artist->names, $wordObj);
 	}
-    checkSave($save, 'mp3PrettifierArtistName', $mp3PrettifierObj, $file, $wordObj);
+    checkSave2($save, 'mp3PrettifierArtistName', $mp3PrettifierObj, $file, $_SESSION['previous_location'], $wordObj);
 }
 
 function saveSongTitle($file, $mp3PrettifierObj){
-	println("<h1>Song Title</h1>");
-
 	assignField($oldWord, "songTitleOldWord");
 	assignField($newWord, "songTitleNewWord");
+	assignCheckbox($parenthesis, "songTitleParenthesis");
 	$save = true;
 	if (empty($oldWord)) {
 		addError ("songTitleOldWord", "Old Song Title can not be empty");
@@ -101,11 +92,11 @@ function saveSongTitle($file, $mp3PrettifierObj){
 		addError ("songTitleOldWord", "Old Song Title " . $oldWord . " already exist");
 		$save = false;
 	}
-    $wordObj = new Word($oldWord, $newWord);
+    $wordObj = new ExtWord($oldWord, $newWord, $parenthesis);
 	if ($save) {
 		array_push ($mp3PrettifierObj->song->replacements, $wordObj);
 	}
-    checkSave($save, 'mp3PrettifierSongTitle', $mp3PrettifierObj, $file, $wordObj);
+    checkSave2($save, 'mp3PrettifierSongTitle', $mp3PrettifierObj, $file, $_SESSION['previous_location'], $wordObj);
 }
 
 function wordExist($wordObj, $oldWord){
@@ -119,10 +110,3 @@ function wordExist($wordObj, $oldWord){
 }
 
 ?>
-<div class="emptySpace"></div>
-
-<script>
-    document.write('<a href="' + document.referrer + '">Go Back</a>');
-</script>
-</body>
-</html> 

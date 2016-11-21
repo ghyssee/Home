@@ -28,6 +28,16 @@ class Word
   }
 }
 
+class ExtWord extends Word {
+  public $parenthesis;
+  public function __construct3($oldWord, $newWord, $parenthesis)
+  {
+    $this->oldWord = $oldWord;
+    $this->newWord = $newWord;
+    $this->parenthesis = $parenthesis;
+  }
+}
+
 class Color
 {
   public $id;

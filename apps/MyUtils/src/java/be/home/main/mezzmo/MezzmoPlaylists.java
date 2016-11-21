@@ -49,7 +49,7 @@ public class MezzmoPlaylists extends BatchJobV2{
         final String batchJob = "Export PlayCount";
 
         PlaylistSetup playlistSetup = (PlaylistSetup) JSONUtils.openJSON(
-                Setup.getInstance().getFullPath(Constants.Path.CONFIG) + File.separator + "PlaylistSetup.json", PlaylistSetup.class);
+                Setup.getInstance().getFullPath(Constants.JSON.PLAYLISTSETUP), PlaylistSetup.class);
 
         try {
             makePlaylists(playlistSetup);

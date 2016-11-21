@@ -31,8 +31,6 @@ public class LastPlayedSongs extends BatchJobV2{
 
     public static ConfigTO.Config config;
     private static final Logger log = Logger.getLogger(LastPlayedSongs.class);
-    private static final String MP3_SETTINGS = Setup.getInstance().getFullPath(Constants.Path.CONFIG) + File.separator +
-            "MP3Settings.json";
 
     public static void main(String args[]) throws IOException {
 
@@ -109,7 +107,7 @@ public class LastPlayedSongs extends BatchJobV2{
     }
 
     public long process() {
-        MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSON(MP3_SETTINGS, MP3Settings.class, "UTF-8");
+        MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSON(Setup.getInstance().getFullPath(Constants.JSON.MP3SETTINGS), MP3Settings.class, "UTF-8");
         log.info("Number of last played songs to show: " + mp3Settings.lastPlayedSong.number);
         List<MGOFileAlbumCompositeTO> list = getMezzmoService().getLastPlayed(mp3Settings.lastPlayedSong.number);
         String base = Setup.getFullPath(Constants.Path.WEB_MUSIC) + File.separator;

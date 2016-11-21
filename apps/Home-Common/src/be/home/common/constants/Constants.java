@@ -17,7 +17,7 @@ public interface Constants {
             ID(0), TITLE(1), ALTERNATE_TITLE(2), YEAR(3), GENRE(4), STOCKPLACE(5), IMDB_ID(6);
             private int value;
 
-            private Import(int value) {
+            Import(int value) {
                 this.value = value;
             }
 
@@ -52,5 +52,13 @@ public interface Constants {
         String WEB_MUSIC = "webMusic";
         String WEB_MUSIC_ALBUMS = "webMusicAlbums";
         String WEB_MUSIC_SONGS = "webMusicSongs";
+    }
+
+    interface JSON {
+        String HTML = "HTMLConfig";
+        String MP3PREPROCESSOR = "mp3PreprocessorConfig";
+        String MP3SETTINGS = "mp3SettingsConfig";
+        String PLAYLISTSETUP = "playlistSetup";
+
     }
 }

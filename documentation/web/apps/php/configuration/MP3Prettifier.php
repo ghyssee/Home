@@ -29,7 +29,7 @@ if (isset($_SESSION["mp3PrettifierArtistName"])) {
 if (isset($_SESSION["mp3PrettifierSongTitle"])) {
     $songTitleObj = $_SESSION["mp3PrettifierSongTitle"];
 } else {
-    $songTitleObj = new Word();
+    $songTitleObj = new ExtWord();
 }
 
 ?>
@@ -111,6 +111,10 @@ if (isset($_SESSION["mp3PrettifierSongTitle"])) {
         'labelClass' => 'descriptionColumn',
         'col' => 1,
         'value' => $songTitleObj->newWord)));
+    $layout->checkBox(new Input(array('name' => "songTitleParenthesis",
+        'label' => 'Parenthesis',
+        'colspan' => 2,
+        'value' => $songTitleObj->parenthesis)));
     $layout->button(new Input(array('name' => "mp3Prettifier",
         'text' => 'Save',
         'value' => 'saveSongTitle',
@@ -132,6 +136,9 @@ if (isset($_SESSION["mp3PrettifierSongTitle"])) {
         'labelClass' => 'descriptionColumn',
         'col' => 2,
         'value' => $artistNameObj->newWord)));
+    $layout->label(new Input(array('label' => '',
+        'col' => 2,
+        'colspan' => 2)));
     $layout->button(new Input(array('name' => "mp3Prettifier",
         'text' => 'Save',
         'value' => 'saveArtistName',
