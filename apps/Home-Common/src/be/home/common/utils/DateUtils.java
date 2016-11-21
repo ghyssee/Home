@@ -11,6 +11,7 @@ public class DateUtils  {
 	public static final String YYYYMMDD = "yyyyMMdd";
 	private static final Locale CURRENT_LOCALE = new Locale("nl", "BE");
 	public static final String YYYYMMDDHHMMSS = "yyyyMMdd.HHmmss";
+    public static final String DD_MM_YYYY_HH_MM_SS = "dd/MM/yyyy HH:mm:ss";
 
 	private static final SimpleDateFormat YYYYMMDD_FORMATTER = new SimpleDateFormat(
 			YYYYMMDD, CURRENT_LOCALE);
@@ -24,7 +25,7 @@ public class DateUtils  {
 	}
 
 	public static String formatDate(Date date, String dateFormat) {
-		if (dateFormat != null){
+		if (date != null && dateFormat != null){
 			final SimpleDateFormat FORMATTER = new SimpleDateFormat(
 					dateFormat, CURRENT_LOCALE);
 			return FORMATTER.format(date);

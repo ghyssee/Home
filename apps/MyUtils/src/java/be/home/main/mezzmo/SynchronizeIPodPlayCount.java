@@ -195,9 +195,9 @@ public class SynchronizeIPodPlayCount extends BatchJobV2{
         record.add(originalFile.getFileTitle());
         record.add(originalFile.getFile());
         record.add(originalFile.getPlayCount());
-        record.add(originalFile.getDateLastPlayed());
+        record.add(DateUtils.formatDate(originalFile.getDateLastPlayed(), DateUtils.DD_MM_YYYY_HH_MM_SS));
         record.add(newPlayCount);
-        record.add(newDate);
+        record.add(DateUtils.formatDate(newDate, DateUtils.DD_MM_YYYY_HH_MM_SS));
         record.add(iPodFile.getFileAlbumTO().getName());
         csvFilePrinter.printRecord(record);
     }
