@@ -35,8 +35,8 @@ public class SynchronizeIPodPlayCount extends BatchJobV2{
     public static ConfigTO.Config config;
     private static final Logger log = Logger.getLogger(MezzmoPlaylists.class);
     public static final String[] FILE_HEADER_MAPPING = {"FileTitle", "PlayCount", "File", "DateLastPlayed", "Album"};
-    public static final String[] SYNC_HEADER_MAPPING = {"FileTitle", "File", "OldPlayCount", "OldDateLastPlayed", "OldDateLastPlayedText",
-            "NewPlayCount", "NewDateLastPlayed", "NewDateLastPlayedText", "Album"};
+    public static final String[] SYNC_HEADER_MAPPING = {"FileTitle", "File", "OldPlayCount", "OldDateLastPlayed",
+            "NewPlayCount", "NewDateLastPlayed", "Album"};
 
     public static void main(String args[]) {
 
@@ -190,9 +190,9 @@ public class SynchronizeIPodPlayCount extends BatchJobV2{
     }
 
     public void writeResult( MGOFileTO originalFile, MGOFileAlbumCompositeTO iPodFile, int newPlayCount, Date newDate, CSVPrinter csvFilePrinter) throws IOException {
-        // "FileTitle", "File", "OldPlayCount", "OldDateLastPlayed", "NewPlayCount", "NewDateLastPlayed", "Album"
+        //{"FileTitle", "File", "OldPlayCount", "OldDateLastPlayed","NewPlayCount", "NewDateLastPlayed", "Album"}
         List record = new ArrayList();
-        record.add(iPodFile.getFileTO().getFileTitle());
+        record.add(originalFile.getFileTitle());
         record.add(originalFile.getFile());
         record.add(originalFile.getPlayCount());
         record.add(originalFile.getDateLastPlayed());
