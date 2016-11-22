@@ -1,6 +1,5 @@
 package be.home.main.mezzmo;
 
-import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
 import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.dao.jdbc.SQLiteUtils;
@@ -9,20 +8,16 @@ import be.home.common.main.BatchJobV2;
 import be.home.common.utils.CSVUtils;
 import be.home.common.utils.DateUtils;
 import be.home.common.utils.JSONUtils;
-import be.home.common.utils.WinUtils;
 import be.home.domain.model.Synchronizer;
 import be.home.mezzmo.domain.model.*;
 import be.home.mezzmo.domain.service.IPodServiceImpl;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.model.ConfigTO;
 import be.home.model.MP3Settings;
-import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.log4j.Logger;
-import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -72,7 +67,7 @@ public class SynchronizeIPodPlayCount extends BatchJobV2{
         List <MGOFileAlbumCompositeTO> list = getIPodService().getListPlayCount();
         Synchronizer synchronizer = new Synchronizer(list, map);
         try {
-            synchronizer.synchronize(base, filename);
+            synchronizer.synchronizeIPodWithMezzmo(base, filename);
         } catch (SQLException e) {
             log.error(e);
         }
@@ -102,7 +97,7 @@ public class SynchronizeIPodPlayCount extends BatchJobV2{
     public void writeToExportFile( List<MGOFileAlbumCompositeTO> list, CSVPrinter csvFilePrinter, Map <String, MGOFileAlbumCompositeTO> map) throws IOException {
         for (MGOFileAlbumCompositeTO comp : list ){
             List record = new ArrayList();
-            record.add(Synchronizer.getFileTitle(map, comp));
+            record.add(getMezzmoService().constructFileTitle(map, comp));
             record.add(comp.getFileTO().getPlayCount());
             record.add("");
             record.add(SQLiteUtils.convertDateToString(comp.getFileTO().getDateLastPlayed()));

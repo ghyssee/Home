@@ -8,6 +8,7 @@ import be.home.mezzmo.domain.dao.jdbc.MezzmoPlaylistDAOImpl;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.MGOFileTO;
 import be.home.mezzmo.domain.model.MGOPlaylistTO;
+import org.apache.commons.lang3.StringUtils;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -119,6 +120,18 @@ public class MezzmoBO extends BusinessObject {
             int length = String.valueOf(foundComp.getFileTO().getDisc()).length();
             return length;
         }
+    }
+
+
+    public String constructFileTitle( Map<String, MGOFileAlbumCompositeTO> map, MGOFileAlbumCompositeTO comp){
+        String fileTitle = formatTrack(map, comp) + " " + comp.getFileArtistTO().getArtist() + " - " +
+                comp.getFileTO().getTitle();
+        return fileTitle;
+    }
+
+    private String formatTrack(Map<String, MGOFileAlbumCompositeTO> map, MGOFileAlbumCompositeTO comp){
+        String track = StringUtils.leftPad(String.valueOf(comp.getFileTO().getTrack()), findMaxDiscLength(map, comp), '0');
+        return track;
     }
 
     public MezzmoDAOImpl getMezzmoDAO(){

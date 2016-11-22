@@ -133,9 +133,9 @@ public class MezzmoServiceImpl {
         return bo.getMaxDisc();
     }
 
-    public int findMaxDiscLength(Map<String, MGOFileAlbumCompositeTO> map, MGOFileAlbumCompositeTO comp) {
+    public static String constructFileTitle( Map<String, MGOFileAlbumCompositeTO> map, MGOFileAlbumCompositeTO comp){
         MezzmoBO bo = new MezzmoBO();
-        return bo.findMaxDiscLength(map, comp);
+        return bo.constructFileTitle(map, comp);
 
     }
 

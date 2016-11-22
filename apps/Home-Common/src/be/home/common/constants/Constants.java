@@ -55,7 +55,7 @@ public interface Constants {
     }
 
     interface JSON {
-        String HTML = "HTMLConfig";
+        String HTML = "htmlConfig";
         String MP3PREPROCESSOR = "mp3PreprocessorConfig";
         String MP3SETTINGS = "mp3SettingsConfig";
         String PLAYLISTSETUP = "playlistSetup";

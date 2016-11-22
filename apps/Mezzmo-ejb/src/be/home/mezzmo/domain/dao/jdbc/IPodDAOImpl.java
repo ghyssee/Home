@@ -46,17 +46,17 @@ public class IPodDAOImpl extends IPodDB {
             MGOFileAlbumCompositeTO fileAlbumComposite = new MGOFileAlbumCompositeTO();
             MGOFileTO fileTO = fileAlbumComposite.getFileTO();
             fileTO.setId(rs.getLong("ID"));
-            fileTO.setTitle(rs.getString("TITLE"));
+            fileTO.setTitle(rs.getString("TITLE").trim());
             fileTO.setTrack(rs.getInt("TRACK"));
             fileTO.setDisc(rs.getInt("DISC"));
             fileTO.setPlayCount(rs.getInt("PLAYCOUNT"));
             fileTO.setDateLastPlayed(SQLiteUtils.convertiPodDateToDate(rs.getLong("DATELASTPLAYED")));
             MGOFileArtistTO fileArtistTO = fileAlbumComposite.getFileArtistTO();
-            fileArtistTO.setArtist(rs.getString("ARTIST"));
+            fileArtistTO.setArtist(rs.getString("ARTIST").trim());
             MGOFileAlbumTO fileAlbumTO = fileAlbumComposite.getFileAlbumTO();
-            fileAlbumTO.setName(rs.getString("ALBUMNAME"));
+            fileAlbumTO.setName(rs.getString("ALBUMNAME").trim());
             MGOAlbumArtistTO albumArtistTO = fileAlbumComposite.getAlbumArtistTO();
-            albumArtistTO.setName(rs.getString("ALBUM_ARTIST"));
+            albumArtistTO.setName(rs.getString("ALBUM_ARTIST").trim());
             return fileAlbumComposite;
         }
 

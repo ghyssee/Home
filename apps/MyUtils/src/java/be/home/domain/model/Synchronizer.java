@@ -26,13 +26,18 @@ public class Synchronizer {
     List<MGOFileAlbumCompositeTO> iPodList;
     private static final Logger log = Logger.getLogger(Synchronizer.class);
     Map<String, MGOFileAlbumCompositeTO> discMap;
+    MezzmoBO mezzmoBO;
+
+    private Synchronizer(){
+    }
 
     public Synchronizer(List<MGOFileAlbumCompositeTO> iPodList, Map<String, MGOFileAlbumCompositeTO> discMap){
         this.iPodList = iPodList;
         this.discMap = discMap;
+        this.mezzmoBO = new MezzmoBO();
     }
 
-    public void synchronize(String base, String filename) throws SQLException {
+    public void synchronizeIPodWithMezzmo(String base, String filename) throws SQLException {
 
         if (iPodList == null || iPodList.size() == 0){
             log.warn("Nothing To Synchronize!!!");
@@ -50,7 +55,7 @@ public class Synchronizer {
                                "Album"
                               };
             csvFilePrinter = csvUtils.initialize(syncedFile, fields);
-            List <String> errors = sync(iPodList, csvFilePrinter);
+            List <String> errors = startSynchronisation(iPodList, csvFilePrinter);
             if (errors.size() > 0){
                 log.error("Number of errors found: " + errors.size());
                 for (String errorMsg : errors){
@@ -58,14 +63,14 @@ public class Synchronizer {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e);
         } finally {
             csvUtils.close(csvFilePrinter);
         }
     }
 
-    private List<String> sync(List <MGOFileAlbumCompositeTO> list, CSVPrinter csvPrinter) throws SQLException {
-        List <String> errors = new ArrayList();
+    private List<String> startSynchronisation(List <MGOFileAlbumCompositeTO> list, CSVPrinter csvPrinter) throws SQLException {
+        List <String> errors = new ArrayList<>();
         MezzmoBO mezzmoBO = new MezzmoBO();
         IPodBO iPodBO = new IPodBO();
         for (MGOFileAlbumCompositeTO comp : list) {
@@ -74,7 +79,7 @@ public class Synchronizer {
             try {
                 foundFileTO = mezzmoBO.findByTitleAndAlbum(comp);
                 int playCount = foundFileTO.getPlayCount() + fileTO.getPlayCount();
-                log.info("FileTitle: " + getFileTitle(this.discMap, comp));
+                log.info("FileTitle: " + mezzmoBO.constructFileTitle(this.discMap, comp));
                 log.info("Playcount: " + foundFileTO.getPlayCount() + " => " + playCount);
                 Date lastUpdatedDate = DateUtils.max(foundFileTO.getDateLastPlayed(), comp.getFileTO().getDateLastPlayed());
                 if (lastUpdatedDate.equals(foundFileTO.getDateLastPlayed())){
@@ -84,45 +89,33 @@ public class Synchronizer {
                     int count = mezzmoBO.synchronizePlayCount(foundFileTO.getId(), playCount);
                     //int count = 1;
                     if (count != 1) {
-                        errors.add("Problem updating file " + getFileTitle(this.discMap, comp) + " with playcount " + playCount);
+                        errors.add("Problem updating file " + mezzmoBO.constructFileTitle(this.discMap, comp) + " with playcount " + playCount);
                     } else {
                         count = iPodBO.resetPlayCount(new Long(comp.getFileTO().getId()), 0);
                         //count = 1;
                         if (count != 1) {
-                            errors.add("Problem resetting playcount for DB iPod And File " + getFileTitle(this.discMap, comp) + " with playcount " + playCount);
+                            errors.add("Problem resetting playcount for DB iPod And File " + mezzmoBO.constructFileTitle(this.discMap, comp) + " with playcount " + playCount);
                         } else {
                             // everything ok
                             writeResult( foundFileTO, comp, playCount, lastUpdatedDate, csvPrinter);
                         }
                     }
-                    } catch (SQLException e) {
-                        errors.add("Problem updating file " + getFileTitle(this.discMap, comp) + " with playcount " + playCount);
+                } catch (SQLException e) {
+                    errors.add("Problem updating file " + mezzmoBO.constructFileTitle(this.discMap, comp) + " with playcount " + playCount);
                 } catch (IOException e) {
-                    errors.add("Problem updating file " + getFileTitle(this.discMap, comp) + " with playcount " + playCount);
+                    errors.add("Problem updating file " + mezzmoBO.constructFileTitle(this.discMap, comp) + " with playcount " + playCount);
                 }
             }
             catch (EmptyResultDataAccessException ex){
-                errors.add("Problem updating file " + getFileTitle(this.discMap, comp));
+                errors.add("Problem updating file " + mezzmoBO.constructFileTitle(this.discMap, comp));
             }
         }
         return errors;
     }
 
-    public static String getFileTitle( Map<String, MGOFileAlbumCompositeTO> map, MGOFileAlbumCompositeTO comp){
-        String fileTitle = formatTrack(map, comp) + " " + comp.getFileArtistTO().getArtist() + " - " +
-                comp.getFileTO().getTitle();
-        return fileTitle;
-
-    }
-
-    private static String formatTrack(Map<String, MGOFileAlbumCompositeTO> map, MGOFileAlbumCompositeTO comp){
-        String track = StringUtils.leftPad(String.valueOf(comp.getFileTO().getTrack()), MezzmoBO.findMaxDiscLength(map, comp), '0');
-        return track;
-    }
-
     private void writeResult( MGOFileTO originalFile, MGOFileAlbumCompositeTO iPodFile, int newPlayCount, Date newDate, CSVPrinter csvFilePrinter) throws IOException {
         List record = new ArrayList();
-        record.add(getFileTitle(this.discMap, iPodFile));
+        record.add(mezzmoBO.constructFileTitle(this.discMap, iPodFile));
         record.add(originalFile.getFile());
         record.add(originalFile.getPlayCount());
         record.add(DateUtils.formatDate(originalFile.getDateLastPlayed(), DateUtils.DD_MM_YYYY_HH_MM_SS));
