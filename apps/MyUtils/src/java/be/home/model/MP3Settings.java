@@ -13,7 +13,6 @@ public class MP3Settings {
     public Mezzmo mezzmo;
     public MediaMonkey mediaMonkey;
     public LastPlayedSong lastPlayedSong;
-    public Export export;
 
     public LastPlayedSong getLastPlayedSong() {
         return lastPlayedSong;
@@ -56,6 +55,7 @@ public class MP3Settings {
         public String base;
         public Playlist playlist;
         public Import importF;
+        public Export export;
 
     }
 

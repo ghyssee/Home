@@ -82,6 +82,8 @@ function saveMezzmo($file, $mp3Settings){
 	assignField($mp3Settings->mezzmo->base, "mezzmoBase");
 	assignField($mp3Settings->mezzmo->importF->base, "importBase");
 	assignField($mp3Settings->mezzmo->importF->filename, "filename");
+	assignField($mp3Settings->mezzmo->export->base, "exportBase");
+	assignField($mp3Settings->mezzmo->export->iPod, "exportiPod");
 	$save = true;
 	if (empty($mp3Settings->mezzmo->base)) {
 		addError ('mezzmoBase', 'Mezzmo Base Directory is either empty, or not set at all');
@@ -93,6 +95,14 @@ function saveMezzmo($file, $mp3Settings){
 	}
 	if (empty($mp3Settings->mezzmo->importF->filename)) {
 		addError ('filename', 'Mezzmo Import Filename is either empty, or not set at all');
+		$save = false;
+	}
+	if (empty($mp3Settings->mezzmo->export->base)) {
+		addError ('exportBase', 'Mezzmo Export Base Directory is either empty, or not set at all');
+		$save = false;
+	}
+	if (empty($mp3Settings->mezzmo->export->iPod)) {
+		addError ('exportiPod', 'Mezzmo Export iPod Directory is either empty, or not set at all');
 		$save = false;
 	}
 	checkSave2($save, 'mp3Settings', $mp3Settings, $file, 'album.php');

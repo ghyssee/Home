@@ -109,6 +109,14 @@ goMenu();
         'size' => 50,
         'label' => 'Import File',
         'value' => $mp3SettingsObj->mezzmo->importF->filename)));
+    $layout->inputBox(new Input(array('name' => "exportBase",
+        'size' => 100,
+        'label' => 'Export Path',
+        'value' => $mp3SettingsObj->mezzmo->export->base)));
+    $layout->inputBox(new Input(array('name' => "exportiPod",
+        'size' => 100,
+        'label' => 'Export iPod Path',
+        'value' => $mp3SettingsObj->mezzmo->export->iPod)));
     $layout->button(new Input(array('name' => "mp3Settings",
         'value' => 'saveMezzmo',
         'text' => 'Save',

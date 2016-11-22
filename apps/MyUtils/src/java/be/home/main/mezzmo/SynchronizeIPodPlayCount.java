@@ -63,8 +63,8 @@ public class SynchronizeIPodPlayCount extends BatchJobV2{
         MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSONWithCode(Constants.JSON.MP3SETTINGS, MP3Settings.class);
         Map <String, MGOFileAlbumCompositeTO> map = getMezzmoService().getMaxDisc();
 
-        export(mp3Settings.export.getiPod(), "iPodDB.PlayCount", map);
-        synchronize(mp3Settings.export.getiPod(), "iPodMezzmoSynced", map);
+        export(mp3Settings.mezzmo.export.getiPod(), "iPodDB.PlayCount", map);
+        synchronize(mp3Settings.mezzmo.export.getiPod(), "iPodMezzmoSynced", map);
     }
 
     public void synchronize(String base, String filename, Map <String, MGOFileAlbumCompositeTO> map) {
