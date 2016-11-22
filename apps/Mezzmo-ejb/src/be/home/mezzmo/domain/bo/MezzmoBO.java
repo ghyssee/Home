@@ -10,7 +10,9 @@ import be.home.mezzmo.domain.model.MGOFileTO;
 import be.home.mezzmo.domain.model.MGOPlaylistTO;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by ghyssee on 13/04/2016.
@@ -94,6 +96,29 @@ public class MezzmoBO extends BusinessObject {
 
     public List<MGOFileAlbumCompositeTO> getLastPlayed(int number) {
         return getMezzmoDAO().getLastPlayed(number);
+    }
+
+    public Map<String, MGOFileAlbumCompositeTO> getMaxDisc() {
+
+        List<MGOFileAlbumCompositeTO> list = getMezzmoDAO().getMaxDisc();
+        Map<String, MGOFileAlbumCompositeTO> map = new HashMap<> ();
+        for (MGOFileAlbumCompositeTO comp : list){
+            map.put(comp.getFileAlbumTO().getName() + comp.getAlbumArtistTO().getName(), comp);
+        }
+        return map;
+    }
+
+    public static int findMaxDiscLength(Map<String, MGOFileAlbumCompositeTO> map, MGOFileAlbumCompositeTO comp) {
+        String key = comp.getFileAlbumTO().getName() + comp.getAlbumArtistTO().getName();
+        MGOFileAlbumCompositeTO foundComp = map.get(key);
+        if (foundComp == null){
+            // default track size
+            return 2;
+        }
+        else {
+            int length = String.valueOf(foundComp.getFileTO().getDisc()).length();
+            return length;
+        }
     }
 
     public MezzmoDAOImpl getMezzmoDAO(){

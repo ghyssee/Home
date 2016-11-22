@@ -6,12 +6,16 @@ import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.dao.jdbc.SQLiteUtils;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
+import be.home.common.utils.CSVUtils;
 import be.home.common.utils.DateUtils;
+import be.home.common.utils.JSONUtils;
 import be.home.common.utils.WinUtils;
+import be.home.domain.model.Synchronizer;
 import be.home.mezzmo.domain.model.*;
 import be.home.mezzmo.domain.service.IPodServiceImpl;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.model.ConfigTO;
+import be.home.model.MP3Settings;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.log4j.Logger;
@@ -35,8 +39,6 @@ public class SynchronizeIPodPlayCount extends BatchJobV2{
     public static ConfigTO.Config config;
     private static final Logger log = Logger.getLogger(MezzmoPlaylists.class);
     public static final String[] FILE_HEADER_MAPPING = {"FileTitle", "PlayCount", "File", "DateLastPlayed", "Album"};
-    public static final String[] SYNC_HEADER_MAPPING = {"FileTitle", "File", "OldPlayCount", "OldDateLastPlayed",
-            "NewPlayCount", "NewDateLastPlayed", "Album"};
 
     public static void main(String args[]) {
 
@@ -58,173 +60,49 @@ public class SynchronizeIPodPlayCount extends BatchJobV2{
     public void run() {
 
         final String batchJob = "Export PlayCount";
+        MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSONWithCode(Constants.JSON.MP3SETTINGS, MP3Settings.class);
+        Map <String, MGOFileAlbumCompositeTO> map = getMezzmoService().getMaxDisc();
 
-        String base = WinUtils.getOneDrivePath();
-        log.info("OneDrive Path: " + base);
-        base += "/Muziek/Export/iPod";
-
-        export(base, "iPodDB.PlayCount");
-        synchronize(base, "iPodMezzmoSynced");
-
-
+        export(mp3Settings.export.getiPod(), "iPodDB.PlayCount", map);
+        synchronize(mp3Settings.export.getiPod(), "iPodMezzmoSynced", map);
     }
 
-    public void synchronize(String base, String filename) {
+    public void synchronize(String base, String filename, Map <String, MGOFileAlbumCompositeTO> map) {
 
         List <MGOFileAlbumCompositeTO> list = getIPodService().getListPlayCount();
-        int errors = 0;
-        if (list == null || list.size() == 0){
-            log.warn("Nothing To Synchronize!!!");
-        }
-        File syncedFile = new File(base + File.separator + filename + "." + DateUtils.formatDate(new Date(), DateUtils.YYYYMMDDHHMMSS) + ".csv");
-        CSVPrinter csvFilePrinter = null;
-        CSVFormat csvFileFormat = CSVFormat.DEFAULT.withHeader(SYNC_HEADER_MAPPING);
-
-        Writer fileWriter = null;
-        FileOutputStream outputStream = null;
+        Synchronizer synchronizer = new Synchronizer(list, map);
         try {
-            outputStream = new FileOutputStream(syncedFile);
-            fileWriter = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
-            csvFilePrinter = new CSVPrinter(fileWriter, csvFileFormat);
-            errors = sync(list, csvFilePrinter);
-            if (errors > 0){
-                log.error("Number of errors found: " + errors);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (fileWriter != null) {
-                try {
-                    fileWriter.flush();
-                    fileWriter.close();
-                    if (csvFilePrinter != null) {
-                        csvFilePrinter.close();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            synchronizer.synchronize(base, filename);
+        } catch (SQLException e) {
+            log.error(e);
         }
     }
 
-    private int sync(List <MGOFileAlbumCompositeTO> list, CSVPrinter csvPrinter) {
-        int errors = 0;
-        for (MGOFileAlbumCompositeTO comp : list) {
-            MGOFileTO fileTO = comp.getFileTO();
-            MGOFileTO foundFileTO = null;
-            try {
-                foundFileTO = getMezzmoService().findByTitleAndAlbum(comp);
-                int playCount = foundFileTO.getPlayCount() + fileTO.getPlayCount();
-                System.out.println("FileTitle: " + getFileTitle(comp));
-                System.out.println("Playcount: " + foundFileTO.getPlayCount() + " => " + playCount);
-                Date lastUpdatedDate = DateUtils.max(foundFileTO.getDateLastPlayed(), comp.getFileTO().getDateLastPlayed());
-                if (lastUpdatedDate.equals(foundFileTO.getDateLastPlayed())){
-                    lastUpdatedDate = null;
-                }
-                try {
-                    //int count = getMezzmoService().synchronizePlayCount(foundFileTO.getId(), playCount);
-                    int count = 1;
-                    if (count != 1) {
-                        log.error("Problem updating file " + getFileTitle(comp) + " with playcount " + playCount);
-                        errors++;
-                    } else {
-                        //count = getIPodService().resetPlayCount(new Long(comp.getFileTO().getId()), 0);
-                        count = 1;
-                        if (count != 1) {
-                            log.error("Problem resetting playcount for DB iPod And File " + getFileTitle(comp) + " with playcount " + playCount);
-                            errors++;
-                        } else {
-                            // everything ok
-                            writeResult( foundFileTO, comp, playCount, lastUpdatedDate, csvPrinter);                        }
-                    }
-                    //} catch (SQLException e) {
-                    //  log.error("Problem updating file " + getFileTitle(comp) + " with playcount " + playCount);
-                    //errors++;
-                } catch (IOException e) {
-                    log.error("Problem updating file " + getFileTitle(comp) + " with playcount " + playCount);
-                    errors++;
-                }
-            }
-            catch (EmptyResultDataAccessException ex){
-                errors++;
-                log.error("Problem updating file " + getFileTitle(comp));
-            }
-        }
-        return errors;
-    }
-
-
-    public void export(String base, String filename){
+    public void export(String base, String filename, Map <String, MGOFileAlbumCompositeTO> map){
 
         List <MGOFileAlbumCompositeTO> list = getIPodService().getListPlayCount();
-        Writer fileWriter = null;
+        CSVUtils csvUtils = new CSVUtils();
+        CSVPrinter csvFilePrinter = null;
         File exportFile = new File(base + File.separator + filename + "." + DateUtils.formatDate(new Date(), DateUtils.YYYYMMDDHHMMSS) + ".csv");
-        CSVPrinter csvFilePrinter = null;
-        CSVFormat csvFileFormat = CSVFormat.DEFAULT.withHeader(FILE_HEADER_MAPPING);
-        FileOutputStream outputStream = null;
+        String fields[] = {"FileTitle", "PlayCount", "File", "DateLastPlayed", "Album"};
 
         try {
-            outputStream = new FileOutputStream(exportFile);
-            fileWriter = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
-            csvFilePrinter = new CSVPrinter(fileWriter, csvFileFormat);
-
-            writeToExportFile(list, csvFilePrinter);
+            csvFilePrinter = csvUtils.initialize(exportFile, fields);
+            writeToExportFile(list, csvFilePrinter, map);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            log.error(e);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e);
         } finally {
-            if (fileWriter != null){
-                try {
-                    fileWriter.flush();
-                    fileWriter.close();
-                    if (csvFilePrinter != null){
-                        csvFilePrinter.close();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            csvUtils.close(csvFilePrinter);
         }
 
     }
 
-    public void writeResult( MGOFileTO originalFile, MGOFileAlbumCompositeTO iPodFile, int newPlayCount, Date newDate, CSVPrinter csvFilePrinter) throws IOException {
-        //{"FileTitle", "File", "OldPlayCount", "OldDateLastPlayed","NewPlayCount", "NewDateLastPlayed", "Album"}
-        List record = new ArrayList();
-        record.add(originalFile.getFileTitle());
-        record.add(originalFile.getFile());
-        record.add(originalFile.getPlayCount());
-        record.add(DateUtils.formatDate(originalFile.getDateLastPlayed(), DateUtils.DD_MM_YYYY_HH_MM_SS));
-        record.add(newPlayCount);
-        record.add(DateUtils.formatDate(newDate, DateUtils.DD_MM_YYYY_HH_MM_SS));
-        record.add(iPodFile.getFileAlbumTO().getName());
-        csvFilePrinter.printRecord(record);
-    }
-
-
-
-    private String formatTrack(MGOFileTO fileTO){
-        String track = String.format("%02d", fileTO.getTrack());
-        if (fileTO.getDisc() > 0){
-            track = String.format("%d", fileTO.getDisc());
-        }
-        return track;
-    }
-
-    private String getFileTitle(MGOFileAlbumCompositeTO comp){
-        String fileTitle = formatTrack(comp.getFileTO()) + " " + comp.getFileArtistTO().getArtist() + " - " +
-               comp.getFileTO().getTitle();
-        return fileTitle;
-
-    }
-
-    public void writeToExportFile( List<MGOFileAlbumCompositeTO> list, CSVPrinter csvFilePrinter) throws IOException {
-        //{"FileTitle", "PlayCount", "File", "DateLastPlayed", "Album"};
+    public void writeToExportFile( List<MGOFileAlbumCompositeTO> list, CSVPrinter csvFilePrinter, Map <String, MGOFileAlbumCompositeTO> map) throws IOException {
         for (MGOFileAlbumCompositeTO comp : list ){
             List record = new ArrayList();
-            MGOFileTO fileTO = comp.getFileTO();
-            record.add(getFileTitle(comp));
+            record.add(Synchronizer.getFileTitle(map, comp));
             record.add(comp.getFileTO().getPlayCount());
             record.add("");
             record.add(SQLiteUtils.convertDateToString(comp.getFileTO().getDateLastPlayed()));
@@ -252,5 +130,6 @@ public class SynchronizeIPodPlayCount extends BatchJobV2{
         }
         return mezzmoService;
     }
+
 }
 

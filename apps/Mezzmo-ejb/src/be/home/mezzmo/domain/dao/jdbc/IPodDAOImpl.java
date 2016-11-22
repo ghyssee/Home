@@ -16,7 +16,7 @@ import java.util.List;
 public class IPodDAOImpl extends IPodDB {
 
     private static final String LIST_PLAYCOUNT = "SELECT " +
-            "item.pid ID, title TITLE, artist ARTIST, album ALBUM, track_number TRACK, disc_number DISC, ITEM_STATS.play_count_user PLAYCOUNT, " +
+            "item.pid ID, title TITLE, artist ARTIST, item.ALBUM_ARTIST ALBUM_ARTIST, album ALBUM, track_number TRACK, disc_number DISC, ITEM_STATS.play_count_user PLAYCOUNT, " +
             "ITEM_STATS.date_played DATELASTPLAYED, ALBUM.pid ALBUMID, ALBUM.name ALBUMNAME " +
             "FROM item " +
             "LEFT OUTER JOIN DYNAMIC.item_stats ITEM_STATS ON (item.pid = ITEM_STATS.item_pid) " +
@@ -55,6 +55,8 @@ public class IPodDAOImpl extends IPodDB {
             fileArtistTO.setArtist(rs.getString("ARTIST"));
             MGOFileAlbumTO fileAlbumTO = fileAlbumComposite.getFileAlbumTO();
             fileAlbumTO.setName(rs.getString("ALBUMNAME"));
+            MGOAlbumArtistTO albumArtistTO = fileAlbumComposite.getAlbumArtistTO();
+            albumArtistTO.setName(rs.getString("ALBUM_ARTIST"));
             return fileAlbumComposite;
         }
 

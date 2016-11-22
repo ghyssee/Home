@@ -10,6 +10,7 @@ import be.home.mezzmo.domain.model.PlaylistSetup;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by ghyssee on 13/04/2016.
@@ -125,6 +126,17 @@ public class MezzmoServiceImpl {
     public List<MGOFileAlbumCompositeTO> getLastPlayed(int number) {
         MezzmoBO bo = new MezzmoBO();
         return bo.getLastPlayed(number);
+    }
+
+    public Map<String, MGOFileAlbumCompositeTO> getMaxDisc() {
+        MezzmoBO bo = new MezzmoBO();
+        return bo.getMaxDisc();
+    }
+
+    public int findMaxDiscLength(Map<String, MGOFileAlbumCompositeTO> map, MGOFileAlbumCompositeTO comp) {
+        MezzmoBO bo = new MezzmoBO();
+        return bo.findMaxDiscLength(map, comp);
+
     }
 
     public synchronized static MezzmoServiceImpl getInstance() {

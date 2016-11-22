@@ -216,6 +216,18 @@ public class MezzmoDAOImpl extends MezzmoDB {
             "ORDER BY mgofile.datelastplayed DESC " +
             "LIMIT 0,? ";
 
+
+    private static final String MAX_DISC = "SELECT max (MGOFileAlbum.data) ALBUM,  max (MGOAlbumArtist.data) ALBUM_ARTIST, max(MGOFile.disc) DISC " +
+                                           "FROM MGOFile " +
+                                           "INNER JOIN MGOFileAlbumRelationship ON (MGOFileAlbumRelationship.FileID = MGOFILE.id) " +
+                                           "INNER JOIN MGOFileAlbum ON (MGOFileAlbum.ID = MGOFileAlbumRelationship.ID) " +
+                                           "INNER JOIN MGOAlbumArtistRelationship ON (MGOAlbumArtistRelationship.fileID = MGOFileAlbumRelationship.fileID) " +
+                                           "INNER JOIN MGOAlbumArtist ON (MGOAlbumArtist.ID = MGOAlbumArtistRelationship.ID) " +
+                                           "INNER JOIN MGOFileExtension ON (MGOFileExtension.ID = MGOFILE.extensionID) " +
+                                           "WHERE MGOFileExtension.data = 'mp3' " +
+                                           "AND MGOFile.disc >= 9 " +
+                                           "GROUP BY MGOFileAlbum.data, MGOAlbumArtist.data ";
+
     private static final Logger log = Logger.getLogger(MezzmoDAOImpl.class);
 
 
@@ -348,6 +360,14 @@ public class MezzmoDAOImpl extends MezzmoDB {
     public int updateRanking(Long fileID, int ranking) throws SQLException {
         Object[] params = {ranking, fileID};
         return getInstance().getJDBCTemplate().update(FILE_UPDATE_RATING, params);
+    }
+
+    public List<MGOFileAlbumCompositeTO> getMaxDisc()
+    {
+        String query = MAX_DISC;
+        List<MGOFileAlbumCompositeTO>  list = getInstance().getJDBCTemplate().query(query, new MezzmoRowMappers.MaxDiscRowMapper());
+        return list;
+
     }
 
 

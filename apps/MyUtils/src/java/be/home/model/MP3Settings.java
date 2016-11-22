@@ -1,5 +1,7 @@
 package be.home.model;
 
+import be.home.common.configuration.Setup;
+
 /**
  * Created by ghyssee on 8/07/2016.
  */
@@ -10,12 +12,27 @@ public class MP3Settings {
     public Rating rating;
     public Mezzmo mezzmo;
     public MediaMonkey mediaMonkey;
+    public LastPlayedSong lastPlayedSong;
+    public Export export;
 
     public LastPlayedSong getLastPlayedSong() {
         return lastPlayedSong;
     }
 
-    public LastPlayedSong lastPlayedSong;
+    public class Export{
+        public String music;
+        public String iPod;
+
+        public String getiPod() {
+            return Setup.replaceEnvironmentVariables(iPod);
+        }
+
+        public String getMusic() {
+            return Setup.replaceEnvironmentVariables(music);
+        }
+
+    }
+
 
     public class Synchronizer{
         public String startDirectory;

@@ -1,5 +1,6 @@
 package be.home.common.utils;
 
+import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
 import be.home.common.exceptions.ApplicationException;
 import com.google.gson.Gson;
@@ -35,6 +36,11 @@ public class JSONUtils {
             throw new RuntimeException("Problem processing file " +filename);
         }
         return object;
+
+    }
+
+    public static Object openJSONWithCode(String pathCode, Class className)  {
+        return openJSON(Setup.getInstance().getFullPath(pathCode), className, "UTF-8");
 
     }
 

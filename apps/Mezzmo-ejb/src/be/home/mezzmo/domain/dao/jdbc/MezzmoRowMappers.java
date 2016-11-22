@@ -147,4 +147,15 @@ public class MezzmoRowMappers {
                 return fileAlbumComposite;
             }
         }
+
+    public static class MaxDiscRowMapper implements RowMapper {
+        public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+            MGOFileAlbumCompositeTO comp = new MGOFileAlbumCompositeTO();
+            comp.getFileTO().setDisc(rs.getInt("DISC"));
+            comp.getFileAlbumTO().setName(rs.getString("ALBUM"));
+            comp.getAlbumArtistTO().setName(rs.getString("ALBUM_ARTIST"));
+            return comp;
+        }
+    }
+
 }
