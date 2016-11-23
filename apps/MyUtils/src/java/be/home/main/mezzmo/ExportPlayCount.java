@@ -5,6 +5,7 @@ import be.home.common.dao.jdbc.SQLiteUtils;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 import be.home.common.model.TransferObject;
+import be.home.common.utils.CSVUtils;
 import be.home.common.utils.DateUtils;
 import be.home.common.utils.WinUtils;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
@@ -67,42 +68,27 @@ public class ExportPlayCount extends BatchJobV2{
 
     public void export(String base, String fileName){
         TransferObject to = new TransferObject();
-        Writer fileWriter = null;
-        File exportFile = new File(base + "MP3SongsWithPlay." + DateUtils.formatDate(new Date(), DateUtils.YYYYMMDDHHMMSS) + ".csv");
+
+        CSVUtils csvUtils = new CSVUtils();
         CSVPrinter csvFilePrinter = null;
-        CSVFormat csvFileFormat = CSVFormat.DEFAULT.withHeader(FILE_HEADER_MAPPING);
-        FileOutputStream outputStream = null;
+        File exportFile = new File(base + "MP3SongsWithPlay." + DateUtils.formatDate(new Date(), DateUtils.YYYYMMDDHHMMSS) + ".csv");
+        String fields[] = {"FileTitle", "PlayCount", "File", "DateLastPlayed", "Album"};
 
         try {
-            outputStream = new FileOutputStream(exportFile);
-            fileWriter = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
-            csvFilePrinter = new CSVPrinter(fileWriter, csvFileFormat);
-
+            csvFilePrinter = csvUtils.initialize(exportFile, fields);
             do {
                 List<MGOFileAlbumCompositeTO> list = getMezzmoService().getMP3FilesWithPlayCount(to);
-                System.out.println("Index = " + to.getIndex());
+                log.info("Index = " + to.getIndex());
                 writeToExportFile(list, csvFilePrinter);
             }
             while (!to.isEndOfList());
-
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            log.error(e);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e);
         } finally {
-            if (fileWriter != null){
-                try {
-                    fileWriter.flush();
-                    fileWriter.close();
-                    if (csvFilePrinter != null){
-                        csvFilePrinter.close();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            csvUtils.close(csvFilePrinter);
         }
-
     }
 
     public void writeToExportFile( List<MGOFileAlbumCompositeTO> list, CSVPrinter csvFilePrinter) throws IOException {

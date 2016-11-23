@@ -51,6 +51,9 @@ public class JSONUtils {
 
     public static Object openJSON(String filename, Class className, String charSet)  {
         Path file = Paths.get(filename);
+        if (!Files.exists(file)){
+            throw new ApplicationException("JSON File does not exist: " + filename);
+        }
         BufferedReader reader = null;
         Object o = null;
         try {

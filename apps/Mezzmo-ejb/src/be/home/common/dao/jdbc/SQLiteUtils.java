@@ -23,7 +23,7 @@ public class SQLiteUtils {
             Calendar calendar = GregorianCalendar.getInstance();
             calendar.setTime(date);
             calendar.add(Calendar.YEAR, 31);
-            calendar.add(Calendar.HOUR, -23);
+            calendar.add(Calendar.HOUR, -24);
 
             return calendar.getTime();
         }

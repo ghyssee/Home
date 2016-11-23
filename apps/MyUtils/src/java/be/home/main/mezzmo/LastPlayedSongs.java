@@ -107,7 +107,7 @@ public class LastPlayedSongs extends BatchJobV2{
     }
 
     public long process() {
-        MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSON(Setup.getInstance().getFullPath(Constants.JSON.MP3SETTINGS), MP3Settings.class, "UTF-8");
+        MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSONWithCode(Constants.JSON.MP3SETTINGS, MP3Settings.class);
         log.info("Number of last played songs to show: " + mp3Settings.lastPlayedSong.number);
         List<MGOFileAlbumCompositeTO> list = getMezzmoService().getLastPlayed(mp3Settings.lastPlayedSong.number);
         String base = Setup.getFullPath(Constants.Path.WEB_MUSIC) + File.separator;

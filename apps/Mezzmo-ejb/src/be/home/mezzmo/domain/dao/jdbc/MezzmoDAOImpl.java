@@ -97,7 +97,8 @@ public class MezzmoDAOImpl extends MezzmoDB {
             ")";
 
     private static final String FILE_SYNC_PLAYCOUNT = "UPDATE MGOFile " +
-            " SET PlayCount = ? " +
+            " SET PlayCount = ?" +
+            " ,DateLastPlayed = ?" +
             " WHERE ID = ?";
 
     private static final String LIST_ALBUMS = "SELECT DISTINCT MGOFileAlbum.data AS ALBUMNAME," +
@@ -264,8 +265,8 @@ public class MezzmoDAOImpl extends MezzmoDB {
 
     }
 
-    public int synchronizePlayCount(Long fileID, int playCount) throws SQLException {
-        Object[] params = {playCount, fileID};
+    public int synchronizePlayCount(Long fileID, int playCount, java.util.Date lastPlayed) throws SQLException {
+        Object[] params = {playCount, SQLiteUtils.convertDateToString(lastPlayed), fileID};
         return getInstance().getJDBCTemplate().update(FILE_SYNC_PLAYCOUNT, params);
     }
 

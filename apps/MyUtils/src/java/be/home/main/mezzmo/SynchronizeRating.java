@@ -67,8 +67,7 @@ public class SynchronizeRating extends BatchJobV2 {
 
     public void start() throws IOException {
 
-        MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSON(Setup.getInstance().getFullPath(Constants.JSON.MP3SETTINGS),
-                MP3Settings.class, "UTF-8");
+        MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSONWithCode(Constants.JSON.MP3SETTINGS, MP3Settings.class);
 
         MP3Helper helper = MP3Helper.getInstance();
         log.info("Start Directory: " + mp3Settings.synchronizer.startDirectory);

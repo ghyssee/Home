@@ -75,7 +75,7 @@ public class MakeTop20 extends BatchJobV2{
     public void makeTop20() throws IOException {
 
 
-        MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSON(Setup.getFullPath(Constants.JSON.MP3SETTINGS), MP3Settings.class, "UTF-8");
+        MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSONWithCode(Constants.JSON.MP3SETTINGS, MP3Settings.class);
 
         /* based on Mezzmo DB
         List <MGOFileAlbumCompositeTO> list = getMezzmoService().getTop20();

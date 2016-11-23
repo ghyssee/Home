@@ -80,7 +80,7 @@ public class MP3Processor extends BatchJobV2 {
     public void start() throws IOException {
 
         AlbumInfo.Config album = (AlbumInfo.Config) JSONUtils.openJSON(INPUT_FILE, AlbumInfo.Config.class, "UTF-8");
-        MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSON(Setup.getFullPath(Constants.JSON.MP3SETTINGS), MP3Settings.class);
+        MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSONWithCode(Constants.JSON.MP3SETTINGS, MP3Settings.class);
 
         MP3Helper helper = MP3Helper.getInstance();
         String mp3Dir = Setup.getInstance().getFullPath(Constants.Path.ALBUM) + mp3Settings.album;
@@ -256,11 +256,9 @@ public class MP3Processor extends BatchJobV2 {
 
     public static List<Path> fileList(String directory) {
 
-        DirectoryStream.Filter<Path> filter = new DirectoryStream.Filter<Path>() {
-            public boolean accept(Path file) throws IOException {
-                String fileExt = FilenameUtils.getExtension(file.toString()).toLowerCase();
-                return "mp3".equals(fileExt);
-            }
+        DirectoryStream.Filter<Path> filter = file -> {
+            String fileExt = FilenameUtils.getExtension(file.toString()).toLowerCase();
+            return "mp3".equals(fileExt);
         };
 
         List<Path> fileNames = new ArrayList<>();
@@ -275,13 +273,7 @@ public class MP3Processor extends BatchJobV2 {
                 directoryStream.close();
             } catch (IOException ex) {
             }
-            Collections.sort(fileNames, new Comparator<Path>() {
-                @Override
-                public int compare(Path f1, Path f2) {
-                    return f1.toString().compareTo(f2.toString());
-                }
-
-            });
+            Collections.sort(fileNames, (f1, f2) -> f1.toString().compareTo(f2.toString()));
         }
         else {
             throw new ApplicationException("MP3 Directory " + directory + " does not exist!");
@@ -291,12 +283,7 @@ public class MP3Processor extends BatchJobV2 {
 
     public static List<Path> directoryList(String directory) {
 
-        DirectoryStream.Filter<Path> filter = new DirectoryStream.Filter<Path>() {
-            public boolean accept(Path file) throws IOException {
-                String fileExt = FilenameUtils.getExtension(file.toString()).toLowerCase();
-                return Files.isDirectory(file);
-            }
-        };
+        DirectoryStream.Filter<Path> filter = file -> Files.isDirectory(file);
 
         List<Path> fileNames = new ArrayList<>();
         Path path = Paths.get(directory);
@@ -310,13 +297,7 @@ public class MP3Processor extends BatchJobV2 {
                 directoryStream.close();
             } catch (IOException ex) {
             }
-            Collections.sort(fileNames, new Comparator<Path>() {
-                @Override
-                public int compare(Path f1, Path f2) {
-                    return f1.toString().compareTo(f2.toString());
-                }
-
-            });
+            Collections.sort(fileNames, (f1, f2) -> f1.toString().compareTo(f2.toString()));
         }
         else {
             throw new ApplicationException("MP3 Directory " + directory + " does not exist!");

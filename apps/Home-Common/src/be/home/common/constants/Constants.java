@@ -58,6 +58,8 @@ public interface Constants {
         String HTML = "htmlConfig";
         String MP3PREPROCESSOR = "mp3PreprocessorConfig";
         String MP3SETTINGS = "mp3SettingsConfig";
+        String MP3PRETTIFIER = "mp3PrettifierConfig";
+        String PLAYLIST = "playlistConfig";
         String PLAYLISTSETUP = "playlistSetup";
 
     }

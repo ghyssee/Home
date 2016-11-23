@@ -9,6 +9,7 @@ import be.home.mezzmo.domain.model.MGOPlaylistTO;
 import be.home.mezzmo.domain.model.PlaylistSetup;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -28,9 +29,9 @@ public class MezzmoServiceImpl {
         return bo.updatePlayCount(fileID, album, playCount, dateLastPlayed);
     }
 
-    public int synchronizePlayCount(Long fileID, int playCount) throws SQLException {
+    public int synchronizePlayCount(Long fileID, int playCount, Date lastPlayed) throws SQLException {
         MezzmoBO bo = new MezzmoBO();
-        return bo.synchronizePlayCount(fileID, playCount);
+        return bo.synchronizePlayCount(fileID, playCount, lastPlayed);
     }
 
     public List<MGOFileTO> findMP3Files(MGOFileAlbumCompositeTO compSearchTO){

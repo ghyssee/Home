@@ -72,8 +72,7 @@ public class ImportPlayCountFromCSV extends BatchJobV2{
         //log4GE.info("test");
         //log4GE.addColumn("Status", 20);
         //log4GE.printHeaders();
-        MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSON(Setup.getInstance().getFullPath(Constants.JSON.MP3SETTINGS),
-                MP3Settings.class, "UTF-8");
+        MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSONWithCode(Constants.JSON.MP3SETTINGS, MP3Settings.class);
         String filename = mp3Settings.mezzmo.importF.base + File.separator + mp3Settings.mezzmo.importF.filename;
         filename = Setup.replaceEnvironmentVariables(filename);
         File file = new File(filename);

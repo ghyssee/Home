@@ -82,11 +82,8 @@ public class Synchronizer {
                 log.info("FileTitle: " + mezzmoBO.constructFileTitle(this.discMap, comp));
                 log.info("Playcount: " + foundFileTO.getPlayCount() + " => " + playCount);
                 Date lastUpdatedDate = DateUtils.max(foundFileTO.getDateLastPlayed(), comp.getFileTO().getDateLastPlayed());
-                if (lastUpdatedDate.equals(foundFileTO.getDateLastPlayed())){
-                    lastUpdatedDate = null;
-                }
                 try {
-                    int count = mezzmoBO.synchronizePlayCount(foundFileTO.getId(), playCount);
+                    int count = mezzmoBO.synchronizePlayCount(foundFileTO.getId(), playCount, lastUpdatedDate);
                     //int count = 1;
                     if (count != 1) {
                         errors.add("Problem updating file " + mezzmoBO.constructFileTitle(this.discMap, comp) + " with playcount " + playCount);
@@ -97,17 +94,20 @@ public class Synchronizer {
                             errors.add("Problem resetting playcount for DB iPod And File " + mezzmoBO.constructFileTitle(this.discMap, comp) + " with playcount " + playCount);
                         } else {
                             // everything ok
+                            if (lastUpdatedDate.equals(foundFileTO.getDateLastPlayed())){
+                                lastUpdatedDate = null;
+                            }
                             writeResult( foundFileTO, comp, playCount, lastUpdatedDate, csvPrinter);
                         }
                     }
                 } catch (SQLException e) {
-                    errors.add("Problem updating file " + mezzmoBO.constructFileTitle(this.discMap, comp) + " with playcount " + playCount);
+                    errors.add("SQL Problem updating file " + mezzmoBO.constructFileTitle(this.discMap, comp) + " with playcount " + playCount);
                 } catch (IOException e) {
-                    errors.add("Problem updating file " + mezzmoBO.constructFileTitle(this.discMap, comp) + " with playcount " + playCount);
+                    errors.add("IO Problem updating file " + mezzmoBO.constructFileTitle(this.discMap, comp) + " with playcount " + playCount);
                 }
             }
             catch (EmptyResultDataAccessException ex){
-                errors.add("Problem updating file " + mezzmoBO.constructFileTitle(this.discMap, comp));
+                errors.add("No Result Found When updating file " + mezzmoBO.constructFileTitle(this.discMap, comp));
             }
         }
         return errors;

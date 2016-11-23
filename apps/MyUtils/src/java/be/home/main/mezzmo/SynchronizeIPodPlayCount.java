@@ -33,7 +33,6 @@ public class SynchronizeIPodPlayCount extends BatchJobV2{
     public static Log4GE log4GE;
     public static ConfigTO.Config config;
     private static final Logger log = Logger.getLogger(MezzmoPlaylists.class);
-    public static final String[] FILE_HEADER_MAPPING = {"FileTitle", "PlayCount", "File", "DateLastPlayed", "Album"};
 
     public static void main(String args[]) {
 

@@ -53,8 +53,7 @@ public class MakeCustomPlaylists extends BatchJobV2{
 
         final String batchJob = "Make Custom Playlists";
 
-        Playlist[] playlists = (Playlist[]) JSONUtils.openJSON(
-                Setup.getInstance().getFullPath(Constants.Path.CONFIG) + File.separator + "Playlists.json", Playlist[].class);
+        Playlist[] playlists = (Playlist[]) JSONUtils.openJSONWithCode(Constants.JSON.PLAYLIST, Playlist[].class);
         try {
             makeCustom(playlists);
         } catch (IOException e) {
@@ -87,8 +86,7 @@ public class MakeCustomPlaylists extends BatchJobV2{
 
     private void processPlayList(Playlist playlist) throws IOException {
 
-        MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSON(Setup.getInstance().getFullPath(Constants.JSON.MP3SETTINGS),
-                MP3Settings.class, "UTF-8");
+        MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSONWithCode(Constants.JSON.MP3SETTINGS, MP3Settings.class);
 
         log.info("Processing PlayList " + playlist.name);
         List <MGOFileAlbumCompositeTO> albums = new ArrayList();

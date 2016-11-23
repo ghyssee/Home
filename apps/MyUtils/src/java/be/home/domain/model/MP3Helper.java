@@ -21,8 +21,7 @@ public class MP3Helper {
     private static MP3Prettifier mp3Prettifer;
 
     private MP3Helper() {
-        mp3Prettifer = (MP3Prettifier) JSONUtils.openJSON(Setup.getInstance().getFullPath(Constants.Path.CONFIG) +
-                File.separator + "MP3Prettifier.json", MP3Prettifier.class);
+        mp3Prettifer = (MP3Prettifier) JSONUtils.openJSONWithCode(Constants.JSON.MP3PRETTIFIER, MP3Prettifier.class);
     }
 
     public static MP3Helper getInstance() {
