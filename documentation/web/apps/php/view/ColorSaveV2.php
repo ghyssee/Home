@@ -5,7 +5,7 @@ include("../bo/ColorBO.php");
 include("../html/config.php");
 include("../form/FormUtils.php");
 session_start();
-$file = $oneDrivePath . '/Config/Java/HTML.json';
+$file = getFullPath(JSON_HTML);
 if (isset($_POST['htmlSettings'])) {
     $button = $_POST['htmlSettings'];
     if ($button == "addColor") {

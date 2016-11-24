@@ -1,17 +1,19 @@
 <html>
 <head>
     <link rel="stylesheet" type="text/css" href="../../css/stylesheet.css">
+    <link rel="stylesheet" type="text/css" href="../../css/form.css">
 </head>
 <body>
 
 <?php
+session_start();
+include("../setup.php");
 include("../config.php");
 include("../model/HTML.php");
 include("../html/config.php");
 include("../bo/ColorBO.php");
 include("../form/FormUtils.php");
-$htmlObj = readJSON($oneDrivePath . '/Config/Java/HTML.json');
-session_start();
+$htmlObj = readJSONWithCode(JSON_HTML);
 $_SESSION['previous_location'] = getUrl();
 ?>
 

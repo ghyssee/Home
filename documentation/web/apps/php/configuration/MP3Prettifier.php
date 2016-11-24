@@ -1,14 +1,15 @@
 <html>
 <head>
     <link rel="stylesheet" type="text/css" href="../../css/stylesheet.css">
+    <link rel="stylesheet" type="text/css" href="../../css/form.css">
 </head>
 <body>
 
 <?php
+include("../setup.php");
 include("../config.php");
 include("../html/config.php");
 include("../model/HTML.php");
-$oneDrive = getOneDrivePath();
 session_start();
 $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
 if (isset($_SESSION["mp3PrettifierGlobal"])) {

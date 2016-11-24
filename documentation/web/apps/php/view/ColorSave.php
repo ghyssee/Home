@@ -1,18 +1,18 @@
 <?php
+include("../setup.php");
 include("../config.php");
 include("../model/HTML.php");
 include("../bo/ColorBO.php");
 include("../html/config.php");
 include("../form/FormUtils.php");
 session_start();
-$file = $oneDrivePath . '/Config/Java/HTML.json';
 if (isset($_POST['htmlSettings'])) {
     $button = $_POST['htmlSettings'];
     if ($button == "addColor") {
-        addColor($file);
+        addColor(JSON_HTML);
     }
     else if ($button == "saveColor") {
-        saveColor($file);
+        saveColor(JSON_HTML);
     }
     else if ($button == "back") {
         header("Location: " . $_SESSION["form_location"]);
@@ -54,7 +54,7 @@ function addColor($file)
         addInfo("Color", "Color Added: " . $color->description);
         $color->id = getUniqueId();
         array_push($htmlObj->colors, $color);
-        writeJSON($htmlObj, $file);
+        writeJSONWithCode($htmlObj, $file);
         header("Location: " . $_SESSION["previous_location"]);
     } else {
         $_SESSION["color"] = $color;

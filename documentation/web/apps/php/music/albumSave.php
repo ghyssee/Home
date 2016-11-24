@@ -22,15 +22,14 @@ session_start();
 if(isset($_POST['mp3Preprocessor'])){
 	$button = $_POST['mp3Preprocessor'];
 	if ($button == "save"){
-		$file = $oneDrivePath . '/Config/Java/MP3Preprocessor.json';
-		$mp3PreprocessorObj = initSave($file);
-		saveMP3Preprocessor($file, $mp3PreprocessorObj);
+		$mp3PreprocessorObj = initSave(JSON_MP3PREPROCESSOR);
+		saveMP3Preprocessor(getFullPath(JSON_MP3PREPROCESSOR), $mp3PreprocessorObj);
 	}
 }
 
 if(isset($_POST['mp3Settings'])){
-	$file = $oneDrivePath . '/Config/Java/MP3Settings.json';
-	$mp3SettingsObj = initSave($file);
+	$file = getFullPath(JSON_MP3SETTINGS);
+	$mp3SettingsObj = initSave(JSON_MP3SETTINGS);
 	$button = $_POST['mp3Settings'];
 	if ($button == "saveAlbum"){
 		saveAlbum($file, $mp3SettingsObj);

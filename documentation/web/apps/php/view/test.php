@@ -1,10 +1,11 @@
 <?php
+include_once("../setup.php");
 include_once("../config.php");
 include_once("../model/HTML.php");
 include_once("../bo/ColorBO.php");
 
 $method = htmlspecialchars($_REQUEST['method']);
-$file = $GLOBALS['oneDrivePath'] . '/Config/Java/HTML.json';
+$file = getFullPath(JSON_HTML);
 switch ($method) {
 	case "list":
 		getList($file);

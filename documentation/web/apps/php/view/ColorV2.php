@@ -9,10 +9,11 @@
 <body style="background">
 
 <?php
+include_once("../setup.php");
 include_once("../config.php");
 include_once("../model/HTML.php");
 include_once("../html/config.php");
-$htmlObj = readJSON($oneDrivePath . '/Config/Java/HTML.json');
+$htmlObj = readJSONWithCode(JSON_HTML);
 session_start();
 $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
 $_SESSION['form_location'] = basename($_SERVER['PHP_SELF']);

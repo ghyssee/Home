@@ -1,12 +1,12 @@
 <?php
+include("../setup.php");
 include("../config.php");
 include("../html/config.php");
 include("../model/HTML.php");
 session_start();
 
 if(isset($_POST['mp3Prettifier'])){
-	$file = $oneDrivePath . '/Config/Java/MP3Prettifier.json';
-	$mp3PrettifierObj = initSave($file);
+	$mp3PrettifierObj = initSave(JSON_MP3PRETTIFIER);
 	$button = $_POST['mp3Prettifier'];
 	if ($button == "saveGlobalWord"){
 		saveGlobalWord($file, $mp3PrettifierObj);

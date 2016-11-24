@@ -164,7 +164,7 @@ class Layout extends FormLayout
         $html .= $hasError ? " *" : "";
         $html .= "</td>" . PHP_EOL;
         $html .= "<td>";
-        $html .= '<input size="' . $input->size .  '"' . $this->checkMinMax($input) . ' type="' . $type . '"';
+        $html .= '<input class="inputField" size="' . $input->size .  '"' . $this->checkMinMax($input) . ' type="' . $type . '"';
         $html.= ' name="' . $input->name . '" value="' . $input->value . '"';
         $html .= $this->checkTabIndex() . $this->checkAutofocus($hasError);
         $html .= '>';
@@ -181,7 +181,7 @@ class Layout extends FormLayout
         if ($input->colspan == 1){
             $html .= '</td><td>';
         }
-        $html .= '<input type="checkbox" name="' . $input->name . '"';
+        $html .= '<input class="inputField" type="checkbox" name="' . $input->name . '"';
         $html .= ' value="' . $input->value . '"';
         $html .= ($input->value ? " checked" : "");
         $html .=  $this->checkTabIndex() .'>';
@@ -205,7 +205,7 @@ class Layout extends FormLayout
         $html = "<tr>" . PHP_EOL;
         $html .= "<td>" . $input->label . "</td>" . PHP_EOL;
         $html .= "<td>";
-        $html .= '<select name="' . $input->name . '"' .  $this->checkTabIndex() . '>';
+        $html .= '<select class="inputField" name="' . $input->name . '"' .  $this->checkTabIndex() . '>';
 
         foreach($array as $key => $item) {
 

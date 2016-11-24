@@ -1,6 +1,7 @@
 <html>
 <head>
     <link rel="stylesheet" type="text/css" href="../../css/stylesheet.css">
+    <link rel="stylesheet" type="text/css" href="../../css/form.css">
     <link rel="stylesheet" href="../../css/jquery-ui.css">
     <script src="../../js/jquery-3.1.1.js"></script>
     <script src="../../js/jquery-ui.js"></script>
@@ -52,11 +53,12 @@ Are you sure about this?
 </style>
 
 <?php
+session_start();
+include("../setup.php");
 include("../config.php");
 include("../model/HTML.php");
 include("../html/config.php");
-$htmlObj = readJSON($oneDrivePath . '/Config/Java/HTML.json');
-session_start();
+$htmlObj = readJSONWithCode(JSON_HTML);
 $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
 $_SESSION['form_location'] = basename($_SERVER['PHP_SELF']);
 ?>

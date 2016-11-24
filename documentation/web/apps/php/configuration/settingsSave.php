@@ -1,4 +1,5 @@
 <?php
+include("../setup.php");
 include("../config.php");
 include("../model/HTML.php");
 include("../bo/ColorBO.php");
@@ -7,19 +8,17 @@ session_start();
 if (isset($_POST['htmlSettings'])) {
     $button = $_POST['htmlSettings'];
     if ($button == "addColor") {
-        $file = $oneDrivePath . '/Config/Java/HTML.json';
-        addColor($file);
+        addColor();
     }
     if ($button == "saveColor") {
-        $file = $oneDrivePath . '/Config/Java/HTML.json';
-        saveColor($file);
+        saveColor();
     }
 }
 
-function addColor($file)
+function addColor()
 {
 
-    $htmlObj = initSave($file);
+    $htmlObj = initSave(JSON_HTML);
     $color = new Color();
 
     assignField($color->description, "colorDescription");
@@ -38,9 +37,8 @@ function addColor($file)
     }
     if ($save) {
         addInfo("Color", "Color Added: " . $color->description);
-        $color->id = getUniqueId();
-        array_push($htmlObj->colors, $color);
-        writeJSON($htmlObj, $file);
+        $colorBO = new ColorBO();
+        $colorBO->addColor($color);
         header("Location: " . "settings.php");
     } else {
         $_SESSION["color"] = $color;
@@ -49,9 +47,9 @@ function addColor($file)
     exit();
 }
 
-function saveColor($file)
+function saveColor()
 {
-    $htmlObj = initSave($file);
+    $htmlObj = initSave(JSON_HTML);
     $color = new Color();
     assignField($color->description, "colorDescription");
     assignField($color->code, "colorCode");

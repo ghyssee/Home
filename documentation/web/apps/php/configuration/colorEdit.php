@@ -5,11 +5,12 @@
 <body>
 
 <?php
+include("../setup.php");
 include("../config.php");
 include("../model/HTML.php");
 include("../html/config.php");
 include("../bo/ColorBO.php");
-$htmlObj = readJSON($oneDrivePath . '/Config/Java/HTML.json');
+$htmlObj = readJSONWithCode(JSON_HTML);
 session_start();
 $_SESSION['previous_location'] = getUrl();
 ?>

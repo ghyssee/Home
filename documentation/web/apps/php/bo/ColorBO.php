@@ -1,7 +1,7 @@
 <?php
 require_once ("../config.php");
 require_once ("../model/HTML.php");
-$htmlFile = $GLOBALS['oneDrivePath'] . '/Config/Java/HTML.json';
+$htmlFile = getFullPath(JSON_HTML);
 
 class ColorBO
 {
@@ -32,6 +32,15 @@ class ColorBO
             $counter++;
         }
         return false;
+    }
+
+    function addColor($color)
+    {
+        $file = $GLOBALS['htmlFile'];
+        $htmlObj = readJSON($file);
+        $color->id = getUniqueId();
+        array_push($htmlObj->colors, $color);
+        writeJSON($htmlObj, $file);
     }
 
     function deleteColor($id)

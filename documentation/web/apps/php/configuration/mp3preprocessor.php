@@ -1,14 +1,16 @@
 <html>
 <head>
     <link rel="stylesheet" type="text/css" href="../../css/stylesheet.css">
+    <link rel="stylesheet" type="text/css" href="../../css/form.css">
 </head>
 <body>
 
 <?php
+include("../setup.php");
 include("../config.php");
 include("../model/HTML.php");
 include("../html/config.php");
-$mp3PreprocessorObj = readJSON($oneDrivePath . '/Config/Java/MP3Preprocessor.json');
+$mp3PreprocessorObj = readJSONWithCode(JSON_MP3PREPROCESSOR);
 session_start();
 $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
 ?>

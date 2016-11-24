@@ -1,18 +1,19 @@
 <html>
 <head>
     <link rel="stylesheet" type="text/css" href="../../css/stylesheet.css">
+    <link rel="stylesheet" type="text/css" href="../../css/form.css">
 </head>
 <body>
 
 <?php
+session_start();
+include("../setup.php");
 include("../config.php");
 include("../html/config.php");
 include("../model/HTML.php");
-$mp3SettingsObj = readJSON($oneDrivePath . '/Config/Java/MP3Settings.json');
-$mp3PreprocessorObj = readJSON($oneDrivePath . '/Config/Java/MP3Preprocessor.json');
-$htmlObj = readJSON($oneDrivePath . '/Config/Java/HTML.json');
-$oneDrive = getOneDrivePath();
-session_start();
+$mp3SettingsObj = readJSONWithCode(JSON_MP3SETTINGS);
+$mp3PreprocessorObj = readJSONWithCode(JSON_MP3PREPROCESSOR);
+$htmlObj = readJSONWithCode(JSON_HTML);
 $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
 if (isset($_SESSION["mp3Settings"])) {
     $mp3SettingsObj = $_SESSION["mp3Settings"];

@@ -1,5 +1,6 @@
 <?php
 require_once ("utils/RandomStringGenerator.php");
+require_once ("setup.php");
 $oneDrivePath = getOneDrivePath();
 
 function println ($string_message) {
@@ -19,15 +20,6 @@ function printErrorMessage ($string_message, $class) {
 	println($msg);
 }
 
-function readJSON($file){
-	$str = file_get_contents($file);
-	return json_decode($str);
-}
-
-function writeJSON($json, $file){
-	file_put_contents($file, json_encode($json, JSON_PRETTY_PRINT + JSON_UNESCAPED_SLASHES));
-}
-
 function assignField(&$field, $value){
    $field = htmlspecialchars($_POST[$value]);
 }
@@ -36,28 +28,13 @@ function assignCheckbox(&$field, $value){
    $field = isset($_POST[$value]);
 }
 
-function write ($file, $text){
-	file_put_contents($file, $text . PHP_EOL, FILE_APPEND | LOCK_EX);
-}
-
 function initSave($file){
-	$obj = readJSON($file);
+	$obj = readJSONWithCode($file);
 	print "<pre>";
 	var_dump($_POST); // write your code here as you would 
 	print "</pre>";
 	return $obj;
 }
-
-function getOneDrivePath() {
-	$Wshshell= new COM('WScript.Shell');
-	try {
-		$oneDrive = $Wshshell->regRead('HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\OneDrive\\UserFolder');
-	} catch (Exception $e) {
-		$oneDrive= $Wshshell->regRead('HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\SkyDrive\\UserFolder');
-	}
-	return $oneDrive;
-}
-
 function execInBackground($cmd) {
     if (substr(php_uname(), 0, 7) == "Windows"){
         pclose(popen('start /B "" "'. $cmd . '"', "r")); 

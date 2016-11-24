@@ -1,11 +1,11 @@
 <?php
+include("../setup.php");
 include("../config.php");
 include("../model/HTML.php");
 include("../html/config.php");
 session_start();
 if (isset($_POST['mp3Preprocessor'])) {
     $button = $_POST['mp3Preprocessor'];
-    $file = $oneDrivePath . '/Config/Java/MP3Preprocessor.json';
     if ($button == "addSplitter") {
         addSplitter($file);
     }
@@ -17,7 +17,7 @@ if (isset($_POST['mp3Preprocessor'])) {
 function addSplitter($file)
 {
 
-    $mp3PreprocesorObj = initSave($file);
+    $mp3PreprocesorObj = initSave(JSON_MP3PREPROCESSOR);
     $splitter = new Splitter();
 
     assignField($splitter->id, "splitterId");

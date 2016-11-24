@@ -1,15 +1,18 @@
 <html>
 <head>
     <link rel="stylesheet" type="text/css" href="../../css/stylesheet.css">
+    <link rel="stylesheet" type="text/css" href="../../css/form.css">
 </head>
 <body style="background">
 
 <?php
+session_start();
+include("../setup.php");
+include("../config.php");
 include("../config.php");
 include("../model/HTML.php");
 include("../html/config.php");
-$htmlObj = readJSON($oneDrivePath . '/Config/Java/HTML.json');
-session_start();
+$htmlObj = readJSONWithCode(JSON_HTML);
 $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
 ?>
 
@@ -31,27 +34,25 @@ if (isset($_SESSION["color"])) {
 <div class="horizontalLine">.</div>
 <form action="settingsSave.php" method="post">
     <?php
-        //<?php errorCheck("description");
         $layout = new Layout(array('numCols' => 1));
-    $layout->inputBox(new Input(array('name' => "colorDescription",
+        $layout->inputBox(new Input(array('name' => "colorDescription",
         'size' => 50,
         'label' => 'Description',
         'value' => $color->description)));
         //<?php errorCheck("code");
-    $layout->inputBox(new Input(array('name' => "colorCode",
-    'size' => 50,
-    'label' => 'Color Code',
-    'value' => $color->code)));
-    $layout->button(new Input(array('name' => "htmlSettings",
+        $layout->inputBox(new Input(array('name' => "colorCode",
+        'size' => 50,
+        'label' => 'Color Code',
+        'value' => $color->code)));
+        $layout->button(new Input(array('name' => "htmlSettings",
         'value' => 'addColor',
         'text' => 'Add',
         'colspan' => 2)));
-    $layout->close();
-    usort($htmlObj->colors, function ($a, $b){
-        return strcmp($a->description, $b->description);
-    });
-    echo build_table($htmlObj->colors);
-
+        $layout->close();
+        usort($htmlObj->colors, function ($a, $b){
+            return strcmp($a->description, $b->description);
+        });
+        echo build_table($htmlObj->colors);
     ?>
 </form>
 
