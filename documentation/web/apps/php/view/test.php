@@ -81,9 +81,8 @@ function add($file)
 		$save = false;
 	}
 	if ($save) {
-		$color->id = getUniqueId();
-		array_push($htmlObj->colors, $color);
-		writeJSON($htmlObj, $file);
+		$colorBO = new ColorBO();
+		$colorBO->addColor($color);
 		$items = array();
 		array_push($items, $color);
 		echo json_encode($items);
