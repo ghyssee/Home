@@ -182,6 +182,19 @@ border-left: none;
 border-right: none;
 }
 
+.formTextAreaLabelAlignment {
+	vertical-align:top
+}
+
+/* Apply padding to td elements that are direct children of the tr elements with class spaceUnder. */
+tr.spaceUnder > td
+{
+	padding-bottom: 1em;
+	padding-left: 1em;
+	padding-rght: 1em;
+	padding-top: 0em;
+}
+
 .displayTable caption {
 	font-weight: bold;
 	font: normal 18px Arial, sans-serif;

@@ -5,6 +5,7 @@ const JSON_MP3SETTINGS = "mp3SettingsConfig";
 const JSON_MP3PREPROCESSOR = "mp3PreprocessorConfig";
 const JSON_MP3PRETTIFIER = "mp3PrettifierConfig";
 const JSON_HTML = "htmlConfig";
+const FILE_ALBUM = "albumInfo";
 
 function initSetup(){
     if (isset($GLOBALS["SETUP"])){
@@ -97,8 +98,13 @@ function writeJSON($json, $file){
 }
 
 
-function write ($file, $text){
-    file_put_contents($file, $text . PHP_EOL, FILE_APPEND | LOCK_EX);
+function write ($file, $text, $append = true){
+    file_put_contents($file, $text . PHP_EOL, ($append ? FILE_APPEND : 0) | LOCK_EX);
+}
+
+
+function read ($file){
+    return file_get_contents($file);
 }
 
 ?>

@@ -9,6 +9,12 @@ import org.apache.commons.lang3.StringUtils;
  */
 public enum Mp3Tags {
 
+    DURATION {
+        @Override
+        public void method(AlbumInfo.Track track, String item, boolean duration) {
+            // this can be ignored
+        }
+    },
     TRACK {
         @Override
         public void method(AlbumInfo.Track track, String item, boolean duration) {

@@ -10,6 +10,7 @@ import be.home.common.main.BatchJobV2;
 import be.home.common.utils.JSONUtils;
 import be.home.domain.model.MP3Helper;
 import be.home.model.MP3PreprocessorConfig;
+import be.home.model.MP3Settings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -31,7 +32,6 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
        will be used
     */
     private static final String RENUM_TAG = "{RENUM}";
-    private static final String FILE = "Album.txt";
 
     public static ConfigTO.Config config;
     private static final Logger log = Logger.getLogger(MP3PreProcessorV2.class);
@@ -110,11 +110,12 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
         }
         String pattern = constructPattern(mp3PreprocessorConfig, configItem.config);
         log.info("Pattern: " + pattern);
-        Path file = Paths.get(Setup.getInstance().getFullPath(Constants.Path.PREPROCESS) + File.separator + FILE);
+        Path file = Paths.get(Setup.getInstance().getFullPath(Constants.FILE.ALBUM));
         BufferedReader reader2 = Files.newBufferedReader(file, Charset.forName("UTF-8"));
         String line = null;
         AlbumInfo info = new AlbumInfo();
         AlbumInfo.Config configAlbum = info.new Config();
+        setAlbumTag(mp3PreprocessorConfig, configAlbum);
         configAlbum.total = 0;
         AtomicInteger counter = new AtomicInteger(0);
         while ((line = reader2.readLine()) != null) {
@@ -185,10 +186,11 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
             log.info("CD Tag found");
             counter.set(1);
         }
+        /*
         else if (checkAlbumTag(mp3Config, album, line)){
             log.info("Album Tag found");
             counter.set(1);
-        }
+        }*/
         else {
             log.debug("patternString: " + sPattern);
             line = replacePattern(line, mp3Config.prefix, PatternType.PREFIX);
@@ -243,6 +245,14 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
         }
         return tagFound;
     }
+
+
+    private void setAlbumTag(MP3PreprocessorConfig mpPreprocessorConfig, AlbumInfo.Config album){
+        // possible problem with UTF-8 BOM, than first characters are special and
+        // album is not found
+        album.album = mpPreprocessorConfig.album;
+    }
+
 
     private AlbumInfo.Track splitString(MP3PreprocessorConfig mp3Config, MP3PreprocessorConfig.ConfigItem configItem, String line){
 

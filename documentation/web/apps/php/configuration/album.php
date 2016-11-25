@@ -18,9 +18,10 @@ $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
 if (isset($_SESSION["mp3Settings"])) {
     $mp3SettingsObj = $_SESSION["mp3Settings"];
 }
+/*
 if (isset($_SESSION["mp3Preprocessor"])) {
     $mp3PreprocessorObj = $_SESSION["mp3Preprocessor"];
-}
+}*/
 ?>
 
 <style>
@@ -40,40 +41,6 @@ if (isset($_SESSION["mp3Preprocessor"])) {
 <?php
 goMenu();
 ?>
-<form action="albumSave.php" method="post">
-    <h1>MP3Preprocessor Configuration</h1>
-    <div class="horizontalLine">.</div>
-    <?php
-    $layout = new Layout(array('numCols' => 1));
-    $layout->inputBox(new Input(array('name' => "albumTag",
-        'size' => 50,
-        'label' => 'AlbumTag',
-        'value' => $mp3PreprocessorObj->albumTag)));
-    $layout->inputBox(new Input(array('name' => "cdTag",
-        'size' => 50,
-        'label' => 'CdTag',
-        'value' => $mp3PreprocessorObj->cdTag)));
-    $layout->inputBox(new Input(array('name' => "prefix",
-        'size' => 50,
-        'label' => 'Prefix',
-        'value' => $mp3PreprocessorObj->prefix)));
-    $layout->inputBox(new Input(array('name' => "suffix",
-        'size' => 50,
-        'label' => 'Suffix',
-        'value' => $mp3PreprocessorObj->suffix)));
-    $layout->comboBox($mp3PreprocessorObj->configurations, "id", "id",
-        new Input(array('name' => "activeConfiguration",
-            'label' => 'Active Configuration',
-            'method' => 'getConfigurationText',
-            'methodArg' => 'config',
-            'default' => $mp3PreprocessorObj->activeConfiguration)));
-    $layout->button(new Input(array('name' => "mp3Preprocessor",
-        'value' => 'save',
-        'text' => 'Save',
-        'colspan' => 2)));
-    $layout->close();
-    ?>
-</form>
 
 <form action="albumSave.php" method="post">
     <h1>Album Configuration</h1>
@@ -165,7 +132,6 @@ goMenu();
         'colspan' => 2)));
     $layout->close();
     ?>
-    </div>
 </form>
 
 <form action="albumSave.php" method="post">
@@ -188,6 +154,9 @@ goMenu();
         new Input(array('name' => "scrollBackgroundColor",
             'label' => 'Scroll Background Color',
             'default' => $mp3SettingsObj->lastPlayedSong->scrollBackgroundColor)));
+    $layout->checkBox(new Input(array('name' => "scrollShowAlbum",
+        'label' => 'Show Album',
+        'value' => $mp3SettingsObj->lastPlayedSong->scrollShowAlbum)));
     $layout->button(new Input(array('name' => "mp3Settings",
         'value' => 'saveLastPlayed',
         'text' => 'Save',
@@ -200,29 +169,10 @@ goMenu();
 goMenu();
 unset($_SESSION["errors"]);
 unset($_SESSION["mp3Settings"]);
+/*
 unset($_SESSION["mp3Preprocessor"]);
+*/
 ?>
 
 </body>
 </html>
-
-<?php
-
-function getConfigurationText($array)
-{
-    $desc = "";
-    foreach ($array as $key => $config) {
-        if (isset($config->type)) {
-            $desc = $desc . (empty($desc) ? '' : ' ') . $config->type;
-        }
-        if (isset($config->splitter)) {
-            $desc = $desc . " " . $config->splitter;
-        }
-        if (!empty($config->duration)) {
-            $desc = $desc . " (duration TRUE)";
-        }
-    }
-    return $desc;
-}
-
-?>

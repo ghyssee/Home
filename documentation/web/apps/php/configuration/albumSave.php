@@ -19,13 +19,14 @@ session_start();
 </style>
 
 <?php
+/*
 if(isset($_POST['mp3Preprocessor'])){
 	$button = $_POST['mp3Preprocessor'];
 	if ($button == "save"){
 		$mp3PreprocessorObj = initSave(JSON_MP3PREPROCESSOR);
 		saveMP3Preprocessor(getFullPath(JSON_MP3PREPROCESSOR), $mp3PreprocessorObj);
 	}
-}
+}*/
 
 if(isset($_POST['mp3Settings'])){
 	$file = getFullPath(JSON_MP3SETTINGS);
@@ -48,6 +49,7 @@ if(isset($_POST['mp3Settings'])){
 	}
 }
 
+/*
 function saveMP3Preprocessor($file, $mp3PreprocessorObj){
 	assignField($mp3PreprocessorObj->albumTag, "albumTag");
 	assignField($mp3PreprocessorObj->cdTag, "cdTag");
@@ -63,8 +65,8 @@ function saveMP3Preprocessor($file, $mp3PreprocessorObj){
 		addError ('cdTag', 'cdTag is either empty, or not set at all');
 		$save = false;
 	}
-	checkSave2($save, 'mp3Preprocessor', $mp3PreprocessorObj, $file, 'album.php');
-}
+	checkSave2($save, 'mp3Preprocessor', $mp3PreprocessorObj, $file, 'AlbumInformation.php');
+}*/
 
 function saveAlbum($file, $mp3Settings){
 	assignField($mp3Settings->album, "album");
@@ -137,6 +139,7 @@ function saveLastPlayed($file, $mp3Settings){
 	assignField($value, "number");
 	assignField($mp3Settings->lastPlayedSong->scrollColor, "scrollColor");
 	assignField($mp3Settings->lastPlayedSong->scrollBackgroundColor, "scrollBackgroundColor");
+	assignCheckbox($mp3Settings->lastPlayedSong->scrollShowAlbum, "scrollShowAlbum");
 	$intNumber = intval($value);
 	$save = true;
 	if ($intNumber <= 0) {

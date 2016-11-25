@@ -14,6 +14,8 @@ class Input
     public $required;
     public $method;
     public $col = 1;
+    public $cols;
+    public $rows;
     public $colspan = 1;
     public $labelClass;
     public $min;
@@ -155,6 +157,48 @@ class Layout extends FormLayout
         return $html;
     }
 
+    
+    function setAttribute($attribute, $value){
+        $html = '';
+        if (isset($value)){
+            $html .= ' ' . $attribute . '="' . $value . '"';
+        }
+        return $html;
+    }
+
+    function setCheckAttribute($attribute, $value){
+        $html = '';
+        if (isset($value) || $value){
+            $html .= ' ' . $attribute;
+        }
+        return $html;
+    }
+
+
+    function textArea(Input $input){
+
+        if (!isset($input->labelClass)){
+            $input->labelClass = "formTextAreaLabelAlignment";
+        }
+        $hasError = errorCheck($input->name, $this->errors);
+        $html = '';
+        $html .= "<td" . $this->getClasses($input, $hasError) . ">" . $input->label;
+        $html .= $hasError ? " *" : "";
+        $html .= "</td>" . PHP_EOL;
+        $html .= "<td>";
+        $html .= '<textarea ' . $this->setAttribute("class", "inputField") . $this->setAttribute("cols", $input->cols) . $this->setAttribute("rows", $input->rows);
+        $html .= $this->setAttribute("name", $input->name) . $this->setCheckAttribute("required", $input->required);
+        $html .= $this->checkTabIndex() . $this->checkAutofocus($hasError);
+        $html .= '>';
+        $html .= $input->value;
+        $html .= '</textarea>';
+        $html .= "</td>" . PHP_EOL;
+        if (!empty($error)){
+            $html .= '</tr></table></td>';
+        }
+        $this->addElement($input, $html);
+    }
+
     function inputBox(Input $input){
 
         $type = empty($input->type) ? 'text' : $input->type;
@@ -176,7 +220,7 @@ class Layout extends FormLayout
     }
 
     function checkBox(Input $input){
-        $html = "<tr>" . PHP_EOL;
+        $html = "<tr " . $this->setAttribute("class", "spaceUnder") . ">" . PHP_EOL;
         $html .= "<td" . $this->setColSpan($input->colspan) . '>' . $input->label;
         if ($input->colspan == 1){
             $html .= '</td><td>';
@@ -202,7 +246,7 @@ class Layout extends FormLayout
        $input = a Class Object that contains the HTML Settings, like name of the select, the default value
     */
     function comboBox($array, $id, $value, Input $input){
-        $html = "<tr>" . PHP_EOL;
+        $html = "<tr" . $this->setAttribute("class", "spaceUnder") . ">" . PHP_EOL;
         $html .= "<td>" . $input->label . "</td>" . PHP_EOL;
         $html .= "<td>";
         $html .= '<select class="inputField" name="' . $input->name . '"' .  $this->checkTabIndex() . '>';
@@ -225,7 +269,7 @@ class Layout extends FormLayout
         }
         $html .= "</select>";
         $html .= "</td>" . PHP_EOL;;
-        $html .= "</tr>" . PHP_EOL;;
+        //$html .= "</tr>" . PHP_EOL;;
         $this->addElement($input, $html);
     }
 
@@ -282,7 +326,7 @@ class Layout extends FormLayout
         //echo var_dump($this->elements);
         echo "<table>" . PHP_EOL;
         for ($x = 1; $x <= $this->rows; $x++) {
-            echo "<tr>" . PHP_EOL ;
+            echo "<tr class='spaceUnder'>" . PHP_EOL ;
             for ($y = 1; $y <= $this->numCols; $y++) {
                 if (isset($this->elements[$x][$y])) {
                     echo $this->elements[$x][$y];
@@ -472,6 +516,12 @@ function checkSave2($save, $key, $obj, $file, $forward, $returnObj = null)
         header("Location: " . $_SESSION["previous_location"]);
     }
     exit();
+}
+
+function checkForErrors($save, $key, $obj){
+    if (!$save) {
+        $_SESSION[$key] = $obj;
+    }
 }
 
 

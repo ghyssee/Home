@@ -63,4 +63,7 @@ public interface Constants {
         String PLAYLISTSETUP = "playlistSetup";
 
     }
+    interface FILE {
+        String ALBUM = "albumInfo";
+    }
 }
