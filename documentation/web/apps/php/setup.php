@@ -5,7 +5,10 @@ const JSON_MP3SETTINGS = "mp3SettingsConfig";
 const JSON_MP3PREPROCESSOR = "mp3PreprocessorConfig";
 const JSON_MP3PRETTIFIER = "mp3PrettifierConfig";
 const JSON_HTML = "htmlConfig";
+const JSON_JOBS = "jobs";
+const JSON_MENU = "menu";
 const FILE_ALBUM = "albumInfo";
+const APPEND = true;
 
 function initSetup(){
     if (isset($GLOBALS["SETUP"])){
@@ -98,7 +101,7 @@ function writeJSON($json, $file){
 }
 
 
-function write ($file, $text, $append = true){
+function write ($file, $text, $append = APPEND){
     file_put_contents($file, $text . PHP_EOL, ($append ? FILE_APPEND : 0) | LOCK_EX);
 }
 

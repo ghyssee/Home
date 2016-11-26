@@ -3,7 +3,7 @@
 
 <?php
 include("../config.php");
-$jobsObj = initSave($oneDrivePath . '/Config/Java/Jobs.json');
+$jobsObj = initSave(JSON_JOBS);
 ?>
 
 <style>

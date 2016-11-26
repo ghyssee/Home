@@ -1,7 +1,7 @@
 <?php
 require_once ("utils/RandomStringGenerator.php");
 require_once ("setup.php");
-$oneDrivePath = getOneDrivePath();
+const HTML_SPECIAL_CHAR = true;
 
 function println ($string_message) {
     echo "$string_message" . "<br>" . PHP_EOL;
@@ -20,8 +20,13 @@ function printErrorMessage ($string_message, $class) {
 	println($msg);
 }
 
-function assignField(&$field, $value){
-   $field = htmlspecialchars($_POST[$value]);
+function assignField(&$field, $value, $isHtml = true)
+{
+	if ($isHtml) {
+		$field = htmlspecialchars($_POST[$value]);
+	} else {
+		$field = $_POST[$value];
+	}
 }
 
 function assignCheckbox(&$field, $value){

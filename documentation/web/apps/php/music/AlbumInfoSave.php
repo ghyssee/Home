@@ -14,16 +14,12 @@ if (isset($_POST['albumInfo'])) {
 
 function updateAlbumInfo($mp3PreprocessorObj){
     assignField($mp3PreprocessorObj->album, "album");
-    assignField($albumInfo, "albumContent");
+    assignField($albumInfo, "albumContent", !HTML_SPECIAL_CHAR);
     assignField($mp3PreprocessorObj->cdTag, "cdTag");
     assignField($mp3PreprocessorObj->prefix, "prefix");
     assignField($mp3PreprocessorObj->suffix, "suffix");
     assignField($mp3PreprocessorObj->activeConfiguration, "activeConfiguration");
     $save = true;
-    if (empty($mp3PreprocessorObj->albumTag)) {
-        addError ('albumTag', 'AlbumTag is either empty, or not set at all');
-        $save = false;
-    }
     if (empty($mp3PreprocessorObj->cdTag)) {
         addError ('cdTag', 'cdTag is either empty, or not set at all');
         $save = false;
@@ -34,7 +30,7 @@ function updateAlbumInfo($mp3PreprocessorObj){
     }
     if ($save){
         $file = getFullPath(FILE_ALBUM);
-        write ($file, $albumInfo, false);
+        write ($file, $albumInfo, !APPEND);
         writeJSONWithCode($mp3PreprocessorObj, JSON_MP3PREPROCESSOR);
         addInfo("album", "Contents saved to '" . $file);
         addInfo("mp3Preprocessor", "Contents saved to '" . getFullPath(JSON_MP3PREPROCESSOR));

@@ -264,8 +264,8 @@ a { text-decoration: none; }
 
 <?php
 include("apps/php/config.php");
-$menuObj = readJSON($oneDrivePath . '/Config/Java/Menu2.json');
-$mp3SettingsObj = readJSON($oneDrivePath . '/Config/Java/MP3Settings.json');
+$menuObj = readJSONWithCode(JSON_MENU);
+$mp3SettingsObj = readJSONWithCode(JSON_MP3SETTINGS);
 ?>
 
 <div class="title centered heightHeader">

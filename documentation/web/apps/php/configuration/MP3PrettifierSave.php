@@ -8,6 +8,7 @@ session_start();
 if(isset($_POST['mp3Prettifier'])){
 	$mp3PrettifierObj = initSave(JSON_MP3PRETTIFIER);
 	$button = $_POST['mp3Prettifier'];
+	$file = getFullPath(JSON_MP3PRETTIFIER);
 	if ($button == "saveGlobalWord"){
 		saveGlobalWord($file, $mp3PrettifierObj);
 	}
