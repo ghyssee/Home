@@ -2,8 +2,9 @@
 <body>
 
 <?php
+include("../setup.php");
 include("../config.php");
-$jobsObj = readJSON($oneDrivePath . '/Config/Java/Jobs.json');
+$jobsObj = readJSONWithCode(JSON_JOBS);
 ?>
 
 <style>
