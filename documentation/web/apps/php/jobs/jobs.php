@@ -2,8 +2,8 @@
 <body>
 
 <?php
-include("../setup.php");
-include("../config.php");
+include_once("../setup.php");
+include_once("../config.php");
 $jobsObj = readJSONWithCode(JSON_JOBS);
 ?>
 

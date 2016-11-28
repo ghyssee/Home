@@ -2,7 +2,8 @@
 <body>
 
 <?php
-include("../config.php");
+include_once("../config.php");
+include_once("../setup.php");
 $jobsObj = initSave(JSON_JOBS);
 ?>
 
@@ -40,7 +41,7 @@ foreach ($jobsObj->list as $key => $groups) {
     if (isset($_POST[$groups->id])) {
         println("Group Found: " . $groups->id);
         $button = $_POST[$groups->id];
-        processJob($jobsObj, $oneDrivePath, $groups->jobs, $button);
+        processJob($jobsObj, $GLOBALS["ONEDRIVE"], $groups->jobs, $button);
         break;
     }
 }

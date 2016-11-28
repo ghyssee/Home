@@ -7,10 +7,10 @@
 
 <?php
 session_start();
-include("../setup.php");
-include("../config.php");
-include("../html/config.php");
-include("../model/HTML.php");
+include_once("../setup.php");
+include_once("../config.php");
+include_once("../html/config.php");
+include_once("../model/HTML.php");
 $mp3SettingsObj = readJSONWithCode(JSON_MP3SETTINGS);
 $mp3PreprocessorObj = readJSONWithCode(JSON_MP3PREPROCESSOR);
 $htmlObj = readJSONWithCode(JSON_HTML);

@@ -1,9 +1,9 @@
 <html>
 <body>
 <?php
-include("../config.php");
-include("../html/config.php");
-include("../model/HTML.php");
+include_once("../config.php");
+include_once("../html/config.php");
+include_once("../model/HTML.php");
 session_start();
 ?>
 <style>
