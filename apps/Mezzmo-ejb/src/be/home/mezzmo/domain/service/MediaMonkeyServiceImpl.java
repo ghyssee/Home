@@ -19,6 +19,11 @@ public class MediaMonkeyServiceImpl {
         return bo.getTop20();
     }
 
+    public int resetPlayCount(){
+        MediaMonkeyBO bo = new MediaMonkeyBO();
+        return bo.resetPlayCount();
+    }
+
     public synchronized static MediaMonkeyServiceImpl getInstance() {
         if(instance == null) {
             instance = new MediaMonkeyServiceImpl();

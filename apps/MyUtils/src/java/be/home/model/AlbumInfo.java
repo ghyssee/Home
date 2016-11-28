@@ -34,7 +34,6 @@ public class AlbumInfo {
 
     public class Config {
         public String album;
-        public String albumArtist;
         public int total;
         public boolean renum = false;
         public int trackSize;

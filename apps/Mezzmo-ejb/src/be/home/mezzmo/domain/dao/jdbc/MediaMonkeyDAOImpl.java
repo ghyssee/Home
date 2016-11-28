@@ -16,9 +16,6 @@ import java.util.List;
  */
 public class MediaMonkeyDAOImpl extends MediaMonkeyDB {
 
-    private static final String FILE_SELECT = "select file from MGOFile where File like '%Boyzone%';";
-
-
     private static final String LIST_TOP20 = "SELECT  SongTitle AS FILETITLE, " +
                                              "PlayCounter AS PLAYCOUNT, " +
                                              "SongTitle AS TITLE,  " +
@@ -35,10 +32,25 @@ public class MediaMonkeyDAOImpl extends MediaMonkeyDB {
                                              "ORDER BY PS.SONGORDER " +
                                              "LIMIT 0,20 ";
 
+
+    private static final String RESET_PLAYCOUNT = "UPDATE songs " +
+                                                   "SET playcounter = 0, " +
+                                                   "LASTTIMEPLAYED = 0 " +
+                                                   "WHERE playcounter > 0";
+
+    private static final String RESET_DEVICETRACKS = "UPDATE devicetracks " +
+            "SET playcount = 0 " +
+            "WHERE playcount > 0";
+
     public List<MGOFileAlbumCompositeTO> getTop20()
     {
         List<MGOFileAlbumCompositeTO> list  = getInstance().getJDBCTemplate().query(LIST_TOP20, new FileAlbumRowMapper());
         return list;
+    }
+
+    public int resetPlayCount(){
+        getInstance().getJDBCTemplate().update(RESET_DEVICETRACKS);
+        return getInstance().getJDBCTemplate().update(RESET_PLAYCOUNT);
     }
 
     public class FileAlbumRowMapper implements RowMapper

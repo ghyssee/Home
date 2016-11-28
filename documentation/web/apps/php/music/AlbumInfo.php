@@ -11,11 +11,19 @@ include("../setup.php");
 include("../config.php");
 include("../model/HTML.php");
 include("../html/config.php");
-$mp3SettingsObj = readJSONWithCode(JSON_MP3SETTINGS);
-$mp3PreprocessorObj = readJSONWithCode(JSON_MP3PREPROCESSOR);
+
 $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
 if (isset($_SESSION["mp3Preprocessor"])) {
-    $mp3SettingsObj = $_SESSION["mp3Preprocessor"];
+    $mp3PreprocessorObj = $_SESSION["mp3Preprocessor"];
+}
+else {
+    $mp3PreprocessorObj = readJSONWithCode(JSON_MP3PREPROCESSOR);
+}
+if (isset($_SESSION["mp3Settings"])) {
+    $mp3SettingsObj = $_SESSION["mp3Settings"];
+}
+else {
+    $mp3SettingsObj = readJSONWithCode(JSON_MP3SETTINGS);
 }
 ?>
 
@@ -33,17 +41,10 @@ if (isset($_SESSION["mp3Preprocessor"])) {
 
 <?php
 goMenu();
-if (isset($_SESSION["mp3Settings"])) {
-    $mp3SettingsObj = $_SESSION["mp3Settings"];
-}
-if (isset($_SESSION["mp3Preprocessor"])) {
-    $mp3PreprocessorObj = $_SESSION["mp3Preprocessor"];
-}
 ?>
 <h1>Album Information</h1>
 <div class="horizontalLine">.</div>
 <form action="albumInfoSave.php" method="post">
-    <div class="horizontalLine">.</div>
     <?php
     $layout = new Layout(array('numCols' => 1));
     $layout->inputBox(new Input(array('name' => "cdTag",
@@ -68,6 +69,21 @@ if (isset($_SESSION["mp3Preprocessor"])) {
         'size' => 100,
         'label' => 'Album',
         'value' => $mp3PreprocessorObj->album)));
+    $layout->inputBox(new Input(array('name' => "albumLocation",
+        'size' => 100,
+        'label' => 'Album Location',
+        'value' => $mp3SettingsObj->album)));
+    $layout->inputBox(new Input(array('name' => "albumArtist",
+        'size' => 100,
+        'label' => 'Album Artist',
+        'value' => $mp3SettingsObj->albumArtist)));
+    $layout->inputBox(new Input(array('name' => "albumYear",
+        'size' => 4,
+        'label' => 'Album Year',
+        'type' => 'number',
+        'min' => '1900',
+        'value' => $mp3SettingsObj->albumYear)));
+
 
     $file = getFullPath(FILE_ALBUM);
     $textValue = '';

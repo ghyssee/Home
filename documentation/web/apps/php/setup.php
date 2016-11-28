@@ -18,6 +18,8 @@ function initSetup(){
         $oneDrive = getOneDrivePath();
         // main JSON File => can't use getFullPath yet
         $setupObj = readJSON($oneDrive . '/Config/Setup.json');
+        //$mp3Settings = readJSONWithCode(JSON_MP3SETTINGS);
+        //$setupObj->globalSettings->numberOfSongs = $mp3Settings->
         $GLOBALS["SETUP"] = $setupObj;
         return $setupObj;
     }

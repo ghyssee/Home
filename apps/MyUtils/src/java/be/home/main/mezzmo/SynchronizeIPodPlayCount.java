@@ -11,6 +11,7 @@ import be.home.common.utils.JSONUtils;
 import be.home.domain.model.Synchronizer;
 import be.home.mezzmo.domain.model.*;
 import be.home.mezzmo.domain.service.IPodServiceImpl;
+import be.home.mezzmo.domain.service.MediaMonkeyServiceImpl;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.model.ConfigTO;
 import be.home.model.MP3Settings;
@@ -29,6 +30,7 @@ public class SynchronizeIPodPlayCount extends BatchJobV2{
 
     public static IPodServiceImpl iPodService = null;
     public static MezzmoServiceImpl mezzmoService = null;
+    public static MediaMonkeyServiceImpl mediaMonkeyService = null;
 
     public static Log4GE log4GE;
     public static ConfigTO.Config config;
@@ -67,7 +69,7 @@ public class SynchronizeIPodPlayCount extends BatchJobV2{
         Synchronizer synchronizer = new Synchronizer(list, map);
         try {
             synchronizer.synchronizeIPodWithMezzmo(base, filename);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             log.error(e);
         }
     }
@@ -86,6 +88,8 @@ public class SynchronizeIPodPlayCount extends BatchJobV2{
         } catch (FileNotFoundException e) {
             log.error(e);
         } catch (IOException e) {
+            log.error(e);
+        } catch (Exception e) {
             log.error(e);
         } finally {
             csvUtils.close(csvFilePrinter);
@@ -123,6 +127,14 @@ public class SynchronizeIPodPlayCount extends BatchJobV2{
             return MezzmoServiceImpl.getInstance();
         }
         return mezzmoService;
+    }
+
+    public static MediaMonkeyServiceImpl getMediaMonkeyService(){
+
+        if (mediaMonkeyService == null) {
+            return MediaMonkeyServiceImpl.getInstance();
+        }
+        return mediaMonkeyService;
     }
 
 }

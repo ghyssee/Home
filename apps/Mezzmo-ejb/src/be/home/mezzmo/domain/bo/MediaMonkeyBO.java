@@ -23,9 +23,12 @@ public class MediaMonkeyBO extends BusinessObject {
         return getMediaMonkeyDAO().getTop20();
     }
 
+    public int resetPlayCount(){
+        return getMediaMonkeyDAO().resetPlayCount();
+    }
+
     public MediaMonkeyDAOImpl getMediaMonkeyDAO(){
         return new MediaMonkeyDAOImpl();
     }
-
 
 }

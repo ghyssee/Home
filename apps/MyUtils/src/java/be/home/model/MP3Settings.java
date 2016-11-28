@@ -7,6 +7,8 @@ import be.home.common.configuration.Setup;
  */
 public class MP3Settings {
     public String album;
+    public String albumArtist;
+    public String albumYear;
 
     public Synchronizer synchronizer;
     public Rating rating;

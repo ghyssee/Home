@@ -3,6 +3,7 @@ package be.home.domain.model;
 import be.home.common.utils.CSVUtils;
 import be.home.common.utils.DateUtils;
 import be.home.mezzmo.domain.bo.IPodBO;
+import be.home.mezzmo.domain.bo.MediaMonkeyBO;
 import be.home.mezzmo.domain.bo.MezzmoBO;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.MGOFileTO;
@@ -10,6 +11,7 @@ import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.UncategorizedSQLException;
 
 import java.io.*;
 import java.sql.SQLException;
@@ -37,7 +39,7 @@ public class Synchronizer {
         this.mezzmoBO = new MezzmoBO();
     }
 
-    public void synchronizeIPodWithMezzmo(String base, String filename) throws SQLException {
+    public void synchronizeIPodWithMezzmo(String base, String filename) throws Exception {
 
         if (iPodList == null || iPodList.size() == 0){
             log.warn("Nothing To Synchronize!!!");
@@ -45,6 +47,7 @@ public class Synchronizer {
         File syncedFile = new File(base + File.separator + filename + "." + DateUtils.formatDate(new Date(), DateUtils.YYYYMMDDHHMMSS) + ".csv");
         CSVUtils csvUtils = new CSVUtils();
         CSVPrinter csvFilePrinter = null;
+        Exception exception = null;
         try {
             String[] fields = {"FileTitle",
                                "File",
@@ -56,16 +59,22 @@ public class Synchronizer {
                               };
             csvFilePrinter = csvUtils.initialize(syncedFile, fields);
             List <String> errors = startSynchronisation(iPodList, csvFilePrinter);
+            MediaMonkeyBO mmBO = new MediaMonkeyBO();
+            int mmReset = mmBO.resetPlayCount();
+            log.info("Number of MediaMonkey Records updated: " + mmReset);
             if (errors.size() > 0){
                 log.error("Number of errors found: " + errors.size());
                 for (String errorMsg : errors){
                     log.error(errorMsg);
                 }
             }
-        } catch (IOException e) {
-            log.error(e);
+        } catch (Exception e) {
+            exception = e;
         } finally {
             csvUtils.close(csvFilePrinter);
+            if (exception != null){
+                throw exception;
+            }
         }
     }
 
@@ -101,8 +110,10 @@ public class Synchronizer {
                         }
                     }
                 } catch (SQLException e) {
+                    log.error(e);
                     errors.add("SQL Problem updating file " + mezzmoBO.constructFileTitle(this.discMap, comp) + " with playcount " + playCount);
                 } catch (IOException e) {
+                    log.error(e);
                     errors.add("IO Problem updating file " + mezzmoBO.constructFileTitle(this.discMap, comp) + " with playcount " + playCount);
                 }
             }

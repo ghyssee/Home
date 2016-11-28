@@ -100,7 +100,7 @@ public class MP3Processor extends BatchJobV2 {
         List <Path> listOfFiles = fileList(mp3Dir);
         if (listOfFiles.size() > 0){
             checkNrOfMP3s(album.tracks, listOfFiles.size());
-            processSingleDirectory(album, listOfFiles, 1, "");
+            processSingleDirectory(mp3Settings, album, listOfFiles, 1, "");
         }
         else {
             List <Path> directories = directoryList(mp3Dir);
@@ -119,7 +119,7 @@ public class MP3Processor extends BatchJobV2 {
                 if (listOfFiles.size() > 0) {
                     counter++;
                     System.out.println("Processing Directory: " + path.toString());
-                    processSingleDirectory(album, listOfFiles, index, String.valueOf(counter));
+                    processSingleDirectory(mp3Settings, album, listOfFiles, index, String.valueOf(counter));
                 }
                 else {
                     System.out.println("No MP3's found in directory: " + path.toString());
@@ -136,12 +136,12 @@ public class MP3Processor extends BatchJobV2 {
         }
     }
 
-    public void processSingleDirectory(AlbumInfo.Config album, List <Path> listOfFiles, Integer index, String prefix){
+    public void processSingleDirectory(MP3Settings mp3Settings, AlbumInfo.Config album, List <Path> listOfFiles, Integer index, String prefix){
         for (Path path : listOfFiles) {
             log.info(path.toString());
             try {
                 AlbumInfo.Track track = findMP3File(album, index++);
-                readMP3File(album, track, path.toString(), prefix);
+                readMP3File(album, mp3Settings, track, path.toString(), prefix);
             }  catch (NotSupportedException e) {
                 e.printStackTrace();
             } catch (InvalidDataException e) {
@@ -197,7 +197,7 @@ public class MP3Processor extends BatchJobV2 {
 
     }
 
-    private void readMP3File(AlbumInfo.Config album, AlbumInfo.Track track, String fileName, String prefixFileName) throws InvalidDataException, IOException, UnsupportedTagException, NotSupportedException {
+    private void readMP3File(AlbumInfo.Config album, MP3Settings mp3Settings, AlbumInfo.Track track, String fileName, String prefixFileName) throws InvalidDataException, IOException, UnsupportedTagException, NotSupportedException {
         Mp3FileExt mp3file = new Mp3FileExt(fileName);
         ID3v2 id3v2Tag;
         if (mp3file.hasId3v2Tag()) {
@@ -219,9 +219,17 @@ public class MP3Processor extends BatchJobV2 {
         if (StringUtils.isNotBlank(album.album)){
             id3v2Tag.setAlbum(album.album);
         }
-        // compilation cd //
-        id3v2Tag.setCompilation(true);
-        id3v2Tag.setAlbumArtist("Various Artists");
+        if (StringUtils.isBlank(mp3Settings.albumArtist)) {
+            // compilation cd //
+            id3v2Tag.setCompilation(true);
+            id3v2Tag.setAlbumArtist("Various Artists");
+        }
+        else {
+            id3v2Tag.setAlbumArtist(mp3Settings.albumArtist);
+        }
+        if (StringUtils.isNotBlank(mp3Settings.albumYear)) {
+            id3v2Tag.setYear(mp3Settings.albumYear);
+        }
         id3v2Tag.setTrack(MP3Helper.getInstance().formatTrack(album, track.track));
         id3v2Tag.setArtist(track.artist);
         id3v2Tag.setTitle(track.title);
