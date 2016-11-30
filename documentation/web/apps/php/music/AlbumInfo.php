@@ -49,36 +49,44 @@ goMenu();
     $layout = new Layout(array('numCols' => 1));
     $layout->inputBox(new Input(array('name' => "cdTag",
         'size' => 50,
+        'col' => 1,
         'label' => 'CdTag',
         'value' => $mp3PreprocessorObj->cdTag)));
     $layout->inputBox(new Input(array('name' => "prefix",
         'size' => 50,
+        'col' => 1,
         'label' => 'Prefix',
         'value' => $mp3PreprocessorObj->prefix)));
     $layout->inputBox(new Input(array('name' => "suffix",
         'size' => 50,
+        'col' => 1,
         'label' => 'Suffix',
         'value' => $mp3PreprocessorObj->suffix)));
     $layout->comboBox($mp3PreprocessorObj->configurations, "id", "id",
         new Input(array('name' => "activeConfiguration",
             'label' => 'Active Configuration',
+            'col' => 1,
             'method' => 'getConfigurationText',
             'methodArg' => 'config',
             'default' => $mp3PreprocessorObj->activeConfiguration)));
     $layout->inputBox(new Input(array('name' => "album",
-        'size' => 100,
+        'size' => 80,
+        'col' => 1,
         'label' => 'Album',
         'value' => $mp3PreprocessorObj->album)));
     $layout->inputBox(new Input(array('name' => "albumLocation",
-        'size' => 100,
+        'size' => 80,
+        'col' => 1,
         'label' => 'Album Location',
         'value' => $mp3SettingsObj->album)));
     $layout->inputBox(new Input(array('name' => "albumArtist",
-        'size' => 100,
+        'size' => 50,
+        'col' => 1,
         'label' => 'Album Artist',
         'value' => $mp3SettingsObj->albumArtist)));
     $layout->inputBox(new Input(array('name' => "albumYear",
         'size' => 4,
+        'col' => 1,
         'label' => 'Album Year',
         'type' => 'number',
         'min' => '1900',
@@ -92,12 +100,14 @@ goMenu();
     }
 
     $layout->textArea(new Input(array('name' => "albumContent",
-        'cols' => 100,
+        'col' => 1,
+        'cols' => 80,
         'rows' => 40,
         'label' => 'Album Inforomation',
         'value' => $textValue)));
 
     $layout->button(new Input(array('name' => "albumInfo",
+        'col' => 1,
         'value' => 'save',
         'text' => 'Save',
         'colspan' => 2)));

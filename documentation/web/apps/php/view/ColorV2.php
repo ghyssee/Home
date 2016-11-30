@@ -8,6 +8,18 @@
 </head>
 <body style="background">
 
+<style>
+	.datagrid-cell{
+		font-size:20px;
+	}
+	.datagrid-header .datagrid-cell span {
+		font-size: 20px;
+	}
+	.datagrid-row{
+		height: 30px;
+	}
+</style>
+
 <?php
 include_once("../setup.php");
 include_once("../config.php");
@@ -34,12 +46,14 @@ goMenu();
 			</tr>
 		</thead>
 	</table>
+	<span style="font-size:20px">
 	<div id="toolbar">
 		<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newRecord()">New Color</a>
 		<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editRecord()">Edit Color</a>
 		<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteRecord()">Remove Color</a>
 	</div>
-	
+	</span>
+
 	<div id="dlg" class="easyui-dialog" style="width:400px;height:280px;padding:10px 20px"
 			closed="true" buttons="#dlg-buttons">
 		<div class="ftitle">Color Information</div>
@@ -64,7 +78,11 @@ goMenu();
 				{field:'id',title:'Id', hidden:true},
 				{field:'description',title:'Desc', width:20},
 				{field:'code',title:'Code', width:20}
-			]]
+			]],
+			options:[[
+				{rowHeight:100}
+			]],
+			autoRowHeight:true
 		});
 		var url;
 		function newRecord(){
