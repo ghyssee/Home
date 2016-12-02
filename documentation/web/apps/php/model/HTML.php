@@ -95,6 +95,17 @@ class Config
   }
 }
 
+class TableGrid
+{
+  public $title;
+  public $url;
+  public $newUrl;
+  public $updateUrl;
+
+  public function __construct()
+  {
+  }
+}
 
 ?>
 
