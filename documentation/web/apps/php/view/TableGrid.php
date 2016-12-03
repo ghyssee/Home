@@ -1,8 +1,4 @@
-<?php
-//$tableGrid = new TableGrid();
-?>
-
-	<table id="dg" title="<?php echo $tableGrid->title ?>" class="easyui-datagrid" style="width:700px;height:500px"
+	<table id="dg" title="Colors" class="easyui-datagrid" style="width:700px;height:500px"
 			url="test.php?method=list"
 			toolbar="#toolbar" pagination="true" rownumbers="true" fitColumns="true" singleSelect="true">
 		<thead>
@@ -14,7 +10,7 @@
 	</table>
 	<span style="font-size:20px">
 	<div id="toolbar">
-		<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newRecord()">New <?php echo $tableGrid->title ?></a>
+		<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newRecord()">New Color</a>
 		<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editRecord()">Edit Color</a>
 		<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteRecord()">Remove Color</a>
 	</div>
