@@ -53,9 +53,7 @@
 					{{assign var="hide" value="false"}}
 				{{/if}}
 				{field:'{{$contacts[sec1].field}}',title:'{{$contacts[sec1].label}}', hidden:{{$hide}}, width:{{$contacts[sec1].size}}}
-  {{if !$smarty.section.sec1.last}}
-    ,
-  {{/if}}		
+  				{{if !$smarty.section.sec1.last}},{{/if}}
 			{{/section}}
 			]],
 			options:[[
