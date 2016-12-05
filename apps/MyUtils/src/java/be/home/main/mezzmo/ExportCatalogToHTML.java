@@ -18,6 +18,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.tools.generic.DateTool;
 import org.apache.velocity.tools.generic.EscapeTool;
 
+import javax.swing.text.html.HTML;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,26 +63,53 @@ public class ExportCatalogToHTML extends BatchJobV2{
 
     }
 
+    private boolean checkIfAlbumInGroup(String album, HTMLSettings.Group group) {
+        int fromLength = Math.min(group.from.length(), album.length());
+        int toLength = Math.min(group.to.length(), album.length());
+        if (album.substring(0, fromLength).compareTo(group.from) >= 0 &&
+                album.substring(0, toLength).compareTo(group.to) <= 0) {
+
+            boolean exceptionFound = false;
+            if (group.exceptions !=null) {
+                for (HTMLSettings.Exception ex : group.exceptions) {
+                    if (album.startsWith(ex.name)){
+                        exceptionFound = true;
+                        break;
+                    }
+
+                }
+            }
+            if (!exceptionFound){
+                return true;
+            }
+            /*
+            if (StringUtils.isBlank(group.exception) || !album.startsWith(group.exception)) {
+                return true;
+            }*/
+        }
+        return false;
+    }
+
     public void processAlbums(HTMLSettings htmlSettings) {
         List<MGOFileAlbumCompositeTO> list = getMezzmoService().getAlbumTracks(new TransferObject());
         List<MGOFileAlbumCompositeTO> others = new ArrayList<MGOFileAlbumCompositeTO>();
         for (MGOFileAlbumCompositeTO comp : list){
-            String firstChar = comp.getFileAlbumTO().getName().toUpperCase();
             boolean found = false;
             for (HTMLSettings.Group group : htmlSettings.export.groups){
-                if (firstChar.substring(0, group.from.length()).compareTo(group.from) >= 0 && firstChar.substring(0,group.to.length()).compareTo(group.to) <= 0){
-                    log.info(comp.getFileAlbumTO().getName());
-                    log.info("Group found:" + group.from + "/" + group.to);
-                    if (group.list == null){
-                        group.list = new ArrayList<MGOFileAlbumCompositeTO>();
-                    }
-                    group.list.add(comp);
-                    found = true;
-                    break;
+                if (checkIfAlbumInGroup(comp.getFileAlbumTO().getName(), group)){
+                        log.info(comp.getFileAlbumTO().getName());
+                        log.info("Group found:" + group.from + "/" + group.to);
+                        if (group.list == null) {
+                            group.list = new ArrayList<MGOFileAlbumCompositeTO>();
+                        }
+                        group.list.add(comp);
+                        found = true;
+                        break;
                 }
             }
             if (!found){
-                others.add(comp);
+               others.add(comp);
+               log.info("No group found for album: " + comp.getFileAlbumTO().getName());
             }
         }
         int idx = 1;
@@ -89,12 +117,14 @@ public class ExportCatalogToHTML extends BatchJobV2{
             log.info("Processing group " + group.from + "-" + group.to);
             group.setFilename(Setup.getPath(Constants.Path.WEB_MUSIC_ALBUMS) + File.separator + group.from + "_" + group.to + ".html");
             try {
-                for (MGOFileAlbumCompositeTO comp : group.list){
-                    comp.setFilename("s" + idx + ".html");
-                    processAlbumSongs(comp);
-                    idx++;
+                if (group.list != null) {
+                    for (MGOFileAlbumCompositeTO comp : group.list) {
+                        comp.setFilename("s" + idx + ".html");
+                        processAlbumSongs(comp);
+                        idx++;
+                    }
+                    export(group.list, group.getFilename());
                 }
-                export(group.list, group.getFilename());
             } catch (IOException e) {
                 e.printStackTrace();
             }

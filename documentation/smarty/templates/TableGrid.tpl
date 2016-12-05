@@ -11,13 +11,13 @@
 	</table>
 	<span style="font-size:20px">
 	<div id="toolbar">
-	{{if isset($new) && $new}}
+	{{if isset($newUrl)}}
 		<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newRecord()">New {{$item}}</a>
 	{{/if}}
-	{{if isset($edit) && $edit}}
+	{{if isset($updateUrl)}}
 		<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editRecord()">Edit {{$item}}</a>
 	{{/if}}
-	{{if isset($remove) && $remove}}
+	{{if isset($deleteUrl)}}
 		<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteRecord()">Remove {{$item}}</a>
 	{{/if}}
 	</div>
@@ -46,15 +46,15 @@
 	<script type="text/javascript">
 		$('#dg').datagrid({
 			columns:[[
-				{{section name=sec1 loop=$contacts}}
-				{{if $contacts[sec1].hidden}}
-					{{assign var="hide" value="true"}}
-				{{else}}
-					{{assign var="hide" value="false"}}
-				{{/if}}
-				{field:'{{$contacts[sec1].field}}',title:'{{$contacts[sec1].label}}', hidden:{{$hide}}, width:{{$contacts[sec1].size}}}
-  				{{if !$smarty.section.sec1.last}},{{/if}}
-			{{/section}}
+{{section name=sec1 loop=$fields}}
+	{{if $fields[sec1].hidden}}
+		{{assign var="hide" value="true"}}
+	{{else}}
+		{{assign var="hide" value="false"}}
+	{{/if}}
+	{field:'{{$fields[sec1].field}}',title:'{{$fields[sec1].label}}', hidden:{{$hide}}, width:{{$fields[sec1].size}}}{{if !$smarty.section.sec1.last}},{{/if}}
+
+{{/section}}
 			]],
 			options:[[
 				{rowHeight:100}

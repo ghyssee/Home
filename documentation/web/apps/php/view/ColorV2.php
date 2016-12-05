@@ -43,20 +43,9 @@ goMenu();
 //include ("TableGrid.php");
 include_once('Smarty.class.php');
 
-$smarty = new Smarty();
-
-$smarty->setTemplateDir('/reports/smarty/templates/');
-$smarty->setCompileDir('/reports/smarty/templates_c/');
-$smarty->setConfigDir('/reports/smarty/configs/');
-$smarty->setCacheDir('/reports/smarty/cache/');
-$smarty->left_delimiter = '{{';
-$smarty->right_delimiter = '}}';
-
+$smarty = initializeSmarty();
 $smarty->assign('title','Colors');
 $smarty->assign('item','Color');
-$smarty->assign('new',true);
-$smarty->assign('edit',true);
-$smarty->assign('remove',true);
 $url = "test.php";
 $smarty->assign('updateUrl',"'" . $url . "?method=update&id='+row['id']");
 $smarty->assign('newUrl',"'" . $url . "?method=add'");
@@ -65,6 +54,10 @@ $smarty->assign('deleteUrl',"'" . $url . "?method=delete',{id:row['id']}");
 $smarty->assign("contacts", array(array("field" => "id", "label"=>"Id", "size" => 50, "hidden" => true),
 	                              array("field" => "description", "label"=>"Description",  "size" => 50, "hidden" => false),
 	                              array("field" => "code", "label"=>"Code",  "size" => 20, "hidden" => false)));
+
+$smarty->assign("fields", array(array("field" => "id", "label"=>"Id", "size" => 50, "hidden" => true),
+	array("field" => "description", "label"=>"Description",  "size" => 50, "hidden" => false),
+	array("field" => "code", "label"=>"Code",  "size" => 20, "hidden" => false)));
 
 
 //** un-comment the following line to show the debug console

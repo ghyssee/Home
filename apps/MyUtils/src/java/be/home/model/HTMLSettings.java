@@ -10,10 +10,15 @@ import java.util.List;
  * Created by Gebruiker on 7/10/2016.
  */
 public class HTMLSettings {
+
+    public class Exception {
+        public String name;
+    }
+
     public class Group {
         public String from;
         public String to;
-
+        public List<Exception> exceptions;
         private String filename;
         public List<MGOFileAlbumCompositeTO> list = new ArrayList<MGOFileAlbumCompositeTO>();
 

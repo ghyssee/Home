@@ -1,6 +1,8 @@
 <?php
 
-const PATH_CONFIG = "Config";
+include_once('Smarty.class.php');
+
+const PATH_CONFIG = "config";
 const JSON_MP3SETTINGS = "mp3SettingsConfig";
 const JSON_MP3PREPROCESSOR = "mp3PreprocessorConfig";
 const JSON_MP3PRETTIFIER = "mp3PrettifierConfig";
@@ -110,6 +112,19 @@ function write ($file, $text, $append = APPEND){
 
 function read ($file){
     return file_get_contents($file);
+}
+
+function initializeSmarty(){
+    $smarty = new Smarty();
+
+    $smarty->setTemplateDir('/reports/smarty/templates/');
+    $smarty->setCompileDir('/reports/smarty/templates_c/');
+    $smarty->setConfigDir('/reports/smarty/configs/');
+    $smarty->setCacheDir('/reports/smarty/cache/');
+    $smarty->left_delimiter = '{{';
+    $smarty->right_delimiter = '}}';
+    return $smarty;
+
 }
 
 ?>
