@@ -34,9 +34,10 @@ public class Setup {
         String parent = null;
         if (tmp != null) {
             do {
-                path = tmp.get("path") + File.separator + path;
+                path = tmp.get("path") + path;
                 parent = (String) tmp.get("parent");
                 if (parent != null) {
+                    path = File.separator + path;
                     tmp = (Map<String, Object>) map.get(parent);
                     if (tmp == null){
                         throw new ApplicationException("Parent Not Found: " + parent);

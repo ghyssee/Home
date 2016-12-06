@@ -15,10 +15,16 @@ public class HTMLSettings {
         public String name;
     }
 
+    public class Name {
+        public String name;
+    }
+
     public class Group {
         public String from;
         public String to;
+        public int priority;
         public List<Exception> exceptions;
+        public List<Name> names;
         private String filename;
         public List<MGOFileAlbumCompositeTO> list = new ArrayList<MGOFileAlbumCompositeTO>();
 

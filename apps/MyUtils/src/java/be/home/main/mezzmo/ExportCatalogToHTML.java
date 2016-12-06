@@ -18,10 +18,8 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.tools.generic.DateTool;
 import org.apache.velocity.tools.generic.EscapeTool;
 
-import javax.swing.text.html.HTML;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by ghyssee on 9/02/2016.
@@ -66,22 +64,33 @@ public class ExportCatalogToHTML extends BatchJobV2{
     private boolean checkIfAlbumInGroup(String album, HTMLSettings.Group group) {
         int fromLength = Math.min(group.from.length(), album.length());
         int toLength = Math.min(group.to.length(), album.length());
-        if (album.substring(0, fromLength).compareTo(group.from) >= 0 &&
-                album.substring(0, toLength).compareTo(group.to) <= 0) {
 
-            boolean exceptionFound = false;
-            if (group.exceptions !=null) {
-                for (HTMLSettings.Exception ex : group.exceptions) {
-                    if (album.startsWith(ex.name)){
-                        exceptionFound = true;
-                        break;
-                    }
-
+        if (group.names != null){
+            for (HTMLSettings.Name name : group.names) {
+                if (album.startsWith(name.name)){
+                    return true;
                 }
             }
-            if (!exceptionFound){
-                return true;
+        }
+        else {
+            if (album.substring(0, fromLength).compareTo(group.from) >= 0 &&
+                album.substring(0, toLength).compareTo(group.to) <= 0) {
+
+                boolean exceptionFound = false;
+                if (group.exceptions != null) {
+                    for (HTMLSettings.Exception ex : group.exceptions) {
+                        if (album.startsWith(ex.name)) {
+                            exceptionFound = true;
+                            break;
+                        }
+
+                    }
+                }
+                if (!exceptionFound) {
+                    return true;
+                }
             }
+
             /*
             if (StringUtils.isBlank(group.exception) || !album.startsWith(group.exception)) {
                 return true;
@@ -93,6 +102,20 @@ public class ExportCatalogToHTML extends BatchJobV2{
     public void processAlbums(HTMLSettings htmlSettings) {
         List<MGOFileAlbumCompositeTO> list = getMezzmoService().getAlbumTracks(new TransferObject());
         List<MGOFileAlbumCompositeTO> others = new ArrayList<MGOFileAlbumCompositeTO>();
+        /* sort array
+         */
+        List <HTMLSettings.Group> list2 = htmlSettings.export.groups;
+        // sort the list on priority and from
+        Collections.sort(list2, new Comparator<HTMLSettings.Group>() {
+            public int compare(HTMLSettings.Group o1, HTMLSettings.Group o2) {
+                int c = o1.priority - o2.priority;
+                if (c == 0){
+                    c = o1.getFrom().compareTo(o2.getFrom());
+                }
+                return c;
+            }
+        });
+
         for (MGOFileAlbumCompositeTO comp : list){
             boolean found = false;
             for (HTMLSettings.Group group : htmlSettings.export.groups){
@@ -157,6 +180,13 @@ public class ExportCatalogToHTML extends BatchJobV2{
     }
 
     public void exportAlbumIndex(List<HTMLSettings.Group> list, String outputFile) throws IOException {
+
+        // sort the list on from
+        Collections.sort(list, new Comparator<HTMLSettings.Group>() {
+            public int compare(HTMLSettings.Group o1, HTMLSettings.Group o2) {
+                return o1.getFrom().compareTo(o2.getFrom());
+            }
+        });
 
         VelocityUtils vu = new VelocityUtils();
 
