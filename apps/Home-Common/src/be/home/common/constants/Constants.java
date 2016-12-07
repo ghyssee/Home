@@ -61,6 +61,7 @@ public interface Constants {
         String MP3PRETTIFIER = "mp3PrettifierConfig";
         String PLAYLIST = "playlistConfig";
         String PLAYLISTSETUP = "playlistSetup";
+        String ALBUMERRORS = "albumErrors";
 
     }
     interface FILE {

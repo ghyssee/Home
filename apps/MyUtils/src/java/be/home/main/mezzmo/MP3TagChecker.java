@@ -1,32 +1,21 @@
 package be.home.main.mezzmo;
 
-import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
 import be.home.common.dao.jdbc.SQLiteJDBC;
-import be.home.common.dao.jdbc.SQLiteUtils;
-import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 import be.home.common.model.TransferObject;
-import be.home.common.utils.CSVUtils;
-import be.home.common.utils.DateUtils;
-import be.home.common.utils.WinUtils;
+import be.home.common.utils.JSONUtils;
 import be.home.domain.model.MP3Helper;
+import be.home.mezzmo.domain.model.AlbumError;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.MGOFileAlbumTO;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
-import be.home.model.AlbumInfo;
 import be.home.model.ConfigTO;
-import be.home.model.MP3Settings;
 import com.mpatric.mp3agic.*;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class MP3TagChecker extends BatchJobV2{
@@ -61,6 +50,9 @@ public class MP3TagChecker extends BatchJobV2{
     }
 
     public void export(String base, String fileName){
+
+        AlbumError[] albumErrors = (AlbumError[]) JSONUtils.openJSONWithCode(Constants.JSON.ALBUMERRORS, AlbumError[].class);
+
         TransferObject to = new TransferObject();
         //base = ""
         MGOFileAlbumTO albumTO = new MGOFileAlbumTO();
@@ -140,27 +132,36 @@ public class MP3TagChecker extends BatchJobV2{
         return maxDisc;
     }
 
-    private void checkTrack(String mp3Track, Integer mezzmoTrack, int nrOfTracks, int nrOfCds){
+    private boolean checkTrack(String mp3Track, Integer mezzmoTrack, int nrOfTracks, int nrOfCds){
         //System.out.println("Track: " + id3v2Tag.getTrack());
+        boolean ok = true;
         int lengthTrack = String.valueOf(nrOfTracks).length() + String.valueOf(nrOfCds).length();
         String mezzmoTr = StringUtils.leftPad(mezzmoTrack.toString(), lengthTrack, '0');
         if (!mezzmoTr.equals(mp3Track)){
             log.warn("Track does not match: " + "mp3: " + mp3Track + " / Mezzmo: " + mezzmoTr);
+            ok = false;
         }
+        return ok;
     }
 
-    private void checkArtist(String mp3Artist){
+    private boolean checkArtist(String mp3Artist){
         String artist = MP3Helper.getInstance().prettifyArtist(mp3Artist);
+        boolean ok = true;
         if (!artist.equals(mp3Artist)){
             log.warn("Artist does not match: " + "mp3: " + mp3Artist + " / Formatted: " + artist);
+            ok = false;
         }
+        return ok;
     }
 
-    private void checkTitle(String mp3Title){
+    private boolean checkTitle(String mp3Title){
+        boolean ok = true;
         String title = MP3Helper.getInstance().prettifySong(mp3Title);
         if (!title.equals(mp3Title)){
             log.warn("Title does not match: " + "mp3: " + mp3Title + " / Formatted: " + title);
+            ok = false;
         }
+        return ok;
     }
 
     public static MezzmoServiceImpl getMezzmoService(){
