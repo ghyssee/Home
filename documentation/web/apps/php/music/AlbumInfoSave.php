@@ -23,6 +23,7 @@ function updateAlbumInfo($mp3PreprocessorObj){
     assignField($mp3PreprocessorObj->prefix, "prefix");
     assignField($mp3PreprocessorObj->suffix, "suffix");
     assignField($mp3PreprocessorObj->activeConfiguration, "activeConfiguration");
+    assignCheckbox($mp3PreprocessorObj->renum, "renum");
     $save = true;
     if (empty($mp3PreprocessorObj->cdTag)) {
         addError ('cdTag', 'cdTag is either empty, or not set at all');

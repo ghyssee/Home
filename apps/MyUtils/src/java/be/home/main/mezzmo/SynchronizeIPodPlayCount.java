@@ -34,7 +34,7 @@ public class SynchronizeIPodPlayCount extends BatchJobV2{
 
     public static Log4GE log4GE;
     public static ConfigTO.Config config;
-    private static final Logger log = Logger.getLogger(MezzmoPlaylists.class);
+    private static final Logger log = getMainLog(SynchronizeIPodPlayCount.class);
 
     public static void main(String args[]) {
 
@@ -60,13 +60,13 @@ public class SynchronizeIPodPlayCount extends BatchJobV2{
         Map <String, MGOFileAlbumCompositeTO> map = getMezzmoService().getMaxDisc();
 
         export(mp3Settings.mezzmo.export.getiPod(), "iPodDB.PlayCount", map);
-        synchronize(mp3Settings.mezzmo.export.getiPod(), "iPodMezzmoSynced", map);
+        synchronize(mp3Settings.mezzmo.export.getiPod(), "iPodMezzmoSynced", map, mp3Settings.mezzmo.synchronizePlaycount);
     }
 
-    public void synchronize(String base, String filename, Map <String, MGOFileAlbumCompositeTO> map) {
+    public void synchronize(String base, String filename, Map <String, MGOFileAlbumCompositeTO> map, boolean sync) {
 
         List <MGOFileAlbumCompositeTO> list = getIPodService().getListPlayCount();
-        Synchronizer synchronizer = new Synchronizer(list, map);
+        Synchronizer synchronizer = new Synchronizer(list, map, sync);
         try {
             synchronizer.synchronizeIPodWithMezzmo(base, filename);
         } catch (Exception e) {

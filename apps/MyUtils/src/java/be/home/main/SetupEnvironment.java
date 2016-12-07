@@ -19,7 +19,7 @@ public class SetupEnvironment extends BatchJobV2 {
     private static final String VERSION = "V1.0";
 
     public static ConfigTO.Config config;
-    private static Logger log =  Logger.getLogger(SetupEnvironment.class);
+    private static Logger log =  getMainLog(SetupEnvironment.class);
 
     public static void main(String args[]) {
 

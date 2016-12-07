@@ -30,7 +30,7 @@ public class LastPlayedSongs extends BatchJobV2{
     public static MezzmoServiceImpl mezzmoService = null;
 
     public static ConfigTO.Config config;
-    private static final Logger log = Logger.getLogger(LastPlayedSongs.class);
+    private static final Logger log = getMainLog(LastPlayedSongs.class);
 
     public static void main(String args[]) throws IOException {
 

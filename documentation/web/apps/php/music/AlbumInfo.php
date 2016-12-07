@@ -91,6 +91,9 @@ goMenu();
         'type' => 'number',
         'min' => '1900',
         'value' => $mp3SettingsObj->albumYear)));
+    $layout->checkBox(new Input(array('name' => "renum",
+        'label' => 'Renum Tracks',
+        'value' => $mp3PreprocessorObj->renum)));
 
 
     $file = getFullPath(FILE_ALBUM);

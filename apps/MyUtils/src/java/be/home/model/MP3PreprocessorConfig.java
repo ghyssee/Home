@@ -31,6 +31,7 @@ public class MP3PreprocessorConfig {
     public String suffix;
     public String cdTag;
     public String albumTag;
+    public boolean renum;
 
     public class ConfigItem {
         public String id;

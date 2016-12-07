@@ -6,6 +6,7 @@ import be.home.mezzmo.domain.dao.jdbc.MezzmoAlbumDAOImpl;
 import be.home.mezzmo.domain.dao.jdbc.MezzmoDAOImpl;
 import be.home.mezzmo.domain.dao.jdbc.MezzmoPlaylistDAOImpl;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
+import be.home.mezzmo.domain.model.MGOFileAlbumTO;
 import be.home.mezzmo.domain.model.MGOFileTO;
 import be.home.mezzmo.domain.model.MGOPlaylistTO;
 import org.apache.commons.lang3.StringUtils;
@@ -46,8 +47,8 @@ public class MezzmoBO extends BusinessObject {
         return getMezzmoDAO().getMP3FilesWithPlayCount(to);
     }
 
-    public List<MGOFileAlbumCompositeTO> getAlbums(TransferObject to){
-        return getMezzmoDAO().getAlbums(to);
+    public List<MGOFileAlbumCompositeTO> getAlbums(MGOFileAlbumTO albumTO, TransferObject to){
+        return getMezzmoDAO().getAlbums(albumTO, to);
     }
 
     public List<MGOFileAlbumCompositeTO> getAlbumTracks(TransferObject to){
@@ -86,6 +87,10 @@ public class MezzmoBO extends BusinessObject {
 
     public MGOFileTO findByTitleAndAlbum(MGOFileAlbumCompositeTO comp){
         return getMezzmoDAO().findByTitleAndAlbum(comp);
+    }
+
+    public List <MGOFileAlbumCompositeTO> findSongsByAlbum(MGOFileAlbumCompositeTO comp){
+        return getMezzmoDAO().findSongsByAlbum(comp);
     }
 
     public int updateRanking (Long fileID, int ranking) throws SQLException {

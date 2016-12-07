@@ -3,10 +3,7 @@ package be.home.mezzmo.domain.service;
 import be.home.common.model.TransferObject;
 import be.home.mezzmo.domain.bo.MezzmoBO;
 import be.home.mezzmo.domain.bo.PlaylistBO;
-import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
-import be.home.mezzmo.domain.model.MGOFileTO;
-import be.home.mezzmo.domain.model.MGOPlaylistTO;
-import be.home.mezzmo.domain.model.PlaylistSetup;
+import be.home.mezzmo.domain.model.*;
 
 import java.sql.SQLException;
 import java.util.Date;
@@ -45,9 +42,9 @@ public class MezzmoServiceImpl {
         return bo.getMP3FilesWithPlayCount(to);
     }
 
-    public List<MGOFileAlbumCompositeTO> getAlbums(TransferObject to){
+    public List<MGOFileAlbumCompositeTO> getAlbums(MGOFileAlbumTO albumTO, TransferObject to){
         MezzmoBO bo = new MezzmoBO();
-        return bo.getAlbums(to);
+        return bo.getAlbums(albumTO, to);
     }
 
     public List<MGOFileAlbumCompositeTO> getAlbumTracks(TransferObject to){
@@ -117,6 +114,11 @@ public class MezzmoServiceImpl {
     public MGOFileTO findByTitleAndAlbum(MGOFileAlbumCompositeTO comp){
         MezzmoBO bo = new MezzmoBO();
         return bo.findByTitleAndAlbum(comp);
+    }
+
+    public List <MGOFileAlbumCompositeTO> findSongsByAlbum(MGOFileAlbumCompositeTO comp){
+        MezzmoBO bo = new MezzmoBO();
+        return bo.findSongsByAlbum(comp);
     }
 
     public List<MGOFileAlbumCompositeTO> getSongsAlbum(Long albumId, Long albumArtistId) {

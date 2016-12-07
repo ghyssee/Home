@@ -23,7 +23,7 @@ public class M3uMakerV2 extends BatchJobV2 {
     public static ConfigTO.Config config;
     public static UltratopConfig.Config ultratopConfig;
     private static String SPLIT_SONG = " - ";
-    private static final Logger log = Logger.getLogger(M3uMakerV2.class);
+    private static final Logger log = getMainLog(M3uMakerV2.class);
 
 
     public static void main(String args[])  {
@@ -31,7 +31,7 @@ public class M3uMakerV2 extends BatchJobV2 {
         try {
             config = instance.init();
             log.info("Full Path To Config Dir = " + config.getFullPathConfigDir());
-            ultratopConfig = instance.init(WinUtils.getOneDrivePath() + File.separator +
+            ultratopConfig = instance.initUT(WinUtils.getOneDrivePath() + File.separator +
                     config.getFullPathConfigDir() + "/UltratopConfig.json");
             instance.processUltratopConfigurationFile(ultratopConfig);
 

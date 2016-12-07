@@ -13,19 +13,34 @@ import java.net.*;
 import java.security.CodeSource;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
 public abstract class BatchJobV2 {
 
-    private static final Logger log = setLogFile();
     public static String workingDir = System.getProperty("user.dir");
+    public static Logger log = null;
 
-    private static Logger setLogFile(){
-        String logFile = Setup.getInstance().getFullPath(Constants.Path.LOG) + File.separator + "MyUtlis.log";
+    public static Logger getMainLog(Class className){
+        setLogFile(className.getSimpleName() + ".log");
+        Logger log = Logger.getLogger(className);
+        return log;
+    }
+
+    public static Logger getLogger(Class className){
+        if (log == null) {
+            log = Logger.getLogger(className);
+        }
+        return log;
+    }
+
+    private static Logger setLogFile(String name){
+        String logFile = Setup.getInstance().getFullPath(Constants.Path.LOG) + File.separator + name;
         System.setProperty("logfile.name", logFile);
-        System.setProperty("p6spy.config.logfile", Setup.getInstance().getFullPath(Constants.Path.LOG) + File.separator + "P6Spy.log");
-        // disable logging of jaudiotagger API
+        System.setProperty("p6spy.config.logfile", Setup.getInstance().getFullPath(Constants.Path.LOG) + File.separator + "P6Spy." + name);
         java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.OFF);
         Logger log = Logger.getLogger(BatchJobV2.class);
         log.info("Setting Log4J Log file to:" + logFile);
@@ -74,11 +89,11 @@ public abstract class BatchJobV2 {
         }
         maxLength++;
         lengthRequired++;
-        log.info("List of parameters");
-        log.info(StringUtils.repeat("=", maxLength + lengthRequired + maxLengthDescription));
-        log.info(StringUtils.rightPad("Id", maxLength) + StringUtils.rightPad(REQ, lengthRequired));
-        log.info("Description");
-        log.info(StringUtils.repeat("-", maxLength + lengthRequired + maxLengthDescription));
+        System.out.println("List of parameters");
+        System.out.println(StringUtils.repeat("=", maxLength + lengthRequired + maxLengthDescription));
+        System.out.println(StringUtils.rightPad("Id", maxLength) + StringUtils.rightPad(REQ, lengthRequired));
+        System.out.println("Description");
+        System.out.println(StringUtils.repeat("-", maxLength + lengthRequired + maxLengthDescription));
         for (int i=0; i < requiredParams.length; i++){
             String logMessage = StringUtils.rightPad(requiredParams[i].getId(), maxLength);
             logMessage += StringUtils.rightPad(requiredParams[i].isRequired() ? "Y" : "N", lengthRequired);
@@ -88,11 +103,11 @@ public abstract class BatchJobV2 {
                 }
                 else {
                     logMessage += StringUtils.repeat(" ", maxLength + lengthRequired) + requiredParams[i].getDescription()[j];
-                    log.info(logMessage);
+                    System.out.println(logMessage);
                 }
             }
         }
-        log.info(StringUtils.repeat("=", maxLength + lengthRequired + maxLengthDescription));
+        System.out.println(StringUtils.repeat("=", maxLength + lengthRequired + maxLengthDescription));
         System.exit(1);
     }
 
@@ -125,8 +140,11 @@ public abstract class BatchJobV2 {
         }
         return params;
     }
-
     public ConfigTO.Config init() throws IOException {
+        return init("MyUtils.log");
+    }
+
+    public ConfigTO.Config init(String log) throws IOException {
         String paramIniFile = Setup.getInstance().getFullPath(Constants.Path.CONFIG) + File.separator + "config.json";
         File iniFile = new File(paramIniFile);
         if (!iniFile.exists()){
@@ -150,16 +168,15 @@ public abstract class BatchJobV2 {
         File logDir = new File(workingDir + File.separator + config.logDir);
         System.out.println("LogDir = " + logDir.getAbsolutePath());
         if (!logDir.exists()){
-            log.warn("Log Directory does not exist.... Creating " + logDir.getAbsolutePath());
+            //log.warn("Log Directory does not exist.... Creating " + logDir.getAbsolutePath());
             logDir.mkdirs();
         }
-        System.out.println(Setup.getInstance().getFullPath("mp3Processor"));
-
         return config;
     }
 
 
-    public UltratopConfig.Config init(String configFile)  {
+
+    public UltratopConfig.Config initUT(String configFile)  {
         UltratopConfig.Config config = (UltratopConfig.Config) JSONUtils.openJSON(configFile, UltratopConfig.Config.class );
         return config;
     }

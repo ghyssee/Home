@@ -22,7 +22,7 @@ public class MezzmoDAOImpl extends MezzmoDB {
             "MGOFile.PlayCount as PLAYCOUNT", "MGOFile.Ranking as RANKING",
             "MGOFile.FileTitle as FILETITLE", "MGOFile.DateLastPlayed as DATELASTPLAYED",
             "MGOFile.Ranking as RANKING",
-            "MGOFileAlbum.ID as FILEALBUMID", "MGOFileAlbum.Data as ALBUMNAME" };
+            "MGOFileAlbum.ID as ALBUMID", "MGOFileAlbum.Data as ALBUMNAME" };
 
     private static final String COLUMNS_FILE[] = {"MGOFile.ID as FILEID", "MGOFile.File as FILE",
             "MGOFile.PlayCount as PLAYCOUNT", "MGOFile.Ranking as RANKING"};
@@ -30,13 +30,19 @@ public class MezzmoDAOImpl extends MezzmoDB {
     private static final String COLUMNS_ALBUMS[] = {"MGOFile.ID as FILEID", "MGOFile.File as FILE",
             "MGOFile.PlayCount as PLAYCOUNT", "MGOFile.Ranking as RANKING"};
 
-    private static final String COLUMNS_MP3[] = {"MGOFile.ID as FILEID", "MGOFile.File as FILE",
+    private static final String COLUMNS_MP3[] = {
+            "MGOFile.ID as FILEID",
+            "MGOFile.File as FILE",
             "MGOFile.Title as TITLE",
-            "MGOFile.PlayCount as PLAYCOUNT", "MGOFile.Ranking as RANKING",
-            "MGOFileArtist.DATA as ARTIST", "MGOFile.Duration as DURATION",
-            "MGOFile.disc as DISC", "MGOFile.FileTitle as FILETITLE",
-            "MGOFile.Track as TRACK", "MGOFile.Ranking as RANKING",
-            "MGOFileAlbum.ID as ALBUMID", "MGOFileAlbum.Data as ALBUMNAME",
+            "MGOFile.FileTitle as FILETITLE",
+            "MGOFile.PlayCount as PLAYCOUNT",
+            "MGOFile.Ranking as RANKING",
+            "MGOFileArtist.DATA as ARTIST",
+            "MGOFile.Duration as DURATION",
+            "MGOFile.disc as DISC",
+            "MGOFile.Track as TRACK",
+            "MGOFileAlbum.ID as ALBUMID",
+            "MGOFileAlbum.Data as ALBUMNAME",
             "MGOFile.DateLastPlayed as DATELASTPLAYED"};
 
     private static final String FILEALBUM_SELECT = "SELECT " + getColumns(COLUMNS) + " FROM MGOFileAlbumRelationship " +
@@ -45,7 +51,7 @@ public class MezzmoDAOImpl extends MezzmoDB {
             " WHERE 1=1" +
             " AND MGOFileAlbum.data like ?"; //"'Ultratop 50 2015%'";
 
-    private static final String FILE_FIND_TAGINFO = "SELECT " + getColumns(COLUMNS) + " FROM MGOFile " +
+    private static final String FILE_FIND_TAGINFO = "SELECT " + getColumns(COLUMNS_MP3) + " FROM MGOFile " +
             " INNER JOIN MGOFileAlbumRelationship ON (MGOFileAlbumRelationship.FileID = MGOFILE.id)" +
             " INNER JOIN MGOFileAlbum ON (MGOFileAlbum.ID = MGOFileAlbumRelationship.ID)" +
             " INNER JOIN MGOFileExtension ON (MGOFileExtension.ID = MGOFILE.extensionID)" +
@@ -53,6 +59,7 @@ public class MezzmoDAOImpl extends MezzmoDB {
             " INNER JOIN MGOFileArtist ON (MGOFileArtist.ID = MGOFileArtistRelationship.ID)" +
             " INNER JOIN MGOAlbumArtistRelationship ON (MGOAlbumArtistRelationship.FileID = MGOFILE.id)" +
             " WHERE MGOFileExtension.data = 'mp3'" +
+            " AND MGOFileAlbum.id like ?" +
             " AND MGOFile.Track like ?" +
             " AND MGOFileArtist.data like ?" +
             " AND MGOFile.Title like ?" +
@@ -113,6 +120,7 @@ public class MezzmoDAOImpl extends MezzmoDB {
                                 " INNER JOIN MGOFileExtension ON (MGOFileExtension.ID = MGOFILE.extensionID)" +
                                 " WHERE 1=1" +
                                 " AND MGOFileExtension.data = 'mp3'" +
+                                " AND MGOFileAlbum.data like ?" +
                                 " GROUP BY ALBUMNAME, ALBUMARTISTNAME, ALBUMID" +
                                 " ORDER BY MGOFileAlbum.data";
 
@@ -281,9 +289,16 @@ public class MezzmoDAOImpl extends MezzmoDB {
         return list;
     }
 
-    public List<MGOFileAlbumCompositeTO> getAlbums(TransferObject to)
+    public List<MGOFileAlbumCompositeTO> getAlbums(MGOFileAlbumTO albumTO, TransferObject to)
     {
-        List<MGOFileAlbumCompositeTO> list  = getInstance().getJDBCTemplate().query(LIST_ALBUMS, new MezzmoRowMappers.AlbumRowMapper());
+        List<MGOFileAlbumCompositeTO> list = null;
+        if (albumTO == null) {
+            list = getInstance().getJDBCTemplate().query(LIST_ALBUMS, new MezzmoRowMappers.AlbumRowMapper());
+        }
+        else {
+            Object[] params = {albumTO.getName()};
+            list = getInstance().getJDBCTemplate().query(LIST_ALBUMS, new MezzmoRowMappers.AlbumRowMapper(), params);
+        }
         return list;
     }
 
@@ -308,9 +323,27 @@ public class MezzmoDAOImpl extends MezzmoDB {
     }
 
     public MGOFileTO findByTitleAndAlbum(MGOFileAlbumCompositeTO comp){
-        Object[] params = {comp.getFileTO().getTrack(), comp.getFileArtistTO().getArtist(), comp.getFileTO().getTitle(), comp.getFileAlbumTO().getName() };
+        Object[] params = {
+                SQLiteUtils.getSearchField(comp.getFileTO().getTrack()),
+                SQLiteUtils.getSearchField(comp.getFileArtistTO().getArtist()),
+                SQLiteUtils.getSearchField(comp.getFileTO().getTitle()),
+                SQLiteUtils.getSearchField(comp.getFileAlbumTO().getName())
+        };
         MGOFileTO fileTO = (MGOFileTO) getInstance().getJDBCTemplate().queryForObject(FILE_FIND_TAGINFO, new MezzmoRowMappers.FileRowMapper(), params);
         return fileTO;
+    }
+
+    public List<MGOFileAlbumCompositeTO> findSongsByAlbum(MGOFileAlbumCompositeTO comp){
+        Object[] params = {
+                //SQLiteUtils.getSearchField(comp.getFileAlbumTO().getId()),
+                comp.getFileAlbumTO().getId() == 0 ? "%": comp.getFileAlbumTO().getId(),
+                SQLiteUtils.getSearchField(comp.getFileTO().getTrack()),
+                SQLiteUtils.getSearchField(comp.getFileArtistTO().getArtist()),
+                SQLiteUtils.getSearchField(comp.getFileTO().getTitle()),
+                SQLiteUtils.getSearchField(comp.getFileAlbumTO().getName())
+        };
+        List<MGOFileAlbumCompositeTO> list = getInstance().getJDBCTemplate().query(FILE_FIND_TAGINFO, new MezzmoRowMappers.SongsAlbumRowMapper(), params);
+        return list;
     }
 
     public MGOFileTO findCoverArt(int albumId){

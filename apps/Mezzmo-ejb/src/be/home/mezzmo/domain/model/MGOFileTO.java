@@ -23,7 +23,7 @@ public class MGOFileTO {
     private int month;
     private String description;
     private int duration;
-    private int track;
+    private Integer track;
     private String bitRate;
     private int creatorID;
     private int  sampleRate;
@@ -199,11 +199,11 @@ public class MGOFileTO {
         this.duration = duration;
     }
 
-    public int getTrack() {
+    public Integer getTrack() {
         return track;
     }
 
-    public void setTrack(int track) {
+    public void setTrack(Integer track) {
         this.track = track;
     }
 

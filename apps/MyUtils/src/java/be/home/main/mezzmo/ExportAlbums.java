@@ -27,7 +27,7 @@ public class ExportAlbums extends BatchJobV2{
 
     public static MezzmoServiceImpl mezzmoService = null;
     public static ConfigTO.Config config;
-    private static final Logger log = Logger.getLogger(ExportAlbums.class);
+    private static final Logger log = getMainLog(ExportAlbums.class);
 
     public static void main(String args[]) {
 
@@ -73,7 +73,7 @@ public class ExportAlbums extends BatchJobV2{
         String pdfFileName = "C:/reports/ListOfAlbums.pdf";
         String htmlFile = "C:/reports/Albums.html";
         Map hm = new HashMap();
-        List<MGOFileAlbumCompositeTO> list = getMezzmoService().getAlbums(new TransferObject());
+        List<MGOFileAlbumCompositeTO> list = getMezzmoService().getAlbums(null, new TransferObject());
         log.info("Getting cover arts of the albums");
         for (MGOFileAlbumCompositeTO comp : list){
             MGOFileTO fileTO = getMezzmoService().findCoverArt(comp.getFileAlbumTO().getId());

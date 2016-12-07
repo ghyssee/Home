@@ -22,7 +22,7 @@ public class MovieInfoMaker extends BatchJobV2 {
 
     public static Log4GE log4GE;
     public static ConfigTO.Config config;
-    private static final Logger log = Logger.getLogger(MovieInfoMaker.class);
+    private static final Logger log = getMainLog(MovieInfoMaker.class);
 
 
 

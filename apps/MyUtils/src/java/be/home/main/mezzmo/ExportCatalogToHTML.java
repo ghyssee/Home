@@ -108,7 +108,7 @@ public class ExportCatalogToHTML extends BatchJobV2{
         // sort the list on priority and from
         Collections.sort(list2, new Comparator<HTMLSettings.Group>() {
             public int compare(HTMLSettings.Group o1, HTMLSettings.Group o2) {
-                int c = o1.priority - o2.priority;
+                int c = o2.priority - o1.priority;
                 if (c == 0){
                     c = o1.getFrom().compareTo(o2.getFrom());
                 }

@@ -34,7 +34,7 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
     private static final String RENUM_TAG = "{RENUM}";
 
     public static ConfigTO.Config config;
-    private static final Logger log = Logger.getLogger(MP3PreProcessorV2.class);
+    private static final Logger log = getMainLog(MP3PreProcessorV2.class);
 
     public static void main(String args[]) {
 
@@ -124,6 +124,8 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
             }
         }
         reader2.close();
+        log.info("Renum (General): " + mp3PreprocessorConfig.renum);
+        log.info("Renum (Album): " + configAlbum.renum);
         JSONUtils.writeJsonFile(configAlbum, Setup.getInstance().getFullPath(Constants.Path.PROCESS) + File.separator + "Album.json");
 
     }
@@ -202,7 +204,7 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
                 if (album.total > 0) {
                     track.cd = String.valueOf(album.total);
                 }
-                if (track.track == null || album.renum){
+                if (track.track == null || album.renum || mp3Config.renum){
                     track.track = String.format("%d", counter.get());
                 }
                 album.trackSize = Math.max(album.trackSize, track.track.length());

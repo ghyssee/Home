@@ -25,7 +25,7 @@ public class ExportAlbumsToPDF extends BatchJobV2{
 
     public static MezzmoServiceImpl mezzmoService = null;
     public static ConfigTO.Config config;
-    private static final Logger log = Logger.getLogger(ExportAlbumsToPDF.class);
+    private static final Logger log = getMainLog(ExportAlbumsToPDF.class);
 
     public static void main(String args[]) {
 
@@ -81,7 +81,7 @@ public class ExportAlbumsToPDF extends BatchJobV2{
     public void export(String base, String fileName){
 
         TransferObject to = new TransferObject();
-        List <MGOFileAlbumCompositeTO> list = getMezzmoService().getAlbums(to);
+        List <MGOFileAlbumCompositeTO> list = getMezzmoService().getAlbums(null, to);
 
         log.info("Number Of Albums Retrieved: " + list.size());
 

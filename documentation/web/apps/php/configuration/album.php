@@ -85,6 +85,9 @@ goMenu();
         'size' => 100,
         'label' => 'Export iPod Path',
         'value' => $mp3SettingsObj->mezzmo->export->iPod)));
+    $layout->checkBox(new Input(array('name' => "synchronizePlaycount",
+        'label' => 'Synchronize Play Count',
+        'value' => $mp3SettingsObj->mezzmo->synchronizePlaycount)));
     $layout->button(new Input(array('name' => "mp3Settings",
         'value' => 'saveMezzmo',
         'text' => 'Save',

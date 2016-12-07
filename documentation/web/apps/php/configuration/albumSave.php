@@ -81,6 +81,7 @@ function saveAlbum($file, $mp3Settings){
 
 function saveMezzmo($file, $mp3Settings){
 	assignField($mp3Settings->mezzmo->base, "mezzmoBase");
+	assignCheckbox($mp3Settings->mezzmo->synchronizePlaycount, "synchronizePlaycount");
 	assignField($mp3Settings->mezzmo->importF->base, "importBase");
 	assignField($mp3Settings->mezzmo->importF->filename, "filename");
 	assignField($mp3Settings->mezzmo->export->base, "exportBase");

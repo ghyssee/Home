@@ -55,6 +55,7 @@ public class MP3Settings {
 
     public class Mezzmo {
         public String base;
+        public boolean synchronizePlaycount;
         public Playlist playlist;
         public Import importF;
         public Export export;

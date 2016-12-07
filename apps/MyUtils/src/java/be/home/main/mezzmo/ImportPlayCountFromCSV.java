@@ -46,7 +46,7 @@ public class ImportPlayCountFromCSV extends BatchJobV2{
 
     public static Log4GE log4GE;
     public static ConfigTO.Config config;
-    private static final Logger log = Logger.getLogger(ImportPlayCountFromCSV.class);
+    private static final Logger log = getMainLog(ImportPlayCountFromCSV.class);
 
     public static void main(String args[]) {
 

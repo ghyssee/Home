@@ -10,7 +10,7 @@ else {
 <!DOCTYPE html>
 <html lang="en-US">
 <head>
-<title>SmartMenus jQuery Website Menu - jQuery Plugin</title>
+<title>MyMenu</title>
 <META http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 <META http-equiv="expires" content="0">	 
 <META http-equiv="Pragma" content="no-cache">   	 

@@ -28,15 +28,17 @@ public class Synchronizer {
     List<MGOFileAlbumCompositeTO> iPodList;
     private static final Logger log = Logger.getLogger(Synchronizer.class);
     Map<String, MGOFileAlbumCompositeTO> discMap;
+    boolean sync;
     MezzmoBO mezzmoBO;
 
     private Synchronizer(){
     }
 
-    public Synchronizer(List<MGOFileAlbumCompositeTO> iPodList, Map<String, MGOFileAlbumCompositeTO> discMap){
+    public Synchronizer(List<MGOFileAlbumCompositeTO> iPodList, Map<String, MGOFileAlbumCompositeTO> discMap, boolean sync){
         this.iPodList = iPodList;
         this.discMap = discMap;
         this.mezzmoBO = new MezzmoBO();
+        this.sync = sync;
     }
 
     public void synchronizeIPodWithMezzmo(String base, String filename) throws Exception {
@@ -60,8 +62,10 @@ public class Synchronizer {
             csvFilePrinter = csvUtils.initialize(syncedFile, fields);
             List <String> errors = startSynchronisation(iPodList, csvFilePrinter);
             MediaMonkeyBO mmBO = new MediaMonkeyBO();
-            int mmReset = mmBO.resetPlayCount();
-            log.info("Number of MediaMonkey Records updated: " + mmReset);
+            if (this.sync) {
+                //int mmReset = mmBO.resetPlayCount();
+                //log.info("Number of MediaMonkey Records updated: " + mmReset);
+            }
             if (errors.size() > 0){
                 log.error("Number of errors found: " + errors.size());
                 for (String errorMsg : errors){
@@ -92,21 +96,23 @@ public class Synchronizer {
                 log.info("Playcount: " + foundFileTO.getPlayCount() + " => " + playCount);
                 Date lastUpdatedDate = DateUtils.max(foundFileTO.getDateLastPlayed(), comp.getFileTO().getDateLastPlayed());
                 try {
-                    int count = mezzmoBO.synchronizePlayCount(foundFileTO.getId(), playCount, lastUpdatedDate);
-                    //int count = 1;
-                    if (count != 1) {
-                        errors.add("Problem updating file " + mezzmoBO.constructFileTitle(this.discMap, comp) + " with playcount " + playCount);
-                    } else {
-                        count = iPodBO.resetPlayCount(new Long(comp.getFileTO().getId()), 0);
-                        //count = 1;
+                    if (this.sync){
+                        int count = mezzmoBO.synchronizePlayCount(foundFileTO.getId(), playCount, lastUpdatedDate);
+                        //int count = 1;
                         if (count != 1) {
-                            errors.add("Problem resetting playcount for DB iPod And File " + mezzmoBO.constructFileTitle(this.discMap, comp) + " with playcount " + playCount);
+                            errors.add("Problem updating file " + mezzmoBO.constructFileTitle(this.discMap, comp) + " with playcount " + playCount);
                         } else {
-                            // everything ok
-                            if (lastUpdatedDate.equals(foundFileTO.getDateLastPlayed())){
-                                lastUpdatedDate = null;
+                            count = iPodBO.resetPlayCount(new Long(comp.getFileTO().getId()), 0);
+                            //count = 1;
+                            if (count != 1) {
+                                errors.add("Problem resetting playcount for DB iPod And File " + mezzmoBO.constructFileTitle(this.discMap, comp) + " with playcount " + playCount);
+                            } else {
+                                // everything ok
+                                if (lastUpdatedDate.equals(foundFileTO.getDateLastPlayed())) {
+                                    lastUpdatedDate = null;
+                                }
+                                writeResult(foundFileTO, comp, playCount, lastUpdatedDate, csvPrinter);
                             }
-                            writeResult( foundFileTO, comp, playCount, lastUpdatedDate, csvPrinter);
                         }
                     }
                 } catch (SQLException e) {
