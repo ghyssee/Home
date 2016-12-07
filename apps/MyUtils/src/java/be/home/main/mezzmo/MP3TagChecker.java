@@ -24,6 +24,7 @@ public class MP3TagChecker extends BatchJobV2{
 
     public static ConfigTO.Config config;
     private static final Logger log = getMainLog(MP3TagChecker.class);
+    public List <AlbumError> albumErrors = (List<AlbumError>) JSONUtils.openJSONWithCode(Constants.JSON.ALBUMERRORS, List.class);
 
     public static void main(String args[]) {
 
@@ -51,7 +52,6 @@ public class MP3TagChecker extends BatchJobV2{
 
     public void export(String base, String fileName){
 
-        AlbumError[] albumErrors = (AlbumError[]) JSONUtils.openJSONWithCode(Constants.JSON.ALBUMERRORS, AlbumError[].class);
 
         TransferObject to = new TransferObject();
         //base = ""
@@ -88,6 +88,9 @@ public class MP3TagChecker extends BatchJobV2{
         }
         else {
             log.warn("File Not Found: " + file.getAbsolutePath());
+            AlbumError error = new AlbumError(comp.getFileTO().getId(), comp.getFileTO().getFile(),
+                    "FILE", "File Not Found", "");
+
         }
 
     }

@@ -29,7 +29,7 @@ public class ExportCatalogToHTML extends BatchJobV2{
     public static MezzmoServiceImpl mezzmoService = null;
 
     public static ConfigTO.Config config;
-    private static final Logger log = Logger.getLogger(ExportCatalogToHTML.class);
+    private static final Logger log = getMainLog(ExportCatalogToHTML.class);
 
     public static void main(String args[]) {
 
