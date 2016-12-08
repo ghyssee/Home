@@ -207,4 +207,11 @@ public class FileUtils {
 			}
 		}
 	}
+
+	public static Path renameFile(String oldFile, String newFile) throws IOException {
+		Path source = Paths.get(oldFile);
+		Path destination = Paths.get(newFile);
+		return Files.move(source, destination);
+	}
+
 }

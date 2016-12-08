@@ -88,5 +88,9 @@ public class JSONUtils {
     }
 
 
+    public static void writeJsonFileWithCode(Object o, String pathCode) throws IOException {
+        writeJsonFile(o, Setup.getInstance().getFullPath(pathCode));
+    }
+
 
 }
