@@ -208,10 +208,10 @@ public class FileUtils {
 		}
 	}
 
-	public static Path renameFile(String oldFile, String newFile) throws IOException {
-		Path source = Paths.get(oldFile);
-		Path destination = Paths.get(newFile);
-		return Files.move(source, destination);
+	public static boolean renameFile(String oldFile, String newFile)  {
+		File oldF = new File(oldFile);
+		File newF = new File(newFile);
+		return oldF.renameTo(newF);
 	}
 
 }

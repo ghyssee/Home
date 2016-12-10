@@ -26,6 +26,11 @@ public class MezzmoServiceImpl {
         return bo.updatePlayCount(fileID, album, playCount, dateLastPlayed);
     }
 
+    public int updateSong (MGOFileAlbumCompositeTO comp, String type) throws SQLException {
+        MezzmoBO bo = new MezzmoBO();
+        return bo.updateSong(comp, type);
+    }
+
     public int synchronizePlayCount(Long fileID, int playCount, Date lastPlayed) throws SQLException {
         MezzmoBO bo = new MezzmoBO();
         return bo.synchronizePlayCount(fileID, playCount, lastPlayed);
@@ -129,6 +134,17 @@ public class MezzmoServiceImpl {
     public List<MGOFileAlbumCompositeTO> getLastPlayed(int number) {
         MezzmoBO bo = new MezzmoBO();
         return bo.getLastPlayed(number);
+    }
+
+    public MGOFileArtistTO findArtist(MGOFileArtistTO artist){
+        MezzmoBO bo = new MezzmoBO();
+        return bo.findArtist(artist);
+    }
+
+
+    public Result updateLinkFileArtist(MGOFileArtistTO artist, Long newId){
+        MezzmoBO bo = new MezzmoBO();
+        return bo.updateLinkFileArtist(artist, newId);
     }
 
     public Map<String, MGOFileAlbumCompositeTO> getMaxDisc() {

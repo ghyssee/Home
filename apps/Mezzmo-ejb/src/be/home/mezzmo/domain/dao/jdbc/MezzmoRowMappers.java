@@ -137,6 +137,7 @@ public class MezzmoRowMappers {
                 fileTO.setPlayCount(rs.getInt("PLAYCOUNT"));
                 fileTO.setTitle(rs.getString("TITLE"));
                 fileTO.setFileTitle(rs.getString("FILETITLE"));
+                artistTO.setID(rs.getLong("ARTISTID"));
                 artistTO.setArtist(rs.getString("ARTIST"));
                 fileTO.setDuration(rs.getInt("DURATION"));
                 fileTO.setDisc(rs.getInt("DISC"));
@@ -155,6 +156,16 @@ public class MezzmoRowMappers {
             comp.getFileAlbumTO().setName(rs.getString("ALBUM"));
             comp.getAlbumArtistTO().setName(rs.getString("ALBUM_ARTIST"));
             return comp;
+        }
+    }
+
+    public static class ArtistRowMapper implements RowMapper {
+        public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+            MGOFileArtistTO artist = new MGOFileArtistTO();
+            artist.setID(rs.getLong("ID"));
+            artist.setArtist(rs.getString("DATA"));
+
+            return artist;
         }
     }
 

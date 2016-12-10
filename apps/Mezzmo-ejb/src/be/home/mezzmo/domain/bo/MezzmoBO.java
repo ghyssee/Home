@@ -5,10 +5,7 @@ import be.home.common.model.TransferObject;
 import be.home.mezzmo.domain.dao.jdbc.MezzmoAlbumDAOImpl;
 import be.home.mezzmo.domain.dao.jdbc.MezzmoDAOImpl;
 import be.home.mezzmo.domain.dao.jdbc.MezzmoPlaylistDAOImpl;
-import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
-import be.home.mezzmo.domain.model.MGOFileAlbumTO;
-import be.home.mezzmo.domain.model.MGOFileTO;
-import be.home.mezzmo.domain.model.MGOPlaylistTO;
+import be.home.mezzmo.domain.model.*;
 import org.apache.commons.lang3.StringUtils;
 
 import java.sql.SQLException;
@@ -89,12 +86,20 @@ public class MezzmoBO extends BusinessObject {
         return getMezzmoDAO().findByTitleAndAlbum(comp);
     }
 
+    public MGOFileArtistTO findArtist(MGOFileArtistTO artist){
+        return getMezzmoDAO().findArtist(artist);
+    }
+
     public List <MGOFileAlbumCompositeTO> findSongsByAlbum(MGOFileAlbumCompositeTO comp){
         return getMezzmoDAO().findSongsByAlbum(comp);
     }
 
     public int updateRanking (Long fileID, int ranking) throws SQLException {
         return getMezzmoDAO().updateRanking(fileID, ranking);
+    }
+
+    public int updateSong (MGOFileAlbumCompositeTO comp, String type) throws SQLException {
+        return getMezzmoDAO().updateSong(comp, type);
     }
 
     public List<MGOFileAlbumCompositeTO> getSongsAlbum(Long albumId, Long albumArtistId) {
@@ -105,7 +110,11 @@ public class MezzmoBO extends BusinessObject {
         return getMezzmoDAO().getLastPlayed(number);
     }
 
-    public Map<String, MGOFileAlbumCompositeTO> getMaxDisc() {
+    public Result updateLinkFileArtist(MGOFileArtistTO artist, Long newId){
+        return getMezzmoDAO().updateLinkFileArtist(artist, newId);
+    }
+
+        public Map<String, MGOFileAlbumCompositeTO> getMaxDisc() {
 
         List<MGOFileAlbumCompositeTO> list = getMezzmoDAO().getMaxDisc();
         Map<String, MGOFileAlbumCompositeTO> map = new HashMap<> ();
