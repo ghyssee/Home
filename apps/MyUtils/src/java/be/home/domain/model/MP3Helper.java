@@ -101,9 +101,6 @@ public class MP3Helper {
     public String prettifyArtist(String text){
         String prettifiedText = prettifyString(text);
         if (StringUtils.isNotBlank(text)) {
-            for (MP3Prettifier.Word wordObj : mp3Prettifer.artist.names){
-                prettifiedText = prettifiedText.replace(wordObj.oldWord, wordObj.newWord);
-            }
             /*
             prettifiedText = prettifiedText.replace("Fpi Project", "FPI Project");
             prettifiedText = prettifiedText.replace("Tourist Lemc", "Tourist LeMC");
@@ -118,6 +115,9 @@ public class MP3Helper {
             prettifiedText = prettifiedText.replace("  ", " ");
             prettifiedText = prettifiedText.trim();
             prettifiedText = checkWords(prettifiedText, Mp3Tag.ARTIST);
+            for (MP3Prettifier.Word wordObj : mp3Prettifer.artist.names){
+                prettifiedText = prettifiedText.replace(wordObj.oldWord, wordObj.newWord);
+            }
         }
         return prettifiedText;
 

@@ -35,8 +35,8 @@ public class MP3TagChecker extends BatchJobV2{
     private static final Logger log = getMainLog(MP3TagChecker.class);
     public AlbumError albumErrors = (AlbumError) JSONUtils.openJSONWithCode(Constants.JSON.ALBUMERRORS, AlbumError.class);
     public String SUBST_A = "H:\\Shared\\Mijn Muziek\\Eric\\iPod\\";
-    //public String SUBST_B = "R:\\My Music\\iPod\\";
-    public String SUBST_B = "C:\\My Data\\tmp\\Java\\MP3Processor\\Album\\";
+    public String SUBST_B = "R:\\My Music\\iPod\\";
+    //public String SUBST_B = "C:\\My Data\\tmp\\Java\\MP3Processor\\Album\\";
 
 
     public static void main(String args[]) {
@@ -61,7 +61,7 @@ public class MP3TagChecker extends BatchJobV2{
 
         //System.out.println(stripFilename("Can't Feel"));
         export();
-        processErrors();
+        //processErrors();
 
     }
 
@@ -72,6 +72,7 @@ public class MP3TagChecker extends BatchJobV2{
         //base = ""
         MGOFileAlbumTO albumTO = new MGOFileAlbumTO();
         albumTO.setName("Ultratop 50 20160102 02 Januari 2016");
+        albumTO.setName("Ultratop 50 20120505 05 Mei 2012");
         List<MGOFileAlbumCompositeTO> listAlbums = getMezzmoService().getAlbums(albumTO, new TransferObject());
         for (MGOFileAlbumCompositeTO comp : listAlbums){
             System.out.println("AlbumID: " + comp.getFileAlbumTO().getId());
@@ -178,7 +179,7 @@ public class MP3TagChecker extends BatchJobV2{
         boolean ok = true;
         int lengthTrack = String.valueOf(nrOfTracks).length();
         String track = StringUtils.leftPad(mp3Track, lengthTrack, '0');
-        if (!track.equals(mp3Track) || Integer.parseInt(mp3Track) != comp.getFileTO().getTrack().intValue()){
+        if (!track.equals(mp3Track)){
             comp.getFileTO().setTrack(Integer.valueOf(mp3Track));
             log.warn("Track does not match: " + "mp3: " + mp3Track + " / Formatted: " + track);
             /* example : Track is 1 => update to 01
@@ -188,6 +189,18 @@ public class MP3TagChecker extends BatchJobV2{
                     comp.getFileTO().getFile(),
                     comp.getFileAlbumTO().getName(),
                     "TRACK", mp3Track, track);
+            ok = false;
+        }
+        else if (Integer.parseInt(track) != comp.getFileTO().getTrack().intValue()){
+            log.warn("Track does not match: " + "DB: " + comp.getFileTO().getTrack() + " / Formatted: " + track);
+            /* example : Track is 1 => update to 01
+                only update the mp3 tag, DB stores it as int
+             */
+            addItem(comp.getFileTO().getId(),
+                    comp.getFileTO().getFile(),
+                    comp.getFileAlbumTO().getName(),
+                    "TRACK", String.valueOf(comp.getFileTO().getTrack()), track);
+            comp.getFileTO().setTrack(Integer.valueOf(track));
             ok = false;
         }
         return ok;
@@ -206,6 +219,16 @@ public class MP3TagChecker extends BatchJobV2{
                     "ARTIST", mp3Artist, artist);
             ok = false;
         }
+        else if (!artist.equals(comp.getFileArtistTO().getArtist())){
+            log.warn("Artist does not match: " + "DB: " + comp.getFileArtistTO().getArtist() + " / Formatted: " + artist);
+            /* update mp3 + DB */
+            addItem(comp.getFileArtistTO().getID(),
+                    comp.getFileTO().getFile(),
+                    comp.getFileAlbumTO().getName(),
+                    "ARTIST", comp.getFileArtistTO().getArtist(), artist);
+            comp.getFileArtistTO().setArtist(artist);
+            ok = false;
+        }
         return ok;
     }
 
@@ -220,6 +243,16 @@ public class MP3TagChecker extends BatchJobV2{
                     comp.getFileTO().getFile(),
                     comp.getFileAlbumTO().getName(),
                     "TITLE", mp3Title, title);
+            ok = false;
+        }
+        else if (!title.equals( comp.getFileTO().getTitle())){
+            log.warn("Title does not match: " + "DB: " + comp.getFileTO().getTitle() + " / Formatted: " + title);
+            /* update mp3 + DB */
+            addItem(comp.getFileTO().getId(),
+                    comp.getFileTO().getFile(),
+                    comp.getFileAlbumTO().getName(),
+                    "TITLE", comp.getFileTO().getTitle(), title);
+            comp.getFileTO().setTitle(title);
             ok = false;
         }
         return ok;
