@@ -46,7 +46,7 @@ public class MP3Helper {
     }
 
     public String prettifyString(String text){
-        String prettifiedText = text;
+        String prettifiedText = replaceSpecialCharacters(text);
         if (StringUtils.isNotBlank(text)) {
             char[] tmp = {'('};
             prettifiedText = WordUtils.capitalizeFully(prettifiedText, startChars);

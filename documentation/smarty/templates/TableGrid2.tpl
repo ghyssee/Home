@@ -4,9 +4,9 @@
 		<thead>
 		<tr>
 			{{section name=sec1 loop=$contacts}}
-			<th field="{{$contacts[sec1].field}}" width="{{$contacts[sec1].size}}"{{if isset($contacts[sec1].formatter)}} formatter="{{$contacts[sec1].formatter}}"{{/if}}>{{$contacts[sec1].label}}</th>
+			<th field="{{$contacts[sec1].field}}"  {{if isset($contacts[sec1].hidden) && $contacts[sec1].hidden}}hidden="true"){{/if}} width="{{$contacts[sec1].size}}"{{if isset($contacts[sec1].formatter)}} formatter="{{$contacts[sec1].formatter}}"{{/if}}>{{$contacts[sec1].label}}</th>
 			{{/section}}
-		<tr>
+		</tr>
 		</thead>
 	</table>
 	<span style="font-size:20px">
@@ -29,7 +29,7 @@
 		<form id="fm" method="post" novalidate>
 		
 			{{section name=sec1 loop=$contacts}}
-			  {{if !$contacts[sec1].hidden}}
+			  {{if !isset($contacts[sec1].hidden) OR !$contacts[sec1].hidden}}
 				<div class="fitem">
 					<label>{{$contacts[sec1].label}}</label>
 					<input name="{{$contacts[sec1].field}}" class="easyui-textbox" required="true">
@@ -45,17 +45,6 @@
 	</div>
 	<script type="text/javascript">
 		$('#dg').datagrid({
-			columns:[[
-{{section name=sec1 loop=$fields}}
-	{{if $fields[sec1].hidden}}
-		{{assign var="hide" value="true"}}
-	{{else}}
-		{{assign var="hide" value="false"}}
-	{{/if}}
-	{field:'{{$fields[sec1].field}}',title:'{{$fields[sec1].label}}'{{if isset($fields[sec1].rowspan)}}, rowspan:{{$fields[sec1].rowspan}}{{/if}}, hidden:{{$hide}}, width:{{$fields[sec1].size}}}{{if !$smarty.section.sec1.last}},{{/if}}
-
-{{/section}}
-			]],
 			options:[[
 				{rowHeight:100}
 			]],

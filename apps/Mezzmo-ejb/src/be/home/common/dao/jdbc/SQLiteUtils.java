@@ -56,16 +56,7 @@ public class SQLiteUtils {
         return null;
     }
 
-    public static String getSearchField(String field){
-        if (field == null){
-            return "%";
-        }
-        else {
-            return field;
-        }
-    }
-
-    public static String getSearchField(Integer field){
+    public static String getSearchField(Object field){
         if (field == null){
             return "%";
         }

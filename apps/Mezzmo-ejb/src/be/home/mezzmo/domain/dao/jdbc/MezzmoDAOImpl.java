@@ -93,20 +93,15 @@ public class MezzmoDAOImpl extends MezzmoDAOQueries {
                 SQLiteUtils.getSearchField(comp.getFileTO().getTitle()),
                 SQLiteUtils.getSearchField(comp.getFileAlbumTO().getName())
         };
-        MGOFileTO fileTO = (MGOFileTO) getInstance().getJDBCTemplate().queryForObject(FILE_FIND_TAGINFO, new MezzmoRowMappers.FileRowMapper(), params);
+        MGOFileTO fileTO = (MGOFileTO) getInstance().getJDBCTemplate().queryForObject(FILE_FIND_TAGINFO_CRITERIA, new MezzmoRowMappers.FileRowMapper(), params);
         return fileTO;
     }
 
     public List<MGOFileAlbumCompositeTO> findSongsByAlbum(MGOFileAlbumCompositeTO comp){
         Object[] params = {
-                //SQLiteUtils.getSearchField(comp.getFileAlbumTO().getId()),
-                comp.getFileAlbumTO().getId() == 0 ? "%": comp.getFileAlbumTO().getId(),
-                SQLiteUtils.getSearchField(comp.getFileTO().getTrack()),
-                SQLiteUtils.getSearchField(comp.getFileArtistTO().getArtist()),
-                SQLiteUtils.getSearchField(comp.getFileTO().getTitle()),
-                SQLiteUtils.getSearchField(comp.getFileAlbumTO().getName())
+                comp.getFileAlbumTO().getId() == 0 ? "%": comp.getFileAlbumTO().getId()
         };
-        List<MGOFileAlbumCompositeTO> list = getInstance().getJDBCTemplate().query(FILE_FIND_TAGINFO, new MezzmoRowMappers.SongsAlbumRowMapper(), params);
+        List<MGOFileAlbumCompositeTO> list = getInstance().getJDBCTemplate().query(FILE_FIND_TAGINFO_BY_ALBUMID, new MezzmoRowMappers.SongsAlbumRowMapper(), params);
         return list;
     }
 

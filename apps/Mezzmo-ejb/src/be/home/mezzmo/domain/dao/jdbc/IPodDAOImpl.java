@@ -26,6 +26,8 @@ public class IPodDAOImpl extends IPodDB {
 
     private static final String RESET_PLAYCOUNT = "UPDATE DYNAMIC.item_stats " +
                                                   "SET play_count_user = ? " +
+                                                  " ,has_been_played = 0" +
+                                                   " ,date_played = 0 " +
                                                   "WHERE item_pid = ? ";
 
     public List<MGOFileAlbumCompositeTO> listPlayCount()

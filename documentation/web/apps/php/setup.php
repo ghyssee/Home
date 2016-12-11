@@ -9,6 +9,7 @@ const JSON_MP3PRETTIFIER = "mp3PrettifierConfig";
 const JSON_HTML = "htmlConfig";
 const JSON_JOBS = "jobs";
 const JSON_MENU = "menu";
+const JSON_ALBUMERRORS = "albumErrors";
 const FILE_ALBUM = "albumInfo";
 const APPEND = true;
 

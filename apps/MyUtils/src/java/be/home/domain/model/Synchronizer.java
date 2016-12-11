@@ -63,8 +63,8 @@ public class Synchronizer {
             List <String> errors = startSynchronisation(iPodList, csvFilePrinter);
             MediaMonkeyBO mmBO = new MediaMonkeyBO();
             if (this.sync) {
-                //int mmReset = mmBO.resetPlayCount();
-                //log.info("Number of MediaMonkey Records updated: " + mmReset);
+                int mmReset = mmBO.resetPlayCount();
+                log.info("Number of MediaMonkey Records updated: " + mmReset);
             }
             if (errors.size() > 0){
                 log.error("Number of errors found: " + errors.size());

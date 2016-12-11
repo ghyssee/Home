@@ -35,8 +35,8 @@ public class MP3TagChecker extends BatchJobV2{
     private static final Logger log = getMainLog(MP3TagChecker.class);
     public AlbumError albumErrors = (AlbumError) JSONUtils.openJSONWithCode(Constants.JSON.ALBUMERRORS, AlbumError.class);
     public String SUBST_A = "H:\\Shared\\Mijn Muziek\\Eric\\iPod\\";
-    public String SUBST_B = "R:\\My Music\\iPod\\";
-    //public String SUBST_B = "C:\\My Data\\tmp\\Java\\MP3Processor\\Album\\";
+    //public String SUBST_B = "R:\\My Music\\iPod\\";
+    public String SUBST_B = "C:\\My Data\\tmp\\Java\\MP3Processor\\Album\\";
 
 
     public static void main(String args[]) {
@@ -59,6 +59,7 @@ public class MP3TagChecker extends BatchJobV2{
     public void run() {
         final String batchJob = "MP3TagChecker";
 
+        //System.out.println(stripFilename("Can't Feel"));
         export();
         processErrors();
 
@@ -484,7 +485,7 @@ public class MP3TagChecker extends BatchJobV2{
         strippedFilename = strippedFilename.replace("P!nk", "Pink");
         strippedFilename = strippedFilename.replace("$", "s");
         strippedFilename = strippedFilename.replace("/\\", "&");
-        strippedFilename = strippedFilename.replaceAll("[^\"&'()\\[\\],. a-zA-Z0-9.-]", "");
+        strippedFilename = strippedFilename.replaceAll("[^\"&()\\[\\],'. a-zA-Z0-9.-]", "");
 
         return strippedFilename;
     }

@@ -47,6 +47,7 @@ $smarty = initializeSmarty();
 $smarty->assign('title','Colors');
 $smarty->assign('item','Color');
 $url = "test.php";
+$smarty->assign('viewUrl',$url . "?method=list");
 $smarty->assign('updateUrl',"'" . $url . "?method=update&id='+row['id']");
 $smarty->assign('newUrl',"'" . $url . "?method=add'");
 $smarty->assign('deleteUrl',"'" . $url . "?method=delete',{id:row['id']}");

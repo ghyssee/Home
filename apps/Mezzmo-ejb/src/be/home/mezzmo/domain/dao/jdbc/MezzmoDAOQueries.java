@@ -42,28 +42,25 @@ public class MezzmoDAOQueries extends MezzmoDB {
             " WHERE 1=1" +
             " AND MGOFileAlbum.data like ?"; //"'Ultratop 50 2015%'";
 
-    protected static final String FILE_FIND_TAGINFO = "SELECT " + getColumns(COLUMNS_MP3) + " FROM MGOFile " +
+    private static final String FILE_FIND_TAGINFO = "SELECT " + getColumns(COLUMNS_MP3) + " FROM MGOFile " +
             " INNER JOIN MGOFileAlbumRelationship ON (MGOFileAlbumRelationship.FileID = MGOFILE.id)" +
             " INNER JOIN MGOFileAlbum ON (MGOFileAlbum.ID = MGOFileAlbumRelationship.ID)" +
             " INNER JOIN MGOFileExtension ON (MGOFileExtension.ID = MGOFILE.extensionID)" +
             " INNER JOIN MGOFileArtistRelationship ON (MGOFileArtistRelationship.FileID = MGOFILE.id)" +
             " INNER JOIN MGOFileArtist ON (MGOFileArtist.ID = MGOFileArtistRelationship.ID)" +
             " INNER JOIN MGOAlbumArtistRelationship ON (MGOAlbumArtistRelationship.FileID = MGOFILE.id)" +
-            " WHERE MGOFileExtension.data = 'mp3'" +
-            " AND MGOFileAlbum.id like ?" +
+            " WHERE MGOFileExtension.data = 'mp3'";
+
+    protected static final String FILE_FIND_TAGINFO_CRITERIA = FILE_FIND_TAGINFO +
             " AND MGOFile.Track like ?" +
             " AND MGOFileArtist.data like ?" +
             " AND MGOFile.Title like ?" +
             " AND MGOFileAlbum.data like ?";
 
-    protected static final String FILE_SELECT_TITLE = "SELECT " + getColumns(COLUMNS) + " FROM MGOFileAlbumRelationship " +
-            " INNER JOIN MGOFile ON (MGOFileAlbumRelationship.FileID = MGOFile.ID)" +
-            " INNER JOIN MGOFileAlbum ON (MGOFileAlbum.ID = MGOFileAlbumRelationship.ID)" +
-            " WHERE 1=1" +
-            " AND MGOFile.FileTitle like ?" +
-            " AND MGOFileAlbum.data like ?";
+    protected static final String FILE_FIND_TAGINFO_BY_ALBUMID = FILE_FIND_TAGINFO +
+            " AND MGOFileAlbum.id like ?";
 
-    protected static final String FILE_FIND = "SELECT " + getColumns(COLUMNS) + " FROM MGOFileAlbumRelationship " +
+    protected static final String FILE_SELECT_TITLE = "SELECT " + getColumns(COLUMNS) + " FROM MGOFileAlbumRelationship " +
             " INNER JOIN MGOFile ON (MGOFileAlbumRelationship.FileID = MGOFile.ID)" +
             " INNER JOIN MGOFileAlbum ON (MGOFileAlbum.ID = MGOFileAlbumRelationship.ID)" +
             " WHERE 1=1" +
