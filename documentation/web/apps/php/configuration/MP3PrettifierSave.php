@@ -24,8 +24,8 @@ if(isset($_POST['mp3Prettifier'])){
 }
 
 function saveGlobalWord($file, $mp3PrettifierObj){
-	assignField($oldWord, "oldWord");
-	assignField($newWord, "newWord");
+	assignField($oldWord, "oldWord", !ESCAPE_HTML);
+	assignField($newWord, "newWord", !ESCAPE_HTML);
 	$save = true;
 	if (empty($oldWord)) {
 		addError ("oldWord", "Old Word can't be empty");
@@ -43,8 +43,8 @@ function saveGlobalWord($file, $mp3PrettifierObj){
 }
 
 function saveArtistWord($file, $mp3PrettifierObj){
-	assignField($oldWord, "artistOldWord");
-	assignField($newWord, "artistNewWord");
+	assignField($oldWord, "artistOldWord", !ESCAPE_HTML);
+	assignField($newWord, "artistNewWord", !ESCAPE_HTML);
 	$save = true;
 	if (empty($oldWord)) {
         addError ("artistOldWord", "Old Word can not be empty");
@@ -62,8 +62,8 @@ function saveArtistWord($file, $mp3PrettifierObj){
 }
 
 function saveArtistName($file, $mp3PrettifierObj){
-	assignField($oldWord, "artistNameOldWord");
-	assignField($newWord, "artistNameNewWord");
+	assignField($oldWord, "artistNameOldWord", !ESCAPE_HTML);
+	assignField($newWord, "artistNameNewWord", !ESCAPE_HTML);
 	$save = true;
 	if (empty($oldWord)) {
         addError ("artistNameOldWord", "Old Name can not be empty");
@@ -81,8 +81,8 @@ function saveArtistName($file, $mp3PrettifierObj){
 }
 
 function saveSongTitle($file, $mp3PrettifierObj){
-	assignField($oldWord, "songTitleOldWord");
-	assignField($newWord, "songTitleNewWord");
+	assignField($oldWord, "songTitleOldWord", !ESCAPE_HTML);
+	assignField($newWord, "songTitleNewWord", !ESCAPE_HTML);
 	assignCheckbox($parenthesis, "songTitleParenthesis");
 	$save = true;
 	if (empty($oldWord)) {

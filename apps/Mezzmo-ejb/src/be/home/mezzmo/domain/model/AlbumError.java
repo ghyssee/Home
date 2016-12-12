@@ -16,7 +16,16 @@ public class AlbumError {
         public String type;
         public String oldValue;
         public String newValue;
+        public String basePath;
         public boolean done;
+
+        public String getBasePath() {
+            return basePath;
+        }
+
+        public void setBasePath(String basePath) {
+            this.basePath = basePath;
+        }
 
         public boolean isDone() {
             return done;

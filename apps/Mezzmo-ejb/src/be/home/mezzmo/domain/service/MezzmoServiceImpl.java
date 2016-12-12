@@ -1,5 +1,6 @@
 package be.home.mezzmo.domain.service;
 
+import be.home.common.enums.MP3Tag;
 import be.home.common.model.TransferObject;
 import be.home.mezzmo.domain.bo.MezzmoBO;
 import be.home.mezzmo.domain.bo.PlaylistBO;
@@ -26,7 +27,7 @@ public class MezzmoServiceImpl {
         return bo.updatePlayCount(fileID, album, playCount, dateLastPlayed);
     }
 
-    public int updateSong (MGOFileAlbumCompositeTO comp, String type) throws SQLException {
+    public int updateSong (MGOFileAlbumCompositeTO comp, MP3Tag type) throws SQLException {
         MezzmoBO bo = new MezzmoBO();
         return bo.updateSong(comp, type);
     }

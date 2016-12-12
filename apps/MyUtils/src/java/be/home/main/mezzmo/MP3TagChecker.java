@@ -2,6 +2,7 @@ package be.home.main.mezzmo;
 
 import be.home.common.constants.Constants;
 import be.home.common.dao.jdbc.SQLiteJDBC;
+import be.home.common.enums.MP3Tag;
 import be.home.common.main.BatchJobV2;
 import be.home.common.model.TransferObject;
 import be.home.common.utils.FileUtils;
@@ -17,15 +18,13 @@ import org.apache.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Map;
 
 public class MP3TagChecker extends BatchJobV2{
 
@@ -35,8 +34,8 @@ public class MP3TagChecker extends BatchJobV2{
     private static final Logger log = getMainLog(MP3TagChecker.class);
     public AlbumError albumErrors = (AlbumError) JSONUtils.openJSONWithCode(Constants.JSON.ALBUMERRORS, AlbumError.class);
     public String SUBST_A = "H:\\Shared\\Mijn Muziek\\Eric\\iPod\\";
-    public String SUBST_B = "R:\\My Music\\iPod\\";
-    //public String SUBST_B = "C:\\My Data\\tmp\\Java\\MP3Processor\\Album\\";
+    //public String SUBST_B = "R:\\My Music\\iPod\\";
+    public String SUBST_B = "C:\\My Data\\tmp\\Java\\MP3Processor\\Album\\";
 
 
     public static void main(String args[]) {
@@ -61,8 +60,50 @@ public class MP3TagChecker extends BatchJobV2{
 
         //System.out.println(stripFilename("Can't Feel"));
         export();
-        //processErrors();
+        processErrors();
+        //String file = "C:\\My Data\\tmp\\Java\\MP3Processor\\ToTest\\05 Netsky feat. Digital Farm Animals - Work It Out.mp3";
+        //file = "C:\\My Data\\tmp\\Java\\MP3Processor\\ToTest\\test.mp3";
+        //readMP3File(file);
 
+    }
+
+    private ID3v2 getId3v2Tag(Mp3File mp3File) {
+        if ( !mp3File.hasId3v2Tag()){
+            return new ID3v24Tag();
+        }
+        ID3v2 id3v2 = mp3File.getId3v2Tag();
+        if (id3v2 instanceof ID3v24Tag){
+            return id3v2;
+        }
+        ID3v2 id3v2Tag = new ID3v24Tag();
+        Map<String, ID3v2FrameSet> map = mp3File.getId3v2Tag().getFrameSets();
+        for (ID3v2FrameSet set : map.values()) {
+            ID3v2FrameSet newFrame = new ID3v2FrameSet(set.getId());
+            for (ID3v2Frame f : set.getFrames()) {
+                newFrame.addFrame(f);
+            }
+            id3v2Tag.getFrameSets().put(set.getId(), newFrame);
+        }
+        return id3v2Tag;
+    }
+
+
+
+    private void readMP3File(String file) {
+        Mp3File mp3file = null;
+        try {
+            mp3file = new Mp3File(file);
+            ID3v2 id3v2Tag = getId3v2Tag(mp3file);
+            String artist = "Axwell Λ Ingrosso";
+            id3v2Tag.setArtist(artist);
+            mp3file.setId3v2Tag(id3v2Tag);
+            String originalFile = file;
+            String newFile = "C:\\My Data\\tmp\\Java\\MP3Processor\\ToTest\\test2.mp3";
+            mp3file.save(newFile);
+        } catch (Exception e) {
+            log.error(e);
+            e.printStackTrace();
+        }
     }
 
     public void export(){
@@ -72,7 +113,6 @@ public class MP3TagChecker extends BatchJobV2{
         //base = ""
         MGOFileAlbumTO albumTO = new MGOFileAlbumTO();
         albumTO.setName("Ultratop 50 20160102 02 Januari 2016");
-        albumTO.setName("Ultratop 50 20120505 05 Mei 2012");
         List<MGOFileAlbumCompositeTO> listAlbums = getMezzmoService().getAlbums(albumTO, new TransferObject());
         for (MGOFileAlbumCompositeTO comp : listAlbums){
             System.out.println("AlbumID: " + comp.getFileAlbumTO().getId());
@@ -128,6 +168,7 @@ public class MP3TagChecker extends BatchJobV2{
         item.setType(type);
         item.setOldValue(oldValue);
         item.setNewValue(newValue);
+        item.setBasePath(FilenameUtils.getFullPath(file));
         this.albumErrors.items.add(item);
     }
 
@@ -188,7 +229,7 @@ public class MP3TagChecker extends BatchJobV2{
             addItem(comp.getFileTO().getId(),
                     comp.getFileTO().getFile(),
                     comp.getFileAlbumTO().getName(),
-                    "TRACK", mp3Track, track);
+                    MP3Tag.TRACK.name(), mp3Track, track);
             ok = false;
         }
         else if (Integer.parseInt(track) != comp.getFileTO().getTrack().intValue()){
@@ -199,7 +240,7 @@ public class MP3TagChecker extends BatchJobV2{
             addItem(comp.getFileTO().getId(),
                     comp.getFileTO().getFile(),
                     comp.getFileAlbumTO().getName(),
-                    "TRACK", String.valueOf(comp.getFileTO().getTrack()), track);
+                    MP3Tag.TRACK.name(), String.valueOf(comp.getFileTO().getTrack()), track);
             comp.getFileTO().setTrack(Integer.valueOf(track));
             ok = false;
         }
@@ -216,7 +257,7 @@ public class MP3TagChecker extends BatchJobV2{
             addItem(comp.getFileArtistTO().getID(),
                     comp.getFileTO().getFile(),
                     comp.getFileAlbumTO().getName(),
-                    "ARTIST", mp3Artist, artist);
+                    MP3Tag.ARTIST.name(), mp3Artist, artist);
             ok = false;
         }
         else if (!artist.equals(comp.getFileArtistTO().getArtist())){
@@ -225,7 +266,7 @@ public class MP3TagChecker extends BatchJobV2{
             addItem(comp.getFileArtistTO().getID(),
                     comp.getFileTO().getFile(),
                     comp.getFileAlbumTO().getName(),
-                    "ARTIST", comp.getFileArtistTO().getArtist(), artist);
+                    MP3Tag.ARTIST.name(), comp.getFileArtistTO().getArtist(), artist);
             comp.getFileArtistTO().setArtist(artist);
             ok = false;
         }
@@ -242,7 +283,7 @@ public class MP3TagChecker extends BatchJobV2{
             addItem(comp.getFileTO().getId(),
                     comp.getFileTO().getFile(),
                     comp.getFileAlbumTO().getName(),
-                    "TITLE", mp3Title, title);
+                    MP3Tag.TITLE.name(), mp3Title, title);
             ok = false;
         }
         else if (!title.equals( comp.getFileTO().getTitle())){
@@ -251,7 +292,7 @@ public class MP3TagChecker extends BatchJobV2{
             addItem(comp.getFileTO().getId(),
                     comp.getFileTO().getFile(),
                     comp.getFileAlbumTO().getName(),
-                    "TITLE", comp.getFileTO().getTitle(), title);
+                    MP3Tag.TITLE.name(), comp.getFileTO().getTitle(), title);
             comp.getFileTO().setTitle(title);
             ok = false;
         }
@@ -305,17 +346,17 @@ public class MP3TagChecker extends BatchJobV2{
         for (AlbumError.Item item : this.albumErrors.items){
             if (!item.isDone()) {
                 log.info("Processing Id " + item.id + " / Type = " + item.type);
-                switch (item.type) {
-                    case "FILE":
+                switch (MP3Tag.valueOf(item.getType())) {
+                    case FILE:
                         renameFile(item);
                         break;
-                    case "ARTIST":
+                    case ARTIST:
                         updateArtist(item);
                         break;
-                    case "TITLE":
+                    case TITLE:
                         updateSong(item);
                         break;
-                    case "TRACK":
+                    case TRACK:
                         updateTrack(item);
                         break;
                     default:
@@ -337,7 +378,7 @@ public class MP3TagChecker extends BatchJobV2{
            comp.getFileTO().setFile(item.getNewValue());
            comp.getFileTO().setFileTitle(getFileTitle(item.getNewValue()));
            try {
-               int nr = getMezzmoService().updateSong(comp, item.getType());
+               int nr = getMezzmoService().updateSong(comp, MP3Tag.valueOf(item.getType()));
                if (nr > 0) {
                    log.info("File updated: " + "Id: " + item.getId() +
                            " / New File: " + item.getNewValue() + " / " + nr + " record(s)");
@@ -359,7 +400,7 @@ public class MP3TagChecker extends BatchJobV2{
         comp.getFileTO().setTitle(item.getNewValue());
         comp.getFileTO().setSortTitle(getSetSortTitle(item.getNewValue()));
         try {
-            int nr = getMezzmoService().updateSong(comp, item.getType());
+            int nr = getMezzmoService().updateSong(comp, MP3Tag.valueOf(item.getType()));
             if (nr > 0) {
                 log.info("Title updated: " + "Id: " + item.getId() +
                         " / New Title: " + item.getNewValue() + " / " + nr + " record(s)");
@@ -375,7 +416,7 @@ public class MP3TagChecker extends BatchJobV2{
         comp.getFileTO().setId(item.getId());
         comp.getFileTO().setTrack(Integer.parseInt(item.getNewValue()));
         try {
-            int nr = getMezzmoService().updateSong(comp, item.getType());
+            int nr = getMezzmoService().updateSong(comp, MP3Tag.valueOf(item.getType()));
             if (nr > 0) {
                 log.info("Track updated: " + "Id: " + item.getId() +
                         " / New Track: " + item.getNewValue() + " / " + nr + " record(s)");
@@ -423,7 +464,7 @@ public class MP3TagChecker extends BatchJobV2{
         }
         else {
             try {
-                int nr = getMezzmoService().updateSong(comp, item.getType());
+                int nr = getMezzmoService().updateSong(comp, MP3Tag.valueOf(item.getType()));
                 if (nr > 0) {
                     log.info("Artitst updated: " + "Id: " + item.getId() +
                             " / New Artist: " + item.getNewValue() + " / " + nr + " record(s)");
@@ -438,29 +479,22 @@ public class MP3TagChecker extends BatchJobV2{
 
     private void updateMP3(AlbumError.Item item) {
         String file = relativizeFile(item.getFile());
-        Mp3FileExt mp3file = null;
+        Mp3File mp3file = null;
         try {
-            mp3file = new Mp3FileExt(file);
-            ID3v2 id3v2Tag;
-            if (mp3file.hasId3v2Tag()) {
-                id3v2Tag = mp3file.getId3v2Tag();
-            }
-            else {
-                id3v2Tag =  new ID3v24TagExt();
-                mp3file.setId3v2Tag(id3v2Tag);
-            }
+            mp3file = new Mp3File(file);
+            ID3v2 id3v2Tag = getId3v2Tag(mp3file);
 
             boolean update = false;
-            switch (item.getType()){
-                case "ARTIST":
+            switch (MP3Tag.valueOf(item.getType())){
+                case ARTIST :
                     update = true;
                     id3v2Tag.setArtist(item.getNewValue());
                     break;
-                case "TITLE":
+                case TITLE:
                     id3v2Tag.setTitle(item.getNewValue());
                     update = true;
                     break;
-                case "TRACK":
+                case TRACK:
                     id3v2Tag.setTrack(item.getNewValue());
                     update = true;
                     break;

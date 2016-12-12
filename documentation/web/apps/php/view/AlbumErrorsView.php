@@ -39,7 +39,7 @@ goMenu();
 
 <script type="text/javascript">
 	function stripCell(val,row){
-		return val.replace("H:\\Shared\\Mijn Muziek\\Eric\\iPod\\Ultratop 50 20160102 02 Januari 2016\\", "");
+		return val.replace(row.basePath, "");
 	}
 </script>
 
@@ -59,7 +59,7 @@ $smarty->assign('newUrl',"'" . $url . "?method=add'");
 $smarty->assign('deleteUrl',"'" . $url . "?method=delete',{id:row['id']}");
 
 $smarty->assign("contacts", array(array("field" => "id", "label"=>"Id", "size" => 10, "hidden" => "true"),
-	                              array("field" => "file", "label"=>"File", "formatter" => "stripCell", "size" => 200),
+	                              array("field" => "file", "label"=>"File", "size" => 200),
 	                              array("field" => "type", "label"=>"Type",  "size" => 50),
 	                              array("field" => "oldValue", "label"=>"Old Value", "formatter" => "stripCell", "size" => 200),
 	                              array("field" => "newValue", "label"=>"New Value", "formatter" => "stripCell", "size" => 200)

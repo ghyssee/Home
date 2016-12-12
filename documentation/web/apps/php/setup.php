@@ -12,6 +12,7 @@ const JSON_MENU = "menu";
 const JSON_ALBUMERRORS = "albumErrors";
 const FILE_ALBUM = "albumInfo";
 const APPEND = true;
+const ESCAPE_HTML = true;
 
 function initSetup(){
     if (isset($GLOBALS["SETUP"])){

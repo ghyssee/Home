@@ -1,5 +1,6 @@
 package be.home.mezzmo.domain.bo;
 
+import be.home.common.enums.MP3Tag;
 import be.home.common.model.BusinessObject;
 import be.home.common.model.TransferObject;
 import be.home.mezzmo.domain.dao.jdbc.MezzmoAlbumDAOImpl;
@@ -98,7 +99,7 @@ public class MezzmoBO extends BusinessObject {
         return getMezzmoDAO().updateRanking(fileID, ranking);
     }
 
-    public int updateSong (MGOFileAlbumCompositeTO comp, String type) throws SQLException {
+    public int updateSong (MGOFileAlbumCompositeTO comp, MP3Tag type) throws SQLException {
         return getMezzmoDAO().updateSong(comp, type);
     }
 

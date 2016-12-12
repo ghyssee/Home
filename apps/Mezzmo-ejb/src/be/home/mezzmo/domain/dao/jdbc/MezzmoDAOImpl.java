@@ -2,6 +2,7 @@ package be.home.mezzmo.domain.dao.jdbc;
 
 import be.home.common.dao.jdbc.QueryBuilder;
 import be.home.common.dao.jdbc.SQLiteUtils;
+import be.home.common.enums.MP3Tag;
 import be.home.common.model.TransferObject;
 import be.home.mezzmo.domain.model.*;
 import org.apache.log4j.Logger;
@@ -163,32 +164,32 @@ public class MezzmoDAOImpl extends MezzmoDAOQueries {
 
     }
 
-    public int updateSong(MGOFileAlbumCompositeTO comp, String type){
+    public int updateSong(MGOFileAlbumCompositeTO comp, MP3Tag mp3Tag){
         Object[] params;
         int nr = 0;
-        switch (type) {
-            case "TITLE":
+        switch (mp3Tag) {
+            case TITLE:
                 params = new Object[] {comp.getFileTO().getTitle(),
                         comp.getFileTO().getSortTitle(),
                         comp.getFileTO().getId()};
                 nr = getInstance().getJDBCTemplate().update(FILE_UPDATE_TITLE, params);
                 break;
-            case "ARTIST":
+            case ARTIST:
                 params = new Object[] {comp.getFileArtistTO().getArtist(), comp.getFileArtistTO().getID()};
                 nr = getInstance().getJDBCTemplate().update(FILE_UPDATE_ARTIST, params);
                 break;
-            case "FILE":
+            case FILE:
                 params = new Object[] {comp.getFileTO().getFile(),
                         comp.getFileTO().getFileTitle(),
                         comp.getFileTO().getId()};
                 nr = getInstance().getJDBCTemplate().update(FILE_UPDATE_FILE, params);
                 break;
-            case "TRACK":
+            case TRACK:
                 params = new Object[] {comp.getFileTO().getTrack(), comp.getFileTO().getId()};
                 nr = getInstance().getJDBCTemplate().update(FILE_UPDATE_TRACK, params);
                 break;
             default:
-                log.error("Unknown Type: " + type);
+                log.error("Unknown Type: " + mp3Tag.name());
                 break;
         }
         return nr;

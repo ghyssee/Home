@@ -2,6 +2,7 @@
 $tabIndex = 1;
 $focus = false;
 
+
 class Input
 {
     public $name;

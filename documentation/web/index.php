@@ -78,8 +78,7 @@ function showMainMenutem($user, $menuItem){
 	if (isset($menuItem->menuItems)){
 		showSubMenuItem($user, $menuItem->menuItems);
 	}
-	echo "</li>";
-	echo PHP_EOL;
+	printh ("</li>" . PHP_EOL);
 }
 
 function showSubMenuItem($user, $menuItems){
