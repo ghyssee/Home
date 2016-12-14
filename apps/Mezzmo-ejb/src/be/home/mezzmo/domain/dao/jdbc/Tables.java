@@ -16,7 +16,7 @@ public enum Tables {
     MGOFile ("FILE"),
     MGOFileAlbum ("FILEALBUM"),
     MGOFileArtist ("FILEARTIST"),
-    MGOF
+
 
     private String alias;
     private String tableAlias;
