@@ -14,32 +14,32 @@ public class MezzmoPlaylistRowMappers {
         public static class PlaylistRowMapper implements RowMapper {
             public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
                 MGOPlaylistTO playlistTO = new MGOPlaylistTO();
-                playlistTO.setID(getInt(rs, PlaylistEnum.ID));
-                playlistTO.setName(getString(rs, PlaylistEnum.NAME));
-                playlistTO.setType(getInt(rs, PlaylistEnum.TYPE));
-                playlistTO.setDescription(getString(rs, PlaylistEnum.DESCRIPTION));
-                playlistTO.setParentID(getInt(rs, PlaylistEnum.PARENTID));
-                playlistTO.setAuthor(getInt(rs, PlaylistEnum.AUTHOR));
-                playlistTO.setIcon(getInt(rs, PlaylistEnum.ICON));
-                playlistTO.setFile(getString(rs, PlaylistEnum.FILE));
-                playlistTO.setTraverseFolder(getString(rs, PlaylistEnum.TRAVERSEFOLDER));
-                playlistTO.setFolderPath(getString(rs, PlaylistEnum.FOLDERPATH));
-                playlistTO.setFilter(getString(rs, PlaylistEnum.FILTER));
-                playlistTO.setDynamicTreeToken(getString(rs, PlaylistEnum.DYNAMICTREETOKEN));
-                playlistTO.setRunTime(getString(rs, PlaylistEnum.RUNTIME));
-                playlistTO.setStreamNum(getString(rs, PlaylistEnum.STREAMNUM));
-                playlistTO.setOrderByColumn(getInt(rs, PlaylistEnum.ORDERBYCOLUMN));
-                playlistTO.setOrderByDirection(getInt(rs, PlaylistEnum.ORDERBYDIRECTION));
-                playlistTO.setLimitBy(getInt(rs, PlaylistEnum.LIMITBY));
-                playlistTO.setCombineAnd(getInt(rs, PlaylistEnum.COMBINEAND));
-                playlistTO.setLimitType(getInt(rs, PlaylistEnum.LIMITTYPE));
-                playlistTO.setPlaylistOrder(getInt(rs, PlaylistEnum.PLAYLISTORDER));
-                playlistTO.setMediaType(getInt(rs, PlaylistEnum.MEDIATYPE));
-                playlistTO.setThumbnailID(getInt(rs, PlaylistEnum.THUMBNAILID));
-                playlistTO.setThumbnailAuthor(getInt(rs, PlaylistEnum.THUMBNAILAUTHOR));
-                playlistTO.setContentRatingID(getInt(rs, PlaylistEnum.CONTENTRATINGID));
-                playlistTO.setBackdropArtworkID(getInt(rs, PlaylistEnum.BACKDROPARTWORKID));
-                playlistTO.setDisplayTitleFormat(getString(rs, PlaylistEnum.DISPLAYTITLEFORMAT));
+                playlistTO.setID(getInt(rs, PlayListEnum.ID));
+                playlistTO.setName(getString(rs, PlayListEnum.NAME));
+                playlistTO.setType(getInt(rs, PlayListEnum.TYPE));
+                playlistTO.setDescription(getString(rs, PlayListEnum.DESCRIPTION));
+                playlistTO.setParentID(getInt(rs, PlayListEnum.PARENTID));
+                playlistTO.setAuthor(getInt(rs, PlayListEnum.AUTHOR));
+                playlistTO.setIcon(getInt(rs, PlayListEnum.ICON));
+                playlistTO.setFile(getString(rs, PlayListEnum.FILE));
+                playlistTO.setTraverseFolder(getString(rs, PlayListEnum.TRAVERSEFOLDER));
+                playlistTO.setFolderPath(getString(rs, PlayListEnum.FOLDERPATH));
+                playlistTO.setFilter(getString(rs, PlayListEnum.FILTER));
+                playlistTO.setDynamicTreeToken(getString(rs, PlayListEnum.DYNAMICTREETOKEN));
+                playlistTO.setRunTime(getString(rs, PlayListEnum.RUNTIME));
+                playlistTO.setStreamNum(getString(rs, PlayListEnum.STREAMNUM));
+                playlistTO.setOrderByColumn(getInt(rs, PlayListEnum.ORDERBYCOLUMN));
+                playlistTO.setOrderByDirection(getInt(rs, PlayListEnum.ORDERBYDIRECTION));
+                playlistTO.setLimitBy(getInt(rs, PlayListEnum.LIMITBY));
+                playlistTO.setCombineAnd(getInt(rs, PlayListEnum.COMBINEAND));
+                playlistTO.setLimitType(getInt(rs, PlayListEnum.LIMITTYPE));
+                playlistTO.setPlaylistOrder(getInt(rs, PlayListEnum.PLAYLISTORDER));
+                playlistTO.setMediaType(getInt(rs, PlayListEnum.MEDIATYPE));
+                playlistTO.setThumbnailID(getInt(rs, PlayListEnum.THUMBNAILID));
+                playlistTO.setThumbnailAuthor(getInt(rs, PlayListEnum.THUMBNAILAUTHOR));
+                playlistTO.setContentRatingID(getInt(rs, PlayListEnum.CONTENTRATINGID));
+                playlistTO.setBackdropArtworkID(getInt(rs, PlayListEnum.BACKDROPARTWORKID));
+                playlistTO.setDisplayTitleFormat(getString(rs, PlayListEnum.DISPLAYTITLEFORMAT));
                 return playlistTO;
 
             }

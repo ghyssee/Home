@@ -37,29 +37,30 @@ public class MezzmoPlaylistDAOImpl extends MezzmoDB {
                                                 "WHERE PL.Name LIKE ? " +
                                                 "AND PL.Type = ?";
 
-    private static final String FIND_PLAYLIST_BY_NAME = "SELECT " + getColumns(PlaylistEnum.values()) +
+    private static final String FIND_PLAYLIST_BY_NAME = "SELECT " + getColumns(PlayListEnum.values()) +
             " FROM MGOPlaylist AS PL" +
-            " WHERE PL." + PlaylistEnum.NAME + "= ?";
+            " WHERE PL." + PlayListEnum.NAME + "= ?";
 
-    private static final String FIND_PLAYLIST_CHILDREN = "SELECT " + getColumns(PlaylistEnum.values()) +
+    private static final String FIND_PLAYLIST_CHILDREN = "SELECT " + getColumns(PlayListEnum.values()) +
             " FROM MGOPlaylist AS PL" +
-            " WHERE PL." + PlaylistEnum.PARENTID + " = ?";
+            " WHERE PL." + PlayListEnum.PARENTID + " = ?";
 
-    private static final String INSERT_PLAYLIST = "INSERT INTO MGOPlaylist (" + getColumns(COLUMNS) + ") " +
+    private static final String INSERT_PLAYLIST = "INSERT INTO " + Tables.MGOPlaylist + " (" + getColumns(COLUMNS) + ") " +
                                                   "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
 
-    private static final String INSERT_PLAYLIST_SQL = "INSERT INTO MGOPlaylistSQL (" + getColumns(COLUMNS_SQL) + ") " +
+    private static final String INSERT_PLAYLIST_SQL = "INSERT INTO " + Tables.MGOPlaylistSQL + " (" +
+            getColumns(COLUMNS_SQL) + ") " +
             "VALUES (?,?,?,?,?,?,?,?,?)";
 
-    private static final String CLEANUP_PLAYLIST_SQL = "DELETE FROM MGOPlaylistSQL " +
-            "WHERE PlaylistID = ?";
+    private static final String CLEANUP_PLAYLIST_SQL = "DELETE FROM " + Tables.MGOPlaylistSQL +
+            " WHERE PlaylistID = ?";
 
-    private static final String DELETE_PLAYLIST = "DELETE FROM MGOPlaylist " +
-            "WHERE " + PlaylistEnum.ID + " = ?";
+    private static final String DELETE_PLAYLIST = "DELETE FROM " + Tables.MGOPlaylist +
+            " WHERE " + PlayListEnum.ID + " = ?";
 
-    private static final String DELETE_PLAYLIST_FILE = "DELETE FROM MGOPlaylist_To_File " +
-            "WHERE PlaylistID = ?";
+    private static final String DELETE_PLAYLIST_FILE = "DELETE FROM " + Tables.MGOPlaylist_To_File +
+            " WHERE PlaylistID = ?";
 
     private Integer getInteger(ResultSet rs, String id) throws SQLException {
         return new Integer(rs.getInt(id));
@@ -161,7 +162,6 @@ public class MezzmoPlaylistDAOImpl extends MezzmoDB {
     }
 
     public int insertPlaylistOld(MGOPlaylistTO playlist) {
-        //System.out.println("Get List of Mp3's for specific FileTitle");
         PreparedStatement stmt = null;
         List<MGOFileTO> list = new ArrayList<MGOFileTO>();
         Connection c = null;
@@ -198,7 +198,6 @@ public class MezzmoPlaylistDAOImpl extends MezzmoDB {
             setInteger(stmt, idx++, playlist.getContentRatingID());
             setInteger(stmt, idx++, playlist.getBackdropArtworkID());
             stmt.setString(idx++, playlist.getDisplayTitleFormat());
-            //System.out.println(FILE_SELECT_TITLE);
             rec = stmt.executeUpdate();
             c.commit();
         } catch (SQLException e) {

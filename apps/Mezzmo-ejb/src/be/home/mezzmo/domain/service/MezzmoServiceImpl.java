@@ -4,6 +4,7 @@ import be.home.common.enums.MP3Tag;
 import be.home.common.model.TransferObject;
 import be.home.mezzmo.domain.bo.MezzmoBO;
 import be.home.mezzmo.domain.bo.PlaylistBO;
+import be.home.mezzmo.domain.dao.jdbc.Tables;
 import be.home.mezzmo.domain.model.*;
 
 import java.sql.SQLException;
@@ -109,7 +110,9 @@ public class MezzmoServiceImpl {
 
     public MGOPlaylistTO cleanUpPlaylistWithChildren (String playlistName) {
         PlaylistBO bo = new PlaylistBO();
-        return bo.cleanUpPlaylistWithChildren(playlistName);
+        System.out.println(Tables.MGOPlaylist.tableAlias());
+        //return bo.cleanUpPlaylistWithChildren(playlistName);
+        return null;
     }
 
     public List<String> validateAndInsertCondition(PlaylistSetup.Condition condition, Integer playlistID){

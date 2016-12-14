@@ -428,16 +428,15 @@ public class MP3TagChecker extends BatchJobV2{
     }
 
     private String getSetSortTitle(String title){
-        String sortTitle = replaceFirstWordAndPlaceAtEnd(title, "The");
-        sortTitle = replaceFirstWordAndPlaceAtEnd(sortTitle, "A");
-        sortTitle = replaceFirstWordAndPlaceAtEnd(sortTitle, "An");
+        String sortTitle = moveFirstWordAtEnd(title, "The");
+        sortTitle = moveFirstWordAtEnd(sortTitle, "A");
+        sortTitle = moveFirstWordAtEnd(sortTitle, "An");
 
         return sortTitle;
     }
 
-    private String replaceFirstWordAndPlaceAtEnd(String title, String word){
-        word += " ";
-        String pattern = "^" + word + "(.+)";
+    private String moveFirstWordAtEnd(String title, String word){
+        String pattern = "^" + word + " " + "(.+)";
         String sortTitle = title.replaceAll(pattern, "$1, " + word);
         return sortTitle;
 

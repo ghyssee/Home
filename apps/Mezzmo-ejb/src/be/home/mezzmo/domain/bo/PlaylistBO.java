@@ -159,7 +159,7 @@ public class PlaylistBO {
         MGOPlaylistTO mainPlaylist = null;
         try {
             mainPlaylist = getMezzmoPlaylistDAO().findPlaylistByName(playlistName);
-            findChildren(mainPlaylist);
+            FindAndDeletePlaylistChildren(mainPlaylist);
             getMezzmoPlaylistDAO().deletePlaylist(mainPlaylist.getID());
         }
         catch (EmptyResultDataAccessException ex){
@@ -171,7 +171,7 @@ public class PlaylistBO {
 
     }
 
-    public void findChildren (MGOPlaylistTO playlist) {
+    public void FindAndDeletePlaylistChildren(MGOPlaylistTO playlist) {
         List<MGOPlaylistTO> list = getMezzmoPlaylistDAO().findChildren(playlist.getID());
         if (list.size() == 0){
             log.info("Cleanup Playlist " + playlist.getName() + "(ID: " + playlist.getID() + ")");
@@ -185,7 +185,7 @@ public class PlaylistBO {
         }
         else {
             for (MGOPlaylistTO item : list) {
-                findChildren(item);
+                FindAndDeletePlaylistChildren(item);
             }
         }
     }

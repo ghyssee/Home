@@ -5,7 +5,7 @@ import java.util.*;
 /**
  * Created by ghyssee on 14/12/2016.
  */
-public enum PlaylistEnum implements DatabaseColumn {
+public enum PlayListEnum implements DatabaseColumn {
     ID("ID"),
     NAME("Name"),
     TYPE("Type"),
@@ -35,7 +35,7 @@ public enum PlaylistEnum implements DatabaseColumn {
 
     public String columnName;
 
-    private PlaylistEnum(String s) {
+    PlayListEnum(String s) {
         columnName = s;
     }
 
@@ -47,7 +47,7 @@ public enum PlaylistEnum implements DatabaseColumn {
 
     // Populate the lookup table on loading time
     static {
-        for (PlaylistEnum s : EnumSet.allOf(PlaylistEnum.class))
+        for (PlayListEnum s : EnumSet.allOf(PlayListEnum.class))
             lookup.add(s.name() + " AS " + s.getColumnName());
     }
 
