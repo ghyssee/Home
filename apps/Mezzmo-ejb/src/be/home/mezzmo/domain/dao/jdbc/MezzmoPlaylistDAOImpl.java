@@ -19,12 +19,6 @@ import java.util.List;
 public class MezzmoPlaylistDAOImpl extends MezzmoDB {
 
 
-    private static final String FIND_PLAYLIST = "SELECT PL.ID AS ID, PL.Name AS NAME, PL.ParentID AS PARENTID, PL2.Name AS PARENTNAME " +
-                                                "FROM MGOPlaylist AS PL " +
-                                                "INNER JOIN MGOPlaylist AS PL2 ON (PL2.ID = PL.ParentID) " +
-                                                "WHERE PL.Name LIKE ? " +
-                                                "AND PL.Type = ?";
-
     private static final String[] COLUMNS = {"Name", "Type", "Description", "ParentID",
             "Author", "Icon", "File", "TraverseFolder",
             "FolderPath", "Filter", "DynamicTreeToken", "RunTime",
@@ -34,8 +28,22 @@ public class MezzmoPlaylistDAOImpl extends MezzmoDB {
             "DisplayTitleFormat"};
 
     private static final String[] COLUMNS_SQL = {"PlaylistID",
-        "ColumnNum", "ColumnType", "Operand", "ValueOneText",
-        "ValueTwoText","ValueOneInt","ValueTwoInt","GroupNr"};
+            "ColumnNum", "ColumnType", "Operand", "ValueOneText",
+            "ValueTwoText","ValueOneInt","ValueTwoInt","GroupNr"};
+
+    private static final String FIND_PLAYLIST = "SELECT PL.ID AS ID, PL.Name AS NAME, PL.ParentID AS PARENTID, PL2.Name AS PARENTNAME " +
+                                                "FROM MGOPlaylist AS PL " +
+                                                "INNER JOIN MGOPlaylist AS PL2 ON (PL2.ID = PL.ParentID) " +
+                                                "WHERE PL.Name LIKE ? " +
+                                                "AND PL.Type = ?";
+
+    private static final String FIND_PLAYLIST_BY_NAME = "SELECT " + getColumns(PlaylistEnum.values()) +
+            " FROM MGOPlaylist AS PL" +
+            " WHERE PL." + PlaylistEnum.NAME + "= ?";
+
+    private static final String FIND_PLAYLIST_CHILDREN = "SELECT " + getColumns(PlaylistEnum.values()) +
+            " FROM MGOPlaylist AS PL" +
+            " WHERE PL." + PlaylistEnum.PARENTID + " = ?";
 
     private static final String INSERT_PLAYLIST = "INSERT INTO MGOPlaylist (" + getColumns(COLUMNS) + ") " +
                                                   "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
@@ -45,6 +53,12 @@ public class MezzmoPlaylistDAOImpl extends MezzmoDB {
             "VALUES (?,?,?,?,?,?,?,?,?)";
 
     private static final String CLEANUP_PLAYLIST_SQL = "DELETE FROM MGOPlaylistSQL " +
+            "WHERE PlaylistID = ?";
+
+    private static final String DELETE_PLAYLIST = "DELETE FROM MGOPlaylist " +
+            "WHERE " + PlaylistEnum.ID + " = ?";
+
+    private static final String DELETE_PLAYLIST_FILE = "DELETE FROM MGOPlaylist_To_File " +
             "WHERE PlaylistID = ?";
 
     private Integer getInteger(ResultSet rs, String id) throws SQLException {
@@ -58,6 +72,17 @@ public class MezzmoPlaylistDAOImpl extends MezzmoDB {
         else {
             ps.setInt(index, value.intValue());
         }
+    }
+
+    public static String getColumns(DatabaseColumn[] enumValues){
+        String columns = "";
+        boolean first = true;
+        for (DatabaseColumn tmp : enumValues){
+            columns += (first ? "" : ", ") + tmp.getColumnName() + " AS " + tmp.name();
+            first = false;
+        }
+        return columns;
+
     }
 
     public class PlayListRowMapper implements RowMapper
@@ -246,4 +271,28 @@ public class MezzmoPlaylistDAOImpl extends MezzmoDB {
         Object[] params = {playlistId};
         return getInstance().getJDBCTemplate().update(CLEANUP_PLAYLIST_SQL, params);
     }
+
+    public MGOPlaylistTO findPlaylistByName(String name){
+        Object[] params = {name };
+        MGOPlaylistTO playlistTO = (MGOPlaylistTO) getInstance().getJDBCTemplate().queryForObject(FIND_PLAYLIST_BY_NAME, new MezzmoPlaylistRowMappers.PlaylistRowMapper(), params);
+        return playlistTO;
+    }
+
+    public List <MGOPlaylistTO> findChildren(Integer id){
+        Object[] params = {id };
+        List <MGOPlaylistTO> list = getInstance().getJDBCTemplate().query(FIND_PLAYLIST_CHILDREN, new MezzmoPlaylistRowMappers.PlaylistRowMapper(), params);
+        return list;
+    }
+
+    public int deletePlaylist(Integer playlistId) {
+        Object[] params = {playlistId};
+        return getInstance().getJDBCTemplate().update(DELETE_PLAYLIST, params);
+    }
+
+    public int deletePlaylistToFile(Integer playlistId) {
+        Object[] params = {playlistId};
+        return getInstance().getJDBCTemplate().update(DELETE_PLAYLIST_FILE, params);
+    }
+
+
 }

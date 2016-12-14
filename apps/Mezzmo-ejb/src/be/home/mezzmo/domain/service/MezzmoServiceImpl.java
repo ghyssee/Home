@@ -107,9 +107,9 @@ public class MezzmoServiceImpl {
         return bo.updateRanking(fileID, ranking);
     }
 
-    public int cleanUpPlaylistSQL (Integer playlistId) {
+    public MGOPlaylistTO cleanUpPlaylistWithChildren (String playlistName) {
         PlaylistBO bo = new PlaylistBO();
-        return bo.cleanUpPlaylist(playlistId);
+        return bo.cleanUpPlaylistWithChildren(playlistName);
     }
 
     public List<String> validateAndInsertCondition(PlaylistSetup.Condition condition, Integer playlistID){

@@ -60,9 +60,12 @@ public class MezzmoPlaylists extends BatchJobV2{
     }
 
     public void makePlaylists(PlaylistSetup config) throws IOException {
+
+        getMezzmoService().cleanUpPlaylistWithChildren("01 Eric");
+        /*
         for (PlaylistSetup.PlaylistRecord rec : config.records){
             validateAndInsertPlaylist(rec);
-        }
+        }*/
     }
 
     public MGOPlaylistTO findParent(String parent){

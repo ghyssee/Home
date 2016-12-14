@@ -4,6 +4,7 @@ import be.home.mezzmo.domain.dao.jdbc.MezzmoPlaylistDAOImpl;
 import be.home.mezzmo.domain.model.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -154,10 +155,41 @@ public class PlaylistBO {
 
     }
 
-    public int cleanUpPlaylist (Integer playlistId) {
-        return getMezzmoPlaylistDAO().cleanUpPlaylistSQL(playlistId);
+    public MGOPlaylistTO cleanUpPlaylistWithChildren (String playlistName) {
+        MGOPlaylistTO mainPlaylist = null;
+        try {
+            mainPlaylist = getMezzmoPlaylistDAO().findPlaylistByName(playlistName);
+            findChildren(mainPlaylist);
+            getMezzmoPlaylistDAO().deletePlaylist(mainPlaylist.getID());
+        }
+        catch (EmptyResultDataAccessException ex){
+            // main playlist not found, nothing to do
+        }
+
+        return mainPlaylist;
+
 
     }
+
+    public void findChildren (MGOPlaylistTO playlist) {
+        List<MGOPlaylistTO> list = getMezzmoPlaylistDAO().findChildren(playlist.getID());
+        if (list.size() == 0){
+            log.info("Cleanup Playlist " + playlist.getName() + "(ID: " + playlist.getID() + ")");
+            int nr = getMezzmoPlaylistDAO().deletePlaylist(playlist.getID());
+            // the records of MGOPlaylistSQL are automatically deleted
+            log.info("Number of records deleted: " + nr);
+            if (playlist.getType() == PlaylistType.EXTERNAL.getValue()){
+                nr = getMezzmoPlaylistDAO().deletePlaylistToFile(playlist.getID());
+                log.info("Number of Playlist_To_File Records deleted: " + nr);
+            }
+        }
+        else {
+            for (MGOPlaylistTO item : list) {
+                findChildren(item);
+            }
+        }
+    }
+
 
 
     public MezzmoPlaylistDAOImpl getMezzmoPlaylistDAO(){
