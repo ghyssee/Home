@@ -6,5 +6,5 @@ package be.home.common.database;
 public interface DatabaseColumn {
     String name();
     String getColumnName();
-    String getType();
+    FieldType getFieldType();
 }

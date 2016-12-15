@@ -7,8 +7,7 @@ import be.home.common.main.BatchJobV2;
 import be.home.common.utils.JSONUtils;
 import be.home.mezzmo.domain.bo.PlaylistBO;
 import be.home.mezzmo.domain.dao.SQLBuilder;
-import be.home.mezzmo.domain.dao.jdbc.PlayListEnum;
-import be.home.mezzmo.domain.dao.jdbc.PlaylistSQLColumns;
+import be.home.mezzmo.domain.dao.jdbc.PlayListColumns;
 import be.home.mezzmo.domain.dao.jdbc.TablesEnum;
 import be.home.mezzmo.domain.model.*;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
@@ -73,8 +72,8 @@ public class MezzmoPlaylists extends BatchJobV2{
         String SQL = SQLBuilder.getInstance().select()
                 .addTable(TablesEnum.MGOPlaylist)
                 .addColumns(TablesEnum.MGOPlaylist)
-                .addRelation(TablesEnum.MGOPlaylist, "PL2", PlayListEnum.ID, TablesEnum.MGOPlaylist, PlayListEnum.PARENTID)
-                .addCondition(TablesEnum.MGOPlaylist.alias(), PlayListEnum.NAME, SQLBuilder.Comparator.LIKE)
+                .addRelation(TablesEnum.MGOPlaylist, "PL2", PlayListColumns.ID, TablesEnum.MGOPlaylist, PlayListColumns.PARENTID)
+                .addCondition(TablesEnum.MGOPlaylist.alias(), PlayListColumns.NAME, SQLBuilder.Comparator.LIKE)
                 .render();
 
         System.out.println(SQL);

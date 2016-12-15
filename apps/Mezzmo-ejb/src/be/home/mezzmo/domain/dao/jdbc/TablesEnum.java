@@ -10,13 +10,17 @@ import java.util.Map;
  * Created by Gebruiker on 14/12/2016.
  */
 public enum TablesEnum {
-    MGOPlaylist ("PLAYLIST", PlayListEnum.values()),
+    MGOPlaylist ("PLAYLIST", PlayListColumns.values()),
     MGOPlaylistSQL ("PLAYLISTSQL", PlaylistSQLColumns.values()),
-    MGOPlaylist_To_File ("PLAYLISTFILE", PlayListEnum.values()),
-    MGOFile ("FILE", PlayListEnum.values()),
-    MGOFileAlbum ("FILEALBUM", PlayListEnum.values()),
-    MGOFileArtist ("FILEARTIST", PlayListEnum.values());
-
+    MGOPlaylist_To_File ("PLAYLISTFILE", PlayListColumns.values()),
+    MGOFile ("FILE", MGOFileColumns.values()),
+    MGOFileAlbum ("FILEALBUM", PlayListColumns.values()),
+    MGOFileAlbumRelationship ("FILEALBUMREL", PlayListColumns.values()),
+    MGOFileArtist ("FILEARTIST", MGOFileArtistColumns.values()),
+    MGOFileArtistRelationship ("FILEARTISTREL", MGOFileArtistRelationshipColumns.values()),
+    MGOAlbumArtist ("ALBUMARTIST", MGOFileArtistColumns.values()),
+    MGOAlbumArtistRelationship ("ALBUMARTISTREL", MGOFileArtistRelationshipColumns.values()),
+    MGOFileExtension ("FILEEXTENSION", MGOFileExtensionColumns.values());
 
     private String alias;
     private String tableAlias;

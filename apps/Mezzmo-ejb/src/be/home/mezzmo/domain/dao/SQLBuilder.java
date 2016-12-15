@@ -1,7 +1,9 @@
 package be.home.mezzmo.domain.dao;
 
 import be.home.common.database.DatabaseColumn;
+import be.home.common.database.FieldType;
 import be.home.mezzmo.domain.dao.jdbc.TablesEnum;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +55,6 @@ public class SQLBuilder {
     }
 
     private class Relation {
-        //TablesEnum table;
         TablesEnum table1;
         DatabaseColumn column1;
         String alias1;
@@ -104,7 +105,24 @@ public class SQLBuilder {
     public SQLBuilder addColumns (TablesEnum table){
 
         for (DatabaseColumn column : table.columns()){
-            dbColumns.add(new Column(column, table.alias()));
+            if (column.getFieldType() == FieldType.NORMAL || column.getFieldType() == FieldType.PRIMARYKEY
+                    || column.getFieldType() == FieldType.SEQUENCE) {
+                dbColumns.add(new Column(column, table.alias()));
+            }
+        }
+        return this;
+    }
+
+
+    public SQLBuilder addColumns (TablesEnum table, SQLTypes sqlType){
+
+        for (DatabaseColumn column : table.columns()){
+            if (column.getFieldType() == FieldType.NORMAL || column.getFieldType() == FieldType.PRIMARYKEY
+                    || column.getFieldType() == FieldType.SEQUENCE) {
+                if (column.getFieldType() != FieldType.SEQUENCE || sqlType != SQLTypes.INSERT) {
+                    dbColumns.add(new Column(column, table.alias()));
+                }
+            }
         }
         return this;
     }
@@ -146,7 +164,6 @@ public class SQLBuilder {
     }
 
     private String renderSelect(){
-        String sql = "";
         StringBuilder sb = new StringBuilder();
         sb
                 .append("SELECT ")
@@ -159,12 +176,25 @@ public class SQLBuilder {
     }
 
     private String renderDelete(){
-        String sql = "";
         StringBuilder sb = new StringBuilder();
         sb
                 .append("DELETE FROM ")
                 .append(this.mainTable)
                 .append(conditions());
+        return sb.toString();
+    }
+
+
+    private String renderInsert(){
+        StringBuilder sb = new StringBuilder();
+        sb
+                .append("INSERT INTO ")
+                .append(this.mainTable)
+                .append(" (")
+                .append(insertFields())
+                .append(") VALUES (")
+                .append(values())
+                .append(")");
         return sb.toString();
     }
 
@@ -174,6 +204,8 @@ public class SQLBuilder {
             case SELECT:
                 sql = renderSelect();
                 break;
+            case INSERT:
+                sql = renderInsert();
             case UPDATE:
                 break;
             case DELETE:
@@ -200,6 +232,25 @@ public class SQLBuilder {
                     .append(columnAlias);
             first = false;
         }
+        return sb.toString();
+    }
+
+    public String insertFields(){
+        boolean first = true;
+        StringBuilder sb = new StringBuilder();
+        for (Column column : this.dbColumns){
+            sb
+                    .append(first ? "" : ", ")
+                    .append(column.column.name());
+            first = false;
+        }
+        return sb.toString();
+    }
+
+    public String values(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("?");
+        sb.append(StringUtils.repeat(",?", this.dbColumns.size()-1));
         return sb.toString();
     }
 

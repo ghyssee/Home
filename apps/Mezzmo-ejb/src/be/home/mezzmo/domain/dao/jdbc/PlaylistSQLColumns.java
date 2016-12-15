@@ -1,36 +1,37 @@
 package be.home.mezzmo.domain.dao.jdbc;
 
 import be.home.common.database.DatabaseColumn;
+import be.home.common.database.FieldType;
 
 /**
  * Created by ghyssee on 14/12/2016.
  */
 public enum PlaylistSQLColumns implements DatabaseColumn  {
-    ID("ID", "PRIMARYKEY"),
-    PlaylistID("PLAYLISTID", "FIELD"),
-    ColumnNum("COLUMNNUM", "FIELD"),
-    ColumnType("COLUMNTYPE", "FIELD"),
-    Operand("OPERAND", "FIELD"),
-    ValueOneText("VALUEONETEXT", "FIELD"),
-    ValueTwoText ("VALUETWOTEXT", "FIELD"),
-    ValueOneInt("VALUEONEINT", "FIELD"),
-    ValueTwoInt ("VALUETWOINT", "FIELD"),
-    GroupNr ("GROUPNR", "FIELD");
+    ID("ID", FieldType.SEQUENCE),
+    PlaylistID("PLAYLISTID", FieldType.NORMAL),
+    ColumnNum("COLUMNNUM", FieldType.NORMAL),
+    ColumnType("COLUMNTYPE", FieldType.NORMAL),
+    Operand("OPERAND", FieldType.NORMAL),
+    ValueOneText("VALUEONETEXT", FieldType.NORMAL),
+    ValueTwoText ("VALUETWOTEXT", FieldType.NORMAL),
+    ValueOneInt("VALUEONEINT", FieldType.NORMAL),
+    ValueTwoInt ("VALUETWOINT", FieldType.NORMAL),
+    GroupNr ("GROUPNR", FieldType.NORMAL);
 
     public String columnName;
-    public String type;
+    public FieldType fieldType;
 
-    PlaylistSQLColumns(String s, String t) {
+    PlaylistSQLColumns(String s, FieldType t) {
 
         columnName = s;
-        type = t;
+        fieldType = t;
     }
 
     public String getColumnName() {
         return columnName;
     }
-    public String getType() {
-        return type;
+    public FieldType getFieldType() {
+        return fieldType;
     }
 
 }
