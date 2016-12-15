@@ -1,4 +1,4 @@
-package be.home.mezzmo.domain.dao.jdbc;
+package be.home.common.database;
 
 /**
  * Created by ghyssee on 14/12/2016.
@@ -6,4 +6,5 @@ package be.home.mezzmo.domain.dao.jdbc;
 public interface DatabaseColumn {
     String name();
     String getColumnName();
+    String getType();
 }

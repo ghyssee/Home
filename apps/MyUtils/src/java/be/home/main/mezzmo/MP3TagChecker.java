@@ -322,7 +322,7 @@ public class MP3TagChecker extends BatchJobV2{
             //comp.getFileTO().setFile(newFile);
             log.warn("Filename does not match: " + "filenameFromDB: " + filenameFromDB + " / Formatted: " + filename);
             /* rename file to new file
-               update MGOFile.file with the new file
+               update Tables.file with the new file
             */
             addItem(comp.getFileTO().getId(),
                     comp.getFileTO().getFile(),

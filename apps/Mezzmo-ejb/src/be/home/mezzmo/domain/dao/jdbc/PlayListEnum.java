@@ -1,63 +1,57 @@
 package be.home.mezzmo.domain.dao.jdbc;
 
+import be.home.common.database.DatabaseColumn;
+
 import java.util.*;
 
 /**
  * Created by ghyssee on 14/12/2016.
  */
 public enum PlayListEnum implements DatabaseColumn {
-    ID("ID"),
-    NAME("Name"),
-    TYPE("Type"),
-    DESCRIPTION("Description"),
-    PARENTID("ParentID"),
-    AUTHOR("Author"),
-    ICON ("Icon"),
-    FILE ("File"),
-    TRAVERSEFOLDER ("TraverseFolder"),
-    FOLDERPATH ("FolderPath"),
-    FILTER ("Filter"),
-    DYNAMICTREETOKEN ("DynamicTreeToken"),
-    RUNTIME ("Runtime"),
-    STREAMNUM ("StreamNum"),
-    ORDERBYCOLUMN ("OrderByColumn"),
-    ORDERBYDIRECTION ("OrderByDirection"),
-    LIMITBY ("LimitBy"),
-    COMBINEAND ("CombineAnd"),
-    LIMITTYPE ("LimitType"),
-    PLAYLISTORDER ("PlaylistOrder"),
-    MEDIATYPE ("MediaType"),
-    THUMBNAILID ("ThumbnailID"),
-    THUMBNAILAUTHOR ("ThumbnailAuthor"),
-    CONTENTRATINGID ("ContentRatingID"),
-    BACKDROPARTWORKID ("BackdropArtworkID"),
-    DISPLAYTITLEFORMAT ("DisplayTitleFormat");
+    ID("ID", "PRIMARYKEY"),
+    NAME("Name", "FIELD"),
+    TYPE("Type", "FIELD"),
+    DESCRIPTION("Description", "FIELD"),
+    PARENTID("ParentID", "FIELD"),
+    AUTHOR("Author", "FIELD"),
+    ICON ("Icon", "FIELD"),
+    FILE ("File", "FIELD"),
+    TRAVERSEFOLDER ("TraverseFolder", "FIELD"),
+    FOLDERPATH ("FolderPath", "FIELD"),
+    FILTER ("Filter", "FIELD"),
+    DYNAMICTREETOKEN ("DynamicTreeToken", "FIELD"),
+    RUNTIME ("Runtime", "FIELD"),
+    STREAMNUM ("StreamNum", "FIELD"),
+    ORDERBYCOLUMN ("OrderByColumn", "FIELD"),
+    ORDERBYDIRECTION ("OrderByDirection", "FIELD"),
+    LIMITBY ("LimitBy", "FIELD"),
+    COMBINEAND ("CombineAnd", "FIELD"),
+    LIMITTYPE ("LimitType", "FIELD"),
+    PLAYLISTORDER ("PlaylistOrder", "FIELD"),
+    MEDIATYPE ("MediaType", "FIELD"),
+    THUMBNAILID ("ThumbnailID", "FIELD"),
+    THUMBNAILAUTHOR ("ThumbnailAuthor", "FIELD"),
+    CONTENTRATINGID ("ContentRatingID", "FIELD"),
+    BACKDROPARTWORKID ("BackdropArtworkID", "FIELD"),
+    DISPLAYTITLEFORMAT ("DisplayTitleFormat", "FIELD");
 
     public String columnName;
+    public String type;
 
-    PlayListEnum(String s) {
+    PlayListEnum(String s, String t) {
+
         columnName = s;
+        type = t;
     }
 
     public String getColumnName() {
         return columnName;
     }
-
-    private static final List<String> lookup = new ArrayList();
-
-    // Populate the lookup table on loading time
-    static {
-        for (PlayListEnum s : EnumSet.allOf(PlayListEnum.class))
-            lookup.add(s.name() + " AS " + s.getColumnName());
+    public String getType() {
+        return type;
     }
-
-    // This method can be used for reverse lookup purpose
-    public String getColumns() {
-        String columns = "";
-        for ( String tmp : lookup){
-            columns += tmp + ",";
-        }
-        return columns;
+    public String getColumnAndAlias() {
+        return this + " AS " + columnName;
     }
 
 }

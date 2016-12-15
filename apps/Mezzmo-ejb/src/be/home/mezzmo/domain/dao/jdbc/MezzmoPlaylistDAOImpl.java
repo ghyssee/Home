@@ -1,16 +1,14 @@
 package be.home.mezzmo.domain.dao.jdbc;
 
 import be.home.common.dao.jdbc.MezzmoDB;
-import be.home.common.dao.jdbc.SQLiteUtils;
-import be.home.common.exceptions.MultipleOccurencesException;
+import be.home.common.database.DatabaseColumn;
+import be.home.mezzmo.domain.dao.SQLBuilder;
 import be.home.mezzmo.domain.model.*;
 import org.springframework.jdbc.core.RowMapper;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,47 +17,53 @@ import java.util.List;
 public class MezzmoPlaylistDAOImpl extends MezzmoDB {
 
 
-    private static final String[] COLUMNS = {"Name", "Type", "Description", "ParentID",
-            "Author", "Icon", "File", "TraverseFolder",
-            "FolderPath", "Filter", "DynamicTreeToken", "RunTime",
-            "StreamNum", "OrderByColumn", "OrderByDirection", "LimitBy",
-            "CombineAnd", "LimitType", "PlaylistOrder", "MediaType",
-            "ThumbnailID", "ThumbnailAuthor", "ContentRatingID", "BackdropArtworkID",
-            "DisplayTitleFormat"};
-
     private static final String[] COLUMNS_SQL = {"PlaylistID",
             "ColumnNum", "ColumnType", "Operand", "ValueOneText",
             "ValueTwoText","ValueOneInt","ValueTwoInt","GroupNr"};
 
-    private static final String FIND_PLAYLIST = "SELECT PL.ID AS ID, PL.Name AS NAME, PL.ParentID AS PARENTID, PL2.Name AS PARENTNAME " +
-                                                "FROM MGOPlaylist AS PL " +
-                                                "INNER JOIN MGOPlaylist AS PL2 ON (PL2.ID = PL.ParentID) " +
-                                                "WHERE PL.Name LIKE ? " +
-                                                "AND PL.Type = ?";
+    private static final String FIND_PLAYLIST = SQLBuilder.getInstance()
+            .select()
+            .addTable(TablesEnum.MGOPlaylist)
+            .addColumns(TablesEnum.MGOPlaylist)
+            .addColumn("PL2",PlayListEnum.NAME, "PARENTNAME")
+            .addRelation(TablesEnum.MGOPlaylist, "PL2", PlayListEnum.ID, TablesEnum.MGOPlaylist, PlayListEnum.PARENTID)
+            .addCondition(TablesEnum.MGOPlaylist.alias(), PlayListEnum.NAME, SQLBuilder.Comparator.LIKE)
+            .addCondition(TablesEnum.MGOPlaylist.alias(), PlayListEnum.TYPE, SQLBuilder.Comparator.EQUALS)
+            .render();
 
-    private static final String FIND_PLAYLIST_BY_NAME = "SELECT " + getColumns(PlayListEnum.values()) +
-            " FROM MGOPlaylist AS PL" +
-            " WHERE PL." + PlayListEnum.NAME + "= ?";
+    private static final String FIND_PLAYLIST_BY_NAME = SQLBuilder.getInstance()
+            .select()
+            .addTable(TablesEnum.MGOPlaylist)
+            .addColumns(TablesEnum.MGOPlaylist)
+            .addCondition(TablesEnum.MGOPlaylist.alias(), PlayListEnum.NAME, SQLBuilder.Comparator.LIKE)
+            .render();
 
-    private static final String FIND_PLAYLIST_CHILDREN = "SELECT " + getColumns(PlayListEnum.values()) +
-            " FROM MGOPlaylist AS PL" +
-            " WHERE PL." + PlayListEnum.PARENTID + " = ?";
+    private static final String FIND_PLAYLIST_CHILDREN2 = "SELECT " + getColumnsWithAlias(PlayListEnum.values(), TablesEnum.MGOPlaylist.alias()) +
+            " FROM " + TablesEnum.MGOPlaylist.tableAlias() +
+            " WHERE " + TablesEnum.MGOPlaylist.alias() + "." + PlayListEnum.PARENTID + " = ?";
 
-    private static final String INSERT_PLAYLIST = "INSERT INTO " + Tables.MGOPlaylist + " (" + getColumns(COLUMNS) + ") " +
+    private static final String FIND_PLAYLIST_CHILDREN = SQLBuilder.getInstance()
+            .select()
+            .addTable(TablesEnum.MGOPlaylist)
+            .addColumns(TablesEnum.MGOPlaylist)
+            .addCondition(TablesEnum.MGOPlaylist.alias(), PlayListEnum.PARENTID, SQLBuilder.Comparator.EQUALS)
+            .render();
+
+    private static final String INSERT_PLAYLIST = "INSERT INTO " + TablesEnum.MGOPlaylist + " (" + getColumns(PlayListEnum.values()) + ") " +
                                                   "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
 
-    private static final String INSERT_PLAYLIST_SQL = "INSERT INTO " + Tables.MGOPlaylistSQL + " (" +
+    private static final String INSERT_PLAYLIST_SQL = "INSERT INTO " + TablesEnum.MGOPlaylistSQL + " (" +
             getColumns(COLUMNS_SQL) + ") " +
             "VALUES (?,?,?,?,?,?,?,?,?)";
 
-    private static final String CLEANUP_PLAYLIST_SQL = "DELETE FROM " + Tables.MGOPlaylistSQL +
-            " WHERE PlaylistID = ?";
+    private static final String DELETE_PLAYLIST = SQLBuilder.getInstance()
+            .delete()
+            .addTable(TablesEnum.MGOPlaylist)
+            .addCondition(PlayListEnum.ID, SQLBuilder.Comparator.EQUALS, null)
+            .render();
 
-    private static final String DELETE_PLAYLIST = "DELETE FROM " + Tables.MGOPlaylist +
-            " WHERE " + PlayListEnum.ID + " = ?";
-
-    private static final String DELETE_PLAYLIST_FILE = "DELETE FROM " + Tables.MGOPlaylist_To_File +
+    private static final String DELETE_PLAYLIST_FILE = "DELETE FROM " + TablesEnum.MGOPlaylist_To_File +
             " WHERE PlaylistID = ?";
 
     private Integer getInteger(ResultSet rs, String id) throws SQLException {
@@ -75,12 +79,25 @@ public class MezzmoPlaylistDAOImpl extends MezzmoDB {
         }
     }
 
-    public static String getColumns(DatabaseColumn[] enumValues){
+    public static String getColumnsWithAlias(DatabaseColumn[] enumValues, String alias){
         String columns = "";
         boolean first = true;
         for (DatabaseColumn tmp : enumValues){
-            columns += (first ? "" : ", ") + tmp.getColumnName() + " AS " + tmp.name();
+            columns += (first ? "" : ", ") + alias + "." + tmp.getColumnName() + " AS " + tmp.name();
             first = false;
+        }
+        return columns;
+
+    }
+
+    public static String getColumns(DatabaseColumn[] enumValues){
+        String columns = "";
+        boolean first = true;
+        for (DatabaseColumn tmp : enumValues) {
+            if (!tmp.getType().equals("PRIMARYKEY")) {
+                columns += (first ? "" : ", ") + tmp.getColumnName();
+            first = false;
+            }
         }
         return columns;
 
@@ -90,8 +107,8 @@ public class MezzmoPlaylistDAOImpl extends MezzmoDB {
     {
         public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
             MGOPlaylistTO playlistTO = new MGOPlaylistTO();
-            playlistTO.setID(getInteger(rs, "ID"));
-            playlistTO.setName(rs.getString("NAME"));
+            playlistTO.setID(getInteger(rs, PlayListEnum.ID.columnName));
+            playlistTO.setName(rs.getString(PlayListEnum.NAME.columnName));
             playlistTO.setParentID(getInteger(rs, "PARENTID"));
             playlistTO.setParentName(rs.getString("PARENTNAME"));
             return playlistTO;
@@ -161,68 +178,8 @@ public class MezzmoPlaylistDAOImpl extends MezzmoDB {
         return getInstance().getJDBCTemplate().update(INSERT_PLAYLIST, params);
     }
 
-    public int insertPlaylistOld(MGOPlaylistTO playlist) {
-        PreparedStatement stmt = null;
-        List<MGOFileTO> list = new ArrayList<MGOFileTO>();
-        Connection c = null;
-        int rec = 0;
-        try {
-            c = getInstance().getConnection();
-
-            //stmt = c.createStatement();
-            stmt = c.prepareStatement(INSERT_PLAYLIST);
-            int idx = 1;
-
-            stmt.setString(idx++, playlist.getName());
-            setInteger(stmt, idx++, playlist.getType());
-            stmt.setString(idx++, playlist.getDescription());
-            setInteger(stmt, idx++, playlist.getParentID());
-            setInteger(stmt, idx++, playlist.getAuthor());
-            setInteger(stmt, idx++, playlist.getIcon());
-            stmt.setString(idx++, playlist.getFile());
-            stmt.setString(idx++, playlist.getTraverseFolder());
-            stmt.setString(idx++, playlist.getFolderPath());
-            stmt.setString(idx++, playlist.getFilter());
-            stmt.setString(idx++, playlist.getDynamicTreeToken());
-            stmt.setString(idx++, playlist.getRunTime());
-            stmt.setString(idx++, playlist.getStreamNum());
-            setInteger(stmt, idx++, playlist.getOrderByColumn());
-            setInteger(stmt, idx++, playlist.getOrderByDirection());
-            setInteger(stmt, idx++, playlist.getLimitBy());
-            setInteger(stmt, idx++, playlist.getCombineAnd());
-            setInteger(stmt, idx++, playlist.getLimitType());
-            setInteger(stmt, idx++, playlist.getPlaylistOrder());
-            setInteger(stmt, idx++, playlist.getMediaType());
-            setInteger(stmt, idx++, playlist.getThumbnailID());
-            setInteger(stmt, idx++, playlist.getThumbnailAuthor());
-            setInteger(stmt, idx++, playlist.getContentRatingID());
-            setInteger(stmt, idx++, playlist.getBackdropArtworkID());
-            stmt.setString(idx++, playlist.getDisplayTitleFormat());
-            rec = stmt.executeUpdate();
-            c.commit();
-        } catch (SQLException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            if (c != null) {
-                try {
-                    System.err.println("Transaction is being rolled back");
-                    c.rollback();
-                } catch (SQLException excep) {
-                    System.err.println(excep.getClass().getName() + ": " + excep.getMessage());
-                }
-            }
-        } finally {
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException excep) {
-                    System.err.println(excep.getClass().getName() + ": " + excep.getMessage());
-                }
-            }
-            return rec;
-        }
-    }
-
-    public int insertPlaylistSQL(MGOPlaylistSQLTO playlistSQL) {
+    /*
+    public int insertPlaylistSQLOld(MGOPlaylistSQLTO playlistSQL) {
         PreparedStatement stmt = null;
         Connection c = null;
         int rec = 0;
@@ -265,10 +222,23 @@ public class MezzmoPlaylistDAOImpl extends MezzmoDB {
             return rec;
         }
     }
+    */
 
-    public int cleanUpPlaylistSQL(Integer playlistId) {
-        Object[] params = {playlistId};
-        return getInstance().getJDBCTemplate().update(CLEANUP_PLAYLIST_SQL, params);
+    public int insertPlaylistSQL(MGOPlaylistSQLTO playlistSQL) {
+
+            Object[] params = {
+                    playlistSQL.getPlaylistId(),
+                    playlistSQL.getColumnNum(),
+                    playlistSQL.getColumnType(),
+                    playlistSQL.getOperand(),
+                    playlistSQL.getValueOneText(),
+                    playlistSQL.getValueTwoText(),
+                    playlistSQL.getValueOneInt(),
+                    playlistSQL.getValueTwoInt(),
+                    playlistSQL.getGroupNr()
+
+            };
+            return getInstance().getJDBCTemplate().update(INSERT_PLAYLIST_SQL, params);
     }
 
     public MGOPlaylistTO findPlaylistByName(String name){

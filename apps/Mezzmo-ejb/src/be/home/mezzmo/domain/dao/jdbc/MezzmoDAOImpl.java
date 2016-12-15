@@ -115,7 +115,7 @@ public class MezzmoDAOImpl extends MezzmoDAOQueries {
     public List<MGOFileAlbumCompositeTO> getCustomPlayListSongs(List <MGOFileAlbumCompositeTO> albums, int limit)
     {
         String query = LIST_CUSTOM;
-        String orClause = "(MGOFileAlbum.data like ? AND MGOFile.ranking > ? AND MGOAlbumArtist.data like ? AND MGOFile.playcount < 2) ";
+        String orClause = "(MGOFileAlbum.data like ? AND Tables.ranking > ? AND MGOAlbumArtist.data like ? AND Tables.playcount < 2) ";
         query = QueryBuilder.buildOrCondition(query, orClause, albums);
 
         List params = new ArrayList();
