@@ -6,7 +6,7 @@ import be.home.common.database.FieldType;
 /**
  * Created by ghyssee on 14/12/2016.
  */
-public enum PlayListColumns implements DatabaseColumn {
+public enum PlaylistColumns implements DatabaseColumn {
     ID("ID", FieldType.SEQUENCE),
     NAME("Name", FieldType.NORMAL),
     TYPE("Type", FieldType.NORMAL),
@@ -38,7 +38,7 @@ public enum PlayListColumns implements DatabaseColumn {
     public String columnName;
     public FieldType fieldType;
 
-    PlayListColumns(String s, FieldType t) {
+    PlaylistColumns(String s, FieldType t) {
 
         columnName = s;
         fieldType = t;

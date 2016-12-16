@@ -14,32 +14,32 @@ public class MezzmoPlaylistRowMappers {
         public static class PlaylistRowMapper implements RowMapper {
             public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
                 MGOPlaylistTO playlistTO = new MGOPlaylistTO();
-                playlistTO.setID(getInt(rs, PlayListColumns.ID));
-                playlistTO.setName(getString(rs, PlayListColumns.NAME));
-                playlistTO.setType(getInt(rs, PlayListColumns.TYPE));
-                playlistTO.setDescription(getString(rs, PlayListColumns.DESCRIPTION));
-                playlistTO.setParentID(getInt(rs, PlayListColumns.PARENTID));
-                playlistTO.setAuthor(getInt(rs, PlayListColumns.AUTHOR));
-                playlistTO.setIcon(getInt(rs, PlayListColumns.ICON));
-                playlistTO.setFile(getString(rs, PlayListColumns.FILE));
-                playlistTO.setTraverseFolder(getString(rs, PlayListColumns.TRAVERSEFOLDER));
-                playlistTO.setFolderPath(getString(rs, PlayListColumns.FOLDERPATH));
-                playlistTO.setFilter(getString(rs, PlayListColumns.FILTER));
-                playlistTO.setDynamicTreeToken(getString(rs, PlayListColumns.DYNAMICTREETOKEN));
-                playlistTO.setRunTime(getString(rs, PlayListColumns.RUNTIME));
-                playlistTO.setStreamNum(getString(rs, PlayListColumns.STREAMNUM));
-                playlistTO.setOrderByColumn(getInt(rs, PlayListColumns.ORDERBYCOLUMN));
-                playlistTO.setOrderByDirection(getInt(rs, PlayListColumns.ORDERBYDIRECTION));
-                playlistTO.setLimitBy(getInt(rs, PlayListColumns.LIMITBY));
-                playlistTO.setCombineAnd(getInt(rs, PlayListColumns.COMBINEAND));
-                playlistTO.setLimitType(getInt(rs, PlayListColumns.LIMITTYPE));
-                playlistTO.setPlaylistOrder(getInt(rs, PlayListColumns.PLAYLISTORDER));
-                playlistTO.setMediaType(getInt(rs, PlayListColumns.MEDIATYPE));
-                playlistTO.setThumbnailID(getInt(rs, PlayListColumns.THUMBNAILID));
-                playlistTO.setThumbnailAuthor(getInt(rs, PlayListColumns.THUMBNAILAUTHOR));
-                playlistTO.setContentRatingID(getInt(rs, PlayListColumns.CONTENTRATINGID));
-                playlistTO.setBackdropArtworkID(getInt(rs, PlayListColumns.BACKDROPARTWORKID));
-                playlistTO.setDisplayTitleFormat(getString(rs, PlayListColumns.DISPLAYTITLEFORMAT));
+                playlistTO.setID(getInt(rs, PlaylistColumns.ID));
+                playlistTO.setName(getString(rs, PlaylistColumns.NAME));
+                playlistTO.setType(getInt(rs, PlaylistColumns.TYPE));
+                playlistTO.setDescription(getString(rs, PlaylistColumns.DESCRIPTION));
+                playlistTO.setParentID(getInt(rs, PlaylistColumns.PARENTID));
+                playlistTO.setAuthor(getInt(rs, PlaylistColumns.AUTHOR));
+                playlistTO.setIcon(getInt(rs, PlaylistColumns.ICON));
+                playlistTO.setFile(getString(rs, PlaylistColumns.FILE));
+                playlistTO.setTraverseFolder(getString(rs, PlaylistColumns.TRAVERSEFOLDER));
+                playlistTO.setFolderPath(getString(rs, PlaylistColumns.FOLDERPATH));
+                playlistTO.setFilter(getString(rs, PlaylistColumns.FILTER));
+                playlistTO.setDynamicTreeToken(getString(rs, PlaylistColumns.DYNAMICTREETOKEN));
+                playlistTO.setRunTime(getString(rs, PlaylistColumns.RUNTIME));
+                playlistTO.setStreamNum(getString(rs, PlaylistColumns.STREAMNUM));
+                playlistTO.setOrderByColumn(getInt(rs, PlaylistColumns.ORDERBYCOLUMN));
+                playlistTO.setOrderByDirection(getInt(rs, PlaylistColumns.ORDERBYDIRECTION));
+                playlistTO.setLimitBy(getInt(rs, PlaylistColumns.LIMITBY));
+                playlistTO.setCombineAnd(getInt(rs, PlaylistColumns.COMBINEAND));
+                playlistTO.setLimitType(getInt(rs, PlaylistColumns.LIMITTYPE));
+                playlistTO.setPlaylistOrder(getInt(rs, PlaylistColumns.PLAYLISTORDER));
+                playlistTO.setMediaType(getInt(rs, PlaylistColumns.MEDIATYPE));
+                playlistTO.setThumbnailID(getInt(rs, PlaylistColumns.THUMBNAILID));
+                playlistTO.setThumbnailAuthor(getInt(rs, PlaylistColumns.THUMBNAILAUTHOR));
+                playlistTO.setContentRatingID(getInt(rs, PlaylistColumns.CONTENTRATINGID));
+                playlistTO.setBackdropArtworkID(getInt(rs, PlaylistColumns.BACKDROPARTWORKID));
+                playlistTO.setDisplayTitleFormat(getString(rs, PlaylistColumns.DISPLAYTITLEFORMAT));
                 return playlistTO;
 
             }

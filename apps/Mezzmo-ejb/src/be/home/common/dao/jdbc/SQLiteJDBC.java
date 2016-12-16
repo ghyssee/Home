@@ -5,6 +5,7 @@ package be.home.common.dao.jdbc;
  */
 import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
+import be.home.common.database.DatabaseColumn;
 import be.home.common.model.DataBaseConfiguration;
 import be.home.common.utils.JSONUtils;
 import be.home.common.utils.WinUtils;
@@ -115,19 +116,28 @@ public class SQLiteJDBC
         }
     }
 
-    public static String getColumns(String[] columns){
-        String col = "";
-        for (int i=0; i < columns.length; i++){
-            if (i > 0){
-                col += ", ";
-            }
-            col += columns[i];
-        }
-        return col;
+    public static Integer getInteger(ResultSet rs, DatabaseColumn column) throws SQLException {
+        return new Integer(rs.getInt(column.name()));
     }
+
+    public static String getString(ResultSet rs, DatabaseColumn column) throws SQLException {
+        return rs.getString(column.name());
+    }
+
+
+    public static void setInteger(PreparedStatement ps, int index, Integer value) throws SQLException {
+        if (value == null){
+            ps.setNull(index, java.sql.Types.INTEGER);
+        }
+        else {
+            ps.setInt(index, value.intValue());
+        }
+    }
+
     public static void initialize(String workingDir){
         initialize();
     }
+
     public static void initialize(){
         InputStream i = null;
         File file = new File (Setup.getInstance().getFullPath(Constants.Path.LOCAL_CONFIG) + File.separator + "localDatabases.json");

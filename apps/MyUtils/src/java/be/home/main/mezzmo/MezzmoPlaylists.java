@@ -6,9 +6,6 @@ import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.JSONUtils;
 import be.home.mezzmo.domain.bo.PlaylistBO;
-import be.home.mezzmo.domain.dao.SQLBuilder;
-import be.home.mezzmo.domain.dao.jdbc.PlayListColumns;
-import be.home.mezzmo.domain.dao.jdbc.TablesEnum;
 import be.home.mezzmo.domain.model.*;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.model.ConfigTO;
@@ -68,16 +65,6 @@ public class MezzmoPlaylists extends BatchJobV2{
         for (PlaylistSetup.PlaylistRecord rec : config.records){
             validateAndInsertPlaylist(rec);
         }
-
-        String SQL = SQLBuilder.getInstance().select()
-                .addTable(TablesEnum.MGOPlaylist)
-                .addColumns(TablesEnum.MGOPlaylist)
-                .addRelation(TablesEnum.MGOPlaylist, "PL2", PlayListColumns.ID, TablesEnum.MGOPlaylist, PlayListColumns.PARENTID)
-                .addCondition(TablesEnum.MGOPlaylist.alias(), PlayListColumns.NAME, SQLBuilder.Comparator.LIKE)
-                .render();
-
-        System.out.println(SQL);
-
     }
 
     public MGOPlaylistTO findParent(String parent){
@@ -186,19 +173,30 @@ public class MezzmoPlaylists extends BatchJobV2{
                                     }
                                 }
                             } else {
+                                logErrors(errors);
                                 log.error("Playlist not found after it was created: " + playlistRec.name);
                             }
                         } else {
+                            logErrors(errors);
                             log.error("Playlist not created: " + playlistRec.name);
                             for (String msg : errors) {
                                 log.error(msg);
                             }
                         }
                     }
+                    else {
+                        logErrors(errors);
+                    }
                     break;
                 default:
                     log.error("Playlist type not supported: " + playlistRec.type);
             }
+        }
+    }
+
+    private void logErrors(List<String> errors){
+        for (String error : errors){
+            log.error(error);
         }
     }
 

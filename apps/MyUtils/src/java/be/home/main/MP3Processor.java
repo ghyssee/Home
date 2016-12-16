@@ -1,5 +1,6 @@
 package be.home.main;
 
+import be.home.common.mp3.MP3Utils;
 import be.home.mezzmo.domain.model.Compilation;
 import be.home.model.AlbumInfo;
 import be.home.model.ConfigTO;
@@ -83,7 +84,7 @@ public class MP3Processor extends BatchJobV2 {
         MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSONWithCode(Constants.JSON.MP3SETTINGS, MP3Settings.class);
 
         MP3Helper helper = MP3Helper.getInstance();
-        String mp3Dir = Setup.getInstance().getFullPath(Constants.Path.ALBUM) + mp3Settings.album;
+        String mp3Dir = Setup.getInstance().getFullPath(Constants.Path.ALBUM) + File.separator + mp3Settings.album;
         log.info("Album Directory: " + mp3Dir);
 
         album.album = helper.prettifyAlbum(album.album);
@@ -198,15 +199,16 @@ public class MP3Processor extends BatchJobV2 {
     }
 
     private void readMP3File(AlbumInfo.Config album, MP3Settings mp3Settings, AlbumInfo.Track track, String fileName, String prefixFileName) throws InvalidDataException, IOException, UnsupportedTagException, NotSupportedException {
-        Mp3FileExt mp3file = new Mp3FileExt(fileName);
-        ID3v2 id3v2Tag;
+        Mp3File mp3file = new Mp3File(fileName);
+        ID3v2 id3v2Tag = MP3Utils.getId3v2Tag(mp3file);
+        /*
         if (mp3file.hasId3v2Tag()) {
             id3v2Tag = mp3file.getId3v2Tag();
         }
         else {
-            id3v2Tag =  new ID3v24TagExt();
+            id3v2Tag =  new ID3v24Tag();
             mp3file.setId3v2Tag(id3v2Tag);
-        }
+        }*/
         System.out.println("Track: " + id3v2Tag.getTrack());
         System.out.println("NEW Track: " + MP3Helper.getInstance().formatTrack(album, track.track));
         System.out.println(StringUtils.repeat('=', 100));
