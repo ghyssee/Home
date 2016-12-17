@@ -81,7 +81,7 @@ public class MezzmoServiceImpl {
         return bo.findByFile(file);
     }
 
-    public MGOFileTO findCoverArt(int albumId){
+    public MGOFileTO findCoverArt(Long albumId){
         MezzmoBO bo = new MezzmoBO();
         return bo.findCoverArt(albumId);
     }

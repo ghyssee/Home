@@ -47,7 +47,7 @@ public class MezzmoRowMappers {
             MGOFileTO fileTO = fileAlbumComposite.getFileTO();
             fileTO.setYear(rs.getInt("YEAR"));
             fileAlbumTO.setName(rs.getString("ALBUMNAME"));
-            fileAlbumTO.setId(rs.getInt("ALBUMID"));
+            fileAlbumTO.setId(rs.getLong("ALBUMID"));
             albumArtistTO.setName(rs.getString("ALBUMARTISTNAME"));
             return fileAlbumComposite;
         }
@@ -65,7 +65,7 @@ public class MezzmoRowMappers {
             //fileTO.setTitle(rs.getString("TITLE"));
             //artistTO.setArtist(rs.getString("ARTIST"));
             fileAlbumTO.setName(rs.getString("ALBUMNAME"));
-            fileAlbumTO.setId(rs.getInt("ALBUMID"));
+            fileAlbumTO.setId(rs.getLong("ALBUMID"));
             albumArtistTO.setId(rs.getInt("ALBUMARTISTID"));
             albumArtistTO.setName(rs.getString("ALBUMARTISTNAME"));
             return fileAlbumComposite;
@@ -128,7 +128,7 @@ public class MezzmoRowMappers {
                 MGOFileAlbumCompositeTO fileAlbumComposite = new MGOFileAlbumCompositeTO();
                 MGOFileAlbumTO fileAlbumTO = fileAlbumComposite.getFileAlbumTO();
                 fileAlbumTO.setName(rs.getString("ALBUMNAME"));
-                fileAlbumTO.setId(rs.getInt("ALBUMID"));
+                fileAlbumTO.setId(rs.getLong("ALBUMID"));
                 MGOAlbumArtistTO albumArtistTO = fileAlbumComposite.getAlbumArtistTO();
                 MGOFileArtistTO artistTO = fileAlbumComposite.getFileArtistTO();
                 MGOFileTO fileTO = fileAlbumComposite.getFileTO();

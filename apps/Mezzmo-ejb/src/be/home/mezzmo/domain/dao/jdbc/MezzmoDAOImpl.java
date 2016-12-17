@@ -106,7 +106,7 @@ public class MezzmoDAOImpl extends MezzmoDAOQueries {
         return list;
     }
 
-    public MGOFileTO findCoverArt(int albumId){
+    public MGOFileTO findCoverArt(Long albumId){
         Object[] params = {albumId };
         MGOFileTO fileTO = (MGOFileTO) getInstance().getJDBCTemplate().queryForObject(FIND_COVER_ART, new MezzmoRowMappers.FileNameRowMapper(), params);
         return fileTO;

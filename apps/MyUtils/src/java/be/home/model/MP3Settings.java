@@ -2,6 +2,8 @@ package be.home.model;
 
 import be.home.common.configuration.Setup;
 
+import java.util.List;
+
 /**
  * Created by ghyssee on 8/07/2016.
  */
@@ -53,13 +55,33 @@ public class MP3Settings {
         public String filename;
     }
 
+    public class MezzmoBase {
+        public String id;
+        public String description;
+        public String path;
+    }
+
     public class Mezzmo {
         public String base;
         public boolean synchronizePlaycount;
         public Playlist playlist;
         public Import importF;
         public Export export;
+        public List<MezzmoBase> baseList;
+        public MezzmoActiveBase activeBase;
 
+
+    }
+
+    public class MezzmoActiveBase {
+        public String defaultId;
+        public List<MezzmoActiveBaseItem> list;
+    }
+
+
+    public class MezzmoActiveBaseItem {
+        public String host;
+        public String id;
     }
 
     public class Playlist {

@@ -25,12 +25,18 @@ function getList($file){
 
     $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
     $rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
-    $htmlObj = readJSON($file);
-    $array = array_slice($htmlObj->items, ($page-1)*$rows, $rows);
+    $albumErrors = readJSON($file);
+    $filteredArray = [];
+	foreach ($albumErrors->items as $key => $value) {
+		//if (!$value->done) {
+			array_push($filteredArray, $value);
+		//}
+	}
+	$array2 = array_slice($filteredArray, ($page-1)*$rows, $rows);
     
     $result = array();
-    $result["total"] = count($htmlObj->items);
-    $result["rows"] = $array;
+    $result["total"] = count($filteredArray);
+    $result["rows"] = $array2;
 
 	echo json_encode($result);
 

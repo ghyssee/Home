@@ -8,6 +8,7 @@ import be.home.mezzmo.domain.dao.jdbc.MezzmoDAOImpl;
 import be.home.mezzmo.domain.dao.jdbc.MezzmoPlaylistDAOImpl;
 import be.home.mezzmo.domain.model.*;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.sql.SQLException;
 import java.util.Date;
@@ -61,10 +62,17 @@ public class MezzmoBO extends BusinessObject {
         return getMezzmoDAO().getCustomPlayListSongs(albums, limit);
     }
     public MGOFileTO findByFile(String file){
-        return getMezzmoDAO().findByFile(file);
+        MGOFileTO mgoFileTO = null;
+        try {
+            mgoFileTO = getMezzmoDAO().findByFile(file);
+        }
+        catch (EmptyResultDataAccessException e){
+            // do nothing
+        }
+        return mgoFileTO;
     }
 
-    public MGOFileTO findCoverArt(int albumId){
+    public MGOFileTO findCoverArt(Long albumId){
         return getMezzmoDAO().findCoverArt(albumId);
     }
 

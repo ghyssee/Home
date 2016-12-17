@@ -4,16 +4,16 @@ package be.home.mezzmo.domain.model;
  * Created by ghyssee on 9/02/2016.
  */
 public class MGOFileAlbumTO {
-    private int id;
+    private Long id;
     private String name;
 
     private String coverArt;
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

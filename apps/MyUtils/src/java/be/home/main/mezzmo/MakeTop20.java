@@ -7,6 +7,7 @@ import be.home.common.main.BatchJobV2;
 import be.home.common.utils.JSONUtils;
 import be.home.common.utils.VelocityUtils;
 import be.home.common.utils.WinUtils;
+import be.home.domain.model.MezzmoUtils;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.MGOFileTO;
 import be.home.mezzmo.domain.service.MediaMonkeyServiceImpl;
@@ -15,12 +16,10 @@ import be.home.model.ConfigTO;
 import be.home.common.configuration.Setup;
 import be.home.model.MP3Settings;
 import org.apache.log4j.Logger;
-import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
+
 
 import java.io.*;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -76,6 +75,7 @@ public class MakeTop20 extends BatchJobV2{
 
 
         MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSONWithCode(Constants.JSON.MP3SETTINGS, MP3Settings.class);
+        String base = MezzmoUtils.getMezzmoBase(mp3Settings.mezzmo);
 
         /* based on Mezzmo DB
         List <MGOFileAlbumCompositeTO> list = getMezzmoService().getTop20();
@@ -105,7 +105,7 @@ public class MakeTop20 extends BatchJobV2{
             System.out.println("pathBase: " + pathBase.toString());
             System.out.println("pathAbsolute: " + pathAbsolute.toString());
             Path iPodBase = Paths.get(DRIVE + ":" + File.separator + mp3Settings.mediaMonkey.base);
-            Path mezzmoBase = Paths.get(mp3Settings.mezzmo.base + File.separator + "Eric");
+            Path mezzmoBase = Paths.get(base + File.separator + "Eric");
             System.out.println("iPodBase: " + iPodBase.toString());
             System.out.println("MezzmoBase: " + mezzmoBase.toString());
             String file = pathAbsolute.toString().replace(iPodBase.toString(), mezzmoBase.toString());

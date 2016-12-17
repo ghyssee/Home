@@ -8,17 +8,24 @@ import java.net.UnknownHostException;
  */
 public class NetUtils {
 
+    private static String hostName = null;
+
     public static String getHostName() {
 
-        String hostname = null;
-        try {
-            InetAddress addr;
-            addr = InetAddress.getLocalHost();
-            hostname = addr.getHostName();
-        } catch (UnknownHostException ex) {
-            throw new RuntimeException("Hostname can not be resolved", ex);
+        String host = null;
+        if (hostName != null){
+            host = hostName;
         }
-        return hostname;
+        else {
+            try {
+                InetAddress addr;
+                addr = InetAddress.getLocalHost();
+                host = addr.getHostName();
+            } catch (UnknownHostException ex) {
+                throw new RuntimeException("Hostname can not be resolved", ex);
+            }
+        }
+        return host;
     }
 
 

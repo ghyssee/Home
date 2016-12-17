@@ -50,7 +50,7 @@ public class MezzmoAlbumDAOImpl extends MezzmoDB {
             while ( rs.next() ) {
                 MGOFileAlbumCompositeTO comp = new MGOFileAlbumCompositeTO();
                 MGOFileAlbumTO fileAlbumTO = comp.getFileAlbumTO();
-                fileAlbumTO.setId(rs.getInt("ID"));
+                fileAlbumTO.setId(rs.getLong("ID"));
                 fileAlbumTO.setName(rs.getString("NAME"));
                 MGOAlbumArtistTO albumArtistTO = comp.getAlbumArtistTO();
                 albumArtistTO.setName(rs.getString("ALBUMARTIST"));

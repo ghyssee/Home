@@ -12,6 +12,7 @@ public enum MGOFileAlbumColumns implements DatabaseColumn  {
 
     public String columnName;
     public FieldType fieldType;
+    public TablesEnum table = TablesEnum.MGOFileAlbum;
 
     MGOFileAlbumColumns(String s, FieldType t) {
 
@@ -25,6 +26,7 @@ public enum MGOFileAlbumColumns implements DatabaseColumn  {
     public FieldType getFieldType() {
         return fieldType;
     }
+    public TablesEnum getTable() { return table; }
 
 }
 

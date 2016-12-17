@@ -84,7 +84,7 @@ function showMainMenutem($user, $menuItem){
 function showSubMenuItem($user, $menuItems){
     printh( "<ul>");;
     foreach($menuItems as $key => $menuItem) {
-		printh( '<li><a href="' . $menuItem->href . '">' . getDescription($menuItem) . '</a>');
+		printh( '<li><a href="' . $menuItem->href . '"' . checkNewPage($menuItem) . '>' . getDescription($menuItem) . '</a>');
 		if (isset($menuItem->menuItems)){
 			showSubMenuItem($user, $menuItem->menuItems);
 		}
@@ -93,6 +93,14 @@ function showSubMenuItem($user, $menuItems){
     printh("</ul>");
 
 
+}
+
+function checkNewPage($menuItem){
+	$html = "";
+	if (isset($menuItem->newPage) && $menuItem->newPage) {
+		$html = ' target="_blank"';
+	}
+	return $html;
 }
 
 function getDescription($menuItem){

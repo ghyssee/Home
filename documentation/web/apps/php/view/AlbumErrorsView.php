@@ -39,7 +39,12 @@ goMenu();
 
 <script type="text/javascript">
 	function stripCell(val,row){
-		return val.replace(row.basePath, "");
+		if (row.type == "FILE") {
+			return val.replace(row.basePath, "");
+		}
+		else {
+			return val;
+		}
 	}
 </script>
 
@@ -59,6 +64,7 @@ $smarty->assign('newUrl',"'" . $url . "?method=add'");
 $smarty->assign('deleteUrl',"'" . $url . "?method=delete',{id:row['id']}");
 
 $smarty->assign("contacts", array(array("field" => "id", "label"=>"Id", "size" => 10, "hidden" => "true"),
+								  array("field" => "done", "label"=>"Done", "size" => 1),
 	                              array("field" => "file", "label"=>"File", "size" => 200),
 	                              array("field" => "type", "label"=>"Type",  "size" => 50),
 	                              array("field" => "oldValue", "label"=>"Old Value", "formatter" => "stripCell", "size" => 200),

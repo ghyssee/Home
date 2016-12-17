@@ -18,6 +18,12 @@ public class SQLBuilder {
         EQUALS
     }
 
+    public enum Type {
+        VALUE,
+        FUNCTION,
+        PARAMETER
+    }
+
     public enum SQLTypes {
         SELECT,
         INSERT,
@@ -41,6 +47,23 @@ public class SQLBuilder {
             this.columnAlias = columnAlias;
         }
     }
+
+    private class UpdateColumn {
+        DatabaseColumn column;
+        String value;
+        Type type;
+
+        UpdateColumn(DatabaseColumn column, String value){
+            this.column = column;
+            this.value = value;
+            this.type = Type.VALUE;
+        }
+
+        UpdateColumn(DatabaseColumn column, String value, Type type){
+            this.column = column;
+            this.value = value;
+            this.type = type;
+        }    }
 
     private class Condition {
         String field1;
@@ -73,6 +96,7 @@ public class SQLBuilder {
 
     private TablesEnum mainTable;
     private List<Column> dbColumns = new ArrayList<>();
+    private List<UpdateColumn> updateColumns = new ArrayList<>();
     private List<Condition> conditions = new ArrayList<>();
     private List<Relation> relations = new ArrayList<>();
     private SQLTypes sqlType;
@@ -130,6 +154,18 @@ public class SQLBuilder {
     public SQLBuilder addColumn (String alias, DatabaseColumn column, String columnAlias) {
 
         dbColumns.add(new Column(column, alias, columnAlias));
+        return this;
+    }
+
+    public SQLBuilder updateColumn (DatabaseColumn column, String value) {
+
+        updateColumns.add(new UpdateColumn(column,value));
+        return this;
+    }
+
+    public SQLBuilder updateColumn (DatabaseColumn column, Type type, String value) {
+
+        updateColumns.add(new UpdateColumn(column,value, type));
         return this;
     }
 
@@ -198,6 +234,18 @@ public class SQLBuilder {
         return sb.toString();
     }
 
+
+    private String renderUpdate(){
+        StringBuilder sb = new StringBuilder();
+        sb
+                .append("UPDATE ")
+                .append(this.mainTable)
+                .append(" ")
+                .append(updateFields())
+                .append(conditions());
+        return sb.toString();
+    }
+
     public String render(){
         String sql = null;
         switch (this.sqlType){
@@ -207,6 +255,7 @@ public class SQLBuilder {
             case INSERT:
                 sql = renderInsert();
             case UPDATE:
+                sql = renderUpdate();
                 break;
             case DELETE:
                 sql = renderDelete();
@@ -242,6 +291,33 @@ public class SQLBuilder {
             sb
                     .append(first ? "" : ", ")
                     .append(column.column.name());
+            first = false;
+        }
+        return sb.toString();
+    }
+
+    public String updateFields(){
+        boolean first = true;
+        StringBuilder sb = new StringBuilder();
+        for (UpdateColumn column : this.updateColumns){
+            String sep = "";
+            switch (column.type){
+                case VALUE :
+                    sep = "'";
+                    break;
+                case PARAMETER :
+                    column.value = "?";
+                    break;
+                case FUNCTION :
+                    break;
+            }
+            sb
+                    .append(first ? "SET " : ", ")
+                    .append(column.column.getColumnName())
+                    .append("=")
+                    .append(sep)
+                    .append(column.value)
+                    .append(sep);
             first = false;
         }
         return sb.toString();

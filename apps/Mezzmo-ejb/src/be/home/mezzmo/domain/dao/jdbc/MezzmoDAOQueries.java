@@ -1,6 +1,7 @@
 package be.home.mezzmo.domain.dao.jdbc;
 
 import be.home.common.dao.jdbc.MezzmoDB;
+import be.home.mezzmo.domain.dao.SQLBuilder;
 
 /**
  * Created by Gebruiker on 8/12/2016.
@@ -41,6 +42,16 @@ public class MezzmoDAOQueries extends MezzmoDB {
             " INNER JOIN MGOFileAlbum ON (MGOFileAlbum.ID = MGOFileAlbumRelationship.ID)" +
             " WHERE 1=1" +
             " AND MGOFileAlbum.data like ?"; //"'Ultratop 50 2015%'";
+
+    private static final String FILEALBUM_SELECT2 = SQLBuilder.getInstance()
+            .select()
+            .addTable(TablesEnum.MGOFile)
+            .addColumns(TablesEnum.MGOPlaylist)
+            .addColumns(TablesEnum.MGOFileAlbum)
+            .addRelation(TablesEnum.MGOFileAlbumRelationship, MGOFileAlbumRelationshipColumns.ID, TablesEnum.MGOFileAlbum, MGOFileAlbumColumns.ID)
+            .addRelation(TablesEnum.MGOFile, MGOFileColumns.ID, TablesEnum.MGOFileAlbumRelationship, MGOFileAlbumRelationshipColumns.FileID)
+            .addCondition(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.Data, SQLBuilder.Comparator.LIKE)
+            .render();
 
     private static final String FILE_FIND_TAGINFO = "SELECT " + getColumns(COLUMNS_MP3) + " FROM MGOFile " +
             " INNER JOIN MGOFileAlbumRelationship ON (MGOFileAlbumRelationship.FileID = MGOFILE.id)" +

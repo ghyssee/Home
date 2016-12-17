@@ -10,7 +10,6 @@ import be.home.common.main.BatchJobV2;
 import be.home.common.utils.JSONUtils;
 import be.home.domain.model.MP3Helper;
 import be.home.model.MP3PreprocessorConfig;
-import be.home.model.MP3Settings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
