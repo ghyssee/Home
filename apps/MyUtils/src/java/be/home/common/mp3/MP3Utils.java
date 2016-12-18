@@ -29,4 +29,14 @@ public class MP3Utils {
         return id3v2Tag;
     }
 
+    public static boolean checkId3v2Tag(ID3v2 id3v2Tag){
+        if (id3v2Tag.getArtist() == null ||
+                id3v2Tag.getTitle() == null ||
+                id3v2Tag.getAlbum() == null){
+            return false;
+        }
+        return true;
+
+    }
+
 }

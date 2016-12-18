@@ -1,5 +1,6 @@
 package be.home.main.mezzmo;
 
+import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
 import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.enums.MP3Tag;
@@ -7,8 +8,10 @@ import be.home.common.exceptions.ApplicationException;
 import be.home.common.main.BatchJobV2;
 import be.home.common.model.TransferObject;
 import be.home.common.mp3.MP3Utils;
+import be.home.common.utils.DateUtils;
 import be.home.common.utils.FileUtils;
 import be.home.common.utils.JSONUtils;
+import be.home.common.utils.MyFileWriter;
 import be.home.domain.model.MP3Helper;
 import be.home.domain.model.MP3TagUtils;
 import be.home.mezzmo.domain.model.*;
@@ -27,6 +30,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -37,10 +41,14 @@ public class MP3TagChecker extends BatchJobV2{
     public static ConfigTO.Config config;
     private static final Logger log = getMainLog(MP3TagChecker.class);
     public AlbumError albumErrors = (AlbumError) JSONUtils.openJSONWithCode(Constants.JSON.ALBUMERRORS, AlbumError.class);
-    public String SUBST_A = "H:\\Shared\\Mijn Muziek\\Eric\\iPod\\";
-    //public String SUBST_B = "R:\\My Music\\iPod\\";
-    public String ALBUM = "Ultratop 50 20120804 04 Augustus 2012";
-    public String SUBST_B = "C:\\My Data\\tmp\\Java\\MP3Processor\\Album\\";
+    public String ALBUM = "Ultratop 50 201212 December 2012";
+    public String[] ALBUMS = {
+            "Ultratop 50 20131005 05 Oktober 2013",
+            "Ultratop 50 20131102 02 November 2013",
+            "Ultratop 50 201312 December 2013",
+            "Ultratop 50 20131207 07 December 2013"
+    };
+
 
 
     public static void main(String args[]) {
@@ -95,22 +103,24 @@ public class MP3TagChecker extends BatchJobV2{
         albumErrors.items = new ArrayList<>();
         //base = ""
         MGOFileAlbumTO albumTO = new MGOFileAlbumTO();
-        albumTO.setName(ALBUM);
-        List<MGOFileAlbumCompositeTO> listAlbums = getMezzmoService().getAlbums(albumTO, new TransferObject());
-        if (listAlbums == null || listAlbums.size() == 0){
-            log.warn("No Album(s) found!!!");
+        for (String album : ALBUMS){
+            albumTO.setName(album);
+            List<MGOFileAlbumCompositeTO> listAlbums = getMezzmoService().getAlbums(albumTO, new TransferObject());
+            if (listAlbums == null || listAlbums.size() == 0){
+                log.warn("No Album(s) found!!!");
+            }
+            else {
+                for (MGOFileAlbumCompositeTO comp : listAlbums) {
+                    System.out.println("AlbumID: " + comp.getFileAlbumTO().getId());
+                    System.out.println("Album: " + comp.getFileAlbumTO().getName());
+                    processAlbum(comp);
+                }
+            }
         }
-        else {
-            for (MGOFileAlbumCompositeTO comp : listAlbums) {
-                System.out.println("AlbumID: " + comp.getFileAlbumTO().getId());
-                System.out.println("Album: " + comp.getFileAlbumTO().getName());
-                processAlbum(comp);
-            }
-            try {
-                JSONUtils.writeJsonFileWithCode(this.albumErrors, Constants.JSON.ALBUMERRORS);
-            } catch (IOException e) {
-                log.error(e);
-            }
+        try {
+            JSONUtils.writeJsonFileWithCode(this.albumErrors, Constants.JSON.ALBUMERRORS);
+        } catch (IOException e) {
+            log.error(e);
         }
     }
 
@@ -178,11 +188,34 @@ public class MP3TagChecker extends BatchJobV2{
             }
         }
         try {
-            JSONUtils.writeJsonFileWithCode(this.albumErrors, Constants.JSON.ALBUMERRORS);
+            flushAlbumErrors();
         } catch (IOException e) {
             log.error(e);
         }
     }
+
+    private void flushAlbumErrors() throws IOException {
+        List <AlbumError.Item> filteredAlbumErrors = new ArrayList <> ();
+        String logAlbum = Setup.getInstance().getFullPath(Constants.FILE.ALBUM_LOG);
+        logAlbum = logAlbum.replace("<DATE>", DateUtils.formatYYYYMMDD(new Date()));
+        MyFileWriter albumLogger = new MyFileWriter(logAlbum, MyFileWriter.APPEND);
+        for (AlbumError.Item item : this.albumErrors.items){
+            if (item.isDone()) {
+                albumLogger.append("ID: " + item.getId());
+                albumLogger.append("File: " + item.getFile());
+                albumLogger.append("Type: " + item.getType());
+                albumLogger.append("Old Value: " + item.getOldValue());
+                albumLogger.append("New Value: " + item.getNewValue());
+                albumLogger.append(StringUtils.repeat('=', 200));
+            }
+            else {
+                filteredAlbumErrors.add(item);
+            }
+        }
+        albumLogger.close();
+        this.albumErrors.items = filteredAlbumErrors;
+        JSONUtils.writeJsonFileWithCode(this.albumErrors, Constants.JSON.ALBUMERRORS);
+        }
 
     private void renameFile(AlbumError.Item item){
        if (FileUtils.renameFile(MP3TagUtils.relativizeFile(item.oldValue), MP3TagUtils.relativizeFile(item.newValue))) {

@@ -3,6 +3,8 @@ package be.home.main;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.FileUtils;
 import be.home.common.utils.WinUtils;
+import be.home.domain.model.MP3Helper;
+import be.home.domain.model.MP3TagUtils;
 import be.home.model.ConfigTO;
 import be.home.model.M3uTO;
 import be.home.model.UltratopConfig;
@@ -158,9 +160,9 @@ public class M3uMakerV2 extends BatchJobV2 {
 
     }
 
-    private String getUniqueSong(String song){
+    /*
+    private String getUniqueSongOld(String song){
         String tmpSong = song.toUpperCase();
-        tmpSong = tmpSong.replace(" FEAT. ", " & ").replace(" FEAT ", " & ").replace(" FT. ", " & ").replace(" FT ", " & ");
         tmpSong = tmpSong.replace(" MET ", " & ").replace(" FEAT ", " & ").replace(" FT. ", " & ").replace(" FT ", " & ");
         tmpSong = tmpSong.replace("[BE]", "");
         tmpSong = tmpSong.replace(" VS. ", " VS ");
@@ -231,7 +233,30 @@ public class M3uMakerV2 extends BatchJobV2 {
 
         return tmpSong.trim();
     }
+    */
 
+    private String removeSpecificWords(String word){
+        word = word.replace("[BE]", "");
+        word = word.replace("[NL]", "");
+        word = word.replace("FEAT.", "&");
+        word = word.replace(" MET ", " & ");
+        return word.trim();
+    }
+
+    private String getUniqueSong(String song){
+        song = MP3Helper.getInstance().prettifySong(song);
+        song = MP3TagUtils.stripFilename(song);
+        song = song.toUpperCase();
+        return song;
+    }
+
+    private String getUniqueAritst(String artist){
+        artist = MP3Helper.getInstance().prettifyArtist(artist);
+        artist = MP3TagUtils.stripFilename(artist);
+        artist = artist.toUpperCase();
+        artist = removeSpecificWords(artist);
+        return artist;
+    }
     private String convertSongNameToM3uSongName(String song){
         String tmpSong = song.replace("\"", "''");
         return tmpSong;
@@ -352,14 +377,14 @@ public class M3uMakerV2 extends BatchJobV2 {
     private M3uTO findSong(M3uTO song, List <M3uTO> list ){
 
         String uniqueSong = getUniqueSong(song.getSong());
-        String uniqueArtist = getUniqueSong(song.getArtist());
+        String uniqueArtist = getUniqueAritst(song.getArtist());
         for (M3uTO m3uTO: list) {
             //System.out.println("Comparing 1: " + getUniqueSong(song.getSong()));
             //System.out.println("Comparing 2: " + getUniqueSong(m3uTO.getSong()));
             if (uniqueSong.equals(getUniqueSong(m3uTO.getSong()))) {
-                //System.out.println("Comparing 1: " + getUniqueSong(song.getArtist()));
+                //System.out.println("Comparing 1: " + getUniqueAritst(song.getArtist()));
                 //System.out.println("Comparing 2: " + getUniqueSong(m3uTO.getArtist()));
-                if (uniqueArtist.equals(getUniqueSong(m3uTO.getArtist()))) {
+                if (uniqueArtist.equals(getUniqueAritst(m3uTO.getArtist()))) {
                     return m3uTO;
                 }
             }
