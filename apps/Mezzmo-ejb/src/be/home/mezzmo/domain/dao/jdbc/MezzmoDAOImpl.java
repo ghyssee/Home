@@ -24,7 +24,7 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
         if (compSearchTO.getFileAlbumTO() != null && compSearchTO.getFileAlbumTO().getName() != null){
             params[1] = compSearchTO.getFileAlbumTO().getName();
         }
-        List<MGOFileTO> list  = getInstance().getJDBCTemplate().query(FILE_SELECT_TITLE, new MezzmoRowMappers.FileRowMapper(), params);
+        List<MGOFileTO> list  = getInstance().getJDBCTemplate().query(FILE_SELECT_TITLE2, new MezzmoRowMappers.FileRowMapper(), params);
         return list;
     }
 

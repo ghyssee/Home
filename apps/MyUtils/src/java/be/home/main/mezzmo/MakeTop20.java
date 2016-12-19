@@ -62,7 +62,7 @@ public class MakeTop20 extends BatchJobV2{
         String base = WinUtils.getOneDrivePath();
         log.info("OneDrive Path: " + base);
         base += "\\Muziek\\Export\\";
-        //System.out.println(MezzmoDAOQueries.FILE_PLAYCOUNT2);
+        System.out.println(MezzmoDAOQueries.FILE_SELECT_TITLE2);
 
         /*
         try {

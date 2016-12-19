@@ -21,6 +21,8 @@ public class SQLBuilder {
     private List<OrderBy> orderByColumns = new ArrayList<>();
     private SQLTypes sqlType;
     private LimitBy limitBy = null;
+    private List<Option> options = new ArrayList<>();
+    private boolean distinct = false;
 
     public enum Comparator {
         LIKE ("LIKE"),
@@ -54,6 +56,14 @@ public class SQLBuilder {
         INSERT,
         UPDATE,
         DELETE
+    }
+
+    private class Option {
+        String option;
+
+        Option(String option){
+            this.option = option;
+        }
     }
 
     private class Column {
@@ -285,6 +295,19 @@ public class SQLBuilder {
         return this;
     }
 
+    public SQLBuilder addOption (String option) {
+        options.add(new Option(option));
+        return this;
+    }
+
+    public SQLBuilder enableDistinct () {
+        distinct = true;
+        return this;
+    }
+
+
+
+
     public SQLBuilder limitBy (int pos, int total) {
         limitBy = new LimitBy(pos, total);
         return this;
@@ -303,13 +326,15 @@ public class SQLBuilder {
         StringBuilder sb = new StringBuilder();
         sb
                 .append("SELECT ")
+                .append(distinct ? "DISTINCT " : "")
                 .append(fields())
                 .append(" FROM ")
                 .append(this.mainTable.tableAlias())
                 .append(relations())
                 .append(conditions())
                 .append(orderBy())
-                .append(limitByClause());
+                .append(limitByClause())
+                .append(options());
         return sb.toString();
     }
 
@@ -469,6 +494,16 @@ public class SQLBuilder {
                     .append(this.limitBy.pos == null ? "?" : this.limitBy.pos)
                     .append(",")
                     .append(this.limitBy.total == null ? "?" : this.limitBy.total);
+        }
+        return sb.toString();
+    }
+
+    public String options () {
+        StringBuilder sb = new StringBuilder();
+        for (Option option : this.options){
+            sb
+                    .append(" ")
+                    .append(option.option);
         }
         return sb.toString();
     }

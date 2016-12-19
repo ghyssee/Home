@@ -56,7 +56,7 @@ public class MezzmoDAOQueries extends MezzmoDB {
             " INNER JOIN MGOAlbumArtistRelationship ON (MGOAlbumArtistRelationship.FileID = MGOFILE.id)" +
             " WHERE MGOFileExtension.data = 'mp3'";
 
-    public static SQLBuilder FILE_FIND_TAGINFO2 = SQLBuilder.getInstance()
+    public static SQLBuilder FILE_FIND_BASIC = SQLBuilder.getInstance()
             .select()
             .addTable(TablesEnum.MGOFile)
             .addColumns(TablesEnum.MGOFile)
@@ -84,6 +84,11 @@ public class MezzmoDAOQueries extends MezzmoDB {
             " WHERE 1=1" +
             " AND MGOFile.FileTitle like ?" +
             " AND MGOFileAlbum.data like ?";
+
+    public static final String FILE_SELECT_TITLE2 = FILE_FIND_BASIC
+            .addCondition(TablesEnum.MGOFile.alias(), MGOFileColumns.FILETITLE, SQLBuilder.Comparator.LIKE)
+            .addCondition(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUM, SQLBuilder.Comparator.LIKE)
+            .render();
 
     protected static final String FILE_PLAYCOUNT_OLD = "SELECT " + getColumns(COLUMNS) + " FROM MGOFileAlbumRelationship " +
             " INNER JOIN MGOFile ON (MGOFileAlbumRelationship.FileID = MGOFile.ID)" +
@@ -176,9 +181,17 @@ public class MezzmoDAOQueries extends MezzmoDB {
             " ORDER BY PLF.rowid " +
             " LIMIT 0,20";
 
-    protected static final String FIND_BY_FILE = "SELECT ID AS FILEID " +
+    protected static final String FIND_BY_FILE2 = "SELECT ID AS FILEID " +
             "FROM MGOfile " +
             "WHERE UPPER(FILE) LIKE UPPER(?)";
+
+    protected static final String FIND_BY_FILE = SQLBuilder.getInstance()
+            .select()
+            .addTable(TablesEnum.MGOFile)
+            .addColumns(TablesEnum.MGOFile)
+            // todo UPPER(FILE) = UPPER(?)
+            .render();
+
 
     protected static final String FIND_COVER_ART = "SELECT MGOFile.File AS FILE " +
             "FROM MGOFileAlbumRelationship " +

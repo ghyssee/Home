@@ -20,7 +20,7 @@ public class CSVUtils {
         CSVFormat csvFileFormat = CSVFormat.DEFAULT.withHeader(fields);
         csvFilePrinter = new CSVPrinter(this.writer, csvFileFormat);
         return csvFilePrinter;
-}
+    }
 
     public void close(CSVPrinter csvPrinter) {
         if (this.writer != null) {

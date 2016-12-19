@@ -6,6 +6,7 @@ import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.dao.jdbc.SQLiteUtils;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
+import be.home.common.utils.CSVUtils;
 import be.home.common.utils.JSONUtils;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.MGOFileAlbumTO;
@@ -67,11 +68,6 @@ public class ImportPlayCountFromCSV extends BatchJobV2{
     @Override
     public void run() {
         final String batchJob = "Mezzmo Synchronisation";
-        //log4GE = new Log4GE(config.logDir, config.movies.log);
-        //log4GE.start(batchJob);
-        //log4GE.info("test");
-        //log4GE.addColumn("Status", 20);
-        //log4GE.printHeaders();
         MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSONWithCode(Constants.JSON.MP3SETTINGS, MP3Settings.class);
         String filename = mp3Settings.mezzmo.importF.base + File.separator + mp3Settings.mezzmo.importF.filename;
         filename = Setup.replaceEnvironmentVariables(filename);
@@ -122,6 +118,8 @@ public class ImportPlayCountFromCSV extends BatchJobV2{
             }
         } catch (java.io.IOException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            log.error(e);
         } finally {
             if (fileReader != null) {
                 try {
@@ -170,7 +168,7 @@ public class ImportPlayCountFromCSV extends BatchJobV2{
         compSearchTO.getFileTO().setFileTitle(fileID);
         compSearchTO.getFileAlbumTO().setName(album);
         List<MGOFileTO> list = getMezzmoService().getFiles(compSearchTO);
-        List<MGOFileAlbumCompositeTO> updateList = new ArrayList<MGOFileAlbumCompositeTO>();
+        List<MGOFileAlbumCompositeTO> updateList = new ArrayList<>();
         MGOFileAlbumCompositeTO fileAlbumCompositeTO = new MGOFileAlbumCompositeTO();
         fileAlbumCompositeTO.getFileTO().setFileTitle(fileID);
         fileAlbumCompositeTO.getFileTO().setFile(file);
@@ -233,18 +231,19 @@ public class ImportPlayCountFromCSV extends BatchJobV2{
                 albumTO.getName();
     }
 
-    public void listErrors(String basePath, List<MGOFileAlbumCompositeTO> updateList, CSVFormat csvFileFormat) {
+    public void listErrors(String basePath, List<MGOFileAlbumCompositeTO> updateList, CSVFormat csvFileFormat) throws Exception {
 
         if (updateList != null && updateList.size() > 0) {
             FileWriter fileWriter = null;
-            CSVPrinter csvFilePrinter = null;
             log.info("List Of ERRORS Found");
             log.info(StringUtils.repeat('=', 100));
             log.info("Total: " + updateList.size());
+            CSVUtils csvUtils = new CSVUtils();
+            CSVPrinter csvFilePrinter = null;
+            Exception exception = null;
             try {
                 String filename = basePath + File.separator + "MP3Songs.Errors." + DateFormatUtils.format(new Date(), "yyyyMMdd.HHmm") + ".csv";
-                fileWriter = new FileWriter(filename);
-                csvFilePrinter = new CSVPrinter(fileWriter, csvFileFormat);
+                csvFilePrinter = csvUtils.initialize(new File(filename), FILE_HEADER_MAPPING);
                 for (MGOFileAlbumCompositeTO fileAlbumCompositeTO : updateList) {
                     List dataRecord = new ArrayList();
                     dataRecord.add(fileAlbumCompositeTO.getFileTO().getFileTitle());
@@ -252,27 +251,21 @@ public class ImportPlayCountFromCSV extends BatchJobV2{
                     dataRecord.add(fileAlbumCompositeTO.getFileTO().getFile());
                     dataRecord.add(fileAlbumCompositeTO.getFileTO().getDateLastPlayed().getTime());
                     dataRecord.add(fileAlbumCompositeTO.getFileAlbumTO().getName());
+                    csvFilePrinter.printRecord(dataRecord);
                     log.info("File: " + fileAlbumCompositeTO.getFileTO().getFileTitle());
                     log.info("PlayCount: " + fileAlbumCompositeTO.getFileTO().getPlayCount());
                     log.info("Album: " + fileAlbumCompositeTO.getFileAlbumTO().getName());
                     log.info(StringUtils.repeat('=', 100));
-                    csvFilePrinter.printRecord(dataRecord);
 
 
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                exception = e;
             }
             finally {
-                if (fileWriter != null){
-                    try {
-                        fileWriter.flush();
-                        fileWriter.close();
-                        csvFilePrinter.close();
-                    } catch (IOException e) {
-                        log.error("Error while flushing/closing fileWriter/csvPrinter !!!");
-                        e.printStackTrace();
-                    }
+                csvUtils.close(csvFilePrinter);
+                if (exception != null){
+                    throw exception;
                 }
             }
         }

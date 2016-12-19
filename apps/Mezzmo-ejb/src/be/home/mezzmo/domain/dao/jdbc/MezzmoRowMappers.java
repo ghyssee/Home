@@ -12,7 +12,7 @@ import java.sql.SQLException;
  * Created by Gebruiker on 5/10/2016.
  */
 public class MezzmoRowMappers extends MezzmoDAOQueries {
-    public static class FileRowMapper implements RowMapper {
+    public static class FileRowMapperOld implements RowMapper {
         public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
             MGOFileTO fileTO = new MGOFileTO();
             fileTO.setId(rs.getLong("FILEID"));
@@ -109,11 +109,19 @@ public class MezzmoRowMappers extends MezzmoDAOQueries {
         }
     }
 
-        public static class FileAlbumPlayCountMapper implements RowMapper {
+    public static class FileRowMapper implements RowMapper {
+        public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+            MGOFileTO fileTO = mapFileTO(rs, rowNum);
+            return fileTO;
+        }
+    }
+
+    public static class FileAlbumPlayCountMapper implements RowMapper {
             public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
                 MGOFileAlbumCompositeTO fileAlbumComposite = new MGOFileAlbumCompositeTO();
                 fileAlbumComposite.setFileTO(mapFileTO(rs, rowNum));
                 fileAlbumComposite.setFileAlbumTO(mapFileAlbumTO(rs, rowNum));
+                fileAlbumComposite.setFileArtistTO(mapFileArtistTO(rs, rowNum));
                 return fileAlbumComposite;
             }
         }
@@ -133,20 +141,30 @@ public class MezzmoRowMappers extends MezzmoDAOQueries {
         }
     }
 
-    private static MGOFileTO  mapFileTO(ResultSet rs, int rowNum)throws SQLException{
+    private static MGOFileTO mapFileTO(ResultSet rs, int rowNum)throws SQLException{
         MGOFileTO fileTO = new MGOFileTO();
+        fileTO.setId(getLong(rs, MGOFileColumns.ID));
         fileTO.setFileTitle(getString(rs, MGOFileColumns.FILETITLE));
         fileTO.setPlayCount(getInteger(rs, MGOFileColumns.PLAYCOUNT));
+        fileTO.setRanking(getInteger(rs, MGOFileColumns.RANKING));
         fileTO.setFile(getString(rs, MGOFileColumns.FILE));
         fileTO.setDateLastPlayed(getDate(rs, MGOFileColumns.DATELASTPLAYED));
+        fileTO.setYear(getInteger(rs, MGOFileColumns.YEAR));
         return fileTO;
     }
 
     private static MGOFileAlbumTO mapFileAlbumTO(ResultSet rs, int rowNum)throws SQLException{
         MGOFileAlbumTO fileAlbumTO = new MGOFileAlbumTO();
-        fileAlbumTO.setName(rs.getString(MGOFileAlbumColumns.ALBUM.name()));
-        fileAlbumTO.setId(rs.getLong(MGOFileAlbumColumns.ALBUMID.name()));
+        fileAlbumTO.setName(getString(rs, MGOFileAlbumColumns.ALBUM));
+        fileAlbumTO.setId(getLong(rs, MGOFileAlbumColumns.ALBUMID));
         return fileAlbumTO;
+    }
+
+    private static MGOFileArtistTO mapFileArtistTO(ResultSet rs, int rowNum)throws SQLException{
+        MGOFileArtistTO fileArtistTO = new MGOFileArtistTO();
+        fileArtistTO.setArtist(getString(rs, MGOFileArtistColumns.ARTIST));
+        fileArtistTO.setID(getLong(rs, MGOFileArtistColumns.ARTISTID));
+        return fileArtistTO;
     }
 
     public static class SongsAlbumRowMapper implements RowMapper {
