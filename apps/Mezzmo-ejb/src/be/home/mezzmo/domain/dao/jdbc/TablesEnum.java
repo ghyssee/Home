@@ -18,8 +18,8 @@ public enum TablesEnum {
     MGOFileAlbumRelationship ("FILEALBUMREL", MGOFileAlbumRelationshipColumns.values()),
     MGOFileArtist ("FILEARTIST", MGOFileArtistColumns.values()),
     MGOFileArtistRelationship ("FILEARTISTREL", MGOFileArtistRelationshipColumns.values()),
-    //MGOAlbumArtist ("ALBUMARTIST", MGOFileArtistColumns.values()),
-    //MGOAlbumArtistRelationship ("ALBUMARTISTREL", MGOFileArtistRelationshipColumns.values()),
+    MGOAlbumArtist ("ALBUMARTIST", MGOAlbumArtistColumns.values()),
+    MGOAlbumArtistRelationship ("ALBUMARTISTREL", MGOAlbumArtistRelationshipColumns.values()),
     MGOFileExtension ("FILEEXTENSION", MGOFileExtensionColumns.values());
 
     private String alias;

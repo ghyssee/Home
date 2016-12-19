@@ -9,22 +9,23 @@ import com.sun.jna.platform.win32.WinReg;
  */
 public class WinUtils {
 
+    private static String oneDrivePath = null;
+
     public static String getOneDrivePath() {
-        String path = null;
-        try {
-            path = Advapi32Util.registryGetStringValue(WinReg.HKEY_CURRENT_USER,
-                    "Software\\Microsoft\\OneDrive\\", "UserFolder");
-        }
-        catch (Win32Exception ex){
+        if (oneDrivePath == null) {
             try {
-                path = Advapi32Util.registryGetStringValue(WinReg.HKEY_CURRENT_USER,
-                        "Software\\Microsoft\\SkyDrive\\", "UserFolder");
-            }
-            catch (Win32Exception ex2){
+                oneDrivePath = Advapi32Util.registryGetStringValue(WinReg.HKEY_CURRENT_USER,
+                        "Software\\Microsoft\\OneDrive\\", "UserFolder");
+            } catch (Win32Exception ex) {
+                try {
+                    oneDrivePath = Advapi32Util.registryGetStringValue(WinReg.HKEY_CURRENT_USER,
+                            "Software\\Microsoft\\SkyDrive\\", "UserFolder");
+                } catch (Win32Exception ex2) {
                     throw new RuntimeException("Problem Getting OneDrive Path");
                 }
+            }
         }
-        return path;
+        return oneDrivePath;
     }
 
 

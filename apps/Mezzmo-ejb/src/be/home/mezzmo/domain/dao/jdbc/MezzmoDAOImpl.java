@@ -83,7 +83,7 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
 
     public MGOFileTO findByFile(String file) {
         Object[] params = {file};
-        MGOFileTO fileTO = (MGOFileTO) getInstance().getJDBCTemplate().queryForObject(FIND_BY_FILE, new MezzmoRowMappers.FileIdRowMapper(), params);
+        MGOFileTO fileTO = (MGOFileTO) getInstance().getJDBCTemplate().queryForObject(FIND_BY_FILE, new FileRowMapper(), params);
         return fileTO;
     }
 
@@ -137,7 +137,7 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
         String query = FIND_SONGS_ALBUM;
         Object[] params = {albumId, albumArtistId};
 
-        List<MGOFileAlbumCompositeTO>  list = getInstance().getJDBCTemplate().query(query, new MezzmoRowMappers.SongsAlbumRowMapper(), params);
+        List<MGOFileAlbumCompositeTO>  list = getInstance().getJDBCTemplate().query(query, new FileAlbumPlayCountMapper(), params);
         return list;
 
     }

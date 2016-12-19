@@ -6,14 +6,14 @@ import be.home.common.database.FieldType;
 /**
  * Created by ghyssee on 14/12/2016.
  */
-public enum MGOAlbumArtistColumns implements DatabaseColumn  {
-    ALBUMARTISTID("ID", FieldType.SEQUENCE),
-    ALBUMARTIST("Data", FieldType.NORMAL);
+public enum MGOAlbumArtistRelationshipColumns implements DatabaseColumn {
+    ID("ID", FieldType.NORMAL),
+    FILEID("FileID", FieldType.NORMAL);
 
     public String columnName;
     public FieldType fieldType;
 
-    MGOAlbumArtistColumns(String s, FieldType t) {
+    MGOAlbumArtistRelationshipColumns(String s, FieldType t) {
 
         columnName = s;
         fieldType = t;

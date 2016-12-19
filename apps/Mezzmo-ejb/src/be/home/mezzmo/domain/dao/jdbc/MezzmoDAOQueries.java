@@ -189,7 +189,12 @@ public class MezzmoDAOQueries extends MezzmoDB {
             .select()
             .addTable(TablesEnum.MGOFile)
             .addColumns(TablesEnum.MGOFile)
-            // todo UPPER(FILE) = UPPER(?)
+            .addCondition(
+                    TablesEnum.MGOFile.alias(),
+                    SQLFunction.UPPER,
+                    MGOFileColumns.FILE,
+                    SQLBuilder.Comparator.LIKE,
+                    null)
             .render();
 
 
@@ -231,19 +236,43 @@ public class MezzmoDAOQueries extends MezzmoDB {
             " SET Ranking = ? " +
             " WHERE ID = ?";
 
-    protected static final String FIND_SONGS_ALBUM = "SELECT " + getColumns(COLUMNS_MP3) +
+    protected static final String FIND_SONGS_ALBUM2 = "SELECT " + getColumns(COLUMNS_MP3) +
             " FROM MGOFile " +
             "INNER JOIN MGOFileExtension ON (MGOFileExtension.ID = MGOFILE.extensionID) " +
             "INNER JOIN MGOFileArtist ON (MGOFileArtist.ID = MGOFileArtistRelationship.ID) " +
             "INNER JOIN MGOFileArtistRelationship ON (MGOFileArtistRelationship.FileID = MGOFILE.ID) " +
             "INNER JOIN MGOFileAlbumRelationship ON (MGOFileAlbumRelationship.FileID = MGOFILE.ID) " +
             "INNER JOIN MGOFileAlbum ON (MGOFileAlbum.ID = MGOFileAlbumRelationship.ID) " +
+
             "INNER JOIN MGOAlbumArtistRelationship ON (MGOAlbumArtistRelationship.fileID = MGOFileAlbumRelationship.fileID) " +
             "INNER JOIN MGOAlbumArtist ON (MGOAlbumArtist.ID = MGOAlbumArtistRelationship.ID) " +
+
             "WHERE  MGOFileAlbum.id = ? " +
             "AND  MGOAlbumArtist.id = ? " +
             "AND MGOFileExtension.data = 'mp3' " +
             "ORDER BY MGOFile.disc, MGOFile.track";
+
+    public static final String FIND_SONGS_ALBUM = SQLBuilder.getInstance()
+            .select()
+            .addTable(TablesEnum.MGOFile)
+            .addColumns(TablesEnum.MGOFile)
+            .addColumns(TablesEnum.MGOFileAlbum)
+            .addColumns(TablesEnum.MGOFileArtist)
+            .addRelation(TablesEnum.MGOFileAlbum, MGOFileAlbumColumns.ALBUMID, TablesEnum.MGOFileAlbumRelationship, MGOFileAlbumRelationshipColumns.ID)
+            .addRelation(TablesEnum.MGOFileAlbumRelationship, MGOFileAlbumRelationshipColumns.FILEID, TablesEnum.MGOFile, MGOFileColumns.ID)
+            .addRelation(TablesEnum.MGOFileExtension, MGOFileExtensionColumns.ID, TablesEnum.MGOFile, MGOFileColumns.EXTENSION_ID)
+            .addRelation(TablesEnum.MGOFileArtist, MGOFileArtistColumns.ARTISTID, TablesEnum.MGOFileArtistRelationship, MGOFileArtistRelationshipColumns.ID)
+            .addRelation(TablesEnum.MGOFileArtistRelationship, MGOFileArtistRelationshipColumns.FILEID, TablesEnum.MGOFile, MGOFileColumns.ID)
+
+            .addRelation(TablesEnum.MGOAlbumArtist, MGOAlbumArtistColumns.ALBUMARTISTID, TablesEnum.MGOAlbumArtistRelationship, MGOAlbumArtistRelationshipColumns.ID)
+            .addRelation(TablesEnum.MGOAlbumArtistRelationship, MGOAlbumArtistRelationshipColumns.FILEID, TablesEnum.MGOFileAlbumRelationship, MGOFileAlbumRelationshipColumns.FILEID)
+
+            .addCondition(TablesEnum.MGOFileExtension.alias(), MGOFileExtensionColumns.DATA, SQLBuilder.Comparator.EQUALS, "mp3")
+            .addCondition(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUMID, SQLBuilder.Comparator.EQUALS, null)
+            .addCondition(TablesEnum.MGOAlbumArtist.alias(), MGOAlbumArtistColumns.ALBUMARTISTID, SQLBuilder.Comparator.EQUALS, null)
+            .orderBy(TablesEnum.MGOFile, MGOFileColumns.DISC, SQLBuilder.SORTORDER.ASC)
+            .orderBy(TablesEnum.MGOFile, MGOFileColumns.TRACK, SQLBuilder.SORTORDER.ASC)
+            .render();
 
     protected static final String FIND_LAST_PLAYED = "SELECT " + getColumns(COLUMNS_MP3) +
             " FROM MGOFile " +

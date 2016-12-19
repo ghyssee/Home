@@ -2,6 +2,7 @@ package be.home.mezzmo.domain.dao;
 
 import be.home.common.database.DatabaseColumn;
 import be.home.common.database.FieldType;
+import be.home.mezzmo.domain.dao.jdbc.SQLFunction;
 import be.home.mezzmo.domain.dao.jdbc.TablesEnum;
 import org.apache.commons.lang.StringUtils;
 
@@ -258,6 +259,20 @@ public class SQLBuilder {
             value = String.valueOf(object);
         }
         return value;
+    }
+
+    public SQLBuilder addCondition (String alias, SQLFunction function, DatabaseColumn dbColumn, Comparator comparator, Object object){
+        StringBuilder sb = new StringBuilder();
+        sb
+                .append(function == SQLFunction.NONE ? "" : function.name() + "(")
+                .append(alias + "." + dbColumn.getColumnName())
+                .append(function.getParameters() > 0 ?
+                        StringUtils.repeat(",?", function.getParameters()) :
+                        "")
+                .append(function == SQLFunction.NONE ? "" : ")");
+
+        conditions.add(new Condition(sb.toString(), comparator, getValue(object)));
+        return this;
     }
 
     public SQLBuilder addCondition (String alias, DatabaseColumn dbColumn, Comparator comparator, Object object){

@@ -62,9 +62,9 @@ public class MakeTop20 extends BatchJobV2{
         String base = WinUtils.getOneDrivePath();
         log.info("OneDrive Path: " + base);
         base += "\\Muziek\\Export\\";
-        System.out.println(MezzmoDAOQueries.FILE_SELECT_TITLE2);
+        //System.out.println(MezzmoDAOQueries.FIND_SONGS_ALBUM2);
 
-        /*
+/*
         try {
             makeTop20();
         } catch (IOException e) {
@@ -105,20 +105,20 @@ public class MakeTop20 extends BatchJobV2{
             String DRIVE = "I";
             Path pathAbsolute = Paths.get(DRIVE + comp.getFileTO().getFile());
             Path pathBase = Paths.get(DRIVE + ":" + File.separator + mp3Settings.mediaMonkey.base + File.separator + mp3Settings.mediaMonkey.playlist.path);
-            System.out.println("pathBase: " + pathBase.toString());
-            System.out.println("pathAbsolute: " + pathAbsolute.toString());
+            log.info("pathBase: " + pathBase.toString());
+            log.info("pathAbsolute: " + pathAbsolute.toString());
             Path iPodBase = Paths.get(DRIVE + ":" + File.separator + mp3Settings.mediaMonkey.base);
             Path mezzmoBase = Paths.get(base + File.separator + "Eric");
-            System.out.println("iPodBase: " + iPodBase.toString());
-            System.out.println("MezzmoBase: " + mezzmoBase.toString());
+            log.info("iPodBase: " + iPodBase.toString());
+            log.info("MezzmoBase: " + mezzmoBase.toString());
             String file = pathAbsolute.toString().replace(iPodBase.toString(), mezzmoBase.toString());
             System.out.println("Replace: " + file);
             MGOFileTO fileTO = getMezzmoService().findByFile(file);
             if (fileTO != null && fileTO.getId() > 0){
-                System.out.println("FOUND: " + fileTO.getId());
+                log.info("FOUND: " + fileTO.getId());
             }
             else {
-                System.out.println("NOT FOUND: " + file);
+                log.info("NOT FOUND: " + file);
             }
 
             Path pathRelative = pathBase.relativize(pathAbsolute);

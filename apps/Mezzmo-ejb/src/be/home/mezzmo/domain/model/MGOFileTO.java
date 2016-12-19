@@ -22,7 +22,7 @@ public class MGOFileTO {
     private int year;
     private int month;
     private String description;
-    private int duration;
+    private Integer duration;
     private Integer track;
     private String bitRate;
     private int creatorID;
@@ -195,7 +195,7 @@ public class MGOFileTO {
         return duration;
     }
 
-    public void setDuration(int duration) {
+    public void setDuration(Integer duration) {
         this.duration = duration;
     }
 
