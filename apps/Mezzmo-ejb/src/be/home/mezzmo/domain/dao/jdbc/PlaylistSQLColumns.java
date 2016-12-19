@@ -8,15 +8,15 @@ import be.home.common.database.FieldType;
  */
 public enum PlaylistSQLColumns implements DatabaseColumn  {
     ID("ID", FieldType.SEQUENCE),
-    PlaylistID("PLAYLISTID", FieldType.NORMAL),
-    ColumnNum("COLUMNNUM", FieldType.NORMAL),
-    ColumnType("COLUMNTYPE", FieldType.NORMAL),
-    Operand("OPERAND", FieldType.NORMAL),
-    ValueOneText("VALUEONETEXT", FieldType.NORMAL),
-    ValueTwoText ("VALUETWOTEXT", FieldType.NORMAL),
-    ValueOneInt("VALUEONEINT", FieldType.NORMAL),
-    ValueTwoInt ("VALUETWOINT", FieldType.NORMAL),
-    GroupNr ("GROUPNR", FieldType.NORMAL);
+    PLAYLISTID("PlaylistID", FieldType.NORMAL),
+    COLUMNNUM("ColumnNum", FieldType.NORMAL),
+    COLUMNTYPE("ColumnType", FieldType.NORMAL),
+    OPERAND("Operand", FieldType.NORMAL),
+    VALUEONETEXT("ValueOneText", FieldType.NORMAL),
+    VALUETWOTEXT ("ValueTwoText", FieldType.NORMAL),
+    VALUEONEINT("ValueOneInt", FieldType.NORMAL),
+    VALUETWOINT ("ValueTwoInt", FieldType.NORMAL),
+    GROUPNR ("GroupNr", FieldType.NORMAL);
 
     public String columnName;
     public FieldType fieldType;

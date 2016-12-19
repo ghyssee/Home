@@ -13,9 +13,34 @@ import java.util.List;
  */
 public class SQLBuilder {
 
+    private TablesEnum mainTable;
+    private List<Column> dbColumns = new ArrayList<>();
+    private List<UpdateColumn> updateColumns = new ArrayList<>();
+    private List<Condition> conditions = new ArrayList<>();
+    private List<Relation> relations = new ArrayList<>();
+    private List<OrderBy> orderByColumns = new ArrayList<>();
+    private SQLTypes sqlType;
+    private LimitBy limitBy = null;
+
     public enum Comparator {
-        LIKE,
-        EQUALS
+        LIKE ("LIKE"),
+        EQUALS ("="),
+        GREATER (">");
+
+        String comparator;
+
+        Comparator(String s) {
+            comparator = s;
+        }
+
+        public String comparator(){
+            return comparator;
+        }
+    }
+
+    public enum SORTORDER {
+        ASC,
+        DESC
     }
 
     public enum Type {
@@ -77,6 +102,24 @@ public class SQLBuilder {
         }
     }
 
+    private class LimitBy {
+        Integer pos;
+        Integer total;
+
+        LimitBy (){
+            pos = null;
+            total = null;
+        }
+        LimitBy (int pos){
+            this.pos = pos;
+            total = null;
+        }
+        LimitBy (int pos, int total){
+            this.pos = pos;
+            total = total;
+        }
+    }
+
     private class Relation {
         TablesEnum table1;
         DatabaseColumn column1;
@@ -94,12 +137,17 @@ public class SQLBuilder {
     }
 
 
-    private TablesEnum mainTable;
-    private List<Column> dbColumns = new ArrayList<>();
-    private List<UpdateColumn> updateColumns = new ArrayList<>();
-    private List<Condition> conditions = new ArrayList<>();
-    private List<Relation> relations = new ArrayList<>();
-    private SQLTypes sqlType;
+    private class OrderBy {
+        String orderField;
+
+        OrderBy (String alias, DatabaseColumn column, SORTORDER sortOrder) {
+            this.orderField = alias + " " + sortOrder.name();
+        }
+        OrderBy (TablesEnum table, DatabaseColumn column, SORTORDER sortOrder) {
+            this.orderField = table.alias() + "." + column.getColumnName() + " " + sortOrder.name();
+        }
+    }
+
 
     public SQLBuilder addTable(TablesEnum table){
         this.mainTable = table;
@@ -129,20 +177,34 @@ public class SQLBuilder {
     public SQLBuilder addColumns (TablesEnum table){
 
         for (DatabaseColumn column : table.columns()){
-            if (column.getFieldType() == FieldType.NORMAL || column.getFieldType() == FieldType.PRIMARYKEY
-                    || column.getFieldType() == FieldType.SEQUENCE) {
+            if (isTableField(column)) {
                 dbColumns.add(new Column(column, table.alias()));
             }
         }
         return this;
     }
 
+    private boolean isTableField(DatabaseColumn column){
+        boolean tableField = false;
+        switch (column.getFieldType()) {
+            case NORMAL:
+                tableField = true;
+                break;
+            case PRIMARYKEY:
+                tableField = true;
+                break;
+            case SEQUENCE:
+                tableField = true;
+                break;
+        }
+        return tableField;
+    }
+
 
     public SQLBuilder addColumns (TablesEnum table, SQLTypes sqlType){
 
         for (DatabaseColumn column : table.columns()){
-            if (column.getFieldType() == FieldType.NORMAL || column.getFieldType() == FieldType.PRIMARYKEY
-                    || column.getFieldType() == FieldType.SEQUENCE) {
+            if (isTableField(column)) {
                 if (column.getFieldType() != FieldType.SEQUENCE || sqlType != SQLTypes.INSERT) {
                     dbColumns.add(new Column(column, table.alias()));
                 }
@@ -169,13 +231,27 @@ public class SQLBuilder {
         return this;
     }
 
-    public SQLBuilder addCondition (DatabaseColumn column, Comparator comparator, String value){
-        conditions.add(new Condition(column.getColumnName(), comparator, value == null ? "?" : "'" + value + "'"));
+    public SQLBuilder addCondition (DatabaseColumn column, Comparator comparator, Object object){
+        conditions.add(new Condition(column.getColumnName(), comparator, getValue(object)));
         return this;
     }
 
-    public SQLBuilder addCondition (String alias, DatabaseColumn dbColumn, Comparator comparator, String value){
-        conditions.add(new Condition(alias + "." + dbColumn.getColumnName(), comparator, "'" + value + "'"));
+    private String getValue(Object object){
+        String value = "";
+        if (object == null){
+            value = "?";
+        }
+        else if (object instanceof String){
+            value = "'" + (String) object + "'";
+        }
+        else if (object instanceof Integer){
+            value = String.valueOf(object);
+        }
+        return value;
+    }
+
+    public SQLBuilder addCondition (String alias, DatabaseColumn dbColumn, Comparator comparator, Object object){
+        conditions.add(new Condition(alias + "." + dbColumn.getColumnName(), comparator, getValue(object)));
         return this;
     }
 
@@ -199,6 +275,30 @@ public class SQLBuilder {
         return this;
     }
 
+    public SQLBuilder orderBy (String alias, DatabaseColumn column, SORTORDER sortOrder) {
+        orderByColumns.add(new OrderBy(alias, column, sortOrder));
+        return this;
+    }
+
+    public SQLBuilder orderBy (TablesEnum table, DatabaseColumn column, SORTORDER sortOrder) {
+        orderByColumns.add(new OrderBy(table, column, sortOrder));
+        return this;
+    }
+
+    public SQLBuilder limitBy (int pos, int total) {
+        limitBy = new LimitBy(pos, total);
+        return this;
+    }
+    public SQLBuilder limitBy (int pos) {
+        limitBy = new LimitBy(pos);
+        return this;
+    }
+    public SQLBuilder limitBy () {
+        limitBy = new LimitBy();
+        return this;
+    }
+
+
     private String renderSelect(){
         StringBuilder sb = new StringBuilder();
         sb
@@ -207,7 +307,9 @@ public class SQLBuilder {
                 .append(" FROM ")
                 .append(this.mainTable.tableAlias())
                 .append(relations())
-                .append(conditions());
+                .append(conditions())
+                .append(orderBy())
+                .append(limitByClause());
         return sb.toString();
     }
 
@@ -254,6 +356,7 @@ public class SQLBuilder {
                 break;
             case INSERT:
                 sql = renderInsert();
+                break;
             case UPDATE:
                 sql = renderUpdate();
                 break;
@@ -271,12 +374,12 @@ public class SQLBuilder {
         boolean first = true;
         StringBuilder sb = new StringBuilder();
         for (Column column : this.dbColumns){
-            String columnAlias = column.columnAlias == null ? column.column.getColumnName() : column.columnAlias;
+            String columnAlias = column.columnAlias == null ? column.column.name() : column.columnAlias;
             sb
                     .append(first ? "" : ", ")
                     .append(column.dbAlias)
                     .append(".")
-                    .append(column.column.name())
+                    .append(column.column.getColumnName())
                     .append( " AS ")
                     .append(columnAlias);
             first = false;
@@ -290,7 +393,7 @@ public class SQLBuilder {
         for (Column column : this.dbColumns){
             sb
                     .append(first ? "" : ", ")
-                    .append(column.column.name());
+                    .append(column.column.getColumnName());
             first = false;
         }
         return sb.toString();
@@ -338,10 +441,34 @@ public class SQLBuilder {
                     .append(first ? " WHERE " : " AND ")
                     .append(condition.field1)
                     .append(" ")
-                    .append(condition.comparator == Comparator.EQUALS ? "=" : "LIKE")
+                    .append(condition.comparator.comparator())
                     .append(" ")
                     .append(condition.field2);
             first = false;
+        }
+        return sb.toString();
+    }
+
+    public String orderBy(){
+        boolean first = true;
+        StringBuilder sb = new StringBuilder();
+        for (OrderBy orderByColumn : this.orderByColumns){
+            sb
+                    .append(first ? " ORDER BY " : ", ")
+                    .append(orderByColumn.orderField);
+            first = false;
+        }
+        return sb.toString();
+    }
+
+    public String limitByClause () {
+        StringBuilder sb = new StringBuilder();
+        if (this.limitBy != null) {
+            sb
+                    .append(" LIMIT ")
+                    .append(this.limitBy.pos == null ? "?" : this.limitBy.pos)
+                    .append(",")
+                    .append(this.limitBy.total == null ? "?" : this.limitBy.total);
         }
         return sb.toString();
     }
@@ -357,11 +484,11 @@ public class SQLBuilder {
                     .append(" ON (")
                     .append(alias)
                     .append(".")
-                    .append(relation.column1.name())
+                    .append(relation.column1.getColumnName())
                     .append(" = ")
                     .append(relation.table2.alias())
                     .append(".")
-                    .append(relation.column2.name())
+                    .append(relation.column2.getColumnName())
                     .append(")");
         }
         return sb.toString();

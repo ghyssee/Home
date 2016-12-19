@@ -8,7 +8,7 @@ import be.home.common.database.FieldType;
  */
 public enum MGOFileArtistRelationshipColumns implements DatabaseColumn  {
     ID("ID", FieldType.NORMAL),
-    FileID("FILEID", FieldType.NORMAL);
+    FILEID("FileID", FieldType.NORMAL);
 
     public String columnName;
     public FieldType fieldType;

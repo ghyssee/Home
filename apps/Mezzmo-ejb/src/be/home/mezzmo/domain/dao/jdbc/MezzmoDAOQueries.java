@@ -37,20 +37,14 @@ public class MezzmoDAOQueries extends MezzmoDB {
             "MGOFileAlbum.Data as ALBUMNAME",
             "MGOFile.DateLastPlayed as DATELASTPLAYED"};
 
-    protected static final String FILEALBUM_SELECT = "SELECT " + getColumns(COLUMNS) + " FROM MGOFileAlbumRelationship " +
-            " INNER JOIN MGOFile ON (MGOFileAlbumRelationship.FileID = MGOFile.ID)" +
-            " INNER JOIN MGOFileAlbum ON (MGOFileAlbum.ID = MGOFileAlbumRelationship.ID)" +
-            " WHERE 1=1" +
-            " AND MGOFileAlbum.data like ?"; //"'Ultratop 50 2015%'";
-
-    private static final String FILEALBUM_SELECT2 = SQLBuilder.getInstance()
+    private static final String FILEALBUM_SELECT = SQLBuilder.getInstance()
             .select()
             .addTable(TablesEnum.MGOFile)
-            .addColumns(TablesEnum.MGOPlaylist)
+            .addColumns(TablesEnum.MGOFile)
             .addColumns(TablesEnum.MGOFileAlbum)
-            .addRelation(TablesEnum.MGOFileAlbumRelationship, MGOFileAlbumRelationshipColumns.ID, TablesEnum.MGOFileAlbum, MGOFileAlbumColumns.ID)
-            .addRelation(TablesEnum.MGOFile, MGOFileColumns.ID, TablesEnum.MGOFileAlbumRelationship, MGOFileAlbumRelationshipColumns.FileID)
-            .addCondition(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.Data, SQLBuilder.Comparator.LIKE)
+            .addRelation(TablesEnum.MGOFileAlbum, MGOFileAlbumColumns.ALBUMID, TablesEnum.MGOFileAlbumRelationship, MGOFileAlbumRelationshipColumns.ID)
+            .addRelation(TablesEnum.MGOFileAlbumRelationship, MGOFileAlbumRelationshipColumns.FILEID, TablesEnum.MGOFile, MGOFileColumns.ID)
+            .addCondition(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUM, SQLBuilder.Comparator.LIKE)
             .render();
 
     private static final String FILE_FIND_TAGINFO = "SELECT " + getColumns(COLUMNS_MP3) + " FROM MGOFile " +
@@ -61,6 +55,19 @@ public class MezzmoDAOQueries extends MezzmoDB {
             " INNER JOIN MGOFileArtist ON (MGOFileArtist.ID = MGOFileArtistRelationship.ID)" +
             " INNER JOIN MGOAlbumArtistRelationship ON (MGOAlbumArtistRelationship.FileID = MGOFILE.id)" +
             " WHERE MGOFileExtension.data = 'mp3'";
+
+    public static SQLBuilder FILE_FIND_TAGINFO2 = SQLBuilder.getInstance()
+            .select()
+            .addTable(TablesEnum.MGOFile)
+            .addColumns(TablesEnum.MGOFile)
+            .addColumns(TablesEnum.MGOFileAlbum)
+            .addColumns(TablesEnum.MGOFileArtist)
+            .addRelation(TablesEnum.MGOFileAlbum, MGOFileAlbumColumns.ALBUMID, TablesEnum.MGOFileAlbumRelationship, MGOFileAlbumRelationshipColumns.ID)
+            .addRelation(TablesEnum.MGOFileAlbumRelationship, MGOFileAlbumRelationshipColumns.FILEID, TablesEnum.MGOFile, MGOFileColumns.ID)
+            .addRelation(TablesEnum.MGOFileExtension, MGOFileExtensionColumns.ID, TablesEnum.MGOFile, MGOFileColumns.EXTENSION_ID)
+            .addRelation(TablesEnum.MGOFileArtist, MGOFileArtistColumns.ARTISTID, TablesEnum.MGOFileArtistRelationship, MGOFileArtistRelationshipColumns.ID)
+            .addRelation(TablesEnum.MGOFileArtistRelationship, MGOFileArtistRelationshipColumns.FILEID, TablesEnum.MGOFile, MGOFileColumns.ID)
+            .addCondition(TablesEnum.MGOFileExtension.alias(), MGOFileExtensionColumns.DATA, SQLBuilder.Comparator.EQUALS, "mp3");
 
     protected static final String FILE_FIND_TAGINFO_CRITERIA = FILE_FIND_TAGINFO +
             " AND MGOFile.Track like ?" +
@@ -78,7 +85,7 @@ public class MezzmoDAOQueries extends MezzmoDB {
             " AND MGOFile.FileTitle like ?" +
             " AND MGOFileAlbum.data like ?";
 
-    protected static final String FILE_PLAYCOUNT = "SELECT " + getColumns(COLUMNS) + " FROM MGOFileAlbumRelationship " +
+    protected static final String FILE_PLAYCOUNT_OLD = "SELECT " + getColumns(COLUMNS) + " FROM MGOFileAlbumRelationship " +
             " INNER JOIN MGOFile ON (MGOFileAlbumRelationship.FileID = MGOFile.ID)" +
             " INNER JOIN MGOFileAlbum ON (MGOFileAlbum.ID = MGOFileAlbumRelationship.ID)" +
             " INNER JOIN MGOFileExtension ON (MGOFileExtension.ID = MGOFile.extensionID)" +
@@ -87,6 +94,23 @@ public class MezzmoDAOQueries extends MezzmoDB {
             " AND MGOFile.PlayCount > 0" +
             " ORDER BY datetime(MGOFile.DateLastPlayed, 'unixepoch', 'localtime')  ASC" +
             " LIMIT ?,?";
+
+    public static final String FILE_PLAYCOUNT = SQLBuilder.getInstance()
+            .select()
+            .addTable(TablesEnum.MGOFile)
+            .addColumns(TablesEnum.MGOFile)
+            .addColumns(TablesEnum.MGOFileAlbum)
+            .addColumns(TablesEnum.MGOFileArtist)
+            .addRelation(TablesEnum.MGOFileAlbum, MGOFileAlbumColumns.ALBUMID, TablesEnum.MGOFileAlbumRelationship, MGOFileAlbumRelationshipColumns.ID)
+            .addRelation(TablesEnum.MGOFileAlbumRelationship, MGOFileAlbumRelationshipColumns.FILEID, TablesEnum.MGOFile, MGOFileColumns.ID)
+            .addRelation(TablesEnum.MGOFileExtension, MGOFileExtensionColumns.ID, TablesEnum.MGOFile, MGOFileColumns.EXTENSION_ID)
+            .addRelation(TablesEnum.MGOFileArtist, MGOFileArtistColumns.ARTISTID, TablesEnum.MGOFileArtistRelationship, MGOFileArtistRelationshipColumns.ID)
+            .addRelation(TablesEnum.MGOFileArtistRelationship, MGOFileArtistRelationshipColumns.FILEID, TablesEnum.MGOFile, MGOFileColumns.ID)
+            .addCondition(TablesEnum.MGOFileExtension.alias(), MGOFileExtensionColumns.DATA, SQLBuilder.Comparator.EQUALS, "mp3")
+            .addCondition(MGOFileColumns.PLAYCOUNT, SQLBuilder.Comparator.GREATER, new Integer(0))
+            .orderBy(TablesEnum.MGOFile, MGOFileColumns.DATELASTPLAYED, SQLBuilder.SORTORDER.ASC)
+            .limitBy()
+            .render();
 
     protected static final String FILE_UPDATE_PLAYCOUNT = "UPDATE MGOFile " +
             " SET PlayCount = ? " +
@@ -128,9 +152,6 @@ public class MezzmoDAOQueries extends MezzmoDB {
             " MGOAlbumArtist.data AS ALBUMARTISTNAME," +
             " MGOFileAlbum.id AS ALBUMID," +
             " MAX(MGOFile.Year) AS YEAR" +
-//            " MGOFile.Track AS TRACK, " +
-//            " MGOFileArtist.data AS ARTIST, " +
-//            " MGOFile.title AS TITLE" +
             " FROM MGOFileAlbumRelationship" +
             " INNER JOIN MGOFileAlbum ON (MGOFileAlbum.ID = MGOFileAlbumRelationship.ID)" +
             " INNER JOIN MGOAlbumArtistRelationship ON (MGOAlbumArtistRelationship.fileID = MGOFileAlbumRelationship.fileID)" +

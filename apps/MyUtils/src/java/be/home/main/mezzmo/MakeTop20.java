@@ -8,6 +8,7 @@ import be.home.common.utils.JSONUtils;
 import be.home.common.utils.VelocityUtils;
 import be.home.common.utils.WinUtils;
 import be.home.domain.model.MezzmoUtils;
+import be.home.mezzmo.domain.dao.jdbc.MezzmoDAOQueries;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.MGOFileTO;
 import be.home.mezzmo.domain.service.MediaMonkeyServiceImpl;
@@ -61,12 +62,14 @@ public class MakeTop20 extends BatchJobV2{
         String base = WinUtils.getOneDrivePath();
         log.info("OneDrive Path: " + base);
         base += "\\Muziek\\Export\\";
+        //System.out.println(MezzmoDAOQueries.FILE_PLAYCOUNT2);
 
+        /*
         try {
             makeTop20();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
 
 
     }

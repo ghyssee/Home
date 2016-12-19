@@ -1,5 +1,6 @@
 package be.home.mezzmo.domain.dao.jdbc;
 
+import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.dao.jdbc.SQLiteUtils;
 import be.home.mezzmo.domain.model.*;
 import org.springframework.jdbc.core.RowMapper;
@@ -10,7 +11,7 @@ import java.sql.SQLException;
 /**
  * Created by Gebruiker on 5/10/2016.
  */
-public class MezzmoRowMappers {
+public class MezzmoRowMappers extends MezzmoDAOQueries {
     public static class FileRowMapper implements RowMapper {
         public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
             MGOFileTO fileTO = new MGOFileTO();
@@ -111,19 +112,44 @@ public class MezzmoRowMappers {
         public static class FileAlbumPlayCountMapper implements RowMapper {
             public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
                 MGOFileAlbumCompositeTO fileAlbumComposite = new MGOFileAlbumCompositeTO();
-                MGOFileTO fileTO = fileAlbumComposite.getFileTO();
-                MGOFileAlbumTO fileAlbumTO = fileAlbumComposite.getFileAlbumTO();
-                fileTO.setFileTitle(rs.getString("FILETITLE"));
-                fileTO.setPlayCount(rs.getInt("PLAYCOUNT"));
-                fileTO.setFile(rs.getString("FILE"));
-                Long f = rs.getLong("DATELASTPLAYED");
-                fileTO.setDateLastPlayed(SQLiteUtils.convertToDate(f));
-                fileAlbumTO.setName(rs.getString("ALBUMNAME"));
+                fileAlbumComposite.setFileTO(mapFileTO(rs, rowNum));
+                fileAlbumComposite.setFileAlbumTO(mapFileAlbumTO(rs, rowNum));
                 return fileAlbumComposite;
             }
         }
 
-        public static class SongsAlbumRowMapper implements RowMapper {
+    public static class FileAlbumPlayCountMapperOld implements RowMapper {
+        public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+            MGOFileAlbumCompositeTO fileAlbumComposite = new MGOFileAlbumCompositeTO();
+            MGOFileTO fileTO = fileAlbumComposite.getFileTO();
+            MGOFileAlbumTO fileAlbumTO = fileAlbumComposite.getFileAlbumTO();
+            fileTO.setFileTitle(rs.getString("FILETITLE"));
+            fileTO.setPlayCount(rs.getInt("PLAYCOUNT"));
+            fileTO.setFile(rs.getString("FILE"));
+            Long f = rs.getLong("DATELASTPLAYED");
+            fileTO.setDateLastPlayed(SQLiteUtils.convertToDate(f));
+            fileAlbumTO.setName(rs.getString("ALBUMNAME"));
+            return fileAlbumComposite;
+        }
+    }
+
+    private static MGOFileTO  mapFileTO(ResultSet rs, int rowNum)throws SQLException{
+        MGOFileTO fileTO = new MGOFileTO();
+        fileTO.setFileTitle(getString(rs, MGOFileColumns.FILETITLE));
+        fileTO.setPlayCount(getInteger(rs, MGOFileColumns.PLAYCOUNT));
+        fileTO.setFile(getString(rs, MGOFileColumns.FILE));
+        fileTO.setDateLastPlayed(getDate(rs, MGOFileColumns.DATELASTPLAYED));
+        return fileTO;
+    }
+
+    private static MGOFileAlbumTO mapFileAlbumTO(ResultSet rs, int rowNum)throws SQLException{
+        MGOFileAlbumTO fileAlbumTO = new MGOFileAlbumTO();
+        fileAlbumTO.setName(rs.getString(MGOFileAlbumColumns.ALBUM.name()));
+        fileAlbumTO.setId(rs.getLong(MGOFileAlbumColumns.ALBUMID.name()));
+        return fileAlbumTO;
+    }
+
+    public static class SongsAlbumRowMapper implements RowMapper {
             public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
                 MGOFileAlbumCompositeTO fileAlbumComposite = new MGOFileAlbumCompositeTO();
                 MGOFileAlbumTO fileAlbumTO = fileAlbumComposite.getFileAlbumTO();

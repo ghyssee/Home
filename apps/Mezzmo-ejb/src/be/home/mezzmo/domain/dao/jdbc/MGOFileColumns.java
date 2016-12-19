@@ -8,14 +8,16 @@ import be.home.common.database.FieldType;
  */
 public enum MGOFileColumns implements DatabaseColumn  {
     ID("ID", FieldType.SEQUENCE),
-    File("FILE", FieldType.NORMAL),
-    Title("TITLE", FieldType.NORMAL),
-    PlayCount("PLAYCOUNT", FieldType.NORMAL),
-    Ranking("RANKING", FieldType.NORMAL),
-    Disc("DISC", FieldType.NORMAL),
-    Track("TRACK", FieldType.NORMAL),
-    FileTitle("FILETITLE", FieldType.NORMAL),
-    DateLastPlayed("DATELASTPLAYED", FieldType.NORMAL);
+    FILE("File", FieldType.NORMAL),
+    TITLE("Title", FieldType.NORMAL),
+    PLAYCOUNT("Playcount", FieldType.NORMAL),
+    RANKING("Ranking", FieldType.NORMAL),
+    DISC("Disc", FieldType.NORMAL),
+    TRACK("Track", FieldType.NORMAL),
+    FILETITLE("FileTitle", FieldType.NORMAL),
+    DATELASTPLAYED("DateLastPlayed", FieldType.NORMAL),
+    DURATION("Duration", FieldType.NORMAL),
+    EXTENSION_ID("ExtensionID", FieldType.NORMAL);
 
     public String columnName;
     public FieldType fieldType;

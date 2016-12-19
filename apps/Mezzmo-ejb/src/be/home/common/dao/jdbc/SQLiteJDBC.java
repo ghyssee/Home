@@ -16,6 +16,7 @@ import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import java.io.*;
 import java.sql.*;
 import java.util.*;
+import java.util.Date;
 
 public class SQLiteJDBC
 {
@@ -118,6 +119,15 @@ public class SQLiteJDBC
 
     public static Integer getInteger(ResultSet rs, DatabaseColumn column) throws SQLException {
         return new Integer(rs.getInt(column.name()));
+    }
+
+    public static Long getLong(ResultSet rs, DatabaseColumn column) throws SQLException {
+        return new Long(rs.getLong(column.name()));
+    }
+
+    public static Date getDate(ResultSet rs, DatabaseColumn column) throws SQLException {
+        Long f = rs.getLong(column.name());
+        return SQLiteUtils.convertToDate(f);
     }
 
     public static String getString(ResultSet rs, DatabaseColumn column) throws SQLException {

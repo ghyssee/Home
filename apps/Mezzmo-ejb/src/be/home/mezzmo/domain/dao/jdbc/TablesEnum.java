@@ -14,12 +14,12 @@ public enum TablesEnum {
     MGOPlaylistSQL ("PLAYLISTSQL", PlaylistSQLColumns.values()),
     MGOPlaylist_To_File ("PLAYLISTFILE", PlaylistColumns.values()),
     MGOFile ("FILE", MGOFileColumns.values()),
-    MGOFileAlbum ("FILEALBUM", PlaylistColumns.values()),
-    MGOFileAlbumRelationship ("FILEALBUMREL", PlaylistColumns.values()),
+    MGOFileAlbum ("FILEALBUM", MGOFileAlbumColumns.values()),
+    MGOFileAlbumRelationship ("FILEALBUMREL", MGOFileAlbumRelationshipColumns.values()),
     MGOFileArtist ("FILEARTIST", MGOFileArtistColumns.values()),
     MGOFileArtistRelationship ("FILEARTISTREL", MGOFileArtistRelationshipColumns.values()),
-    MGOAlbumArtist ("ALBUMARTIST", MGOFileArtistColumns.values()),
-    MGOAlbumArtistRelationship ("ALBUMARTISTREL", MGOFileArtistRelationshipColumns.values()),
+    //MGOAlbumArtist ("ALBUMARTIST", MGOFileArtistColumns.values()),
+    //MGOAlbumArtistRelationship ("ALBUMARTISTREL", MGOFileArtistRelationshipColumns.values()),
     MGOFileExtension ("FILEEXTENSION", MGOFileExtensionColumns.values());
 
     private String alias;

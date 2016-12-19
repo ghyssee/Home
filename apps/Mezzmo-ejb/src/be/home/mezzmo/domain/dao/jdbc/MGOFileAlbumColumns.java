@@ -7,8 +7,8 @@ import be.home.common.database.FieldType;
  * Created by ghyssee on 14/12/2016.
  */
 public enum MGOFileAlbumColumns implements DatabaseColumn  {
-    ID("ALBUMID", FieldType.SEQUENCE),
-    Data("ALBUM", FieldType.NORMAL);
+    ALBUMID("ID", FieldType.SEQUENCE),
+    ALBUM("Data", FieldType.NORMAL);
 
     public String columnName;
     public FieldType fieldType;

@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Created by ghyssee on 9/02/2016.
  */
-public class MezzmoDAOImpl extends MezzmoDAOQueries {
+public class MezzmoDAOImpl extends MezzmoRowMappers {
 
     private static final Logger log = Logger.getLogger(MezzmoDAOImpl.class);
 

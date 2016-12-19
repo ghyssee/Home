@@ -250,10 +250,10 @@ public class MP3TagUtils {
         String SQL = new SQLBuilder()
                 .update()
                 .addTable(TablesEnum.MGOFile)
-                .updateColumn(MGOFileColumns.File, SQLBuilder.Type.FUNCTION,
-                        "REPLACE(" + MGOFileColumns.File.name() +
+                .updateColumn(MGOFileColumns.FILE, SQLBuilder.Type.FUNCTION,
+                        "REPLACE(" + MGOFileColumns.FILE.name() +
                               ",'" + oldValue + "','" + newValue + "')")
-                .addCondition(MGOFileColumns.File, SQLBuilder.Comparator.LIKE, find + "%")
+                .addCondition(MGOFileColumns.FILE, SQLBuilder.Comparator.LIKE, find + "%")
                 .render();
         return SQL;
     }

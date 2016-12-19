@@ -8,7 +8,7 @@ import be.home.common.database.FieldType;
  */
 public enum MGOFileExtensionColumns implements DatabaseColumn  {
     ID("ID", FieldType.SEQUENCE),
-    Data("DATA", FieldType.NORMAL);
+    DATA("Data", FieldType.NORMAL);
 
     public String columnName;
     public FieldType fieldType;
