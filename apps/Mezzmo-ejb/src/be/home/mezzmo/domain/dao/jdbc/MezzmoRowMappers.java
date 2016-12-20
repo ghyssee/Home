@@ -108,7 +108,7 @@ public class MezzmoRowMappers extends MezzmoDAOQueries {
         }
     }
 
-    public static class FileAlbumPlayCountMapper implements RowMapper {
+    public class FileAlbumPlayCountMapper implements RowMapper {
             public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
                 MGOFileAlbumCompositeTO fileAlbumComposite = new MGOFileAlbumCompositeTO();
                 fileAlbumComposite.setFileTO(mapFileTO(rs, rowNum));
@@ -187,12 +187,12 @@ public class MezzmoRowMappers extends MezzmoDAOQueries {
             }
         }
 
-    public static class MaxDiscRowMapper implements RowMapper {
+    public class MaxDiscRowMapper implements RowMapper {
         public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
             MGOFileAlbumCompositeTO comp = new MGOFileAlbumCompositeTO();
-            comp.getFileTO().setDisc(rs.getInt("DISC"));
-            comp.getFileAlbumTO().setName(rs.getString("ALBUM"));
-            comp.getAlbumArtistTO().setName(rs.getString("ALBUM_ARTIST"));
+            comp.getFileTO().setDisc(getInteger(rs, MGOFileColumns.DISC));
+            comp.getFileAlbumTO().setName(getString(rs, MGOFileAlbumColumns.ALBUM));
+            comp.getAlbumArtistTO().setName(getString(rs, MGOAlbumArtistColumns.ALBUMARTIST));
             return comp;
         }
     }

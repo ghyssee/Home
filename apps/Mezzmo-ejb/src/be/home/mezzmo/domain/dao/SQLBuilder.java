@@ -24,6 +24,7 @@ public class SQLBuilder {
     private LimitBy limitBy = null;
     private List<Option> options = new ArrayList<>();
     private boolean distinct = false;
+    private List<GroupBy> groupColumns = new ArrayList<>();
 
     public enum Comparator {
         LIKE ("LIKE"),
@@ -68,10 +69,16 @@ public class SQLBuilder {
     }
 
     private class Column {
-        DatabaseColumn column;
-        String dbAlias;
-        String columnAlias;
+        //DatabaseColumn column;
+        //String dbAlias;
+        //String columnAlias;
+        String field;
 
+        Column(String field){
+            this.field = field;
+        }
+
+        /*
         Column(DatabaseColumn column, String alias){
             this.column = column;
             this.dbAlias = alias;
@@ -81,7 +88,7 @@ public class SQLBuilder {
             this.column = column;
             this.dbAlias = alias;
             this.columnAlias = columnAlias;
-        }
+        }*/
     }
 
     private class UpdateColumn {
@@ -159,6 +166,14 @@ public class SQLBuilder {
         }
     }
 
+    private class GroupBy {
+        String groupbyField;
+        GroupBy (String alias, DatabaseColumn column) {
+            this.groupbyField = alias + "." + column.getColumnName();
+        }
+    }
+
+
 
     public SQLBuilder addTable(TablesEnum table){
         this.mainTable = table;
@@ -189,7 +204,9 @@ public class SQLBuilder {
 
         for (DatabaseColumn column : table.columns()){
             if (isTableField(column)) {
-                dbColumns.add(new Column(column, table.alias()));
+                String field = getField(table.alias(), SQLFunction.NONE, column, null);
+                //dbColumns.add(new Column(column, table.alias()));
+                dbColumns.add(new Column(field));
             }
         }
         return this;
@@ -217,28 +234,55 @@ public class SQLBuilder {
         for (DatabaseColumn column : table.columns()){
             if (isTableField(column)) {
                 if (column.getFieldType() != FieldType.SEQUENCE || sqlType != SQLTypes.INSERT) {
-                    dbColumns.add(new Column(column, table.alias()));
+                    String field = getField(table.alias(), SQLFunction.NONE, column, null);
+                    //dbColumns.add(new Column(column, table.alias()));
+                    dbColumns.add(new Column(field));
                 }
             }
         }
         return this;
     }
 
-    public SQLBuilder addColumn (String alias, DatabaseColumn column, String columnAlias) {
+    private String getField(String tableAlias, SQLFunction function, DatabaseColumn dbColumn, String columnAlias){
+        StringBuilder sb = new StringBuilder();
+        sb
+                .append (tableAlias)
+                .append (".")
+                .append ( dbColumn.getColumnName())
+                .append( " AS ")
+                .append ( columnAlias == null ? dbColumn.name() : columnAlias);
+        return sb.toString();
+    }
 
-        dbColumns.add(new Column(column, alias, columnAlias));
+
+    public SQLBuilder addColumn (String alias, SQLFunction function, DatabaseColumn dbColumn, String columnAlias){
+        StringBuilder sb = new StringBuilder();
+        sb
+                .append(function == SQLFunction.NONE ? "" : function.name() + "(")
+                .append(alias + "." + dbColumn.getColumnName())
+                .append(function.getParameters() > 0 ?
+                        StringUtils.repeat(",?", function.getParameters()) :
+                        "")
+                .append(function == SQLFunction.NONE ? "" : ")")
+                .append(" AS " + dbColumn.name());
+
+        //dbColumns.add(new Column(sb.toString(), alias, columnAlias);
+        dbColumns.add(new Column(sb.toString()));
         return this;
     }
 
-    public SQLBuilder updateColumn (DatabaseColumn column, String value) {
 
-        updateColumns.add(new UpdateColumn(column,value));
+    public SQLBuilder addColumn (String alias, DatabaseColumn column, String columnAlias) {
+
+        String getField = getField(alias, SQLFunction.NONE, column, columnAlias);
+        //dbColumns.add(new Column(column, alias, columnAlias));
+        dbColumns.add(new Column(getField));
         return this;
     }
 
     public SQLBuilder updateColumn (DatabaseColumn column, Type type, String value) {
 
-        updateColumns.add(new UpdateColumn(column,value, type));
+        updateColumns.add(new UpdateColumn(column, value, type));
         return this;
     }
 
@@ -315,13 +359,15 @@ public class SQLBuilder {
         return this;
     }
 
+    public SQLBuilder addGroup (String alias, DatabaseColumn column){
+        groupColumns.add(new GroupBy(alias, column));
+        return this;
+    }
+
     public SQLBuilder enableDistinct () {
         distinct = true;
         return this;
     }
-
-
-
 
     public SQLBuilder limitBy (int pos, int total) {
         limitBy = new LimitBy(pos, total);
@@ -347,6 +393,7 @@ public class SQLBuilder {
                 .append(this.mainTable.tableAlias())
                 .append(relations())
                 .append(conditions())
+                .append(groupBy())
                 .append(orderBy())
                 .append(limitByClause())
                 .append(options());
@@ -414,6 +461,11 @@ public class SQLBuilder {
         boolean first = true;
         StringBuilder sb = new StringBuilder();
         for (Column column : this.dbColumns){
+            sb
+                    .append(first ? "" : ", ")
+                    .append(column.field);
+
+            /*
             String columnAlias = column.columnAlias == null ? column.column.name() : column.columnAlias;
             sb
                     .append(first ? "" : ", ")
@@ -421,7 +473,7 @@ public class SQLBuilder {
                     .append(".")
                     .append(column.column.getColumnName())
                     .append( " AS ")
-                    .append(columnAlias);
+                    .append(columnAlias);*/
             first = false;
         }
         return sb.toString();
@@ -430,13 +482,26 @@ public class SQLBuilder {
     public String insertFields(){
         boolean first = true;
         StringBuilder sb = new StringBuilder();
+        /*
         for (Column column : this.dbColumns){
             sb
                     .append(first ? "" : ", ")
                     .append(column.column.getColumnName());
             first = false;
+        }*/
+        for (DatabaseColumn column : this.mainTable.columns()) {
+            if (!isSequence(column)){
+                sb
+                        .append(first ? "" : ", ")
+                        .append(column.getColumnName());
+                first = false;
+            }
         }
         return sb.toString();
+    }
+
+    private boolean isSequence(DatabaseColumn column){
+        return (column.getFieldType() == FieldType.SEQUENCE);
     }
 
     public String updateFields(){
@@ -468,8 +533,15 @@ public class SQLBuilder {
 
     public String values(){
         StringBuilder sb = new StringBuilder();
-        sb.append("?");
-        sb.append(StringUtils.repeat(",?", this.dbColumns.size()-1));
+        boolean first = true;
+        for (DatabaseColumn column : this.mainTable.columns()) {
+            if (!isSequence(column)){
+                sb
+                        .append(first ? "" : ", ")
+                        .append("?");
+                first = false;
+            }
+        }
         return sb.toString();
     }
 
@@ -496,6 +568,18 @@ public class SQLBuilder {
             sb
                     .append(first ? " ORDER BY " : ", ")
                     .append(orderByColumn.orderField);
+            first = false;
+        }
+        return sb.toString();
+    }
+
+    public String groupBy(){
+        boolean first = true;
+        StringBuilder sb = new StringBuilder();
+        for (GroupBy column : this.groupColumns){
+            sb
+                    .append(first ? " GROUP BY " : ", ")
+                    .append(column.groupbyField);
             first = false;
         }
         return sb.toString();

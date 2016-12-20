@@ -146,7 +146,7 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
     {
         String query = FIND_LAST_PLAYED;
         Object[] params = {number};
-        List<MGOFileAlbumCompositeTO>  list = getInstance().getJDBCTemplate().query(query, new MezzmoRowMappers.SongsAlbumRowMapper(), params);
+        List<MGOFileAlbumCompositeTO>  list = getInstance().getJDBCTemplate().query(query, new FileAlbumPlayCountMapper(), params);
         return list;
 
     }
@@ -159,7 +159,7 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
     public List<MGOFileAlbumCompositeTO> getMaxDisc()
     {
         String query = MAX_DISC;
-        List<MGOFileAlbumCompositeTO>  list = getInstance().getJDBCTemplate().query(query, new MezzmoRowMappers.MaxDiscRowMapper());
+        List<MGOFileAlbumCompositeTO>  list = getInstance().getJDBCTemplate().query(query, new MaxDiscRowMapper());
         return list;
 
     }
