@@ -1,4 +1,4 @@
-package be.home.mezzmo.domain.dao.jdbc;
+package be.home.common.database.sqlbuilder;
 
 /**
  * Created by Gebruiker on 19/12/2016.

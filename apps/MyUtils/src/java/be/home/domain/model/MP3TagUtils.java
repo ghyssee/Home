@@ -1,10 +1,12 @@
 package be.home.domain.model;
 
+import be.home.common.database.sqlbuilder.Comparator;
+import be.home.common.database.sqlbuilder.Type;
 import be.home.common.enums.MP3Tag;
 import be.home.common.mp3.MP3Utils;
-import be.home.mezzmo.domain.dao.SQLBuilder;
-import be.home.mezzmo.domain.dao.jdbc.MGOFileColumns;
-import be.home.mezzmo.domain.dao.jdbc.TablesEnum;
+import be.home.common.database.sqlbuilder.SQLBuilder;
+import be.home.mezzmo.domain.dao.definition.MGOFileColumns;
+import be.home.mezzmo.domain.dao.definition.TablesEnum;
 import be.home.mezzmo.domain.model.AlbumError;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import com.mpatric.mp3agic.ID3v2;
@@ -250,10 +252,10 @@ public class MP3TagUtils {
         String SQL = new SQLBuilder()
                 .update()
                 .addTable(TablesEnum.MGOFile)
-                .updateColumn(MGOFileColumns.FILE, SQLBuilder.Type.FUNCTION,
+                .updateColumn(MGOFileColumns.FILE, Type.FUNCTION,
                         "REPLACE(" + MGOFileColumns.FILE.name() +
                               ",'" + oldValue + "','" + newValue + "')")
-                .addCondition(MGOFileColumns.FILE, SQLBuilder.Comparator.LIKE, find + "%")
+                .addCondition(MGOFileColumns.FILE, Comparator.LIKE, find + "%")
                 .render();
         return SQL;
     }

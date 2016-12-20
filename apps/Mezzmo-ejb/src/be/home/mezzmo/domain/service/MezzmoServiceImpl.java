@@ -4,7 +4,7 @@ import be.home.common.enums.MP3Tag;
 import be.home.common.model.TransferObject;
 import be.home.mezzmo.domain.bo.MezzmoBO;
 import be.home.mezzmo.domain.bo.PlaylistBO;
-import be.home.mezzmo.domain.dao.jdbc.TablesEnum;
+import be.home.mezzmo.domain.dao.definition.TablesEnum;
 import be.home.mezzmo.domain.model.*;
 
 import java.sql.SQLException;

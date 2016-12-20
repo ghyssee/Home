@@ -1,9 +1,7 @@
-package be.home.mezzmo.domain.dao;
+package be.home.common.database.sqlbuilder;
 
 import be.home.common.database.DatabaseColumn;
 import be.home.common.database.FieldType;
-import be.home.mezzmo.domain.dao.jdbc.SQLFunction;
-import be.home.mezzmo.domain.dao.jdbc.TablesEnum;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
@@ -14,7 +12,7 @@ import java.util.List;
  */
 public class SQLBuilder {
 
-    private TablesEnum mainTable;
+    private DatabaseTables mainTable;
     private List<Column> dbColumns = new ArrayList<>();
     private List<UpdateColumn> updateColumns = new ArrayList<>();
     private List<Condition> conditions = new ArrayList<>();
@@ -26,156 +24,8 @@ public class SQLBuilder {
     private boolean distinct = false;
     private List<GroupBy> groupColumns = new ArrayList<>();
 
-    public enum Comparator {
-        LIKE ("LIKE"),
-        EQUALS ("="),
-        GREATER (">");
 
-        String comparator;
-
-        Comparator(String s) {
-            comparator = s;
-        }
-
-        public String comparator(){
-            return comparator;
-        }
-    }
-
-    public enum SORTORDER {
-        ASC,
-        DESC
-    }
-
-    public enum Type {
-        VALUE,
-        FUNCTION,
-        PARAMETER
-    }
-
-    public enum SQLTypes {
-        SELECT,
-        INSERT,
-        UPDATE,
-        DELETE
-    }
-
-    private class Option {
-        String option;
-
-        Option(String option){
-            this.option = option;
-        }
-    }
-
-    private class Column {
-        //DatabaseColumn column;
-        //String dbAlias;
-        //String columnAlias;
-        String field;
-
-        Column(String field){
-            this.field = field;
-        }
-
-        /*
-        Column(DatabaseColumn column, String alias){
-            this.column = column;
-            this.dbAlias = alias;
-        }
-
-        Column(DatabaseColumn column, String alias, String columnAlias){
-            this.column = column;
-            this.dbAlias = alias;
-            this.columnAlias = columnAlias;
-        }*/
-    }
-
-    private class UpdateColumn {
-        DatabaseColumn column;
-        String value;
-        Type type;
-
-        UpdateColumn(DatabaseColumn column, String value){
-            this.column = column;
-            this.value = value;
-            this.type = Type.VALUE;
-        }
-
-        UpdateColumn(DatabaseColumn column, String value, Type type){
-            this.column = column;
-            this.value = value;
-            this.type = type;
-        }    }
-
-    private class Condition {
-        String field1;
-        Comparator comparator;
-        String field2;
-
-        Condition (String field1, Comparator comparator, String field2){
-            this.field1 = field1;
-            this.comparator = comparator;
-            this.field2 = field2;
-        }
-    }
-
-    private class LimitBy {
-        Integer pos;
-        Integer total;
-
-        LimitBy (){
-            pos = null;
-            total = null;
-        }
-        LimitBy (int pos){
-            this.pos = pos;
-            total = null;
-        }
-        LimitBy (int pos, int total){
-            this.pos = pos;
-            total = total;
-        }
-    }
-
-    private class Relation {
-        TablesEnum table1;
-        DatabaseColumn column1;
-        String alias1;
-        TablesEnum table2;
-        DatabaseColumn column2;
-
-        Relation (TablesEnum table1, String alias1, DatabaseColumn column1, TablesEnum table2, DatabaseColumn column2) {
-            this.table1 = table1;
-            this.column1 = column1;
-            this.alias1 = alias1;
-            this.table2 = table2;
-            this.column2 = column2;
-        }
-    }
-
-
-    private class OrderBy {
-        String orderField;
-
-        OrderBy (String alias, DatabaseColumn column, SORTORDER sortOrder) {
-            this.orderField = alias + " " + sortOrder.name();
-        }
-        OrderBy (TablesEnum table, DatabaseColumn column, SORTORDER sortOrder) {
-            this.orderField = table.alias() + "." + column.getColumnName() + " " + sortOrder.name();
-        }
-    }
-
-    private class GroupBy {
-        String groupbyField;
-        GroupBy (String alias, DatabaseColumn column) {
-            this.groupbyField = alias + "." + column.getColumnName();
-        }
-    }
-
-
-
-    public SQLBuilder addTable(TablesEnum table){
+    public SQLBuilder addTable(DatabaseTables table){
         this.mainTable = table;
         return this;
     }
@@ -200,7 +50,7 @@ public class SQLBuilder {
         return this;
     }
 
-    public SQLBuilder addColumns (TablesEnum table){
+    public SQLBuilder addColumns (DatabaseTables table){
 
         for (DatabaseColumn column : table.columns()){
             if (isTableField(column)) {
@@ -229,7 +79,7 @@ public class SQLBuilder {
     }
 
 
-    public SQLBuilder addColumns (TablesEnum table, SQLTypes sqlType){
+    public SQLBuilder addColumns (DatabaseTables table, SQLTypes sqlType){
 
         for (DatabaseColumn column : table.columns()){
             if (isTableField(column)) {
@@ -334,22 +184,24 @@ public class SQLBuilder {
         return this;
     }
 
-    public SQLBuilder addRelation (TablesEnum table, DatabaseColumn dbColumn, TablesEnum table2, DatabaseColumn dbColumn2){
+    public SQLBuilder addRelation (DatabaseTables table, DatabaseColumn dbColumn,
+                                   DatabaseTables table2, DatabaseColumn dbColumn2){
         relations.add(new Relation(table, null, dbColumn, table2, dbColumn2));
         return this;
     }
 
-    public SQLBuilder addRelation (TablesEnum table, String alias1, DatabaseColumn dbColumn, TablesEnum table2, DatabaseColumn dbColumn2){
+    public SQLBuilder addRelation (DatabaseTables table, String alias1, DatabaseColumn dbColumn,
+                                   DatabaseTables table2, DatabaseColumn dbColumn2){
         relations.add(new Relation(table, alias1, dbColumn, table2, dbColumn2));
         return this;
     }
 
-    public SQLBuilder orderBy (String alias, DatabaseColumn column, SORTORDER sortOrder) {
+    public SQLBuilder orderBy (String alias, DatabaseColumn column, SortOrder sortOrder) {
         orderByColumns.add(new OrderBy(alias, column, sortOrder));
         return this;
     }
 
-    public SQLBuilder orderBy (TablesEnum table, DatabaseColumn column, SORTORDER sortOrder) {
+    public SQLBuilder orderBy (DatabaseTables table, DatabaseColumn column, SortOrder sortOrder) {
         orderByColumns.add(new OrderBy(table, column, sortOrder));
         return this;
     }

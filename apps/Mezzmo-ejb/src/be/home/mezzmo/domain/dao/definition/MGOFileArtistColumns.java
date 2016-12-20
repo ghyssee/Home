@@ -1,4 +1,4 @@
-package be.home.mezzmo.domain.dao.jdbc;
+package be.home.mezzmo.domain.dao.definition;
 
 import be.home.common.database.DatabaseColumn;
 import be.home.common.database.FieldType;
@@ -6,14 +6,14 @@ import be.home.common.database.FieldType;
 /**
  * Created by ghyssee on 14/12/2016.
  */
-public enum MGOAlbumArtistColumns implements DatabaseColumn  {
-    ALBUMARTISTID("ID", FieldType.SEQUENCE),
-    ALBUMARTIST("Data", FieldType.NORMAL);
+public enum MGOFileArtistColumns implements DatabaseColumn  {
+    ARTISTID("ID", FieldType.SEQUENCE),
+    ARTIST("Data", FieldType.NORMAL);
 
     public String columnName;
     public FieldType fieldType;
 
-    MGOAlbumArtistColumns(String s, FieldType t) {
+    MGOFileArtistColumns(String s, FieldType t) {
 
         columnName = s;
         fieldType = t;

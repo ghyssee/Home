@@ -1,7 +1,12 @@
 package be.home.mezzmo.domain.dao.jdbc;
 
 import be.home.common.dao.jdbc.MezzmoDB;
-import be.home.mezzmo.domain.dao.SQLBuilder;
+import be.home.common.database.sqlbuilder.Comparator;
+import be.home.common.database.sqlbuilder.SQLBuilder;
+import be.home.common.database.sqlbuilder.SQLTypes;
+import be.home.mezzmo.domain.dao.definition.PlaylistColumns;
+import be.home.mezzmo.domain.dao.definition.Playlist_To_FileColumns;
+import be.home.mezzmo.domain.dao.definition.TablesEnum;
 import be.home.mezzmo.domain.model.*;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -20,40 +25,40 @@ public class MezzmoPlaylistDAOImpl extends MezzmoDB {
             .addColumns(TablesEnum.MGOPlaylist)
             .addColumn("PL2", PlaylistColumns.NAME, "PARENTNAME")
             .addRelation(TablesEnum.MGOPlaylist, "PL2", PlaylistColumns.ID, TablesEnum.MGOPlaylist, PlaylistColumns.PARENTID)
-            .addCondition(TablesEnum.MGOPlaylist.alias(), PlaylistColumns.NAME, SQLBuilder.Comparator.LIKE)
-            .addCondition(TablesEnum.MGOPlaylist.alias(), PlaylistColumns.TYPE, SQLBuilder.Comparator.EQUALS)
+            .addCondition(TablesEnum.MGOPlaylist.alias(), PlaylistColumns.NAME, Comparator.LIKE)
+            .addCondition(TablesEnum.MGOPlaylist.alias(), PlaylistColumns.TYPE, Comparator.EQUALS)
             .render();
 
     private static final String FIND_PLAYLIST_BY_NAME = SQLBuilder.getInstance()
             .select()
             .addTable(TablesEnum.MGOPlaylist)
             .addColumns(TablesEnum.MGOPlaylist)
-            .addCondition(TablesEnum.MGOPlaylist.alias(), PlaylistColumns.NAME, SQLBuilder.Comparator.LIKE)
+            .addCondition(TablesEnum.MGOPlaylist.alias(), PlaylistColumns.NAME, Comparator.LIKE)
             .render();
 
     private static final String FIND_PLAYLIST_CHILDREN = SQLBuilder.getInstance()
             .select()
             .addTable(TablesEnum.MGOPlaylist)
             .addColumns(TablesEnum.MGOPlaylist)
-            .addCondition(TablesEnum.MGOPlaylist.alias(), PlaylistColumns.PARENTID, SQLBuilder.Comparator.EQUALS)
+            .addCondition(TablesEnum.MGOPlaylist.alias(), PlaylistColumns.PARENTID, Comparator.EQUALS)
             .render();
 
     private static final String INSERT_PLAYLIST = SQLBuilder.getInstance()
             .insert()
-            .addColumns(TablesEnum.MGOPlaylist, SQLBuilder.SQLTypes.INSERT)
+            .addColumns(TablesEnum.MGOPlaylist, SQLTypes.INSERT)
             .addTable(TablesEnum.MGOPlaylist)
             .render();
 
     private static final String INSERT_PLAYLIST_SQL = SQLBuilder.getInstance()
             .insert()
-            .addColumns(TablesEnum.MGOPlaylistSQL, SQLBuilder.SQLTypes.INSERT)
+            .addColumns(TablesEnum.MGOPlaylistSQL, SQLTypes.INSERT)
             .addTable(TablesEnum.MGOPlaylistSQL)
             .render();
 
     private static final String DELETE_PLAYLIST = SQLBuilder.getInstance()
             .delete()
             .addTable(TablesEnum.MGOPlaylist)
-            .addCondition(PlaylistColumns.ID, SQLBuilder.Comparator.EQUALS, null)
+            .addCondition(PlaylistColumns.ID, Comparator.EQUALS, null)
             .render();
 
     private static final String DELETE_PLAYLIST_FILE2 = "DELETE FROM " + TablesEnum.MGOPlaylist_To_File +
@@ -62,7 +67,7 @@ public class MezzmoPlaylistDAOImpl extends MezzmoDB {
     private static final String DELETE_PLAYLIST_FILE = SQLBuilder.getInstance()
             .delete()
             .addTable(TablesEnum.MGOPlaylist_To_File)
-            .addCondition(Playlist_To_FileColumns.PLAYLISTID, SQLBuilder.Comparator.EQUALS, null)
+            .addCondition(Playlist_To_FileColumns.PLAYLISTID, Comparator.EQUALS, null)
             .render();
 
     public class PlayListRowMapper implements RowMapper

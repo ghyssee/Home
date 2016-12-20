@@ -1,4 +1,4 @@
-package be.home.mezzmo.domain.dao.jdbc;
+package be.home.mezzmo.domain.dao.definition;
 
 import be.home.common.database.DatabaseColumn;
 import be.home.common.database.FieldType;

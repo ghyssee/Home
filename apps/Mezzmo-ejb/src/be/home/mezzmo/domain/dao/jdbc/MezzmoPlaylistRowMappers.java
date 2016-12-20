@@ -1,5 +1,6 @@
 package be.home.mezzmo.domain.dao.jdbc;
 
+import be.home.mezzmo.domain.dao.definition.PlaylistColumns;
 import be.home.mezzmo.domain.model.MGOPlaylistTO;
 import org.springframework.jdbc.core.RowMapper;
 

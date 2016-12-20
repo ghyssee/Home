@@ -1,7 +1,10 @@
 package be.home.mezzmo.domain.dao.jdbc;
 
-import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.dao.jdbc.SQLiteUtils;
+import be.home.mezzmo.domain.dao.definition.MGOAlbumArtistColumns;
+import be.home.mezzmo.domain.dao.definition.MGOFileAlbumColumns;
+import be.home.mezzmo.domain.dao.definition.MGOFileArtistColumns;
+import be.home.mezzmo.domain.dao.definition.MGOFileColumns;
 import be.home.mezzmo.domain.model.*;
 import org.springframework.jdbc.core.RowMapper;
 

@@ -1,7 +1,11 @@
 package be.home.mezzmo.domain.dao.jdbc;
 
 import be.home.common.dao.jdbc.MezzmoDB;
-import be.home.mezzmo.domain.dao.SQLBuilder;
+import be.home.common.database.sqlbuilder.Comparator;
+import be.home.common.database.sqlbuilder.SQLFunction;
+import be.home.common.database.sqlbuilder.SQLBuilder;
+import be.home.common.database.sqlbuilder.SortOrder;
+import be.home.mezzmo.domain.dao.definition.*;
 
 /**
  * Created by Gebruiker on 8/12/2016.
@@ -44,7 +48,7 @@ public class MezzmoDAOQueries extends MezzmoDB {
             .addColumns(TablesEnum.MGOFileAlbum)
             .addRelation(TablesEnum.MGOFileAlbum, MGOFileAlbumColumns.ALBUMID, TablesEnum.MGOFileAlbumRelationship, MGOFileAlbumRelationshipColumns.ID)
             .addRelation(TablesEnum.MGOFileAlbumRelationship, MGOFileAlbumRelationshipColumns.FILEID, TablesEnum.MGOFile, MGOFileColumns.ID)
-            .addCondition(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUM, SQLBuilder.Comparator.LIKE)
+            .addCondition(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUM, Comparator.LIKE)
             .render();
 
     private static final String FILE_FIND_TAGINFO = "SELECT " + getColumns(COLUMNS_MP3) + " FROM MGOFile " +
@@ -67,7 +71,7 @@ public class MezzmoDAOQueries extends MezzmoDB {
             .addRelation(TablesEnum.MGOFileExtension, MGOFileExtensionColumns.ID, TablesEnum.MGOFile, MGOFileColumns.EXTENSION_ID)
             .addRelation(TablesEnum.MGOFileArtist, MGOFileArtistColumns.ARTISTID, TablesEnum.MGOFileArtistRelationship, MGOFileArtistRelationshipColumns.ID)
             .addRelation(TablesEnum.MGOFileArtistRelationship, MGOFileArtistRelationshipColumns.FILEID, TablesEnum.MGOFile, MGOFileColumns.ID)
-            .addCondition(TablesEnum.MGOFileExtension.alias(), MGOFileExtensionColumns.DATA, SQLBuilder.Comparator.EQUALS, "mp3");
+            .addCondition(TablesEnum.MGOFileExtension.alias(), MGOFileExtensionColumns.DATA, Comparator.EQUALS, "mp3");
 
     protected static final String FILE_FIND_TAGINFO_CRITERIA = FILE_FIND_TAGINFO +
             " AND MGOFile.Track like ?" +
@@ -86,8 +90,8 @@ public class MezzmoDAOQueries extends MezzmoDB {
             " AND MGOFileAlbum.data like ?";
 
     public static final String FILE_SELECT_TITLE2 = FILE_FIND_BASIC
-            .addCondition(TablesEnum.MGOFile.alias(), MGOFileColumns.FILETITLE, SQLBuilder.Comparator.LIKE)
-            .addCondition(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUM, SQLBuilder.Comparator.LIKE)
+            .addCondition(TablesEnum.MGOFile.alias(), MGOFileColumns.FILETITLE, Comparator.LIKE)
+            .addCondition(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUM, Comparator.LIKE)
             .render();
 
     protected static final String FILE_PLAYCOUNT_OLD = "SELECT " + getColumns(COLUMNS) + " FROM MGOFileAlbumRelationship " +
@@ -111,9 +115,9 @@ public class MezzmoDAOQueries extends MezzmoDB {
             .addRelation(TablesEnum.MGOFileExtension, MGOFileExtensionColumns.ID, TablesEnum.MGOFile, MGOFileColumns.EXTENSION_ID)
             .addRelation(TablesEnum.MGOFileArtist, MGOFileArtistColumns.ARTISTID, TablesEnum.MGOFileArtistRelationship, MGOFileArtistRelationshipColumns.ID)
             .addRelation(TablesEnum.MGOFileArtistRelationship, MGOFileArtistRelationshipColumns.FILEID, TablesEnum.MGOFile, MGOFileColumns.ID)
-            .addCondition(TablesEnum.MGOFileExtension.alias(), MGOFileExtensionColumns.DATA, SQLBuilder.Comparator.EQUALS, "mp3")
-            .addCondition(MGOFileColumns.PLAYCOUNT, SQLBuilder.Comparator.GREATER, new Integer(0))
-            .orderBy(TablesEnum.MGOFile, MGOFileColumns.DATELASTPLAYED, SQLBuilder.SORTORDER.ASC)
+            .addCondition(TablesEnum.MGOFileExtension.alias(), MGOFileExtensionColumns.DATA, Comparator.EQUALS, "mp3")
+            .addCondition(MGOFileColumns.PLAYCOUNT, Comparator.GREATER, new Integer(0))
+            .orderBy(TablesEnum.MGOFile, MGOFileColumns.DATELASTPLAYED, SortOrder.ASC)
             .limitBy()
             .render();
 
@@ -193,7 +197,7 @@ public class MezzmoDAOQueries extends MezzmoDB {
                     TablesEnum.MGOFile.alias(),
                     SQLFunction.UPPER,
                     MGOFileColumns.FILE,
-                    SQLBuilder.Comparator.LIKE,
+                    Comparator.LIKE,
                     null)
             .render();
 
@@ -267,11 +271,11 @@ public class MezzmoDAOQueries extends MezzmoDB {
             .addRelation(TablesEnum.MGOAlbumArtist, MGOAlbumArtistColumns.ALBUMARTISTID, TablesEnum.MGOAlbumArtistRelationship, MGOAlbumArtistRelationshipColumns.ID)
             .addRelation(TablesEnum.MGOAlbumArtistRelationship, MGOAlbumArtistRelationshipColumns.FILEID, TablesEnum.MGOFileAlbumRelationship, MGOFileAlbumRelationshipColumns.FILEID)
 
-            .addCondition(TablesEnum.MGOFileExtension.alias(), MGOFileExtensionColumns.DATA, SQLBuilder.Comparator.EQUALS, "mp3")
-            .addCondition(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUMID, SQLBuilder.Comparator.EQUALS, null)
-            .addCondition(TablesEnum.MGOAlbumArtist.alias(), MGOAlbumArtistColumns.ALBUMARTISTID, SQLBuilder.Comparator.EQUALS, null)
-            .orderBy(TablesEnum.MGOFile, MGOFileColumns.DISC, SQLBuilder.SORTORDER.ASC)
-            .orderBy(TablesEnum.MGOFile, MGOFileColumns.TRACK, SQLBuilder.SORTORDER.ASC)
+            .addCondition(TablesEnum.MGOFileExtension.alias(), MGOFileExtensionColumns.DATA, Comparator.EQUALS, "mp3")
+            .addCondition(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUMID, Comparator.EQUALS, null)
+            .addCondition(TablesEnum.MGOAlbumArtist.alias(), MGOAlbumArtistColumns.ALBUMARTISTID, Comparator.EQUALS, null)
+            .orderBy(TablesEnum.MGOFile, MGOFileColumns.DISC, SortOrder.ASC)
+            .orderBy(TablesEnum.MGOFile, MGOFileColumns.TRACK, SortOrder.ASC)
             .render();
 
     protected static final String FIND_LAST_PLAYED2 = "SELECT " + getColumns(COLUMNS_MP3) +
@@ -300,8 +304,8 @@ public class MezzmoDAOQueries extends MezzmoDB {
             .addRelation(TablesEnum.MGOFileArtistRelationship, MGOFileArtistRelationshipColumns.FILEID, TablesEnum.MGOFile, MGOFileColumns.ID)
             .addRelation(TablesEnum.MGOAlbumArtist, MGOAlbumArtistColumns.ALBUMARTISTID, TablesEnum.MGOAlbumArtistRelationship, MGOAlbumArtistRelationshipColumns.ID)
             .addRelation(TablesEnum.MGOAlbumArtistRelationship, MGOAlbumArtistRelationshipColumns.FILEID, TablesEnum.MGOFileAlbumRelationship, MGOFileAlbumRelationshipColumns.FILEID)
-            .addCondition(TablesEnum.MGOFileExtension.alias(), MGOFileExtensionColumns.DATA, SQLBuilder.Comparator.EQUALS, "mp3")
-            .orderBy(TablesEnum.MGOFile, MGOFileColumns.DATELASTPLAYED, SQLBuilder.SORTORDER.DESC)
+            .addCondition(TablesEnum.MGOFileExtension.alias(), MGOFileExtensionColumns.DATA, Comparator.EQUALS, "mp3")
+            .orderBy(TablesEnum.MGOFile, MGOFileColumns.DATELASTPLAYED, SortOrder.DESC)
             .limitBy(0)
             .render();
 
@@ -329,7 +333,7 @@ public class MezzmoDAOQueries extends MezzmoDB {
             .addRelation(TablesEnum.MGOFileExtension, MGOFileExtensionColumns.ID, TablesEnum.MGOFile, MGOFileColumns.EXTENSION_ID)
             .addRelation(TablesEnum.MGOAlbumArtist, MGOAlbumArtistColumns.ALBUMARTISTID, TablesEnum.MGOAlbumArtistRelationship, MGOAlbumArtistRelationshipColumns.ID)
             .addRelation(TablesEnum.MGOAlbumArtistRelationship, MGOAlbumArtistRelationshipColumns.FILEID, TablesEnum.MGOFileAlbumRelationship, MGOFileAlbumRelationshipColumns.FILEID)
-            .addCondition(TablesEnum.MGOFileExtension.alias(), MGOFileExtensionColumns.DATA, SQLBuilder.Comparator.EQUALS, "mp3")
+            .addCondition(TablesEnum.MGOFileExtension.alias(), MGOFileExtensionColumns.DATA, Comparator.EQUALS, "mp3")
             .addGroup(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUM)
             .addGroup(TablesEnum.MGOAlbumArtist.alias(), MGOAlbumArtistColumns.ALBUMARTIST)
             .render();
