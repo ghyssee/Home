@@ -43,10 +43,7 @@ public class MP3TagChecker extends BatchJobV2{
     public AlbumError albumErrors = (AlbumError) JSONUtils.openJSONWithCode(Constants.JSON.ALBUMERRORS, AlbumError.class);
     public String ALBUM = "Ultratop 50 201212 December 2012";
     public String[] ALBUMS = {
-            "Ultratop 50 20131005 05 Oktober 2013",
-            "Ultratop 50 20131102 02 November 2013",
-            "Ultratop 50 201312 December 2013",
-            "Ultratop 50 20131207 07 December 2013"
+            "Ultratop 50 20140104 04 Januari 2014"
     };
 
 
@@ -300,7 +297,22 @@ public class MP3TagChecker extends BatchJobV2{
             System.out.println("artist found");
             Result result = getMezzmoService().updateLinkFileArtist(comp.getFileArtistTO(), artist.getID());
             System.out.println("Nr Of Links updated: " + result.getNr1());
-            updateMP3(item);
+            /* update the found artist (because of case insensitive constraint on
+               field artist, so update it to be sure it is prettified (feat. => Feat.)
+             */
+            int nr = 0;
+            try {
+                comp.getFileArtistTO().setID(artist.getID());
+                nr = getMezzmoService().updateSong(comp, MP3Tag.valueOf(item.getType()));
+                if (nr > 0) {
+                    log.info("Artitst updated: " + "Id: " + item.getId() +
+                            " / New Artist: " + item.getNewValue() + " / " + nr + " record(s)");
+                    //item.setDone(true);
+                    updateMP3(item);
+                }
+            } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             //System.out.println("Nr Of Old Artists deleted: " + result.getNr2());
         }
         else {

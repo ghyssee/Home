@@ -57,13 +57,14 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
     public List<MGOFileAlbumCompositeTO> getAlbums(MGOFileAlbumTO albumTO, TransferObject to)
     {
         List<MGOFileAlbumCompositeTO> list = null;
+        Object[] params;
         if (albumTO == null) {
-            list = getInstance().getJDBCTemplate().query(LIST_ALBUMS, new MezzmoRowMappers.AlbumRowMapper());
+            params = new Object[] {"%"};
         }
         else {
-            Object[] params = {albumTO.getName()};
-            list = getInstance().getJDBCTemplate().query(LIST_ALBUMS, new MezzmoRowMappers.AlbumRowMapper(), params);
+            params = new Object[] {albumTO.getName()};
         }
+        list = getInstance().getJDBCTemplate().query(LIST_ALBUMS, new AlbumRowMapper(), params);
         return list;
     }
 
@@ -102,7 +103,7 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
         Object[] params = {
                 comp.getFileAlbumTO().getId() == 0 ? "%": comp.getFileAlbumTO().getId()
         };
-        List<MGOFileAlbumCompositeTO> list = getInstance().getJDBCTemplate().query(FILE_FIND_TAGINFO_BY_ALBUMID, new MezzmoRowMappers.SongsAlbumRowMapper(), params);
+        List<MGOFileAlbumCompositeTO> list = getInstance().getJDBCTemplate().query(FILE_FIND_TAGINFO_BY_ALBUMID, new SongsAlbumRowMapper(), params);
         return list;
     }
 
@@ -115,7 +116,7 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
     public List<MGOFileAlbumCompositeTO> getCustomPlayListSongs(List <MGOFileAlbumCompositeTO> albums, int limit)
     {
         String query = LIST_CUSTOM;
-        String orClause = "(MGOFileAlbum.data like ? AND Tables.ranking > ? AND MGOAlbumArtist.data like ? AND Tables.playcount < 2) ";
+        String orClause = "(MGOFileAlbum.data like ? AND MGOFile.ranking > ? AND MGOAlbumArtist.data like ? AND MGOFile.playcount < 2) ";
         query = QueryBuilder.buildOrCondition(query, orClause, albums);
 
         List params = new ArrayList();

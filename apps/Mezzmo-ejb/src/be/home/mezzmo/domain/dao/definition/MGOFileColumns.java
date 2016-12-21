@@ -18,7 +18,8 @@ public enum MGOFileColumns implements DatabaseColumn  {
     DATELASTPLAYED("DateLastPlayed", FieldType.NORMAL),
     DURATION("Duration", FieldType.NORMAL),
     EXTENSION_ID("ExtensionID", FieldType.NORMAL),
-    YEAR("Year", FieldType.NORMAL);
+    YEAR("Year", FieldType.NORMAL),
+    SORTTILE("SortTitle", FieldType.NORMAL);
 
     public String columnName;
     public FieldType fieldType;

@@ -117,7 +117,7 @@ public class SQLBuilder implements Cloneable, Serializable {
     }
 
 
-    public SQLBuilder addColumn (String alias, SQLFunction function, DatabaseColumn dbColumn, String columnAlias){
+    public SQLBuilder addColumn (String alias, SQLFunction function, DatabaseColumn dbColumn){
         StringBuilder sb = new StringBuilder();
         sb
                 .append(function == SQLFunction.NONE ? "" : function.name() + "(")
@@ -140,6 +140,11 @@ public class SQLBuilder implements Cloneable, Serializable {
         //dbColumns.add(new Column(column, alias, columnAlias));
         dbColumns.add(new Column(getField));
         return this;
+    }
+
+
+    public SQLBuilder addColumn (String alias, DatabaseColumn column) {
+        return addColumn(alias, column, column.name());
     }
 
     public SQLBuilder updateColumn (DatabaseColumn column, Type type, String value) {
@@ -334,7 +339,7 @@ public class SQLBuilder implements Cloneable, Serializable {
         return sql;
     }
 
-    public String fields(){
+    private String fields(){
         if (this.dbColumns.size() == 0){
             addColumns(this.mainTable);
         }
@@ -359,7 +364,7 @@ public class SQLBuilder implements Cloneable, Serializable {
         return sb.toString();
     }
 
-    public String insertFields(){
+    private String insertFields(){
         boolean first = true;
         StringBuilder sb = new StringBuilder();
         /*
@@ -384,7 +389,7 @@ public class SQLBuilder implements Cloneable, Serializable {
         return (column.getFieldType() == FieldType.SEQUENCE);
     }
 
-    public String updateFields(){
+    private String updateFields(){
         boolean first = true;
         StringBuilder sb = new StringBuilder();
         for (UpdateColumn column : this.updateColumns){
@@ -411,7 +416,7 @@ public class SQLBuilder implements Cloneable, Serializable {
         return sb.toString();
     }
 
-    public String values(){
+    private String values(){
         StringBuilder sb = new StringBuilder();
         boolean first = true;
         for (DatabaseColumn column : this.mainTable.columns()) {
@@ -441,7 +446,7 @@ public class SQLBuilder implements Cloneable, Serializable {
         return sb.toString();
     }
 
-    public String orderBy(){
+    private String orderBy(){
         boolean first = true;
         StringBuilder sb = new StringBuilder();
         for (OrderBy orderByColumn : this.orderByColumns){
@@ -453,7 +458,7 @@ public class SQLBuilder implements Cloneable, Serializable {
         return sb.toString();
     }
 
-    public String groupBy(){
+    private String groupBy(){
         boolean first = true;
         StringBuilder sb = new StringBuilder();
         for (GroupBy column : this.groupColumns){
@@ -465,7 +470,7 @@ public class SQLBuilder implements Cloneable, Serializable {
         return sb.toString();
     }
 
-    public String limitByClause () {
+    private String limitByClause () {
         StringBuilder sb = new StringBuilder();
         if (this.limitBy != null) {
             sb
@@ -477,7 +482,7 @@ public class SQLBuilder implements Cloneable, Serializable {
         return sb.toString();
     }
 
-    public String options () {
+    private String options () {
         StringBuilder sb = new StringBuilder();
         for (Option option : this.options){
             sb
@@ -487,7 +492,7 @@ public class SQLBuilder implements Cloneable, Serializable {
         return sb.toString();
     }
 
-    public String relations(){
+    private String relations(){
         StringBuilder sb = new StringBuilder();
         for (Relation relation : this.relations){
             String alias = relation.alias1 == null ? relation.table1.alias() : relation.alias1;
