@@ -2,10 +2,12 @@ package be.home.common.database.sqlbuilder;
 
 import be.home.common.database.DatabaseColumn;
 
+import java.io.Serializable;
+
 /**
  * Created by Gebruiker on 20/12/2016.
  */
-class UpdateColumn {
+class UpdateColumn implements Serializable {
     DatabaseColumn column;
     String value;
     Type type;

@@ -202,9 +202,7 @@ public class MezzmoRowMappers extends MezzmoDAOQueries {
 
     public static class ArtistRowMapper implements RowMapper {
         public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-            MGOFileArtistTO artist = new MGOFileArtistTO();
-            artist.setID(rs.getLong("ID"));
-            artist.setArtist(rs.getString("DATA"));
+            MGOFileArtistTO artist = mapFileArtistTO(rs, rowNum);
 
             return artist;
         }

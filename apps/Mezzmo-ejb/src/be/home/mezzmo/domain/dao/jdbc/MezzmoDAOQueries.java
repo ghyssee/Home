@@ -1,17 +1,14 @@
 package be.home.mezzmo.domain.dao.jdbc;
 
 import be.home.common.dao.jdbc.MezzmoDB;
-import be.home.common.database.sqlbuilder.Comparator;
-import be.home.common.database.sqlbuilder.SQLFunction;
-import be.home.common.database.sqlbuilder.SQLBuilder;
-import be.home.common.database.sqlbuilder.SortOrder;
+import be.home.common.database.sqlbuilder.*;
 import be.home.mezzmo.domain.dao.definition.*;
+import org.apache.commons.lang.SerializationUtils;
 
 /**
  * Created by Gebruiker on 8/12/2016.
  */
 public class MezzmoDAOQueries extends MezzmoDB {
-    protected static final String FILE_SELECT = "select file from MGOFile where File like '%Boyzone%';";
 
     protected static final String COLUMNS[] = {"MGOFile.ID as FILEID", "MGOFile.File as FILE",
             "MGOFile.PlayCount as PLAYCOUNT", "MGOFile.Ranking as RANKING",
@@ -51,7 +48,7 @@ public class MezzmoDAOQueries extends MezzmoDB {
             .addCondition(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUM, Comparator.LIKE)
             .render();
 
-    private static final String FILE_FIND_TAGINFO = "SELECT " + getColumns(COLUMNS_MP3) + " FROM MGOFile " +
+    private static final String FILE_FIND_TAGINFOOld = "SELECT " + getColumns(COLUMNS_MP3) + " FROM MGOFile " +
             " INNER JOIN MGOFileAlbumRelationship ON (MGOFileAlbumRelationship.FileID = MGOFILE.id)" +
             " INNER JOIN MGOFileAlbum ON (MGOFileAlbum.ID = MGOFileAlbumRelationship.ID)" +
             " INNER JOIN MGOFileExtension ON (MGOFileExtension.ID = MGOFILE.extensionID)" +
@@ -60,7 +57,7 @@ public class MezzmoDAOQueries extends MezzmoDB {
             " INNER JOIN MGOAlbumArtistRelationship ON (MGOAlbumArtistRelationship.FileID = MGOFILE.id)" +
             " WHERE MGOFileExtension.data = 'mp3'";
 
-    public static SQLBuilder FILE_FIND_BASIC = SQLBuilder.getInstance()
+    protected static SQLBuilder FILE_FIND_BASIC = SQLBuilder.getInstance()
             .select()
             .addTable(TablesEnum.MGOFile)
             .addColumns(TablesEnum.MGOFile)
@@ -73,23 +70,34 @@ public class MezzmoDAOQueries extends MezzmoDB {
             .addRelation(TablesEnum.MGOFileArtistRelationship, MGOFileArtistRelationshipColumns.FILEID, TablesEnum.MGOFile, MGOFileColumns.ID)
             .addCondition(TablesEnum.MGOFileExtension.alias(), MGOFileExtensionColumns.DATA, Comparator.EQUALS, "mp3");
 
-    protected static final String FILE_FIND_TAGINFO_CRITERIA = FILE_FIND_TAGINFO +
+    protected static final String FILE_FIND_TAGINFO_CRITERIAOLD = FILE_FIND_TAGINFOOld +
             " AND MGOFile.Track like ?" +
             " AND MGOFileArtist.data like ?" +
             " AND MGOFile.Title like ?" +
             " AND MGOFileAlbum.data like ?";
 
-    protected static final String FILE_FIND_TAGINFO_BY_ALBUMID = FILE_FIND_TAGINFO +
+    public static final String FILE_FIND_TAGINFO_CRITERIA = ((SQLBuilder) SerializationUtils.clone(FILE_FIND_BASIC))
+            .addCondition(TablesEnum.MGOFile.alias(), MGOFileColumns.TRACK, Comparator.LIKE)
+            .addCondition(TablesEnum.MGOFileArtist.alias(), MGOFileArtistColumns.ARTIST, Comparator.LIKE)
+            .addCondition(TablesEnum.MGOFile.alias(), MGOFileColumns.TITLE, Comparator.LIKE)
+            .addCondition(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUM, Comparator.LIKE)
+            .render();
+
+    public static final String FILE_FIND_TAGINFO_BY_ALBUMID = ((SQLBuilder) SerializationUtils.clone(FILE_FIND_BASIC))
+            .addCondition(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUMID, Comparator.LIKE)
+            .render();
+
+    protected static final String FILE_FIND_TAGINFO_BY_ALBUMIDOLD = FILE_FIND_TAGINFOOld +
             " AND MGOFileAlbum.id like ?";
 
-    protected static final String FILE_SELECT_TITLE = "SELECT " + getColumns(COLUMNS) + " FROM MGOFileAlbumRelationship " +
+    protected static final String FILE_SELECT_TITLEOld = "SELECT " + getColumns(COLUMNS) + " FROM MGOFileAlbumRelationship " +
             " INNER JOIN MGOFile ON (MGOFileAlbumRelationship.FileID = MGOFile.ID)" +
             " INNER JOIN MGOFileAlbum ON (MGOFileAlbum.ID = MGOFileAlbumRelationship.ID)" +
             " WHERE 1=1" +
             " AND MGOFile.FileTitle like ?" +
             " AND MGOFileAlbum.data like ?";
 
-    public static final String FILE_SELECT_TITLE2 = FILE_FIND_BASIC
+    protected static final String FILE_SELECT_TITLE = ((SQLBuilder) SerializationUtils.clone(FILE_FIND_BASIC))
             .addCondition(TablesEnum.MGOFile.alias(), MGOFileColumns.FILETITLE, Comparator.LIKE)
             .addCondition(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUM, Comparator.LIKE)
             .render();
@@ -104,7 +112,7 @@ public class MezzmoDAOQueries extends MezzmoDB {
             " ORDER BY datetime(MGOFile.DateLastPlayed, 'unixepoch', 'localtime')  ASC" +
             " LIMIT ?,?";
 
-    public static final String FILE_PLAYCOUNT = SQLBuilder.getInstance()
+    protected static final String FILE_PLAYCOUNT_OLD2 = SQLBuilder.getInstance()
             .select()
             .addTable(TablesEnum.MGOFile)
             .addColumns(TablesEnum.MGOFile)
@@ -121,7 +129,14 @@ public class MezzmoDAOQueries extends MezzmoDB {
             .limitBy()
             .render();
 
-    protected static final String FILE_UPDATE_PLAYCOUNT = "UPDATE MGOFile " +
+
+    protected static final String FILE_PLAYCOUNT = ((SQLBuilder) SerializationUtils.clone(FILE_FIND_BASIC))
+            .addCondition(MGOFileColumns.PLAYCOUNT, Comparator.GREATER, new Integer(0))
+            .orderBy(TablesEnum.MGOFile, MGOFileColumns.DATELASTPLAYED, SortOrder.ASC)
+            .limitBy()
+            .render();
+
+    protected static final String FILE_UPDATE_PLAYCOUNTOld = "UPDATE MGOFile " +
             " SET PlayCount = ? " +
             " ,DateLastPlayed = ? " +
             " WHERE FileTitle like ? " +
@@ -134,6 +149,29 @@ public class MezzmoDAOQueries extends MezzmoDB {
             " AND MGOFileAlbum.data like ?" +
             " AND MGOFile.FileTitle like ?" +
             ")";
+
+
+    protected static final SQLBuilder FILE_UPDATE_PLAYCOUNT_SUBSELECT = SQLBuilder.getInstance()
+            .select()
+            .addTable(TablesEnum.MGOFile)
+            .addColumn(TablesEnum.MGOFile.alias(), MGOFileColumns.ID, null)
+            .addRelation(TablesEnum.MGOFileAlbum, MGOFileAlbumColumns.ALBUMID, TablesEnum.MGOFileAlbumRelationship, MGOFileAlbumRelationshipColumns.ID)
+            .addRelation(TablesEnum.MGOFileAlbumRelationship, MGOFileAlbumRelationshipColumns.FILEID, TablesEnum.MGOFile, MGOFileColumns.ID)
+            .addCondition(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUM, Comparator.LIKE, SQLBuilder.PARAMETER)
+            .addCondition(TablesEnum.MGOFile.alias(), MGOFileColumns.FILETITLE, Comparator.LIKE, SQLBuilder.PARAMETER);
+
+    public static final String FILE_UPDATE_PLAYCOUNT = SQLBuilder.getInstance()
+            .update()
+            .addTable(TablesEnum.MGOFile)
+            .updateColumn(MGOFileColumns.PLAYCOUNT, Type.PARAMETER)
+            .updateColumn(MGOFileColumns.DATELASTPLAYED, Type.PARAMETER)
+            .addCondition(MGOFileColumns.FILETITLE, Comparator.LIKE, SQLBuilder.PARAMETER)
+            .addCondition(MGOFileColumns.PLAYCOUNT, Comparator.LESS, SQLBuilder.PARAMETER)
+
+            .addCondition(MGOFileColumns.ID, Comparator.IN,
+                    FILE_UPDATE_PLAYCOUNT_SUBSELECT
+            )
+            .render();
 
     protected static final String FILE_SYNC_PLAYCOUNT = "UPDATE MGOFile " +
             " SET PlayCount = ?" +
@@ -236,9 +274,17 @@ public class MezzmoDAOQueries extends MezzmoDB {
             "ORDER BY RANDOM() " +
             "LIMIT 0,? ";
 
-    protected static final String FILE_UPDATE_RATING = "UPDATE MGOFile " +
+    protected static final String FILE_UPDATE_RATINGOLD = "UPDATE MGOFile " +
             " SET Ranking = ? " +
             " WHERE ID = ?";
+
+    public static final String FILE_UPDATE_RATING = SQLBuilder.getInstance()
+            .update()
+            .addTable(TablesEnum.MGOFile)
+            .updateColumn(MGOFileColumns.RANKING, Type.PARAMETER)
+            .addCondition(MGOFileColumns.ID, Comparator.EQUALS, SQLBuilder.PARAMETER)
+            .render();
+
 
     protected static final String FIND_SONGS_ALBUM2 = "SELECT " + getColumns(COLUMNS_MP3) +
             " FROM MGOFile " +
@@ -356,15 +402,32 @@ public class MezzmoDAOQueries extends MezzmoDB {
             " fileTitle = ? " +
             " WHERE ID = ?";
 
-    protected static final String FIND_ARTIST = "SELECT ID, DATA " +
+    protected static final String FIND_ARTISTOld = "SELECT ID, DATA " +
             " FROM MGOFileArtist " +
             " WHERE data = ? " +
-            "  COLLATE BINARY"; // case sensitive search
-            //" AND ID <> ?";
+            "  COLLATE BINARY";
 
-    protected static final String UPDATE_LINK_FILE_ARTIST = "UPDATE MGOFILEARTISTRELATIONSHIP " +
+    public static final String FIND_ARTIST = SQLBuilder.getInstance()
+            .select()
+            .addTable(TablesEnum.MGOFileArtist)
+            .addColumns(TablesEnum.MGOFileArtist)
+            .addCondition(MGOFileArtistColumns.ARTIST, Comparator.EQUALS, SQLBuilder.PARAMETER)
+            .addOption("COLLATE BINARY")
+            .render();
+
+
+
+    protected static final String UPDATE_LINK_FILE_ARTIST2 = "UPDATE MGOFILEARTISTRELATIONSHIP " +
             " SET ID = ? " +
             " WHERE ID = ?";
+
+
+    public static final String UPDATE_LINK_FILE_ARTIST = SQLBuilder.getInstance()
+            .update()
+            .addTable(TablesEnum.MGOFileArtistRelationship)
+            .updateColumn(MGOFileArtistRelationshipColumns.ID, Type.PARAMETER)
+            .addCondition(MGOFileArtistRelationshipColumns.ID, Comparator.EQUALS, SQLBuilder.PARAMETER)
+            .render();
 
     public static String getColumns(String[] columns){
         String col = "";

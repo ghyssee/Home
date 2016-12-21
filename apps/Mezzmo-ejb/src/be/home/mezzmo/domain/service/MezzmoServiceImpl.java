@@ -23,19 +23,14 @@ public class MezzmoServiceImpl {
     }
 
 
-    public int updatePlayCount(String fileID, String album, int playCount, java.util.Date dateLastPlayed) throws SQLException {
+    public int updatePlayCount(String fileTitle, String album, int playCount, java.util.Date dateLastPlayed) throws SQLException {
         MezzmoBO bo = new MezzmoBO();
-        return bo.updatePlayCount(fileID, album, playCount, dateLastPlayed);
+        return bo.updatePlayCount(fileTitle, album, playCount, dateLastPlayed);
     }
 
     public int updateSong (MGOFileAlbumCompositeTO comp, MP3Tag type) throws SQLException {
         MezzmoBO bo = new MezzmoBO();
         return bo.updateSong(comp, type);
-    }
-
-    public int synchronizePlayCount(Long fileID, int playCount, Date lastPlayed) throws SQLException {
-        MezzmoBO bo = new MezzmoBO();
-        return bo.synchronizePlayCount(fileID, playCount, lastPlayed);
     }
 
     public List<MGOFileTO> findMP3Files(MGOFileAlbumCompositeTO compSearchTO){

@@ -24,14 +24,14 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
         if (compSearchTO.getFileAlbumTO() != null && compSearchTO.getFileAlbumTO().getName() != null){
             params[1] = compSearchTO.getFileAlbumTO().getName();
         }
-        List<MGOFileTO> list  = getInstance().getJDBCTemplate().query(FILE_SELECT_TITLE2, new MezzmoRowMappers.FileRowMapper(), params);
+        List<MGOFileTO> list  = getInstance().getJDBCTemplate().query(FILE_SELECT_TITLE, new MezzmoRowMappers.FileRowMapper(), params);
         return list;
     }
 
-    public int updatePlayCount(String fileID, String album, int playCount, java.util.Date dateLastPlayed) throws SQLException {
+    public int updatePlayCount(String fileTitle, String album, int playCount, java.util.Date dateLastPlayed) throws SQLException {
 
-        Object[] params = {playCount, SQLiteUtils.convertDateToString(dateLastPlayed), fileID, playCount,
-                           album == null ? "%" : album, fileID
+        Object[] params = {playCount, SQLiteUtils.convertDateToString(dateLastPlayed), fileTitle, playCount,
+                           album == null ? "%" : album, fileTitle
                           };
         return getInstance().getJDBCTemplate().update(FILE_UPDATE_PLAYCOUNT, params);
 
@@ -94,7 +94,7 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
                 SQLiteUtils.getSearchField(comp.getFileTO().getTitle()),
                 SQLiteUtils.getSearchField(comp.getFileAlbumTO().getName())
         };
-        MGOFileTO fileTO = (MGOFileTO) getInstance().getJDBCTemplate().queryForObject(FILE_FIND_TAGINFO_CRITERIA, new MezzmoRowMappers.FileRowMapper(), params);
+        MGOFileTO fileTO = (MGOFileTO) getInstance().getJDBCTemplate().queryForObject(FILE_FIND_TAGINFO_CRITERIA, new FileRowMapper(), params);
         return fileTO;
     }
 
@@ -200,7 +200,7 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
                 artist.getArtist()
                 //artist.getID()
                 };
-        MGOFileArtistTO fileArtistTO = (MGOFileArtistTO) getInstance().getJDBCTemplate().queryForObject(FIND_ARTIST, new MezzmoRowMappers.ArtistRowMapper(), params);
+        MGOFileArtistTO fileArtistTO = (MGOFileArtistTO) getInstance().getJDBCTemplate().queryForObject(FIND_ARTIST, new ArtistRowMapper(), params);
         return fileArtistTO;
     }
 

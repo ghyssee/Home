@@ -97,10 +97,14 @@ goMenu();
 </form>
 
 <form action="albumSave.php" method="post">
-    <h1>iPod Configuration</h1>
+    <h1>Synchronizer Configuration</h1>
     <div class="horizontalLine">.</div>
     <?php
     $layout = new Layout(array('numCols' => 1));
+    $layout->inputBox(new Input(array('name' => "synchronizerStartDirectory",
+        'size' => 100,
+        'label' => 'Start Directory',
+        'value' => $mp3SettingsObj->synchronizer->startDirectory)));
     $layout->checkBox(new Input(array('name' => "updateRating",
         'label' => 'Update Rating',
         'value' => $mp3SettingsObj->synchronizer->updateRating)));

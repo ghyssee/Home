@@ -1,14 +1,18 @@
 package be.home.common.database.sqlbuilder;
 
+import java.io.Serializable;
+
 /**
  * Created by Gebruiker on 20/12/2016.
  */
-public enum Comparator {
+public enum Comparator implements Serializable {
     LIKE("LIKE"),
     EQUALS("="),
     GREATER(">"),
     GREATEREQUALS(">="),
-    LESSEQUALS("<=");
+    LESS("<"),
+    LESSEQUALS("<="),
+    IN("IN");
 
     String comparator;
 

@@ -1,9 +1,11 @@
 package be.home.common.database.sqlbuilder;
 
+import java.io.Serializable;
+
 /**
  * Created by Gebruiker on 20/12/2016.
  */
-class Column {
+class Column implements Serializable {
     //DatabaseColumn column;
     //String dbAlias;
     //String columnAlias;

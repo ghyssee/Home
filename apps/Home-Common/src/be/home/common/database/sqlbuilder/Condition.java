@@ -1,9 +1,11 @@
 package be.home.common.database.sqlbuilder;
 
+import java.io.Serializable;
+
 /**
  * Created by Gebruiker on 20/12/2016.
  */
-class Condition {
+class Condition implements Serializable{
     String field1;
     Comparator comparator;
     String field2;

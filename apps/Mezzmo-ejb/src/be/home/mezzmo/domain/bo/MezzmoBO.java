@@ -25,8 +25,8 @@ public class MezzmoBO extends BusinessObject {
     }
 
 
-    public int updatePlayCount(String fileID, String album, int playCount, java.util.Date dateLastPlayed) throws SQLException {
-        return getMezzmoDAO().updatePlayCount(fileID, album, playCount, dateLastPlayed);
+    public int updatePlayCount(String fileTitle, String album, int playCount, java.util.Date dateLastPlayed) throws SQLException {
+        return getMezzmoDAO().updatePlayCount(fileTitle, album, playCount, dateLastPlayed);
     }
 
     public int synchronizePlayCount(Long fileID, int playCount, Date lastPlayed) throws SQLException {

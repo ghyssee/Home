@@ -2,10 +2,12 @@ package be.home.common.database.sqlbuilder;
 
 import be.home.common.database.DatabaseColumn;
 
+import java.io.Serializable;
+
 /**
  * Created by Gebruiker on 20/12/2016.
  */
-class Relation {
+class Relation implements Serializable {
     DatabaseTables table1;
     DatabaseColumn column1;
     String alias1;

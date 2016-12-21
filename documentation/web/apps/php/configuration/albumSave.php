@@ -111,6 +111,7 @@ function saveMezzmo($file, $mp3Settings){
 }
 
 function saveiPod($file, $mp3Settings){
+	assignField($mp3Settings->synchronizer->startDirectory, "synchronizerStartDirectory");
 	assignCheckbox($mp3Settings->synchronizer->updateRating, "updateRating");
     checkSave2(true, 'mp3Settings', $mp3Settings, $file, 'album.php');
 }

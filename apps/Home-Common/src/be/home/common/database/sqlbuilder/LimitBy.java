@@ -1,9 +1,11 @@
 package be.home.common.database.sqlbuilder;
 
+import java.io.Serializable;
+
 /**
  * Created by Gebruiker on 20/12/2016.
  */
-class LimitBy {
+class LimitBy implements Serializable {
     Integer pos;
     Integer total;
 

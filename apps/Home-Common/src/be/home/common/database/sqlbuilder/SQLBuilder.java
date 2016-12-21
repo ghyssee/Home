@@ -4,13 +4,14 @@ import be.home.common.database.DatabaseColumn;
 import be.home.common.database.FieldType;
 import org.apache.commons.lang.StringUtils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by ghyssee on 15/12/2016.
  */
-public class SQLBuilder {
+public class SQLBuilder implements Cloneable, Serializable {
 
     private DatabaseTables mainTable;
     private List<Column> dbColumns = new ArrayList<>();
@@ -23,11 +24,22 @@ public class SQLBuilder {
     private List<Option> options = new ArrayList<>();
     private boolean distinct = false;
     private List<GroupBy> groupColumns = new ArrayList<>();
+    public static final Object PARAMETER = null;
 
 
     public SQLBuilder addTable(DatabaseTables table){
         this.mainTable = table;
         return this;
+    }
+
+    public Object clone() {
+        Object object = null;
+        try {
+            object = super.clone();
+        } catch (CloneNotSupportedException e) {
+            // nothing to do
+        }
+        return object;
     }
 
     public SQLBuilder select(){
@@ -136,10 +148,22 @@ public class SQLBuilder {
         return this;
     }
 
+    public SQLBuilder updateColumn (DatabaseColumn column, Type type) {
+
+        return updateColumn(column, type, null);
+    }
+
+    /* Object can be:
+    1. String
+    2. Integer
+    3. null, which means it is a parameter (?)
+    4. SQLBuilder combined with comparator IN
+     */
     public SQLBuilder addCondition (DatabaseColumn column, Comparator comparator, Object object){
         conditions.add(new Condition(column.getColumnName(), comparator, getValue(object)));
         return this;
     }
+
 
     private String getValue(Object object){
         String value = "";
@@ -151,6 +175,10 @@ public class SQLBuilder {
         }
         else if (object instanceof Integer){
             value = String.valueOf(object);
+        }
+        else if (object instanceof SQLBuilder){
+            SQLBuilder subSQL = (SQLBuilder) object;
+            value = "(" + subSQL.render() + ")";
         }
         return value;
     }

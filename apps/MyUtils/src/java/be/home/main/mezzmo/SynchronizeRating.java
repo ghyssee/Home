@@ -50,7 +50,7 @@ public class SynchronizeRating extends BatchJobV2 {
         java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.OFF);
 
         SynchronizeRating instance = new SynchronizeRating();
-        instance.printHeader("SyncrhonizeRatings " + VERSION, "=");
+        instance.printHeader("SynchronizeRatings " + VERSION, "=");
         try {
             config = instance.init();
             SQLiteJDBC.initialize();
