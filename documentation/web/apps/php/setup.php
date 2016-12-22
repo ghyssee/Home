@@ -11,6 +11,7 @@ const JSON_JOBS = "jobs";
 const JSON_MENU = "menu";
 const JSON_ALBUMERRORS = "albumErrors";
 const FILE_ALBUM = "albumInfo";
+const FILE_ALBUMCHECK = "albumsToCheck";
 const APPEND = true;
 const ESCAPE_HTML = true;
 

@@ -324,6 +324,7 @@ public class MezzmoDAOQueries extends MezzmoDB {
     protected static final String FILE_UPDATE_TITLE = SQLBuilder.getInstance()
             .update()
             .addTable(TablesEnum.MGOFile)
+            .updateColumn(MGOFileColumns.TITLE, Type.PARAMETER)
             .updateColumn(MGOFileColumns.SORTTILE, Type.PARAMETER)
             .addCondition(MGOFileColumns.ID, Comparator.EQUALS, SQLBuilder.PARAMETER)
             .render();
@@ -348,6 +349,14 @@ public class MezzmoDAOQueries extends MezzmoDB {
             .update()
             .addTable(TablesEnum.MGOFile)
             .updateColumn(MGOFileColumns.FILE, Type.PARAMETER)
+            .updateColumn(MGOFileColumns.FILETITLE, Type.PARAMETER)
+            .addCondition(MGOFileColumns.ID, Comparator.EQUALS, SQLBuilder.PARAMETER)
+            .render();
+
+    protected static final String FILE_UPDATE_FILETITLE = SQLBuilder.getInstance()
+            .update()
+            .addTable(TablesEnum.MGOFile)
+            .updateColumn(MGOFileColumns.FILETITLE, Type.PARAMETER)
             .addCondition(MGOFileColumns.ID, Comparator.EQUALS, SQLBuilder.PARAMETER)
             .render();
 

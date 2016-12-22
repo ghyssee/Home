@@ -67,6 +67,8 @@ public interface Constants {
     interface FILE {
         String ALBUM = "albumInfo";
         String ALBUM_LOG = "albumLog";
+        String ALBUMS_TO_CHECK = "albumsToCheck";
+
     }
 
 }

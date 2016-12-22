@@ -44,7 +44,7 @@ goMenu();
 ?>
 <h1>Album Information</h1>
 <div class="horizontalLine">.</div>
-<form action="albumInfoSave.php" method="post">
+<form action="albumInfoAction.php" method="post">
     <?php
     $layout = new Layout(array('numCols' => 1));
     $layout->inputBox(new Input(array('name' => "cdTag",

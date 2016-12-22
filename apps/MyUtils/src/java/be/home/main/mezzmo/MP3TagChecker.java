@@ -8,10 +8,7 @@ import be.home.common.exceptions.ApplicationException;
 import be.home.common.main.BatchJobV2;
 import be.home.common.model.TransferObject;
 import be.home.common.mp3.MP3Utils;
-import be.home.common.utils.DateUtils;
-import be.home.common.utils.FileUtils;
-import be.home.common.utils.JSONUtils;
-import be.home.common.utils.MyFileWriter;
+import be.home.common.utils.*;
 import be.home.domain.model.MP3Helper;
 import be.home.domain.model.MP3TagUtils;
 import be.home.mezzmo.domain.model.*;
@@ -25,6 +22,7 @@ import org.apache.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -41,12 +39,6 @@ public class MP3TagChecker extends BatchJobV2{
     public static ConfigTO.Config config;
     private static final Logger log = getMainLog(MP3TagChecker.class);
     public AlbumError albumErrors = (AlbumError) JSONUtils.openJSONWithCode(Constants.JSON.ALBUMERRORS, AlbumError.class);
-    public String ALBUM = "Ultratop 50 201212 December 2012";
-    public String[] ALBUMS = {
-            "Ultratop 50 20140104 04 Januari 2014"
-    };
-
-
 
     public static void main(String args[]) {
 
@@ -85,12 +77,10 @@ public class MP3TagChecker extends BatchJobV2{
             String artist = "Axwell Λ Ingrosso";
             id3v2Tag.setArtist(artist);
             mp3file.setId3v2Tag(id3v2Tag);
-            String originalFile = file;
             String newFile = "C:\\My Data\\tmp\\Java\\MP3Processor\\ToTest\\test2.mp3";
             mp3file.save(newFile);
         } catch (Exception e) {
-            log.error(e);
-            e.printStackTrace();
+            LogUtils.logError(log, e);
         }
     }
 
@@ -100,24 +90,34 @@ public class MP3TagChecker extends BatchJobV2{
         albumErrors.items = new ArrayList<>();
         //base = ""
         MGOFileAlbumTO albumTO = new MGOFileAlbumTO();
-        for (String album : ALBUMS){
-            albumTO.setName(album);
-            List<MGOFileAlbumCompositeTO> listAlbums = getMezzmoService().getAlbums(albumTO, new TransferObject());
-            if (listAlbums == null || listAlbums.size() == 0){
-                log.warn("No Album(s) found!!!");
-            }
-            else {
-                for (MGOFileAlbumCompositeTO comp : listAlbums) {
-                    System.out.println("AlbumID: " + comp.getFileAlbumTO().getId());
-                    System.out.println("Album: " + comp.getFileAlbumTO().getName());
-                    processAlbum(comp);
+        File file = new File(Setup.getInstance().getFullPath(Constants.FILE.ALBUMS_TO_CHECK));
+        try {
+            List<String> lines = FileUtils.getContents(file, StandardCharsets.UTF_8);
+            for (String line : lines){
+                if (StringUtils.isBlank(line)){
+                    break;
+                }
+                albumTO.setName(line.trim());
+                List<MGOFileAlbumCompositeTO> listAlbums = getMezzmoService().getAlbums(albumTO, new TransferObject());
+                if (listAlbums == null || listAlbums.size() == 0){
+                    log.warn("No Album(s) found!!!");
+                }
+                else {
+                    for (MGOFileAlbumCompositeTO comp : listAlbums) {
+                        log.info("AlbumID: " + comp.getFileAlbumTO().getId());
+                        log.info("Album: " + comp.getFileAlbumTO().getName());
+                        processAlbum(comp);
+                    }
                 }
             }
-        }
-        try {
-            JSONUtils.writeJsonFileWithCode(this.albumErrors, Constants.JSON.ALBUMERRORS);
+            try {
+                JSONUtils.writeJsonFileWithCode(this.albumErrors, Constants.JSON.ALBUMERRORS);
+            } catch (IOException e) {
+                LogUtils.logError(log, e, "Problem writing the AlbumErrors JSON file");
+
+            }
         } catch (IOException e) {
-            log.error(e);
+            LogUtils.logError(log, e, "Problem opening file " + file.getAbsolutePath());
         }
     }
 
@@ -125,16 +125,16 @@ public class MP3TagChecker extends BatchJobV2{
         MGOFileAlbumCompositeTO search = new MGOFileAlbumCompositeTO();
         search.getFileAlbumTO().setId(comp.getFileAlbumTO().getId());
         List<MGOFileAlbumCompositeTO> list = getMezzmoService().findSongsByAlbum(search);
-        System.out.println("Album: " + comp.getFileAlbumTO().getName());
+        log.info("Album: " + comp.getFileAlbumTO().getName());
         int maxDisc = getMaxDisc(list);
-        System.out.println("Max Disc: " + maxDisc);
+        log.info("Max Disc: " + maxDisc);
         MP3TagUtils tagUtils = new MP3TagUtils(this.albumErrors);
         for (MGOFileAlbumCompositeTO item : list){
 
-            System.out.println("Track: " + item.getFileTO().getTrack());
-            System.out.println("Artist: " + item.getFileArtistTO().getArtist());
-            System.out.println("Title: " + item.getFileTO().getTitle());
-            System.out.println(StringUtils.repeat('=', 100));
+            log.info("Track: " + item.getFileTO().getTrack());
+            log.info("Artist: " + item.getFileArtistTO().getArtist());
+            log.info("Title: " + item.getFileTO().getTitle());
+            log.info(StringUtils.repeat('=', 100));
             tagUtils.processSong(item, list.size(), maxDisc);
         }
 
@@ -146,15 +146,6 @@ public class MP3TagChecker extends BatchJobV2{
             maxDisc = Math.max(maxDisc, comp.getFileTO().getDisc());
         }
         return maxDisc;
-    }
-
-
-    private String getFileTitle(String file){
-        Path tmp = Paths.get(file);
-        String filename = tmp.getFileName().toString();
-        filename = FilenameUtils.removeExtension(filename);
-        return filename;
-
     }
 
     private void processErrors(){
@@ -169,6 +160,9 @@ public class MP3TagChecker extends BatchJobV2{
                 switch (MP3Tag.valueOf(item.getType())) {
                     case FILE:
                         renameFile(item);
+                        break;
+                    case FILETITLE:
+                        updateFileTitle(item);
                         break;
                     case ARTIST:
                         updateArtist(item);
@@ -187,7 +181,7 @@ public class MP3TagChecker extends BatchJobV2{
         try {
             flushAlbumErrors();
         } catch (IOException e) {
-            log.error(e);
+            LogUtils.logError(log, e, "There was a problem flushing the Album Errors File");
         }
     }
 
@@ -219,7 +213,7 @@ public class MP3TagChecker extends BatchJobV2{
            MGOFileAlbumCompositeTO comp = new MGOFileAlbumCompositeTO();
            comp.getFileTO().setId(item.getId());
            comp.getFileTO().setFile(item.getNewValue());
-           comp.getFileTO().setFileTitle(getFileTitle(item.getNewValue()));
+           comp.getFileTO().setFileTitle(MP3TagUtils.getFileTitle(item.getNewValue()));
            try {
                int nr = getMezzmoService().updateSong(comp, MP3Tag.valueOf(item.getType()));
                if (nr > 0) {
@@ -228,7 +222,7 @@ public class MP3TagChecker extends BatchJobV2{
                    item.setDone(true);
                }
            } catch (SQLException e) {
-               log.error(e);
+               LogUtils.logError(log, e);
            }
        }
     }
@@ -246,7 +240,24 @@ public class MP3TagChecker extends BatchJobV2{
                 updateMP3(item);
             }
         } catch (SQLException e) {
-            log.error(e);
+            LogUtils.logError(log, e);
+        }
+    }
+
+    private void updateFileTitle(AlbumError.Item item){
+        MGOFileAlbumCompositeTO comp = new MGOFileAlbumCompositeTO();
+        comp.getFileTO().setId(item.getId());
+        comp.getFileTO().setFileTitle(item.getNewValue());
+        comp.getFileTO().setSortTitle(getSetSortTitle(item.getNewValue()));
+        try {
+            int nr = getMezzmoService().updateSong(comp, MP3Tag.valueOf(item.getType()));
+            if (nr > 0) {
+                log.info("FileTitle updated: " + "Id: " + item.getId() +
+                        " / New FileTitle: " + item.getNewValue() + " / " + nr + " record(s)");
+                item.setDone(true);
+            }
+        } catch (SQLException e) {
+            LogUtils.logError(log, e);
         }
     }
 
@@ -262,7 +273,7 @@ public class MP3TagChecker extends BatchJobV2{
                 updateMP3(item);
             }
         } catch (SQLException e) {
-            log.error(e);
+            LogUtils.logError(log, e);
         }
     }
 
@@ -296,7 +307,7 @@ public class MP3TagChecker extends BatchJobV2{
         if (artist != null) {
             System.out.println("artist found");
             Result result = getMezzmoService().updateLinkFileArtist(comp.getFileArtistTO(), artist.getID());
-            System.out.println("Nr Of Links updated: " + result.getNr1());
+            log.info("Nr Of Links updated: " + result.getNr1());
             /* update the found artist (because of case insensitive constraint on
                field artist, so update it to be sure it is prettified (feat. => Feat.)
              */
@@ -311,7 +322,7 @@ public class MP3TagChecker extends BatchJobV2{
                     updateMP3(item);
                 }
             } catch (SQLException e) {
-                    e.printStackTrace();
+                LogUtils.logError(log, e);
                 }
             //System.out.println("Nr Of Old Artists deleted: " + result.getNr2());
         }
@@ -325,7 +336,7 @@ public class MP3TagChecker extends BatchJobV2{
                     updateMP3(item);
                 }
             } catch (SQLException e) {
-                log.error(e);
+                LogUtils.logError(log, e);
             }
         }
     }
@@ -370,9 +381,8 @@ public class MP3TagChecker extends BatchJobV2{
                 }
             }
         } catch (Exception e) {
-            log.error(e);
-            e.printStackTrace();
-            }
+            LogUtils.logError(log, e);
+        }
     }
 
     public static MezzmoServiceImpl getMezzmoService(){

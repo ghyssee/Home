@@ -5,6 +5,7 @@ import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.JSONUtils;
+import be.home.common.utils.LogUtils;
 import be.home.common.utils.VelocityUtils;
 import be.home.common.utils.WinUtils;
 import be.home.domain.model.MezzmoUtils;
@@ -62,14 +63,14 @@ public class MakeTop20 extends BatchJobV2{
         String base = WinUtils.getOneDrivePath();
         log.info("OneDrive Path: " + base);
         base += "\\Muziek\\Export\\";
-        System.out.println(MezzmoDAOQueries.LIST_ALBUMS_TRACKS);
+        //System.out.println(MezzmoDAOQueries.LIST_ALBUMS_TRACKS);
 
-/*
+
         try {
             makeTop20();
         } catch (IOException e) {
-            e.printStackTrace();
-        }*/
+            LogUtils.logError(log, e);
+        }
 
 
     }

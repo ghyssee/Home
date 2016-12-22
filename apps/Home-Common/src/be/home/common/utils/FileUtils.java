@@ -91,8 +91,11 @@ public class FileUtils {
 	}
 
     public static List<String> getContents(File aFile) throws IOException {
-        return getContents(aFile, "UTF-16");
+        return getContents(aFile, StandardCharsets.UTF_16);
     }
+	public static List<String> getContents(File aFile, Charset charSet) throws IOException {
+        return getContents(aFile, charSet.name());
+	}
 
 	public static List<String> getContents(File aFile, String charSet) throws IOException {
 		// ...checks on aFile are elided

@@ -5,6 +5,7 @@ import be.home.common.database.sqlbuilder.Type;
 import be.home.common.enums.MP3Tag;
 import be.home.common.mp3.MP3Utils;
 import be.home.common.database.sqlbuilder.SQLBuilder;
+import be.home.common.utils.LogUtils;
 import be.home.mezzmo.domain.dao.definition.MGOFileColumns;
 import be.home.mezzmo.domain.dao.definition.TablesEnum;
 import be.home.mezzmo.domain.model.AlbumError;
@@ -20,6 +21,7 @@ import org.apache.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -73,7 +75,10 @@ public class MP3TagUtils {
                     checkArtist(comp, id3v2Tag.getArtist());
                     checkTitle(comp, id3v2Tag.getTitle());
                     checkAlbum(comp, id3v2Tag.getAlbum());
-                    checkFilename(comp, nrOfTracks, maxDisc);
+                    if (checkFilename(comp, nrOfTracks, maxDisc)) {
+                        // if filename is ok, an extra check for filetitle
+                        checkFileTitle(comp);
+                    }
 
                     System.out.println(StringUtils.repeat('=', 100));
                     System.out.println("MP3 Tag Info");
@@ -147,10 +152,50 @@ public class MP3TagUtils {
             System.out.println("Before Stripped: " + filename);
             System.out.println("Stripped: " + stripFilename(filename));*/
         }
+        File file = new File(relativizeFile((comp.getFileTO().getFile())));
+        Path path = Paths.get(file.getAbsolutePath());
+        try {
+            Path realPath = path.toRealPath(LinkOption.NOFOLLOW_LINKS);
+            String realFile = realPath.getFileName().toString();
+            System.out.println(realFile);
+            if (!realFile.equals(filenameFromDB)){
+                addItem(comp.getFileTO().getId(),
+                        comp.getFileTO().getFile(),
+                        comp.getFileAlbumTO().getName(),
+                        MP3Tag.FILE, realPath.toString().replace(SUBST_B, SUBST_A), comp.getFileTO().getFile());
+
+            }
+        } catch (IOException e) {
+            LogUtils.logError(log, e);
+        }
+
+
         return ok;
     }
+    public static String getFileTitle(String file){
+        Path tmp = Paths.get(file);
+        String filename = tmp.getFileName().toString();
+        filename = FilenameUtils.removeExtension(filename);
+        return filename;
 
+    }
 
+    private boolean checkFileTitle(MGOFileAlbumCompositeTO comp) throws UnsupportedEncodingException {
+        boolean ok = true;
+        comp.getFileTO().setFile(comp.getFileTO().getFile().replace(SUBST_B, SUBST_A));
+        String filenameFromDB = getFileTitle(comp.getFileTO().getFile());
+        if (!filenameFromDB.equals(comp.getFileTO().getFileTitle())){
+            log.warn("FileTitle does not match: " + "filenameFromDB: " + filenameFromDB +
+                     " / FileTitle: " + comp.getFileTO().getFileTitle());
+            addItem(comp.getFileTO().getId(),
+                    comp.getFileTO().getFile(),
+                    comp.getFileAlbumTO().getName(),
+                    MP3Tag.FILETITLE, comp.getFileTO().getFileTitle(), filenameFromDB);
+            comp.getFileTO().setFileTitle(filenameFromDB);
+            ok = false;
+        }
+        return ok;
+    }
 
     private boolean checkTrack(String mp3Track, MGOFileAlbumCompositeTO comp, int nrOfTracks, int nrOfCds){
         //System.out.println("Track: " + id3v2Tag.getTrack());
@@ -336,6 +381,7 @@ public class MP3TagUtils {
         strippedFilename = strippedFilename.replaceAll("[ÚÙÛÜ]", "U");
         strippedFilename = strippedFilename.replaceAll("[ýÿ]", "y");
         strippedFilename = strippedFilename.replaceAll("[Ý]", "Y");
+        strippedFilename = strippedFilename.replaceAll("AC/DC", "ACDC");
         strippedFilename = strippedFilename.replace("/", "&");
         strippedFilename = strippedFilename.replace("æ", "ae");
         strippedFilename = strippedFilename.replace("Æ", "AE");
