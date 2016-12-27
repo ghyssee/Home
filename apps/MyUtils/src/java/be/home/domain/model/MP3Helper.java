@@ -63,7 +63,7 @@ public class MP3Helper {
                     prettifiedText = prettifiedText.replaceAll(replaceBetweenBrackets(wordObj.oldWord), wordObj.newWord);
                 }
                 else {
-                    prettifiedText = prettifiedText.replace(wordObj.oldWord, wordObj.newWord);
+                    prettifiedText = prettifiedText.replaceAll(wordObj.oldWord, wordObj.newWord);
                 }
             }
             //prettifiedText = prettifiedText.replaceAll("\\[]", "(");

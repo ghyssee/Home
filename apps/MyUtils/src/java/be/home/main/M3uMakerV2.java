@@ -247,6 +247,7 @@ public class M3uMakerV2 extends BatchJobV2 {
         song = MP3Helper.getInstance().prettifySong(song);
         song = MP3TagUtils.stripFilename(song);
         song = song.toUpperCase();
+        song = song.replace("CATCH & RELEASE (DEEPEND REMIX)", "CATCH & RELEASE");
         return song;
     }
 

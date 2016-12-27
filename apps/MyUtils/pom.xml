@@ -230,7 +230,11 @@
 			<artifactId>Home-Common</artifactId>
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
-		</dependencies>
+			<dependency>
+				<groupId>net.lingala.zip4j</groupId>
+				<artifactId>zip4j</artifactId>
+			</dependency>
+			</dependencies>
 
     
 </project>

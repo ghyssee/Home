@@ -58,8 +58,6 @@ public class ZipFiles extends BatchJobV2 {
 
     public void start(String source, String zipFile) throws IOException {
 
-        String configFile = config.movies.importFile;
-
         String ext = FilenameUtils.getExtension(zipFile);
         zipFile = FilenameUtils.removeExtension(zipFile);
 

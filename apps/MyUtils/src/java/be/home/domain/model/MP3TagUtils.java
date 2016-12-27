@@ -34,6 +34,8 @@ public class MP3TagUtils {
     private static final Logger log = Logger.getLogger(MP3TagUtils.class);
     public static final String SUBST_A = "H:\\Shared\\Mijn Muziek\\Eric\\iPod\\";
     public static final String SUBST_B = "R:\\My Music\\iPod\\";
+    public static final String SUBST_A2 = "H:\\Shared\\Mijn Muziek\\";
+    public static final String SUBST_B2 = "O:\\Shared\\Mijn Muziek\\";
     //public static final String SUBST_B = "C:\\My Data\\tmp\\Java\\MP3Processor\\Album\\";
     public static final String HTML_BREAK = "<br>";
 
@@ -74,9 +76,9 @@ public class MP3TagUtils {
                     checkTrack(id3v2Tag.getTrack(), comp, nrOfTracks, maxDisc);
                     checkArtist(comp, id3v2Tag.getArtist());
                     checkTitle(comp, id3v2Tag.getTitle());
-                    checkAlbum(comp, id3v2Tag.getAlbum());
                     if (checkFilename(comp, nrOfTracks, maxDisc)) {
                         // if filename is ok, an extra check for filetitle
+                        checkAlbum(comp, id3v2Tag.getAlbum());
                         checkFileTitle(comp);
                     }
 
@@ -114,7 +116,7 @@ public class MP3TagUtils {
     }
 
 
-    private  void addItem(Long id, String file, String album, MP3Tag type, String oldValue, String newValue){
+    private  void addItem(Long id, String file, String album, MP3Tag type, String oldValue, String newValue) {
         AlbumError.Item item = new AlbumError().new Item();
         item.setId(id);
         item.setFile(file);
@@ -128,15 +130,34 @@ public class MP3TagUtils {
     private boolean checkFilename(MGOFileAlbumCompositeTO comp, int nrOfTracks, int nrOfCds) throws UnsupportedEncodingException {
         boolean ok = true;
         comp.getFileTO().setFile(comp.getFileTO().getFile().replace(SUBST_B, SUBST_A));
-        Path tmp = Paths.get(comp.getFileTO().getFile());
-        String filenameFromDB = tmp.getFileName().toString();
+        Path pathFromDB = Paths.get(comp.getFileTO().getFile());
+        String filenameFromDB = pathFromDB.getFileName().toString();
         System.out.println("filenameDB = " + filenameFromDB);
-        int lengthTrack = String.valueOf(nrOfTracks).length() + (nrOfCds > 0 ? String.valueOf(nrOfCds).length() : 0);
+        int lengthDisc = nrOfCds > 0 ? String.valueOf(nrOfCds).length() : 0;
+        int lengthTrack = String.valueOf(nrOfTracks).length();
         String track = StringUtils.leftPad(String.valueOf(comp.getFileTO().getTrack()), lengthTrack, '0');
-        String filename = track + " " + comp.getFileArtistTO().getArtist() + " - " + comp.getFileTO().getTitle() + ".mp3";
+        String cd = nrOfCds > 0 ? StringUtils.leftPad(String.valueOf(comp.getFileTO().getDisc()), lengthDisc, '0')
+                : "";
+        String filename = cd + track + " " + comp.getFileArtistTO().getArtist() + " - " + comp.getFileTO().getTitle() + ".mp3";
+        String strFilenameFromDB = pathFromDB.toString();
         filename = stripFilename(filename);
-        if (!filenameFromDB.equals(filename)){
-            String newFile = tmp.getParent().toString() + File.separator + filename;
+        if (!strFilenameFromDB.startsWith(SUBST_A)){
+            // Path is in small letters instead of The Real Path
+            int len = SUBST_A.length();
+            String tmp = strFilenameFromDB.substring(0, len);
+            if (tmp.compareToIgnoreCase(SUBST_A) == 0){
+                Path newPathFile = Paths.get(SUBST_A + strFilenameFromDB.substring(len));
+                String newFile = newPathFile.getParent().toString() + File.separator + filename;
+                addItem(comp.getFileTO().getId(),
+                        comp.getFileTO().getFile(),
+                        comp.getFileAlbumTO().getName(),
+                        MP3Tag.FILE, comp.getFileTO().getFile(), newFile);
+            }
+
+            ok = false;
+        }
+        else if (!filenameFromDB.equals(filename)){
+            String newFile = pathFromDB.getParent().toString() + File.separator + filename;
             //comp.getFileTO().setFile(newFile);
             log.warn("Filename does not match: " + "filenameFromDB: " + filenameFromDB + " / Formatted: " + filename);
             /* rename file to new file
@@ -152,21 +173,24 @@ public class MP3TagUtils {
             System.out.println("Before Stripped: " + filename);
             System.out.println("Stripped: " + stripFilename(filename));*/
         }
-        File file = new File(relativizeFile((comp.getFileTO().getFile())));
-        Path path = Paths.get(file.getAbsolutePath());
-        try {
-            Path realPath = path.toRealPath(LinkOption.NOFOLLOW_LINKS);
-            String realFile = realPath.getFileName().toString();
-            System.out.println(realFile);
-            if (!realFile.equals(filenameFromDB)){
-                addItem(comp.getFileTO().getId(),
-                        comp.getFileTO().getFile(),
-                        comp.getFileAlbumTO().getName(),
-                        MP3Tag.FILE, realPath.toString().replace(SUBST_B, SUBST_A), comp.getFileTO().getFile());
+        else  {
+            File file = new File(relativizeFile((comp.getFileTO().getFile())));
+            Path path = Paths.get(file.getAbsolutePath());
+            try {
+                Path realPath = path.toRealPath(LinkOption.NOFOLLOW_LINKS);
+                String realFile = realPath.getFileName().toString();
+                System.out.println(realFile);
+                if (!realFile.equals(filenameFromDB)) {
+                    addItem(comp.getFileTO().getId(),
+                            comp.getFileTO().getFile(),
+                            comp.getFileAlbumTO().getName(),
+                            MP3Tag.FILE, realPath.toString().replace(SUBST_B, SUBST_A), comp.getFileTO().getFile());
+                    ok = false;
 
+                }
+            } catch (IOException e) {
+                LogUtils.logError(log, e);
             }
-        } catch (IOException e) {
-            LogUtils.logError(log, e);
         }
 
 
@@ -273,7 +297,8 @@ public class MP3TagUtils {
                     comp.getFileAlbumTO().getName(),
                     MP3Tag.ALBUMCHECK, getAlbumCheckInfoOld("Disc:", path, "MP3:", album),
                                               getAlbumCheckInfoNew(
-                                                      file.getParentFile().getAbsolutePath(),
+                                                      //file.getParentFile().getAbsolutePath(),
+                                                      comp.getFileTO().getId(),
                                                       oldFile,
                                                       possibleNewFile));
             comp.getFileArtistTO().setArtist(album);
@@ -293,14 +318,15 @@ public class MP3TagUtils {
         return value;
     }
 
-    private String getAlbumCheckInfoNew(String find, String oldValue, String newValue){
+    private String getAlbumCheckInfoNew(Long id, String oldValue, String newValue){
         String SQL = new SQLBuilder()
                 .update()
                 .addTable(TablesEnum.MGOFile)
                 .updateColumn(MGOFileColumns.FILE, Type.FUNCTION,
                         "REPLACE(" + MGOFileColumns.FILE.name() +
                               ",'" + oldValue + "','" + newValue + "')")
-                .addCondition(MGOFileColumns.FILE, Comparator.LIKE, find + "%")
+                //.addCondition(MGOFileColumns.FILE, Comparator.LIKE, find + "%")
+                .addCondition(MGOFileColumns.ID, Comparator.EQUALS, id)
                 .render();
         return SQL;
     }
@@ -397,20 +423,28 @@ public class MP3TagUtils {
         strippedFilename = strippedFilename.replace("Ch!pz", "Chipz");
         strippedFilename = strippedFilename.replace("M:ck", "Mick");
         strippedFilename = strippedFilename.replace("$hort", "Short");
+        strippedFilename = strippedFilename.replace("+1", "Plus 1");
         strippedFilename = strippedFilename.replace("+", "&");
         strippedFilename = strippedFilename.replace("$ign", "Sign");
+        strippedFilename = strippedFilename.replace("A$AP", "ASAP");
         strippedFilename = strippedFilename.replace("^", "&");
         strippedFilename = strippedFilename.replace("P!nk", "Pink");
         strippedFilename = strippedFilename.replace("$", "s");
         strippedFilename = strippedFilename.replace("%", "Percent");
         strippedFilename = strippedFilename.replace("/\\", "&");
+        strippedFilename = strippedFilename.replace("DELV!S", "DELVIS");
+
         strippedFilename = strippedFilename.replaceAll("[^&()\\[\\],'. a-zA-Z0-9.-]", "");
 
         return strippedFilename;
     }
 
     public static String relativizeFile(String file){
-        return file.replace(SUBST_A, SUBST_B);
+
+        String SUBST_1 = "h:\\shared\\mijn muziek\\eric\\ipod\\";
+        file = file.replace(SUBST_A, SUBST_B);
+        file = file.replace(SUBST_1, SUBST_B);
+        return file;
     }
 
 }

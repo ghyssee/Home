@@ -170,6 +170,9 @@ public class MP3TagChecker extends BatchJobV2{
                     case TITLE:
                         updateSong(item);
                         break;
+                    case ALBUM:
+                        updateAlbum(item);
+                        break;
                     case TRACK:
                         updateTrack(item);
                         break;
@@ -237,6 +240,22 @@ public class MP3TagChecker extends BatchJobV2{
             if (nr > 0) {
                 log.info("Title updated: " + "Id: " + item.getId() +
                         " / New Title: " + item.getNewValue() + " / " + nr + " record(s)");
+                updateMP3(item);
+            }
+        } catch (SQLException e) {
+            LogUtils.logError(log, e);
+        }
+    }
+
+    private void updateAlbum(AlbumError.Item item){
+        MGOFileAlbumCompositeTO comp = new MGOFileAlbumCompositeTO();
+        comp.getFileAlbumTO().setId(item.getId());
+        comp.getFileAlbumTO().setName(item.getNewValue());
+        try {
+            int nr = getMezzmoService().updateSong(comp, MP3Tag.valueOf(item.getType()));
+            if (nr > 0) {
+                log.info("Album updated: " + "Id: " + item.getId() +
+                        " / New Album: " + item.getNewValue() + " / " + nr + " record(s)");
                 updateMP3(item);
             }
         } catch (SQLException e) {

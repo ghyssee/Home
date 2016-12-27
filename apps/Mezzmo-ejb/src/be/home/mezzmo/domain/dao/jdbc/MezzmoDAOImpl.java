@@ -179,6 +179,11 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
                 params = new Object[] {comp.getFileArtistTO().getArtist(), comp.getFileArtistTO().getID()};
                 nr = getInstance().getJDBCTemplate().update(FILE_UPDATE_ARTIST, params);
                 break;
+            case ALBUM:
+                params = new Object[] {comp.getFileAlbumTO().getName(),
+                        comp.getFileAlbumTO().getId()};
+                nr = getInstance().getJDBCTemplate().update(FILE_UPDATE_ALBUM, params);
+                break;
             case FILE:
                 params = new Object[] {comp.getFileTO().getFile(),
                         comp.getFileTO().getFileTitle(),

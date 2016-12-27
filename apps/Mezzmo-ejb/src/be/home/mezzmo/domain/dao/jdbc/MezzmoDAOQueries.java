@@ -315,6 +315,13 @@ public class MezzmoDAOQueries extends MezzmoDB {
             .addCondition(MGOFileArtistColumns.ARTISTID, Comparator.EQUALS, SQLBuilder.PARAMETER)
             .render();
 
+    protected static final String FILE_UPDATE_ALBUM = SQLBuilder.getInstance()
+            .update()
+            .addTable(TablesEnum.MGOFileAlbum)
+            .updateColumn(MGOFileAlbumColumns.ALBUM, Type.PARAMETER)
+            .addCondition(MGOFileAlbumColumns.ALBUMID, Comparator.EQUALS, SQLBuilder.PARAMETER)
+            .render();
+
 
     protected static final String FILE_UPDATE_TITLEOld = "UPDATE MGOFile " +
             " SET title = ?, " +

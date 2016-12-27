@@ -181,6 +181,9 @@ public class SQLBuilder implements Cloneable, Serializable {
         else if (object instanceof Integer){
             value = String.valueOf(object);
         }
+        else if (object instanceof Long){
+            value = String.valueOf(object);
+        }
         else if (object instanceof SQLBuilder){
             SQLBuilder subSQL = (SQLBuilder) object;
             value = "(" + subSQL.render() + ")";

@@ -9,6 +9,7 @@ import be.home.common.utils.LogUtils;
 import be.home.common.utils.VelocityUtils;
 import be.home.common.utils.WinUtils;
 import be.home.domain.model.MezzmoUtils;
+import be.home.main.tools.ZipFiles;
 import be.home.mezzmo.domain.dao.jdbc.MezzmoDAOQueries;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.MGOFileTO;
@@ -17,6 +18,9 @@ import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.model.ConfigTO;
 import be.home.common.configuration.Setup;
 import be.home.model.MP3Settings;
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.model.ZipParameters;
+import net.lingala.zip4j.util.Zip4jConstants;
 import org.apache.log4j.Logger;
 import org.apache.velocity.VelocityContext;
 
@@ -65,13 +69,13 @@ public class MakeTop20 extends BatchJobV2{
         base += "\\Muziek\\Export\\";
         //System.out.println(MezzmoDAOQueries.LIST_ALBUMS_TRACKS);
 
-
+/*
         try {
             makeTop20();
         } catch (IOException e) {
             LogUtils.logError(log, e);
         }
-
+*/
 
     }
 

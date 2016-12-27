@@ -6,6 +6,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.spi.FileSystemProvider;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -93,6 +94,25 @@ public class ZipArchiver extends Archiver {
             e.printStackTrace();
         }
         FileSystem fs = FileSystems.getDefault();
+        FileSystemProvider provider = fs.provider();
+
+        System.out.println("Provider: " + provider.toString());
+        System.out.println("Open: " + fs.isOpen());
+        System.out.println("Read Only: " + fs.isReadOnly());
+
+        Iterable<Path> rootDirectories = fs.getRootDirectories();
+
+        System.out.println("\nRoot Directories \n-----------------");
+
+        for (Path path : rootDirectories)
+            System.out.println(path);
+
+        Iterable<FileStore> fileStores = fs.getFileStores();
+
+        System.out.println("\nFile Stores \n-------------");
+
+        for (FileStore fileStore : fileStores)
+            System.out.println(fileStore.name());
 
 
         if (Files.isDirectory(fs.getPath(this.getInputDir()))) {
@@ -120,7 +140,7 @@ public class ZipArchiver extends Archiver {
         // shutdown ExecutorService and block till tasks are complete
         es.shutdown();
         try {
-            es.awaitTermination(10, TimeUnit.SECONDS);
+            es.awaitTermination(1, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

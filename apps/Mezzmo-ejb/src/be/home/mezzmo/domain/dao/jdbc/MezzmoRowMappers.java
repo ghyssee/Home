@@ -112,6 +112,7 @@ public class MezzmoRowMappers extends MezzmoDAOQueries {
         fileTO.setTrack(getInteger(rs, MGOFileColumns.TRACK));
         fileTO.setDateLastPlayed(getDate(rs, MGOFileColumns.DATELASTPLAYED));
         fileTO.setYear(getInteger(rs, MGOFileColumns.YEAR));
+        fileTO.setDisc(getInteger(rs, MGOFileColumns.DISC));
         return fileTO;
     }
 
