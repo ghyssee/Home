@@ -1,5 +1,7 @@
 package be.home.common.archiving;
 
+import be.home.common.utils.FileUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -30,20 +32,27 @@ public class ZipArchiver extends Archiver {
         }
 
         @Override
-        public Integer call() throws Exception {
+        public Integer call()  {
             // copy input file to ZipFileSystem
             if (attrs.isDirectory()){
                 Path absolutePath = file;
                 Path relativePath = basePath.relativize(absolutePath);
-                Files.createDirectories(zipfs.getPath(relativePath.toString()));
+                try {
+                    Files.createDirectories(zipfs.getPath(relativePath.toString()));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
             else {
                 Path absolutePath = file.getParent();
                 Path relativePath = basePath.relativize(absolutePath);
                 // absoluteFilename = file.getFileName().toString();
                 Path zipFile = zipfs.getPath(relativePath + File.separator + file.getFileName().toString());
-                Files.copy(file, zipFile,
-                        StandardCopyOption.REPLACE_EXISTING);
+                try {
+                    Files.copy(file, zipFile, StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
 
             return 0;
@@ -140,7 +149,7 @@ public class ZipArchiver extends Archiver {
         // shutdown ExecutorService and block till tasks are complete
         es.shutdown();
         try {
-            es.awaitTermination(1, TimeUnit.SECONDS);
+            es.awaitTermination(10, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

@@ -369,6 +369,10 @@ public class MP3TagChecker extends BatchJobV2{
 
             boolean update = false;
             switch (MP3Tag.valueOf(item.getType())){
+                case ALBUM:
+                    update = true;
+                    id3v2Tag.setAlbum(item.getNewValue());
+                    break;
                 case ARTIST :
                     update = true;
                     id3v2Tag.setArtist(item.getNewValue());

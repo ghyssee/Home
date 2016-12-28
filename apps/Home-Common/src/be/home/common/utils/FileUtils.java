@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.net.URLEncoder;
+import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -53,6 +54,22 @@ public class FileUtils {
 
 		return newFileName;
 
+	}
+
+    public static void copyFileUsingFileChannels(File source, File dest, boolean appendIfExist) throws IOException {
+		FileChannel inputChannel = null;
+		FileChannel outputChannel = null;
+		try {
+            inputChannel = new FileInputStream(source).getChannel();
+            outputChannel = new FileOutputStream(dest).getChannel();
+            outputChannel.transferFrom(inputChannel, 0, inputChannel.size());
+        }
+		catch (Exception e){
+                e.printStackTrace();
+        } finally {
+			inputChannel.close();
+			outputChannel.close();
+		}
 	}
 
 	public static void copy(File src, File dst, boolean appendIfExist)

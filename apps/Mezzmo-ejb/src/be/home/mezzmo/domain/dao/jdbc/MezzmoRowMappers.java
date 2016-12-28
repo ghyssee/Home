@@ -39,10 +39,10 @@ public class MezzmoRowMappers extends MezzmoDAOQueries {
     public static class AlbumTrackRowMapper implements RowMapper {
         public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
             MGOFileAlbumCompositeTO fileAlbumComposite = new MGOFileAlbumCompositeTO();
+            fileAlbumComposite.getFileTO().setYear(getInteger(rs, MGOFileColumns.YEAR));
             fileAlbumComposite.setFileAlbumTO(mapFileAlbumTO(rs, rowNum));
             fileAlbumComposite.setAlbumArtistTO(mapAlbumArtistTO(rs, rowNum));
-            MGOFileTO fileTO = fileAlbumComposite.getFileTO();
-            fileTO.setYear(rs.getInt("YEAR"));
+            fileAlbumComposite.setFileArtistTO(mapFileArtistTO(rs, rowNum));
             return fileAlbumComposite;
         }
     }

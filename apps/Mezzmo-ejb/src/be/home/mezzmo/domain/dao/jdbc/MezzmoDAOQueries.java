@@ -125,7 +125,7 @@ public class MezzmoDAOQueries extends MezzmoDB {
             .render();
 
 
-    protected static final String LIST_ALBUMS_oLD = "SELECT DISTINCT MGOFileAlbum.data AS ALBUMNAME," +
+    protected static final String LIST_ALBUMS_OLD = "SELECT DISTINCT MGOFileAlbum.data AS ALBUMNAME," +
             " MGOAlbumArtist.data AS ALBUMARTISTNAME," +
             " MGOFileAlbum.id AS ALBUMID," +
             " MAX(MGOFile.Year) AS YEAR" +
@@ -164,10 +164,9 @@ public class MezzmoDAOQueries extends MezzmoDB {
             .select()
             .enableDistinct()
             .addTable(TablesEnum.MGOFile)
-            .addColumn(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUM )
-            .addColumn(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUMID )
-            .addColumn(TablesEnum.MGOAlbumArtist.alias(), MGOAlbumArtistColumns.ALBUMARTISTID)
-            .addColumn(TablesEnum.MGOAlbumArtist.alias(), MGOAlbumArtistColumns.ALBUMARTIST)
+            .addColumns(TablesEnum.MGOFileAlbum)
+            .addColumns(TablesEnum.MGOFileArtist )
+            .addColumns(TablesEnum.MGOAlbumArtist )
             .addColumn(TablesEnum.MGOFile.alias(), SQLFunction.MAX, MGOFileColumns.YEAR )
             .addRelation(TablesEnum.MGOFileAlbum, MGOFileAlbumColumns.ALBUMID, TablesEnum.MGOFileAlbumRelationship, MGOFileAlbumRelationshipColumns.ID)
             .addRelation(TablesEnum.MGOFileAlbumRelationship, MGOFileAlbumRelationshipColumns.FILEID, TablesEnum.MGOFile, MGOFileColumns.ID)

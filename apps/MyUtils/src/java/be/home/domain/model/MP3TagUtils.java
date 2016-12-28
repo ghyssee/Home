@@ -33,7 +33,7 @@ public class MP3TagUtils {
     public AlbumError albumErrors;
     private static final Logger log = Logger.getLogger(MP3TagUtils.class);
     public static final String SUBST_A = "H:\\Shared\\Mijn Muziek\\Eric\\iPod\\";
-    public static final String SUBST_B = "R:\\My Music\\iPod\\";
+    public static final String SUBST_B = "T:\\My Music\\iPod\\";
     public static final String SUBST_A2 = "H:\\Shared\\Mijn Muziek\\";
     public static final String SUBST_B2 = "O:\\Shared\\Mijn Muziek\\";
     //public static final String SUBST_B = "C:\\My Data\\tmp\\Java\\MP3Processor\\Album\\";

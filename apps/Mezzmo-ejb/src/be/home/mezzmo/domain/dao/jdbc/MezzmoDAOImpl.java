@@ -71,7 +71,7 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
 
     public List<MGOFileAlbumCompositeTO> getAlbumTracks(TransferObject to)
     {
-        List<MGOFileAlbumCompositeTO> list  = getInstance().getJDBCTemplate().query(LIST_ALBUMS_TRACKS, new MezzmoRowMappers.AlbumTrackRowMapper());
+        List<MGOFileAlbumCompositeTO> list  = getInstance().getJDBCTemplate().query(LIST_ALBUMS_TRACKS, new AlbumTrackRowMapper());
         return list;
     }
 

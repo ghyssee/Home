@@ -1,6 +1,7 @@
 package be.home.common.utils;
 
 import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
 
@@ -22,7 +23,7 @@ public class ZipUtils {
         this.zipFile = zipFile;
     }
 
-    public void zip(String nameOfZipFile, String folderOrFile, String zipPath) {
+    public void zip(String nameOfZipFile, String folderOrFile, String zipPath) throws ZipException {
         Calendar calendar = Calendar.getInstance();
         Date time = calendar.getTime();
         long milliseconds = time.getTime();
@@ -30,11 +31,9 @@ public class ZipUtils {
         // Initiate ZipFile object with the path/name of the zip file.
         Path path = Paths.get(folderOrFile);
         if (Files.exists(path)) {
-            try {
                 ZipFile zipFile = new ZipFile(nameOfZipFile);
 
                 // Folder to add
-                Path path2 = Paths.get(folderOrFile);
                 String folderToAdd = path.toString();
 
                 // Initiate Zip Parameters which define various properties such
@@ -48,11 +47,8 @@ public class ZipUtils {
                 parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_MAXIMUM);
                 parameters.setRootFolderInZip(zipPath);
                 // Add folder to the zip file
-                zipFile.addFile(new File(path2.toString()), parameters);
+                zipFile.addFile(new File(path.toString()), parameters);
 
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
 
     }

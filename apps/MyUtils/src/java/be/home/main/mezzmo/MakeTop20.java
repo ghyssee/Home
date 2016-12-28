@@ -1,5 +1,7 @@
 package be.home.main.mezzmo;
 
+import be.home.common.archiving.Archiver;
+import be.home.common.archiving.ZipArchiver;
 import be.home.common.constants.Constants;
 import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.logging.Log4GE;
@@ -29,6 +31,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 
 /**
@@ -68,14 +71,22 @@ public class MakeTop20 extends BatchJobV2{
         log.info("OneDrive Path: " + base);
         base += "\\Muziek\\Export\\";
         //System.out.println(MezzmoDAOQueries.LIST_ALBUMS_TRACKS);
+        //Path p1 = Paths.get("c:/my data/mezzmo.db");
+        //Path p2 = Paths.get("c:/my backups/test.zip");
 
-/*
+
+        //Archiver zipArchiver = new ZipArchiver("c:/my data/mezzmo.db", "c:/my backups/test.zip");
+        //Archiver zipArchiver = new ZipArchiver("C:/My Test", "c:/My Backups/zipFile.zip");
+        //zipArchiver.run();
+
+
+
         try {
             makeTop20();
         } catch (IOException e) {
             LogUtils.logError(log, e);
         }
-*/
+
 
     }
 
