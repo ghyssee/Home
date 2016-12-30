@@ -7,6 +7,7 @@ import be.home.common.main.BatchJobV2;
 import be.home.common.model.TransferObject;
 import be.home.common.utils.DateUtils;
 import be.home.common.utils.JSONUtils;
+import be.home.common.utils.LogUtils;
 import be.home.common.utils.VelocityUtils;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
@@ -170,7 +171,7 @@ public class ExportCatalogToHTML extends BatchJobV2{
             try {
                 exportAlbumSongs(comp, songs, file);
             } catch (Exception e) {
-                e.printStackTrace();
+                LogUtils.logError(log, e);
             }
         }
         else {

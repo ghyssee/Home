@@ -63,22 +63,51 @@ public class MP3TagChecker extends BatchJobV2{
         //System.out.println(stripFilename("Can't Feel"));
         export();
         //processErrors();
-        //String file = "C:\\My Data\\tmp\\Java\\MP3Processor\\ToTest\\05 Netsky feat. Digital Farm Animals - Work It Out.mp3";
-        //file = "C:\\My Data\\tmp\\Java\\MP3Processor\\ToTest\\test.mp3";
-        //readMP3File(file);
+        /*
+        String file = "C:\\My Data\\tmp\\Java\\MP3Processor\\_test\\MNM Big Hits Best Of 2015\\05 Netsky feat. Digital Farm Animals - Work It Out.mp3";
+        file = "C:\\My Data\\tmp\\Java\\MP3Processor\\_test\\MNM Big Hits Best Of 2015\\105 Christine & The Queens - Christine.mp3";
+        String fileOK = "C:\\My Data\\tmp\\Java\\MP3Processor\\_test\\MNM Big Hits Best Of 2015\\209 Dotan - Hungry.mp3";
+        String fileOK2 = "C:\\My Data\\tmp\\Java\\MP3Processor\\_test\\MNM Big Hits Best Of 2015\\105 Christine & The Queens - Christine.mp3";
+        String newFile = "C:\\My Data\\tmp\\Java\\MP3Processor\\_test\\test.mp3";
+        ID3v2 id3v2 = readMP3File(fileOK2);
+        readMP3File2(newFile, id3v2);
+        */
 
     }
 
-    private void readMP3File(String file) {
+    private ID3v2 readMP3File(String file) {
+        Mp3File mp3file = null;
+        ID3v2 id3v2Tag = null;
+        try {
+            mp3file = new Mp3File(file);
+            id3v2Tag = MP3Utils.getId3v2Tag(mp3file);
+            String artist = "Axwell Λ Ingrosso";
+            //id3v2Tag.setArtist(artist);
+            //mp3file.removeId3v2Tag();
+            //mp3file.removeCustomTag();
+            mp3file.setId3v2Tag(id3v2Tag);
+            String newFile = "C:\\My Data\\tmp\\Java\\MP3Processor\\_test\\test.mp3";
+            mp3file.save(newFile);
+            log.info("test");
+        } catch (Exception e) {
+            LogUtils.logError(log, e);
+        }
+        return id3v2Tag;
+    }
+
+
+    private void readMP3File2(String file, ID3v2 testID) {
         Mp3File mp3file = null;
         try {
             mp3file = new Mp3File(file);
             ID3v2 id3v2Tag = MP3Utils.getId3v2Tag(mp3file);
             String artist = "Axwell Λ Ingrosso";
+            String album = "test";
             id3v2Tag.setArtist(artist);
-            mp3file.setId3v2Tag(id3v2Tag);
-            String newFile = "C:\\My Data\\tmp\\Java\\MP3Processor\\ToTest\\test2.mp3";
-            mp3file.save(newFile);
+            //id3v2Tag.setAlbum(album);
+            //mp3file.setId3v2Tag(id3v2Tag);
+            //String newFile = "C:\\My Data\\tmp\\Java\\MP3Processor\\_test\\test.mp3";
+            //mp3file.save(newFile);
         } catch (Exception e) {
             LogUtils.logError(log, e);
         }
@@ -176,6 +205,8 @@ public class MP3TagChecker extends BatchJobV2{
                     case TRACK:
                         updateTrack(item);
                         break;
+                    case DISC:
+                        updateDisc(item);
                     default:
                         log.error("Id: " + item.getId() + " / Unknwon Type");
                 }
@@ -240,6 +271,22 @@ public class MP3TagChecker extends BatchJobV2{
             if (nr > 0) {
                 log.info("Title updated: " + "Id: " + item.getId() +
                         " / New Title: " + item.getNewValue() + " / " + nr + " record(s)");
+                updateMP3(item);
+            }
+        } catch (SQLException e) {
+            LogUtils.logError(log, e);
+        }
+    }
+
+    private void updateDisc(AlbumError.Item item){
+        MGOFileAlbumCompositeTO comp = new MGOFileAlbumCompositeTO();
+        comp.getFileTO().setId(item.getId());
+        comp.getFileTO().setDisc(Integer.parseInt(item.getNewValue()));
+        try {
+            int nr = getMezzmoService().updateSong(comp, MP3Tag.valueOf(item.getType()));
+            if (nr > 0) {
+                log.info("Disc updated: " + "Id: " + item.getId() +
+                        " / New Disc: " + item.getNewValue() + " / " + nr + " record(s)");
                 updateMP3(item);
             }
         } catch (SQLException e) {
@@ -370,17 +417,42 @@ public class MP3TagChecker extends BatchJobV2{
             boolean update = false;
             switch (MP3Tag.valueOf(item.getType())){
                 case ALBUM:
-                    update = true;
-                    id3v2Tag.setAlbum(item.getNewValue());
+                    if (item.getNewValue().equals(id3v2Tag.getAlbum())) {
+                        log.info("No Update needed for " + item.getFile());
+                        log.info("MP3 Album Info: " + id3v2Tag.getAlbum());
+                        log.info("Update Info: " + item.getType());
+                    }
+                    else {
+                        update = true;
+                        id3v2Tag.setAlbum(item.getNewValue());
+                    }
                     break;
                 case ARTIST :
-                    update = true;
-                    id3v2Tag.setArtist(item.getNewValue());
+                    if (item.getNewValue().equals(id3v2Tag.getArtist())) {
+                        log.info("No Update needed for " + item.getFile());
+                        log.info("MP3 Artist Info: " + id3v2Tag.getArtist());
+                        log.info("Update Info: " + item.getType());
+                    }
+                    else {
+                        update = true;
+                        id3v2Tag.setArtist(item.getNewValue());
+                    }
                     break;
                 case TITLE:
-                    id3v2Tag.setTitle(item.getNewValue());
-                    update = true;
+                    if (item.getNewValue().equals(id3v2Tag.getTitle())) {
+                        log.info("No Update needed for " + item.getFile());
+                        log.info("MP3 Title Info: " + id3v2Tag.getTitle());
+                        log.info("Update Info: " + item.getType());
+                    }
+                    else {
+                        id3v2Tag.setTitle(item.getNewValue());
+                        update = true;
+                    }
                     break;
+                case DISC:
+                        id3v2Tag.setPartOfSet(item.getNewValue());
+                        update = true;
+                        break;
                 case TRACK:
                     id3v2Tag.setTrack(item.getNewValue());
                     update = true;

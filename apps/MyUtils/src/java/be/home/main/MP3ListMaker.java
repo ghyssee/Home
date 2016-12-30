@@ -1,10 +1,14 @@
 package be.home.main;
 
+import be.home.common.configuration.Setup;
+import be.home.common.constants.Constants;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.FileUtils;
+import be.home.common.utils.LogUtils;
 import be.home.common.utils.WinUtils;
 import be.home.model.ConfigTO;
+import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -17,11 +21,9 @@ public class MP3ListMaker extends BatchJobV2 {
 
     public static Log4GE log4GE;
     public static ConfigTO.Config config;
-    private static String LIST_TITLE = "List 2016 V2.txt";
-    private static String BASE_DIR = "r:/My Music/iPod";
-    private static String DESTINATION_DIR = WinUtils.getOneDrivePath() + File.separator+ "Muziek/Lists/";
-    private static String FILTER = "Ultratop 50 2016";
-
+    private static String LIST_TITLE = "List 2012 V2.txt";
+    private static String FILTER = "Ultratop 50 2012";
+    private static final Logger log = getMainLog(MP3ListMaker.class);
 
     public static void main(String args[])  {
         MP3ListMaker instance = new MP3ListMaker();
@@ -47,34 +49,35 @@ public class MP3ListMaker extends BatchJobV2 {
         log4GE.clear();
         log4GE.start("Make MP3 List File");
 
-        File destinationFile = new File(DESTINATION_DIR + LIST_TITLE);
+        File destinationFile = new File(Setup.getInstance().getFullPath(Constants.Path.MUSIC_LISTS) + LIST_TITLE);
         PrintWriter writer = null;
         try {
             writer= new PrintWriter(new OutputStreamWriter(new FileOutputStream(destinationFile),
                     StandardCharsets.UTF_8), true);
-            File folder = new File(BASE_DIR);
+            String iPodBase = Setup.getInstance().getFullPath(Constants.Path.IPOD);
+            File folder = new File(iPodBase);
             if (folder.isDirectory()) {
                 File[] listOfFiles = folder.listFiles();
                 Arrays.sort(listOfFiles);
                 for (int i = 0; i < listOfFiles.length; i++) {
                     File tmpFile = listOfFiles[i];
                     if (tmpFile.isDirectory()) {
-                        System.out.println("Directory : " + tmpFile.getName());
+                        log.info("Directory : " + tmpFile.getName());
                         if (tmpFile.getName().toUpperCase().startsWith(FILTER.toUpperCase())){
                             processDirectory(tmpFile, writer);
                         }
                         else {
-                            System.out.println("Ignoring directory " + tmpFile.getName());
+                            log.info("Ignoring directory " + tmpFile.getName());
                         }
                     } else {
-                        System.out.println("Ignoring file " + tmpFile.getName());
+                        log.info("Ignoring file " + tmpFile.getName());
                     }
                 }
             } else {
-                System.err.println("Invalid Directory: " + BASE_DIR);
+                log.error("Invalid Directory: " + iPodBase);
             }
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            LogUtils.logError(log, e);
         }
          finally{
              if (writer != null){
@@ -93,12 +96,12 @@ public class MP3ListMaker extends BatchJobV2 {
         for (int i=0; i < listOfFiles.length; i++){
             File file = listOfFiles[i];
             if (file.isDirectory()) {
-                System.out.println("Ignoring folder " + file.getName());
+                log.info("Ignoring folder " + file.getName());
             }
             else {
-                System.out.println("File: " + file.getName());
+                log.info("File: " + file.getName());
                 if (file.getName().toUpperCase().endsWith(".MP3")){
-                    System.out.println("Processing file: " + file.getName());
+                    log.info("Processing file: " + file.getName());
                     String path = file.getParentFile().getName();
                     dest.println("..\\" + path + "\\" + FileUtils.encodeFilename(file.getName()));
                     //System.out.println("path = " + path);
@@ -106,7 +109,7 @@ public class MP3ListMaker extends BatchJobV2 {
                     //System.out.println("relative = " + relative);
                 }
                 else {
-                    System.out.println("Ignoring file: " + file.getName());
+                    log.info("Ignoring file: " + file.getName());
                 }
             }
         }

@@ -8,6 +8,7 @@ import be.home.common.main.BatchJobV2;
 import be.home.common.utils.CSVUtils;
 import be.home.common.utils.DateUtils;
 import be.home.common.utils.JSONUtils;
+import be.home.common.utils.LogUtils;
 import be.home.domain.model.Synchronizer;
 import be.home.mezzmo.domain.model.*;
 import be.home.mezzmo.domain.service.IPodServiceImpl;
@@ -45,9 +46,9 @@ public class SynchronizeIPodPlayCount extends BatchJobV2{
             instance.run();
         }
         catch (FileNotFoundException e){
-            e.printStackTrace();
+            LogUtils.logError(log, e);
         } catch (IOException e) {
-            e.printStackTrace();
+            LogUtils.logError(log, e);
         }
 
     }
@@ -55,7 +56,6 @@ public class SynchronizeIPodPlayCount extends BatchJobV2{
     @Override
     public void run() {
 
-        final String batchJob = "Export PlayCount";
         MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSONWithCode(Constants.JSON.MP3SETTINGS, MP3Settings.class);
         Map <String, MGOFileAlbumCompositeTO> map = getMezzmoService().getMaxDisc();
 
@@ -70,7 +70,7 @@ public class SynchronizeIPodPlayCount extends BatchJobV2{
         try {
             synchronizer.synchronizeIPodWithMezzmo(base, filename);
         } catch (Exception e) {
-            log.error(e);
+            LogUtils.logError(log, e);
         }
     }
 
@@ -86,11 +86,11 @@ public class SynchronizeIPodPlayCount extends BatchJobV2{
             csvFilePrinter = csvUtils.initialize(exportFile, fields);
             writeToExportFile(list, csvFilePrinter, map);
         } catch (FileNotFoundException e) {
-            log.error(e);
+            LogUtils.logError(log, e);
         } catch (IOException e) {
-            log.error(e);
+            LogUtils.logError(log, e);
         } catch (Exception e) {
-            log.error(e);
+            LogUtils.logError(log, e);
         } finally {
             csvUtils.close(csvFilePrinter);
         }

@@ -335,6 +335,13 @@ public class MezzmoDAOQueries extends MezzmoDB {
             .addCondition(MGOFileColumns.ID, Comparator.EQUALS, SQLBuilder.PARAMETER)
             .render();
 
+    protected static final String FILE_UPDATE_DISC = SQLBuilder.getInstance()
+            .update()
+            .addTable(TablesEnum.MGOFile)
+            .updateColumn(MGOFileColumns.DISC, Type.PARAMETER)
+            .addCondition(MGOFileColumns.ID, Comparator.EQUALS, SQLBuilder.PARAMETER)
+            .render();
+
     protected static final String FILE_UPDATE_TRACKOld = "UPDATE MGOFile " +
             " SET track = ?" +
             " WHERE ID = ?";

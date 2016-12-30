@@ -234,4 +234,10 @@ public class FileUtils {
 		return oldF.renameTo(newF);
 	}
 
+
+	public static Path relativize(Path pathBase, Path pathAbsolute) {
+		Path pathRelative = pathBase.relativize(pathAbsolute);
+		return pathRelative;
+	}
+
 }

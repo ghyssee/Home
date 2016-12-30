@@ -32,10 +32,10 @@ public class MP3TagUtils {
 
     public AlbumError albumErrors;
     private static final Logger log = Logger.getLogger(MP3TagUtils.class);
-    public static final String SUBST_A = "H:\\Shared\\Mijn Muziek\\Eric\\iPod\\";
-    public static final String SUBST_B = "T:\\My Music\\iPod\\";
-    public static final String SUBST_A2 = "H:\\Shared\\Mijn Muziek\\";
-    public static final String SUBST_B2 = "O:\\Shared\\Mijn Muziek\\";
+    public static final String SUBST_A1 = "H:\\Shared\\Mijn Muziek\\Eric\\iPod\\";
+    public static final String SUBST_B1 = "T:\\My Music\\iPod\\";
+    public static final String SUBST_A = "H:\\Shared\\Mijn Muziek\\";
+    public static final String SUBST_B = "O:\\Shared\\Mijn Muziek\\";
     //public static final String SUBST_B = "C:\\My Data\\tmp\\Java\\MP3Processor\\Album\\";
     public static final String HTML_BREAK = "<br>";
 
@@ -76,10 +76,12 @@ public class MP3TagUtils {
                     checkTrack(id3v2Tag.getTrack(), comp, nrOfTracks, maxDisc);
                     checkArtist(comp, id3v2Tag.getArtist());
                     checkTitle(comp, id3v2Tag.getTitle());
-                    if (checkFilename(comp, nrOfTracks, maxDisc)) {
-                        // if filename is ok, an extra check for filetitle
-                        checkAlbum(comp, id3v2Tag.getAlbum());
-                        checkFileTitle(comp);
+                    if (checkDisc(comp, id3v2Tag.getPartOfSet())) {
+                        if (checkFilename(comp, nrOfTracks, maxDisc)) {
+                            // if filename is ok, an extra check for filetitle
+                            checkAlbum(comp, id3v2Tag.getAlbum());
+                            checkFileTitle(comp);
+                        }
                     }
 
                     System.out.println(StringUtils.repeat('=', 100));
@@ -115,6 +117,34 @@ public class MP3TagUtils {
         }
     }
 
+    private boolean checkDisc(MGOFileAlbumCompositeTO comp, String disc) {
+        int discFromDB = comp.getFileTO().getDisc();
+        int discFromMP3 = 0;
+        String mp3Disc = StringUtils.isBlank(disc) ? "0": disc;
+        boolean ok = true;
+        try {
+            discFromMP3 = Integer.parseInt(mp3Disc);
+            if (discFromMP3 != discFromDB){
+                ok = false;
+            }
+        }
+        catch (NumberFormatException e){
+            ok = false;
+        }
+        if (!ok){
+            addItem(comp.getFileTO().getId(),
+                    comp.getFileTO().getFile(),
+                    comp.getFileAlbumTO().getName(),
+                    MP3Tag.DISC, String.valueOf(discFromDB), mp3Disc);
+            try {
+                comp.getFileTO().setDisc(Integer.parseInt(mp3Disc));
+            }
+            catch (NumberFormatException e){
+                // nothing to do
+            }
+        }
+        return ok;
+    }
 
     private  void addItem(Long id, String file, String album, MP3Tag type, String oldValue, String newValue) {
         AlbumError.Item item = new AlbumError().new Item();

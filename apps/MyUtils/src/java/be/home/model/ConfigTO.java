@@ -89,10 +89,6 @@ public class ConfigTO {
         public Movies movies;
         public List <Parts> parts = new ArrayList <Parts>();
 
-        public String getFullPathConfigDir(){
-            return configDir;
-        }
-
         public void Config(){};
 
 

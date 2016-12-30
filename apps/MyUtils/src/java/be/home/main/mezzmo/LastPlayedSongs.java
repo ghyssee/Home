@@ -6,6 +6,7 @@ import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.DateUtils;
 import be.home.common.utils.JSONUtils;
+import be.home.common.utils.LogUtils;
 import be.home.common.utils.VelocityUtils;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
@@ -123,7 +124,7 @@ public class LastPlayedSongs extends BatchJobV2{
                     exportLastPlayed(mp3Settings, comp, base + "LastPlayed.html", "LastPlayed.vm", refresh);
                     exportLastPlayed(mp3Settings, comp, base + "LastPlayedScroll.html", "LastPlayedScroll.vm", refresh);
                 } catch (IOException e) {
-                    log.error(e);
+                    LogUtils.logError(log, e);
                 }
                 rec++;
             }
@@ -131,7 +132,7 @@ public class LastPlayedSongs extends BatchJobV2{
         try {
             export(list, filename, refresh);
         } catch (IOException e) {
-            log.error(e);
+            LogUtils.logError(log, e);
         }
         return refresh;
     }

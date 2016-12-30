@@ -7,6 +7,7 @@ import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 import be.home.common.mp3.PlayList;
 import be.home.common.utils.JSONUtils;
+import be.home.common.utils.LogUtils;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.mezzmo.domain.util.Utils;
@@ -57,7 +58,7 @@ public class MakeCustomPlaylists extends BatchJobV2{
         try {
             makeCustom(playlists);
         } catch (IOException e) {
-            e.printStackTrace();
+            LogUtils.logError(log, e);
         }
 
 

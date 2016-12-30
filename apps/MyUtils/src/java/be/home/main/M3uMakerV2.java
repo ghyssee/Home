@@ -1,7 +1,10 @@
 package be.home.main;
 
+import be.home.common.configuration.Setup;
+import be.home.common.constants.Constants;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.FileUtils;
+import be.home.common.utils.JSONUtils;
 import be.home.common.utils.WinUtils;
 import be.home.domain.model.MP3Helper;
 import be.home.domain.model.MP3TagUtils;
@@ -14,6 +17,7 @@ import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,9 +36,7 @@ public class M3uMakerV2 extends BatchJobV2 {
         M3uMakerV2 instance = new M3uMakerV2();
         try {
             config = instance.init();
-            log.info("Full Path To Config Dir = " + config.getFullPathConfigDir());
-            ultratopConfig = instance.initUT(WinUtils.getOneDrivePath() + File.separator +
-                    config.getFullPathConfigDir() + "/UltratopConfig.json");
+            ultratopConfig = (UltratopConfig.Config) JSONUtils.openJSONWithCode(Constants.JSON.ULTRATOP, UltratopConfig.Config.class );
             instance.processUltratopConfigurationFile(ultratopConfig);
 
             /*
@@ -78,7 +80,7 @@ public class M3uMakerV2 extends BatchJobV2 {
 
     public void processMonth(UltratopConfig.Config m3u, UltratopConfig.Year year, UltratopConfig.Month m3uMonth) {
 
-        String baseFolder = m3u.baseDir + File.separator + m3uMonth.baseDir + File.separator;
+        String baseFolder = Setup.getFullPath(Constants.Path.IPOD) + File.separator + m3uMonth.baseDir + File.separator;
         String inputFile =  baseFolder + m3uMonth.inputFile;
         List <M3uTO> songsOfUltratop = null;
         boolean fileRenamed = false;
@@ -113,7 +115,8 @@ public class M3uMakerV2 extends BatchJobV2 {
     }
 
     private String getFullPathYearListFile(String listFile) {
-        String base = WinUtils.getOneDrivePath() + File.separator + listFile;
+        String base = Setup.getInstance().getFullPath(Constants.Path.ONEDRIVE) +
+                File.separator + listFile;
         return base;
 
     }
@@ -306,7 +309,7 @@ public class M3uMakerV2 extends BatchJobV2 {
         List <String> lines = new ArrayList<String>();
         File myFile = new File(inputFile);
         if (myFile.isFile()) {
-            lines = FileUtils.getContents(new File(inputFile), "UTF-8");
+            lines = FileUtils.getContents(new File(inputFile), StandardCharsets.UTF_8);
         }
         List <M3uTO> songs = new ArrayList();
         for(String line: lines) {
@@ -326,7 +329,7 @@ public class M3uMakerV2 extends BatchJobV2 {
 
     private List<M3uTO> getSongsFromUltratopListFile(String inputFile) throws IOException {
         log.info("Start: Ultratop List + " + inputFile);
-        List <String> lines = FileUtils.getContents(new File(inputFile), "UTF-8");
+        List <String> lines = FileUtils.getContents(new File(inputFile),  StandardCharsets.UTF_8);
         List <M3uTO> songs = new ArrayList();
         for(String line: lines) {
             if (StringUtils.isBlank(line)) {

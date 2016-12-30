@@ -7,6 +7,7 @@ import be.home.common.main.BatchJobV2;
 import be.home.common.model.TransferObject;
 import be.home.common.utils.CSVUtils;
 import be.home.common.utils.DateUtils;
+import be.home.common.utils.LogUtils;
 import be.home.common.utils.WinUtils;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
@@ -42,9 +43,9 @@ public class ExportPlayCount extends BatchJobV2{
             instance.run();
         }
         catch (FileNotFoundException e){
-            e.printStackTrace();
+            LogUtils.logError(log, e);
         } catch (IOException e) {
-            e.printStackTrace();
+            LogUtils.logError(log, e);
         }
 
     }
@@ -83,9 +84,9 @@ public class ExportPlayCount extends BatchJobV2{
             }
             while (!to.isEndOfList());
         } catch (FileNotFoundException e) {
-            log.error(e);
+            LogUtils.logError(log, e);
         } catch (IOException e) {
-            log.error(e);
+            LogUtils.logError(log, e);
         } finally {
             csvUtils.close(csvFilePrinter);
         }

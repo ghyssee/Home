@@ -18,73 +18,50 @@ import java.util.Date;
 public class ZipUtils {
 
     String zipFile;
+    private enum ZipType {
+        FILE, FOLDER;
+    }
 
     public ZipUtils(String zipfile) {
         this.zipFile = zipFile;
     }
-
-    public void zip(String nameOfZipFile, String folderOrFile, String zipPath) throws ZipException {
-        Calendar calendar = Calendar.getInstance();
-        Date time = calendar.getTime();
-        long milliseconds = time.getTime();
-
-        // Initiate ZipFile object with the path/name of the zip file.
-        Path path = Paths.get(folderOrFile);
-        if (Files.exists(path)) {
-                ZipFile zipFile = new ZipFile(nameOfZipFile);
-
-                // Folder to add
-                String folderToAdd = path.toString();
-
-                // Initiate Zip Parameters which define various properties such
-                // as compression method, etc.
-                ZipParameters parameters = new ZipParameters();
-
-                // set compression method to store compression
-                parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
-
-                // Set the compression level
-                parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_MAXIMUM);
-                parameters.setRootFolderInZip(zipPath);
-                // Add folder to the zip file
-                zipFile.addFile(new File(path.toString()), parameters);
-
-        }
-
+    public ZipUtils() {
     }
 
-    public void zipFile() {
-        try {
-            Calendar calendar = Calendar.getInstance();
-            Date time = calendar.getTime();
-            long milliseconds = time.getTime();
+    public void zipFile(String nameOfZipFile, String zipFolder, Path file) throws ZipException {
 
-            // Initiate ZipFile object with the path/name of the zip file.
-            Path path = Paths.get("c:/My Backups/tmpmezmmo");
-            ZipFile zipFile = new ZipFile(path + "_" + milliseconds + ".zip");
-
-            // Folder to add
-            Path path2 = Paths.get("c:/My Data/mgofilealbum.csv");
-            String folderToAdd = path.toString();
-
-            // Initiate Zip Parameters which define various properties such
-            // as compression method, etc.
-            ZipParameters parameters = new ZipParameters();
-
-            // set compression method to store compression
-            parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
-
-            // Set the compression level
-            parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_MAXIMUM);
-            parameters.setRootFolderInZip("/mezzmo");
-            // Add folder to the zip file
-            zipFile.addFile(new File(path2.toString()), parameters);
-            parameters.setRootFolderInZip("/test");
-            zipFile.addFile(new File("c:/My Data/fields.csv"), parameters);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        zip(nameOfZipFile, zipFolder, file.toString(), ZipType.FILE);
     }
+
+    public void zipFolder(String nameOfZipFile, String zipFolder, String folder) throws ZipException {
+
+        zip(nameOfZipFile, zipFolder, folder, ZipType.FOLDER);
+    }
+
+    private void zip(String nameOfZipFile, String zipFolder, String folderOrFile, ZipType zipType) throws ZipException {
+        ZipFile zipFile = new ZipFile(nameOfZipFile);
+
+        // Initiate Zip Parameters which define various properties such
+        // as compression method, etc.
+        ZipParameters parameters = new ZipParameters();
+
+        // set compression method to store compression
+        parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
+
+        // Set the compression level
+        parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_MAXIMUM);
+        zipFolder = zipFolder.startsWith("/") ? zipFolder : "/" + zipFolder;
+        parameters.setRootFolderInZip(zipFolder);
+
+        switch (zipType){
+            case FILE :
+                zipFile.addFile(new File(folderOrFile), parameters);
+                break;
+            case FOLDER :
+                parameters.setIncludeRootFolder(false);
+                zipFile.addFolder(new File(folderOrFile), parameters);
+                break;
+        }
+    }
+
 }

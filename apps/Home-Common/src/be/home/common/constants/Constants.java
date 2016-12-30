@@ -52,6 +52,9 @@ public interface Constants {
         String WEB_MUSIC = "webMusic";
         String WEB_MUSIC_ALBUMS = "webMusicAlbums";
         String WEB_MUSIC_SONGS = "webMusicSongs";
+        String ULTRATOP = "ultratopBase";
+        String IPOD = "iPod";
+        String MUSIC_LISTS = "musicList";
     }
 
     interface JSON {
@@ -62,7 +65,8 @@ public interface Constants {
         String PLAYLIST = "playlistConfig";
         String PLAYLISTSETUP = "playlistSetup";
         String ALBUMERRORS = "albumErrors";
-
+        String ULTRATOP = "ultratop";
+        String BACKUP = "backup";
     }
     interface FILE {
         String ALBUM = "albumInfo";

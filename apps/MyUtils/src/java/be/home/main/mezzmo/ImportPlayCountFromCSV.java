@@ -8,6 +8,7 @@ import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.CSVUtils;
 import be.home.common.utils.JSONUtils;
+import be.home.common.utils.LogUtils;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.MGOFileAlbumTO;
 import be.home.mezzmo.domain.model.MGOFileTO;
@@ -119,7 +120,7 @@ public class ImportPlayCountFromCSV extends BatchJobV2{
         } catch (java.io.IOException e) {
             e.printStackTrace();
         } catch (Exception e) {
-            log.error(e);
+            LogUtils.logError(log, e);
         } finally {
             if (fileReader != null) {
                 try {
@@ -218,7 +219,7 @@ public class ImportPlayCountFromCSV extends BatchJobV2{
                 log.info("Nr Of Records updated: " + rec);
                 updatedRecords += rec;
             } catch (SQLException e) {
-                e.printStackTrace();
+                LogUtils.logError(log, e);
             }
         }
         log.info("FINISHED Updating PlayCounts...");

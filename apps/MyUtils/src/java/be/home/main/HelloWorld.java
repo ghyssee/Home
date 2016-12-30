@@ -25,9 +25,11 @@ public class HelloWorld {
     public static void main(String args[]) throws SAXException, DocumentException, IOException, IllegalAccessException, NoSuchFieldException, ParserConfigurationException {
 
 
-        StringUtils su = new StringUtils();
-        System.out.println("TEST: " + su.repeat("ab", 0) + "TEST");
-
+        String t="Yolanda Be Cool & D-CUP";
+        String t2 = "Yolanda Be Cool & DCUP";
+        String s = t+ " TEST";
+        String o=s.replaceAll(t, t2);
+        System.out.println(o);
     }
 
     private static void tmp() throws SAXException, DocumentException, IOException {

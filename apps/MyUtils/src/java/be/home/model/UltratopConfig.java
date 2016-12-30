@@ -41,13 +41,11 @@ public class UltratopConfig  {
     }
 
     public class Config {
-        public String baseDir;
         public boolean rename;
         public List <Year> years = new ArrayList <Year>();
 
         public String toString() {
             StringBuilder b = new StringBuilder();
-            b.append("m3u baseDir : " + baseDir + "\n");
             b.append("m3u rename : " + rename + "\n");
             return b.toString();
         }
