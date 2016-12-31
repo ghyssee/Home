@@ -6,6 +6,9 @@ import be.home.common.enums.MP3Tag;
 import be.home.common.model.TransferObject;
 import be.home.mezzmo.domain.model.*;
 import org.apache.log4j.Logger;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -164,6 +167,11 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
         return list;
 
     }
+    public int updateArtist(MGOFileArtistTO artist) {
+        Object params[] = {artist.getArtist(), artist.getID()};
+        int nr = getInstance().getJDBCTemplate().update(FILE_UPDATE_ARTIST, params);
+        return nr;
+    }
 
     public int updateSong(MGOFileAlbumCompositeTO comp, MP3Tag mp3Tag){
         Object[] params;
@@ -181,8 +189,7 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
                 nr = getInstance().getJDBCTemplate().update(FILE_UPDATE_DISC, params);
                 break;
             case ARTIST:
-                params = new Object[] {comp.getFileArtistTO().getArtist(), comp.getFileArtistTO().getID()};
-                nr = getInstance().getJDBCTemplate().update(FILE_UPDATE_ARTIST, params);
+                nr = updateArtist(comp.getFileArtistTO());
                 break;
             case ALBUM:
                 params = new Object[] {comp.getFileAlbumTO().getName(),
@@ -220,12 +227,59 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
         return fileArtistTO;
     }
 
+    public MGOFileArtistTO findArtistById(MGOFileArtistTO artist){
+        Object[] params = {
+                artist.getID()
+        };
+        MGOFileArtistTO fileArtistTO = (MGOFileArtistTO) getInstance().getJDBCTemplate().queryForObject(FIND_ARTIST_BY_ID, new ArtistRowMapper(), params);
+        return fileArtistTO;
+    }
+
+    public List <MGOFileAlbumCompositeTO> findLinkedArtist(MGOFileArtistTO artist){
+        Object[] params = {
+                artist.getID()
+        };
+        List <MGOFileAlbumCompositeTO> list = getInstance().getJDBCTemplate().query(FIND_LINKED_ARTIST, new FileArtistRowMapper(), params);
+        return list;
+    }
+
     public Result updateLinkFileArtist(MGOFileArtistTO artist, Long newId){
         Object[] params;
         Result result = new Result();
         params = new Object[] {newId, artist.getID()};
         result.setNr1(getInstance().getJDBCTemplate().update(UPDATE_LINK_FILE_ARTIST, params));
         return result;
+    }
+
+    public int updateLinkFileArtist2(MGOFileAlbumCompositeTO comp){
+        Object[] params;
+        params = new Object[] {comp.getFileArtistTO().getID(), comp.getFileTO().getId()};
+        int nr = getInstance().getJDBCTemplate().update(UPDATE_LINK_FILE_ARTIST2, params);
+        return nr;
+    }
+
+    public int deleteArtist(MGOFileArtistTO artist){
+        Object[] params;
+        params = new Object[] {artist.getID()};
+        int nr = getInstance().getJDBCTemplate().update(DELETE_ARTIST, params);
+        return nr;
+    }
+
+    public Integer insertArtist(final MGOFileArtistTO artist){
+        Object[] params = {artist.getArtist()};
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        getInstance().getJDBCTemplate().update(
+                new PreparedStatementCreator() {
+                    public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+                        PreparedStatement pst =
+                                con.prepareStatement(INSERT_ARTIST, new String[] {"id"});
+                        pst.setString(1, artist.getArtist());
+                        return pst;
+                    }
+                },
+                keyHolder);
+        return (Integer)keyHolder.getKey();
     }
 
 }

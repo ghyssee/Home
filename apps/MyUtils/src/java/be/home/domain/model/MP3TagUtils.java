@@ -56,6 +56,7 @@ public class MP3TagUtils {
         else {
             log.warn("File Not Found: " + file.getAbsolutePath());
             addItem(comp.getFileTO().getId(),
+                    comp.getFileTO().getId(),
                     comp.getFileTO().getFile(),
                     comp.getFileAlbumTO().getName(),
                     MP3Tag.FILENOTFOUND, "",
@@ -93,6 +94,7 @@ public class MP3TagUtils {
                 }
                 else {
                     addItem(comp.getFileTO().getId(),
+                            comp.getFileTO().getId(),
                             comp.getFileTO().getFile(),
                             comp.getFileAlbumTO().getName(),
                             MP3Tag.MP3CHECK,
@@ -133,6 +135,7 @@ public class MP3TagUtils {
         }
         if (!ok){
             addItem(comp.getFileTO().getId(),
+                    comp.getFileTO().getId(),
                     comp.getFileTO().getFile(),
                     comp.getFileAlbumTO().getName(),
                     MP3Tag.DISC, String.valueOf(discFromDB), mp3Disc);
@@ -146,8 +149,9 @@ public class MP3TagUtils {
         return ok;
     }
 
-    private  void addItem(Long id, String file, String album, MP3Tag type, String oldValue, String newValue) {
+    private  void addItem(Long fileId, Long id, String file, String album, MP3Tag type, String oldValue, String newValue) {
         AlbumError.Item item = new AlbumError().new Item();
+        item.setFileId(fileId);
         item.setId(id);
         item.setFile(file);
         item.setType(type.name());
@@ -157,6 +161,15 @@ public class MP3TagUtils {
         albumErrors.items.add(item);
     }
 
+    private int calculateLengthOfTrack(int nrOfTracks, int nrOfCds){
+        if (nrOfCds > 1){
+            nrOfTracks = nrOfTracks / nrOfCds;
+        }
+        int lengthTrack = String.valueOf(nrOfTracks).length();
+        return lengthTrack;
+
+    }
+
     private boolean checkFilename(MGOFileAlbumCompositeTO comp, int nrOfTracks, int nrOfCds) throws UnsupportedEncodingException {
         boolean ok = true;
         comp.getFileTO().setFile(comp.getFileTO().getFile().replace(SUBST_B, SUBST_A));
@@ -164,7 +177,7 @@ public class MP3TagUtils {
         String filenameFromDB = pathFromDB.getFileName().toString();
         System.out.println("filenameDB = " + filenameFromDB);
         int lengthDisc = nrOfCds > 0 ? String.valueOf(nrOfCds).length() : 0;
-        int lengthTrack = String.valueOf(nrOfTracks).length();
+        int lengthTrack = calculateLengthOfTrack(nrOfTracks, nrOfCds);
         String track = StringUtils.leftPad(String.valueOf(comp.getFileTO().getTrack()), lengthTrack, '0');
         String cd = nrOfCds > 0 ? StringUtils.leftPad(String.valueOf(comp.getFileTO().getDisc()), lengthDisc, '0')
                 : "";
@@ -179,6 +192,7 @@ public class MP3TagUtils {
                 Path newPathFile = Paths.get(SUBST_A + strFilenameFromDB.substring(len));
                 String newFile = newPathFile.getParent().toString() + File.separator + filename;
                 addItem(comp.getFileTO().getId(),
+                        comp.getFileTO().getId(),
                         comp.getFileTO().getFile(),
                         comp.getFileAlbumTO().getName(),
                         MP3Tag.FILE, comp.getFileTO().getFile(), newFile);
@@ -194,6 +208,7 @@ public class MP3TagUtils {
                update Tables.file with the new file
             */
             addItem(comp.getFileTO().getId(),
+                    comp.getFileTO().getId(),
                     comp.getFileTO().getFile(),
                     comp.getFileAlbumTO().getName(),
                     MP3Tag.FILE, comp.getFileTO().getFile(), newFile);
@@ -212,6 +227,7 @@ public class MP3TagUtils {
                 System.out.println(realFile);
                 if (!realFile.equals(filenameFromDB)) {
                     addItem(comp.getFileTO().getId(),
+                            comp.getFileTO().getId(),
                             comp.getFileTO().getFile(),
                             comp.getFileAlbumTO().getName(),
                             MP3Tag.FILE, realPath.toString().replace(SUBST_B, SUBST_A), comp.getFileTO().getFile());
@@ -242,6 +258,7 @@ public class MP3TagUtils {
             log.warn("FileTitle does not match: " + "filenameFromDB: " + filenameFromDB +
                      " / FileTitle: " + comp.getFileTO().getFileTitle());
             addItem(comp.getFileTO().getId(),
+                    comp.getFileTO().getId(),
                     comp.getFileTO().getFile(),
                     comp.getFileAlbumTO().getName(),
                     MP3Tag.FILETITLE, comp.getFileTO().getFileTitle(), filenameFromDB);
@@ -254,7 +271,7 @@ public class MP3TagUtils {
     private boolean checkTrack(String mp3Track, MGOFileAlbumCompositeTO comp, int nrOfTracks, int nrOfCds){
         //System.out.println("Track: " + id3v2Tag.getTrack());
         String track = null;
-        int lengthTrack = String.valueOf(nrOfTracks).length();
+        int lengthTrack = calculateLengthOfTrack(nrOfTracks, nrOfCds);
         if (mp3Track == null){
             track = StringUtils.leftPad(String.valueOf(comp.getFileTO().getTrack()),
                     lengthTrack, '0');
@@ -272,6 +289,7 @@ public class MP3TagUtils {
                 only update the mp3 tag, DB stores it as int
              */
             addItem(comp.getFileTO().getId(),
+                    comp.getFileTO().getId(),
                     comp.getFileTO().getFile(),
                     comp.getFileAlbumTO().getName(),
                     MP3Tag.TRACK, mp3Track, track);
@@ -283,6 +301,7 @@ public class MP3TagUtils {
                 only update the mp3 tag, DB stores it as int
              */
             addItem(comp.getFileTO().getId(),
+                    comp.getFileTO().getId(),
                     comp.getFileTO().getFile(),
                     comp.getFileAlbumTO().getName(),
                     MP3Tag.TRACK, String.valueOf(comp.getFileTO().getTrack()), track);
@@ -299,7 +318,8 @@ public class MP3TagUtils {
             log.warn("Album does not match: " + "mp3: " + mp3Album + " / Formatted: " + album);
             /* update mp3 + DB */
             comp.getFileAlbumTO().setName(album);
-            addItem(comp.getFileAlbumTO().getId(),
+            addItem(comp.getFileTO().getId(),
+                    comp.getFileAlbumTO().getId(),
                     comp.getFileTO().getFile(),
                     comp.getFileAlbumTO().getName(),
                     MP3Tag.ALBUM, mp3Album, album);
@@ -308,7 +328,8 @@ public class MP3TagUtils {
         else if (!album.equals(comp.getFileAlbumTO().getName())){
             log.warn("Album does not match: " + "formatted: " + mp3Album + " / DB: " + comp.getFileAlbumTO().getName());
             /* update mp3 + DB */
-            addItem(comp.getFileAlbumTO().getId(),
+            addItem(comp.getFileTO().getId(),
+                    comp.getFileAlbumTO().getId(),
                     comp.getFileTO().getFile(),
                     comp.getFileAlbumTO().getName(),
                     MP3Tag.ALBUM, comp.getFileAlbumTO().getName(), album);
@@ -318,11 +339,15 @@ public class MP3TagUtils {
         File file = new File(comp.getFileTO().getFile());
         String path = file.getParentFile().getName();
         path = removeYearFromAlbum(path);
+        if (!"VARIOUS ARTISTS".equals(comp.getAlbumArtistTO().getName().toUpperCase())){
+            album = comp.getAlbumArtistTO().getName() + " - " + album;
+        }
         if (!album.equals(path)){
             log.warn("Path Album does not match: " + "Formatted: " + album + " / Disc: " + path);
             String possibleNewFile = file.getParentFile().getParentFile().getAbsolutePath() + File.separator + album + File.separator;
             String oldFile = file.getParentFile().getAbsolutePath() + File.separator;
-            addItem(comp.getFileAlbumTO().getId(),
+            addItem(comp.getFileTO().getId(),
+                    comp.getFileAlbumTO().getId(),
                     comp.getFileTO().getFile(),
                     comp.getFileAlbumTO().getName(),
                     MP3Tag.ALBUMCHECK, getAlbumCheckInfoOld("Disc:", path, "MP3:", album),
@@ -374,7 +399,8 @@ public class MP3TagUtils {
             log.warn("Artist does not match: " + "mp3: " + mp3Artist + " / Formatted: " + artist);
             /* update mp3 + DB */
             comp.getFileArtistTO().setArtist(artist);
-            addItem(comp.getFileArtistTO().getID(),
+            addItem(comp.getFileTO().getId(),
+                    comp.getFileArtistTO().getID(),
                     comp.getFileTO().getFile(),
                     comp.getFileAlbumTO().getName(),
                     MP3Tag.ARTIST, mp3Artist, artist);
@@ -383,7 +409,8 @@ public class MP3TagUtils {
         else if (!artist.equals(comp.getFileArtistTO().getArtist())){
             log.warn("Artist does not match: " + "DB: " + comp.getFileArtistTO().getArtist() + " / Formatted: " + artist);
             /* update mp3 + DB */
-            addItem(comp.getFileArtistTO().getID(),
+            addItem(comp.getFileTO().getId(),
+                    comp.getFileArtistTO().getID(),
                     comp.getFileTO().getFile(),
                     comp.getFileAlbumTO().getName(),
                     MP3Tag.ARTIST, comp.getFileArtistTO().getArtist(), artist);
@@ -401,6 +428,7 @@ public class MP3TagUtils {
             /* update mp3 + DB */
             comp.getFileTO().setTitle(title);
             addItem(comp.getFileTO().getId(),
+                    comp.getFileTO().getId(),
                     comp.getFileTO().getFile(),
                     comp.getFileAlbumTO().getName(),
                     MP3Tag.TITLE, mp3Title, title);
@@ -410,6 +438,7 @@ public class MP3TagUtils {
             log.warn("Title does not match: " + "DB: " + comp.getFileTO().getTitle() + " / Formatted: " + title);
             /* update mp3 + DB */
             addItem(comp.getFileTO().getId(),
+                    comp.getFileTO().getId(),
                     comp.getFileTO().getFile(),
                     comp.getFileAlbumTO().getName(),
                     MP3Tag.TITLE, comp.getFileTO().getTitle(), title);
@@ -453,6 +482,7 @@ public class MP3TagUtils {
         strippedFilename = strippedFilename.replace("Ch!pz", "Chipz");
         strippedFilename = strippedFilename.replace("M:ck", "Mick");
         strippedFilename = strippedFilename.replace("$hort", "Short");
+        strippedFilename = strippedFilename.replace("A+", "APlus");
         strippedFilename = strippedFilename.replace("+1", "Plus 1");
         strippedFilename = strippedFilename.replace("+", "&");
         strippedFilename = strippedFilename.replace("$ign", "Sign");

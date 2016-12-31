@@ -3,6 +3,7 @@ package be.home.mezzmo.domain.dao.jdbc;
 import be.home.common.dao.jdbc.MezzmoDB;
 import be.home.common.database.sqlbuilder.*;
 import be.home.mezzmo.domain.dao.definition.*;
+import be.home.mezzmo.domain.model.MGOFileArtistTO;
 import org.apache.commons.lang.SerializationUtils;
 
 /**
@@ -44,11 +45,14 @@ public class MezzmoDAOQueries extends MezzmoDB {
             .addColumns(TablesEnum.MGOFile)
             .addColumns(TablesEnum.MGOFileAlbum)
             .addColumns(TablesEnum.MGOFileArtist)
+            .addColumns(TablesEnum.MGOAlbumArtist)
             .addRelation(TablesEnum.MGOFileAlbum, MGOFileAlbumColumns.ALBUMID, TablesEnum.MGOFileAlbumRelationship, MGOFileAlbumRelationshipColumns.ID)
             .addRelation(TablesEnum.MGOFileAlbumRelationship, MGOFileAlbumRelationshipColumns.FILEID, TablesEnum.MGOFile, MGOFileColumns.ID)
             .addRelation(TablesEnum.MGOFileExtension, MGOFileExtensionColumns.ID, TablesEnum.MGOFile, MGOFileColumns.EXTENSION_ID)
             .addRelation(TablesEnum.MGOFileArtist, MGOFileArtistColumns.ARTISTID, TablesEnum.MGOFileArtistRelationship, MGOFileArtistRelationshipColumns.ID)
             .addRelation(TablesEnum.MGOFileArtistRelationship, MGOFileArtistRelationshipColumns.FILEID, TablesEnum.MGOFile, MGOFileColumns.ID)
+            .addRelation(TablesEnum.MGOAlbumArtist, MGOAlbumArtistColumns.ALBUMARTISTID, TablesEnum.MGOAlbumArtistRelationship, MGOAlbumArtistRelationshipColumns.ID)
+            .addRelation(TablesEnum.MGOAlbumArtistRelationship, MGOAlbumArtistRelationshipColumns.FILEID, TablesEnum.MGOFile, MGOFileColumns.ID)
             .addCondition(TablesEnum.MGOFileExtension.alias(), MGOFileExtensionColumns.DATA, Comparator.EQUALS, "mp3");
 
     public static final String FILE_FIND_TAGINFO_CRITERIA = ((SQLBuilder) SerializationUtils.clone(FILE_FIND_BASIC))
@@ -381,10 +385,44 @@ public class MezzmoDAOQueries extends MezzmoDB {
             //.addOption("COLLATE BINARY")
             .render();
 
+    public static final String FIND_ARTIST_BY_ID = SQLBuilder.getInstance()
+            .select()
+            .addTable(TablesEnum.MGOFileArtist)
+            .addColumns(TablesEnum.MGOFileArtist)
+            .addCondition(MGOFileArtistColumns.ARTISTID, Comparator.EQUALS, SQLBuilder.PARAMETER)
+            //.addOption("COLLATE BINARY")
+            .render();
+
+    public static final String FIND_LINKED_ARTIST = SQLBuilder.getInstance()
+            .select()
+            .addTable(TablesEnum.MGOFileArtistRelationship)
+            .addColumns(TablesEnum.MGOFileArtistRelationship)
+            .addCondition(MGOFileArtistRelationshipColumns.ID, Comparator.EQUALS, SQLBuilder.PARAMETER)
+            .render();
+
     public static final String UPDATE_LINK_FILE_ARTIST = SQLBuilder.getInstance()
             .update()
             .addTable(TablesEnum.MGOFileArtistRelationship)
             .updateColumn(MGOFileArtistRelationshipColumns.ID, Type.PARAMETER)
             .addCondition(MGOFileArtistRelationshipColumns.ID, Comparator.EQUALS, SQLBuilder.PARAMETER)
+            .render();
+
+    public static final String UPDATE_LINK_FILE_ARTIST2 = SQLBuilder.getInstance()
+            .update()
+            .addTable(TablesEnum.MGOFileArtistRelationship)
+            .updateColumn(MGOFileArtistRelationshipColumns.ID, Type.PARAMETER)
+            .addCondition(MGOFileArtistRelationshipColumns.FILEID, Comparator.EQUALS, SQLBuilder.PARAMETER)
+            .render();
+
+    public static final String DELETE_ARTIST = SQLBuilder.getInstance()
+            .delete()
+            .addTable(TablesEnum.MGOFileArtist)
+            .addCondition(MGOFileArtistColumns.ARTISTID, Comparator.EQUALS, SQLBuilder.PARAMETER)
+            .render();
+
+    public static final String INSERT_ARTIST = SQLBuilder.getInstance()
+            .insert()
+            .addTable(TablesEnum.MGOFileArtist)
+            .addColumns(TablesEnum.MGOFileArtist)
             .render();
 }

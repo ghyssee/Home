@@ -361,6 +361,24 @@ public class MP3TagChecker extends BatchJobV2{
 
     private void updateArtist(AlbumError.Item item){
         MGOFileAlbumCompositeTO comp = new MGOFileAlbumCompositeTO();
+        comp.getFileTO().setId(item.getFileId());
+        comp.getFileArtistTO().setID(item.getId());
+        comp.getFileArtistTO().setArtist(item.getNewValue());
+        try {
+            int nr = getMezzmoService().updateArtist(comp);
+            if (nr > 0) {
+                log.info("Artitst updated: " + "Id: " + item.getId() +
+                        " / New Artist: " + item.getNewValue() + " / " + nr + " record(s)");
+                //item.setDone(true);
+                updateMP3(item);
+            }
+        } catch (SQLException e) {
+            LogUtils.logError(log, e);
+        }
+    }
+
+    private void updateArtistOld(AlbumError.Item item){
+        MGOFileAlbumCompositeTO comp = new MGOFileAlbumCompositeTO();
         comp.getFileArtistTO().setID(item.getId());
         comp.getFileArtistTO().setArtist(item.getNewValue());
         MGOFileArtistTO artist = null;
@@ -389,7 +407,7 @@ public class MP3TagChecker extends BatchJobV2{
                 }
             } catch (SQLException e) {
                 LogUtils.logError(log, e);
-                }
+            }
             //System.out.println("Nr Of Old Artists deleted: " + result.getNr2());
         }
         else {
@@ -421,6 +439,7 @@ public class MP3TagChecker extends BatchJobV2{
                         log.info("No Update needed for " + item.getFile());
                         log.info("MP3 Album Info: " + id3v2Tag.getAlbum());
                         log.info("Update Info: " + item.getType());
+                        item.setDone(true);
                     }
                     else {
                         update = true;
@@ -432,6 +451,7 @@ public class MP3TagChecker extends BatchJobV2{
                         log.info("No Update needed for " + item.getFile());
                         log.info("MP3 Artist Info: " + id3v2Tag.getArtist());
                         log.info("Update Info: " + item.getType());
+                        item.setDone(true);
                     }
                     else {
                         update = true;
@@ -443,6 +463,7 @@ public class MP3TagChecker extends BatchJobV2{
                         log.info("No Update needed for " + item.getFile());
                         log.info("MP3 Title Info: " + id3v2Tag.getTitle());
                         log.info("Update Info: " + item.getType());
+                        item.setDone(true);
                     }
                     else {
                         id3v2Tag.setTitle(item.getNewValue());

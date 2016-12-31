@@ -2,10 +2,13 @@ package be.home.mezzmo.domain.service;
 
 import be.home.common.enums.MP3Tag;
 import be.home.common.model.TransferObject;
+import be.home.common.utils.LogUtils;
 import be.home.mezzmo.domain.bo.MezzmoBO;
 import be.home.mezzmo.domain.bo.PlaylistBO;
 import be.home.mezzmo.domain.dao.definition.TablesEnum;
 import be.home.mezzmo.domain.model.*;
+import org.apache.log4j.Logger;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.sql.SQLException;
 import java.util.Date;
@@ -18,6 +21,7 @@ import java.util.Map;
 public class MezzmoServiceImpl {
 
     private static MezzmoServiceImpl instance = null;
+    private static final Logger log = Logger.getLogger(MezzmoServiceImpl.class);
 
     protected MezzmoServiceImpl(){
     }
@@ -138,6 +142,72 @@ public class MezzmoServiceImpl {
     public MGOFileArtistTO findArtist(MGOFileArtistTO artist){
         MezzmoBO bo = new MezzmoBO();
         return bo.findArtist(artist);
+    }
+
+    public int updateArtist (MGOFileAlbumCompositeTO comp) throws SQLException {
+        MezzmoBO bo = new MezzmoBO();
+        int nr = 0;
+        MGOFileArtistTO artist = null;
+        try {
+            artist = bo.findArtistById(comp.getFileArtistTO());
+            if (artist.getArtist().toUpperCase().equals(comp.getFileArtistTO().getArtist().toUpperCase())){
+                // artist is case insensitive equal, example Jojo == JoJo
+                // just update the artist and it is ok
+                log.info("Artist is case insensitive equal: " + comp.getFileArtistTO().getArtist());
+                nr = bo.updateArtist(comp.getFileArtistTO());
+            }
+            else {
+                try {
+                    artist = bo.findArtist(comp.getFileArtistTO());
+                    // artist is different, and exist
+                    // update artist to be sure it is case sensitive correct
+                    // check if there are other songs linked to the old artist, if not, delete it
+                    log.info("Artist is different, but exist already: " + comp.getFileArtistTO().getArtist());
+                    artist.setArtist(comp.getFileArtistTO().getArtist());
+                    nr = bo.updateArtist(artist);
+                    MGOFileArtistTO oldArtist = comp.getFileArtistTO();
+                    comp.setFileArtistTO(artist);
+                    nr = bo.updateLinkFileArtist2(comp);
+                    checkArtistLinked(oldArtist);
+                }
+                catch (EmptyResultDataAccessException e){
+                    // artist is different, and does not exist already, example Jojo Ft. Dodo <==> Jojo Feat. Dodo
+                    // insert new artist and link it to the file
+                    // maybe check if there are other songs linked to the old artist, if not, delete it
+                    Integer artistId = bo.insertArtist(comp.getFileArtistTO());
+                    if (artistId != null){
+                        log.info("New Artist created: " + comp.getFileArtistTO().getArtist() + "/Id: " + artistId);
+                        MGOFileArtistTO oldArtist = new MGOFileArtistTO();
+                        oldArtist.setID(comp.getFileArtistTO().getID());
+                        comp.getFileArtistTO().setID(new Long(artistId));
+                        nr = bo.updateLinkFileArtist2(comp);
+                        checkArtistLinked(oldArtist);
+                    }
+                    else {
+                        // if insert failed nr will be empty and tag info of the song will not be updated
+                        log.error("Insert Artist failed: " + comp.getFileArtistTO().getArtist());
+                    }
+                }
+            }
+        }
+        catch (EmptyResultDataAccessException e){
+            // artist not found By Id
+            // this should never occur
+            log.error("Find Artist By Id failed: " + comp.getFileArtistTO().getArtist() + " Id: " + comp.getFileArtistTO().getID());
+            nr = 0;
+        }
+        return nr;
+    }
+
+    private void checkArtistLinked(MGOFileArtistTO artist) {
+
+        MezzmoBO bo = new MezzmoBO();
+            List<MGOFileAlbumCompositeTO> list = bo.findLinkedArtist(artist);
+            if (list == null || list.size() == 0) {
+                // nothing linked to it, safe to delete the link + the artist
+                int del = bo.deleteArtist(artist);
+                log.info("Nr Of Artists Deleted: " + del + " /Id: " + artist.getID());
+            }
     }
 
 

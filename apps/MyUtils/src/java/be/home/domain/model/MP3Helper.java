@@ -49,7 +49,6 @@ public class MP3Helper {
     public String prettifyString(String text){
         String prettifiedText = replaceSpecialCharacters(text);
         if (StringUtils.isNotBlank(text)) {
-            char[] tmp = {'('};
             prettifiedText = WordUtils.capitalizeFully(prettifiedText, startChars);
         }
         return prettifiedText;
@@ -301,7 +300,8 @@ public class MP3Helper {
     public String prettifyAlbum(String title){
         String prettifiedText = title;
         if (StringUtils.isNotBlank(prettifiedText)) {
-            prettifiedText = WordUtils.capitalizeFully(prettifiedText, startChars);
+            prettifiedText = prettifyString(prettifiedText) ;
+                    //WordUtils.capitalizeFully(prettifiedText, startChars);
             prettifiedText = prettifiedText.replaceFirst("\\[[Ee]xplicit\\]", "");
             prettifiedText = checkWords(prettifiedText, Mp3Tag.ALBUM);
             prettifiedText = prettifiedText.replaceAll("R'n'b", "R'n'B");

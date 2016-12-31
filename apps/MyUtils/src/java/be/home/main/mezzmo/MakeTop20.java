@@ -12,8 +12,10 @@ import be.home.common.utils.VelocityUtils;
 import be.home.common.utils.WinUtils;
 import be.home.domain.model.MezzmoUtils;
 import be.home.main.tools.ZipFiles;
+import be.home.mezzmo.domain.bo.MezzmoBO;
 import be.home.mezzmo.domain.dao.jdbc.MezzmoDAOQueries;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
+import be.home.mezzmo.domain.model.MGOFileArtistTO;
 import be.home.mezzmo.domain.model.MGOFileTO;
 import be.home.mezzmo.domain.service.MediaMonkeyServiceImpl;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
@@ -32,6 +34,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -78,14 +81,26 @@ public class MakeTop20 extends BatchJobV2{
         //Archiver zipArchiver = new ZipArchiver("c:/my data/mezzmo.db", "c:/my backups/test.zip");
         //Archiver zipArchiver = new ZipArchiver("C:/My Test", "c:/My Backups/zipFile.zip");
         //zipArchiver.run();
+        MGOFileAlbumCompositeTO comp = new MGOFileAlbumCompositeTO();
+        MGOFileArtistTO artist = comp.getFileArtistTO();
+        artist.setID(new Long(24080));
+        artist.setArtist("Liquid feat. SilvyX5");
+        comp.getFileTO().setId(new Long(6));
+        try {
+            getMezzmoService().updateArtist(comp);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("id = ");
 
 
-
+        /*
         try {
             makeTop20();
         } catch (IOException e) {
             LogUtils.logError(log, e);
-        }
+        }*/
 
 
     }

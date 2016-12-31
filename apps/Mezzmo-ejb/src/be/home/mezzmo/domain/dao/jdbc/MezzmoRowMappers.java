@@ -1,10 +1,7 @@
 package be.home.mezzmo.domain.dao.jdbc;
 
 import be.home.common.dao.jdbc.SQLiteUtils;
-import be.home.mezzmo.domain.dao.definition.MGOAlbumArtistColumns;
-import be.home.mezzmo.domain.dao.definition.MGOFileAlbumColumns;
-import be.home.mezzmo.domain.dao.definition.MGOFileArtistColumns;
-import be.home.mezzmo.domain.dao.definition.MGOFileColumns;
+import be.home.mezzmo.domain.dao.definition.*;
 import be.home.mezzmo.domain.model.*;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -168,6 +165,7 @@ public class MezzmoRowMappers extends MezzmoDAOQueries {
             fileAlbumComposite.setFileTO(mapFileTO(rs, rowNum));
             fileAlbumComposite.setFileAlbumTO(mapFileAlbumTO(rs, rowNum));
             fileAlbumComposite.setFileArtistTO(mapFileArtistTO(rs, rowNum));
+            fileAlbumComposite.setAlbumArtistTO(mapAlbumArtistTO(rs, rowNum));
             return fileAlbumComposite;
         }
     }
@@ -187,6 +185,16 @@ public class MezzmoRowMappers extends MezzmoDAOQueries {
             MGOFileArtistTO artist = mapFileArtistTO(rs, rowNum);
 
             return artist;
+        }
+    }
+
+    public static class FileArtistRowMapper implements RowMapper {
+        public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+            MGOFileAlbumCompositeTO comp = new MGOFileAlbumCompositeTO();
+            comp.getFileTO().setId(getLong(rs, MGOFileArtistRelationshipColumns.FILEID));
+            comp.getFileArtistTO().setID(getLong(rs, MGOFileArtistRelationshipColumns.ID));
+
+            return comp;
         }
     }
 

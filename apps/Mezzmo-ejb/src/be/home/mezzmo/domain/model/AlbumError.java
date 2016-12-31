@@ -12,12 +12,22 @@ public class AlbumError {
     public class Item {
 
         public Long id;
+
+        public Long fileId;
         public String file;
         public String type;
         public String oldValue;
         public String newValue;
         public String basePath;
         public boolean done;
+
+        public Long getFileId() {
+            return fileId;
+        }
+
+        public void setFileId(Long fileId) {
+            this.fileId = fileId;
+        }
 
         public String getBasePath() {
             return basePath;

@@ -99,6 +99,22 @@ public class MezzmoBO extends BusinessObject {
         return getMezzmoDAO().findArtist(artist);
     }
 
+    public MGOFileArtistTO findArtistById(MGOFileArtistTO artist){
+        return getMezzmoDAO().findArtistById(artist);
+    }
+
+    public List <MGOFileAlbumCompositeTO> findLinkedArtist(MGOFileArtistTO artist){
+        return getMezzmoDAO().findLinkedArtist(artist);
+    }
+
+    public Integer insertArtist(MGOFileArtistTO artist){
+        return getMezzmoDAO().insertArtist(artist);
+    }
+
+    public int updateArtist(MGOFileArtistTO artist){
+        return getMezzmoDAO().updateArtist(artist);
+    }
+
     public List <MGOFileAlbumCompositeTO> findSongsByAlbum(MGOFileAlbumCompositeTO comp){
         return getMezzmoDAO().findSongsByAlbum(comp);
     }
@@ -119,11 +135,19 @@ public class MezzmoBO extends BusinessObject {
         return getMezzmoDAO().getLastPlayed(number);
     }
 
-    public Result updateLinkFileArtist(MGOFileArtistTO artist, Long newId){
+   public Result updateLinkFileArtist(MGOFileArtistTO artist, Long newId){
         return getMezzmoDAO().updateLinkFileArtist(artist, newId);
     }
 
-        public Map<String, MGOFileAlbumCompositeTO> getMaxDisc() {
+    public int updateLinkFileArtist2(MGOFileAlbumCompositeTO comp){
+        return getMezzmoDAO().updateLinkFileArtist2(comp);
+    }
+
+    public int deleteArtist(MGOFileArtistTO artist){
+        return getMezzmoDAO().deleteArtist(artist);
+    }
+
+    public Map<String, MGOFileAlbumCompositeTO> getMaxDisc() {
 
         List<MGOFileAlbumCompositeTO> list = getMezzmoDAO().getMaxDisc();
         Map<String, MGOFileAlbumCompositeTO> map = new HashMap<> ();
