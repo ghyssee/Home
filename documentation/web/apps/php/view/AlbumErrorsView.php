@@ -47,7 +47,11 @@ goMenu();
 		}
 	}
 </script>
+<form onsubmit="myFunction()">
+    <input type="submit" value="Process Selected Rows">
+</form>
 
+<form action="AlbumErrorsAction.php" method="post">
 <?php
 //$tableGrid = new TableGrid();
 //$tableGrid->title = "Colors222";
@@ -59,9 +63,9 @@ $smarty->assign('title','Album Errors');
 $smarty->assign('item','Album Errors');
 $url = "AlbumErrorsAction.php";
 $smarty->assign('viewUrl',$url . "?method=list");
-$smarty->assign('updateUrl',"'" . $url . "?method=update&id='+row['id']");
+$smarty->assign('updateUrl',"'" . $url . "?method=update&id='+row['uniqueId']");
 $smarty->assign('newUrl',"'" . $url . "?method=add'");
-$smarty->assign('deleteUrl',"'" . $url . "?method=delete',{id:row['id']}");
+$smarty->assign('deleteUrl',"'" . $url . "?method=delete',{id:row['uniqueId']}");
 
 $smarty->assign("contacts", array(array("field" => "id", "label"=>"Id", "size" => 10, "hidden" => "true"),
 								  array("field" => "done", "label"=>"Done", "size" => 1),
@@ -86,12 +90,43 @@ $smarty->assign("fields", array(array("field" => "id", "label"=>"Id", "size" => 
 
 $smarty->display('TableGrid2.tpl');
 ?>
-
+    <script type="text/javascript">
+        $('#dg').datagrid({
+            onLoadSuccess:function(data){
+                var rows = $(this).datagrid('getRows');
+                for(i=0;i<rows.length;++i){
+                    if(rows[i]['process']==1) $(this).datagrid('checkRow',i);
+                }
+            }
+        });
+</script>
 <br>
 <?php
 goMenu();
 ?>
 <br>
+    <div style="margin:10px 0;">
+        <span>Selection Mode: </span>
+        <select onchange="$('#dg').datagrid({singleSelect:(this.value==0)})">
+            <option value="0">Single Row</option>
+            <option value="1">Multiple Rows</option>
+        </select><br/>
+        SelectOnCheck: <input type="checkbox" checked onchange="$('#dg').datagrid({selectOnCheck:$(this).is(':checked')})"><br/>
+        CheckOnSelect: <input type="checkbox" checked onchange="$('#dg').datagrid({checkOnSelect:$(this).is(':checked')})">
+    </div>
+<script type="text/javascript">
+	function myFunction(){
+		var ids = [];
+		var rows = $('#dg').datagrid('getSelections');
+		for(var i=0; i<rows.length; i++){
+			ids.push(rows[i].uniqueId);
+		}
+	    $.post('AlbumErrorsAction.php?method=select', { selectedIds : ids}, function(response) {
+        /* do something with response*/
+        }
+        )
+    }
+	</script>
 
 </body>
 </html>

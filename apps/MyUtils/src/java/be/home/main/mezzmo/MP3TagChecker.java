@@ -61,8 +61,9 @@ public class MP3TagChecker extends BatchJobV2{
         final String batchJob = "MP3TagChecker";
 
         //System.out.println(stripFilename("Can't Feel"));
-        export();
-        //processErrors();
+        //export();
+        int nr = processErrors();
+        log.info("Nr Of Errors processed: " + nr);
         /*
         String file = "C:\\My Data\\tmp\\Java\\MP3Processor\\_test\\MNM Big Hits Best Of 2015\\05 Netsky feat. Digital Farm Animals - Work It Out.mp3";
         file = "C:\\My Data\\tmp\\Java\\MP3Processor\\_test\\MNM Big Hits Best Of 2015\\105 Christine & The Queens - Christine.mp3";
@@ -177,14 +178,16 @@ public class MP3TagChecker extends BatchJobV2{
         return maxDisc;
     }
 
-    private void processErrors(){
+    private int processErrors(){
+        int errorsProcessed = 0;
         log.info("Processing Errors");
         if (this.albumErrors.items.size() == 0){
             log.info("Nothing To Process");
-            return;
+            return 0;
         }
         for (AlbumError.Item item : this.albumErrors.items){
-            if (!item.isDone()) {
+            if (!item.isDone() && item.isProcess()) {
+                errorsProcessed++;
                 log.info("Processing Id " + item.id + " / Type = " + item.type);
                 switch (MP3Tag.valueOf(item.getType())) {
                     case FILE:
@@ -217,6 +220,7 @@ public class MP3TagChecker extends BatchJobV2{
         } catch (IOException e) {
             LogUtils.logError(log, e, "There was a problem flushing the Album Errors File");
         }
+        return errorsProcessed;
     }
 
     private void flushAlbumErrors() throws IOException {

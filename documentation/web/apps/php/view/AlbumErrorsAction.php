@@ -4,11 +4,13 @@ include_once("../config.php");
 include_once("../model/HTML.php");
 include_once("../bo/ColorBO.php");
 
-$method = htmlspecialchars($_REQUEST['method']);
 $file = getFullPath(JSON_ALBUMERRORS);
+
+$method = htmlspecialchars($_REQUEST['method']);
+
 switch ($method) {
 	case "list":
-		getList($file);
+		getList();
 		break;
 	case "update":
 		update($file);
@@ -19,18 +21,42 @@ switch ($method) {
 	case "delete":
         delete($file);
 		break;
+    case "select":
+        $sel = $_POST['selectedIds'];
+        selectRows($sel);
+        break;
 }
 
-function getList($file){
+function selectRows($selArray){
+    $albumErrors = readJSONWithCode(JSON_ALBUMERRORS);
+    $save = false;
+    foreach ($albumErrors->items as $key => $record) {
+
+        if (!$record->done) {
+            $record->process = false;
+            foreach ($selArray as $id) {
+                if ($id == $record->uniqueId){
+                    $record->process = true;
+                    $save = true;
+                }
+            }
+        }
+    }
+    writeJSONWithCode($albumErrors, JSON_ALBUMERRORS);
+
+}
+
+
+function getList(){
 
     $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
     $rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
-    $albumErrors = readJSON($file);
+    $albumErrors = readJSONWithCode(JSON_ALBUMERRORS);
     $filteredArray = [];
 	foreach ($albumErrors->items as $key => $value) {
-		//if (!$value->done) {
+		if (!$value->done) { //} && !$value->process) {
 			array_push($filteredArray, $value);
-		//}
+		}
 	}
 	$array2 = array_slice($filteredArray, ($page-1)*$rows, $rows);
     

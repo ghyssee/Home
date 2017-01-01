@@ -38,9 +38,15 @@ public class MP3TagUtils {
     public static final String SUBST_B = "O:\\Shared\\Mijn Muziek\\";
     //public static final String SUBST_B = "C:\\My Data\\tmp\\Java\\MP3Processor\\Album\\";
     public static final String HTML_BREAK = "<br>";
+    private static long idCounter = 0;
 
     private MP3TagUtils (){
 
+    }
+
+    public static synchronized long createID()
+    {
+        return idCounter++;
     }
 
     public MP3TagUtils(AlbumError albumErrors){
@@ -158,6 +164,7 @@ public class MP3TagUtils {
         item.setOldValue(oldValue);
         item.setNewValue(newValue);
         item.setBasePath(FilenameUtils.getFullPath(file));
+        item.setUniqueId(createID());
         albumErrors.items.add(item);
     }
 

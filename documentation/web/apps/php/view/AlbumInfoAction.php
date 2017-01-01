@@ -14,8 +14,8 @@ if (isset($_POST['albumInfo'])) {
 function updateAlbumInfo($mp3PreprocessorObj){
     $mp3PreprocessorObj = readJSONWithCode(JSON_MP3PREPROCESSOR);
     $mp3SettingsObj = readJSONWithCode(JSON_MP3SETTINGS);
-    assignField($mp3PreprocessorObj->album, "album");
-    assignField($mp3SettingsObj->album, "albumLocation");
+    assignField($mp3PreprocessorObj->album, "album", !HTML_SPECIAL_CHAR);
+    assignField($mp3SettingsObj->album, "albumLocation", !HTML_SPECIAL_CHAR);
     assignField($mp3SettingsObj->albumArtist, "albumArtist");
     assignField($mp3SettingsObj->albumYear, "albumYear");
     assignField($albumInfo, "albumContent", !HTML_SPECIAL_CHAR);

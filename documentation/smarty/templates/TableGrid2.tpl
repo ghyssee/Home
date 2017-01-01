@@ -1,14 +1,16 @@
-	<table id="dg" title="{{$title}}" class="easyui-datagrid" style="width:1500px;height:500px"
+	<table id="dg" title="{{$title}}" class="easyui-datagrid" style="width:1500px;height:500px" idField="uniqueId"
 			url="{{$viewUrl}}"
-			toolbar="#toolbar" pagination="true" nowrap="false" rownumbers="true" fitColumns="true" singleSelect="true">
+			toolbar="#toolbar" pagination="true" nowrap="false" rownumbers="true" fitColumns="true" singleSelect="false">
 		<thead>
 		<tr>
+			<th field="process" checkbox="true"></th>
 			{{section name=sec1 loop=$contacts}}
-			<th field="{{$contacts[sec1].field}}"  {{if isset($contacts[sec1].hidden) && $contacts[sec1].hidden}}hidden="true"){{/if}} width="{{$contacts[sec1].size}}"{{if isset($contacts[sec1].formatter)}} formatter="{{$contacts[sec1].formatter}}"{{/if}}>{{$contacts[sec1].label}}</th>
+			<th field="{{$contacts[sec1].field}}"  {{if isset($contacts[sec1].hidden) && $contacts[sec1].hidden}}hidden="true"{{/if}} width="{{$contacts[sec1].size}}"{{if isset($contacts[sec1].formatter)}} formatter="{{$contacts[sec1].formatter}}"{{/if}}>{{$contacts[sec1].label}}</th>
 			{{/section}}
 		</tr>
 		</thead>
 	</table>
+
 	<span style="font-size:20px">
 	<div id="toolbar">
 	{{if isset($newUrl)}}
@@ -43,6 +45,8 @@
 		<a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="save()" style="width:90px">Save</a>
 		<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')" style="width:90px">Cancel</a>
 	</div>
+
+
 	<script type="text/javascript">
 		$('#dg').datagrid({
 			options:[[

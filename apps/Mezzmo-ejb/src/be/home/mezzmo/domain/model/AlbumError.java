@@ -11,6 +11,8 @@ public class AlbumError {
 
     public class Item {
 
+        public long uniqueId;
+
         public Long id;
 
         public Long fileId;
@@ -20,6 +22,8 @@ public class AlbumError {
         public String newValue;
         public String basePath;
         public boolean done;
+
+        public boolean process;
 
         public Long getFileId() {
             return fileId;
@@ -85,6 +89,23 @@ public class AlbumError {
         public void setOldValue(String oldValue) {
             this.oldValue = oldValue;
         }
+
+        public boolean isProcess() {
+            return process;
+        }
+
+        public void setProcess(boolean process) {
+            this.process = process;
+        }
+        public long getUniqueId() {
+            return uniqueId;
+        }
+
+        public void setUniqueId(long uniqueId) {
+            this.uniqueId = uniqueId;
+        }
+
+
     }
 
 }
