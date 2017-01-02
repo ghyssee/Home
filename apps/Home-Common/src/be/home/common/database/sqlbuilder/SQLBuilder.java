@@ -24,7 +24,10 @@ public class SQLBuilder implements Cloneable, Serializable {
     private List<Option> options = new ArrayList<>();
     private boolean distinct = false;
     private List<GroupBy> groupColumns = new ArrayList<>();
+    private List<GroupCondition> groupConditions = new ArrayList<>();
     public static final Object PARAMETER = null;
+
+    private boolean firstWhere = true;
 
 
     public SQLBuilder addTable(DatabaseTables table){
@@ -116,6 +119,17 @@ public class SQLBuilder implements Cloneable, Serializable {
         return sb.toString();
     }
 
+
+    public GroupCondition groupCondition (){
+        SQLBuilder current = this;
+        GroupCondition gc = new GroupCondition(current);
+        return gc;
+    }
+
+    public SQLBuilder addGroupCondition (GroupCondition group){
+        this.groupConditions.add(group);
+        return this;
+    }
 
     public SQLBuilder addColumn (String alias, SQLFunction function, DatabaseColumn dbColumn){
         StringBuilder sb = new StringBuilder();
@@ -242,6 +256,11 @@ public class SQLBuilder implements Cloneable, Serializable {
         return this;
     }
 
+    public SQLBuilder orderBy (String field) {
+        orderByColumns.add(new OrderBy(field));
+        return this;
+    }
+
     public SQLBuilder addOption (String option) {
         options.add(new Option(option));
         return this;
@@ -281,6 +300,7 @@ public class SQLBuilder implements Cloneable, Serializable {
                 .append(this.mainTable.tableAlias())
                 .append(relations())
                 .append(conditions())
+                .append(getGroupConditions())
                 .append(groupBy())
                 .append(orderBy())
                 .append(limitByClause())
@@ -434,17 +454,57 @@ public class SQLBuilder implements Cloneable, Serializable {
     }
 
     public String conditions(){
-        boolean first = true;
         StringBuilder sb = new StringBuilder();
         for (Condition condition : this.conditions){
             sb
-                    .append(first ? " WHERE " : " AND ")
+                    .append(firstWhere ? " WHERE " : " AND ")
+                    .append(condition.field1)
+                    .append(" ")
+                    .append(condition.comparator.comparator())
+                    .append(" ")
+                    .append(condition.field2);
+            firstWhere = false;
+        }
+        return sb.toString();
+    }
+
+    public String getChildConditions(List <Condition> list){
+        StringBuilder sb = new StringBuilder();
+        boolean first = true;
+        for (Condition condition : list){
+            sb
+                    .append(" ")
+                    .append(first ? "" : condition.conditionType.name())
+                    .append(" ")
                     .append(condition.field1)
                     .append(" ")
                     .append(condition.comparator.comparator())
                     .append(" ")
                     .append(condition.field2);
             first = false;
+        }
+        return sb.toString();
+    }
+
+    public String getGroupConditions(){
+        boolean first = true;
+        StringBuilder sb = new StringBuilder("");
+
+        for (GroupCondition group : this.groupConditions){
+            if (first){
+                sb.append(firstWhere ? " WHERE " : " AND ")
+                        .append("(");
+                firstWhere = false;
+            }
+            sb
+                    .append(first ? "" : " OR ")
+                    .append("(")
+                    .append(getChildConditions(group.conditions))
+                    .append(")");
+            first = false;
+        }
+        if (this.groupConditions.size() > 0){
+            sb.append(")");
         }
         return sb.toString();
     }

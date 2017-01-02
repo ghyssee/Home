@@ -17,4 +17,7 @@ class OrderBy implements Serializable {
     OrderBy(DatabaseTables table, DatabaseColumn column, SortOrder sortOrder) {
         this.orderField = table.alias() + "." + column.getColumnName() + " " + sortOrder.name();
     }
+    OrderBy(String field) {
+        this.orderField = field;
+    }
 }

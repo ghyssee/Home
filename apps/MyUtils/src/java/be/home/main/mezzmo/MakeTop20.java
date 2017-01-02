@@ -4,6 +4,8 @@ import be.home.common.archiving.Archiver;
 import be.home.common.archiving.ZipArchiver;
 import be.home.common.constants.Constants;
 import be.home.common.dao.jdbc.SQLiteJDBC;
+import be.home.common.database.sqlbuilder.*;
+import be.home.common.database.sqlbuilder.Comparator;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.JSONUtils;
@@ -77,22 +79,22 @@ public class MakeTop20 extends BatchJobV2{
         //Path p1 = Paths.get("c:/my data/mezzmo.db");
         //Path p2 = Paths.get("c:/my backups/test.zip");
 
+        SQLBuilder b = MezzmoDAOQueries.LIST_CUSTOM2;
+        System.out.println(
+        b
+                .groupCondition()
+                    .add("test", Comparator.EQUALS, "test2", ConditionType.AND)
+                    .add("test3", Comparator.EQUALS, "test4", ConditionType.AND)
+                    .close()
+                .groupCondition()
+                    .add("test10", Comparator.EQUALS, "test11", ConditionType.AND)
+                    .add("test20", Comparator.EQUALS, "test21", ConditionType.AND)
+                    .close()
+                .render()
+        );
 
-        //Archiver zipArchiver = new ZipArchiver("c:/my data/mezzmo.db", "c:/my backups/test.zip");
-        //Archiver zipArchiver = new ZipArchiver("C:/My Test", "c:/My Backups/zipFile.zip");
-        //zipArchiver.run();
-        MGOFileAlbumCompositeTO comp = new MGOFileAlbumCompositeTO();
-        MGOFileArtistTO artist = comp.getFileArtistTO();
-        artist.setID(new Long(24080));
-        artist.setArtist("Liquid feat. SilvyX5");
-        comp.getFileTO().setId(new Long(6));
-        try {
-            getMezzmoService().updateArtist(comp);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
 
-        System.out.println("id = ");
+
 
 
         /*

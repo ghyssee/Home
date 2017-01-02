@@ -124,6 +124,29 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
 
         List params = new ArrayList();
         for (MGOFileAlbumCompositeTO album : albums){
+            //query
+
+
+            params.add(album.getFileAlbumTO().getName());
+            params.add(0L);
+            String albumArtist = album.getAlbumArtistTO().getName();
+            params.add(albumArtist == null ? "%" : albumArtist);
+        }
+        params.add(limit);
+
+        List<MGOFileAlbumCompositeTO>  list = getInstance().getJDBCTemplate().query(query, new MezzmoRowMappers.CustomAlbumRowMapper(), params.toArray());
+        return list;
+
+    }
+
+    public List<MGOFileAlbumCompositeTO> getCustomPlayListSongsOld(List <MGOFileAlbumCompositeTO> albums, int limit)
+    {
+        String query = LIST_CUSTOM;
+        String orClause = "(MGOFileAlbum.data like ? AND MGOFile.ranking > ? AND MGOAlbumArtist.data like ? AND MGOFile.playcount < 2) ";
+        query = QueryBuilder.buildOrCondition(query, orClause, albums);
+
+        List params = new ArrayList();
+        for (MGOFileAlbumCompositeTO album : albums){
             params.add(album.getFileAlbumTO().getName());
             params.add(0L);
             String albumArtist = album.getAlbumArtistTO().getName();

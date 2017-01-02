@@ -10,17 +10,17 @@ class LimitBy implements Serializable {
     Integer total;
 
     LimitBy() {
-        pos = null;
-        total = null;
+        this.pos = null;
+        this.total = null;
     }
 
     LimitBy(int pos) {
         this.pos = pos;
-        total = null;
+        this.total = null;
     }
 
     LimitBy(int pos, int total) {
         this.pos = pos;
-        total = total;
+        this.total = total;
     }
 }

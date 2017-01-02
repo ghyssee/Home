@@ -244,6 +244,10 @@ public class MezzmoDAOQueries extends MezzmoDB {
             "ORDER BY RANDOM() " +
             "LIMIT 0,? ";
 
+    public static SQLBuilder LIST_CUSTOM2 = ((SQLBuilder) SerializationUtils.clone(FILE_FIND_BASIC))
+            .orderBy("RANDOM()")
+            .limitBy(0);
+
     public static final String FILE_UPDATE_RATING = SQLBuilder.getInstance()
             .update()
             .addTable(TablesEnum.MGOFile)
