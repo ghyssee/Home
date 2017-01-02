@@ -22,27 +22,42 @@ switch ($method) {
         delete($file);
 		break;
     case "select":
-        $sel = $_POST['selectedIds'];
+        $sel = json_decode($_POST['selectedIds']);
         selectRows($sel);
         break;
 }
 
-function selectRows($selArray){
+function selectRows($selObj){
     $albumErrors = readJSONWithCode(JSON_ALBUMERRORS);
-    $save = false;
     foreach ($albumErrors->items as $key => $record) {
-
         if (!$record->done) {
             $record->process = false;
-            foreach ($selArray as $id) {
+            foreach ($selObj->ids as $id) {
                 if ($id == $record->uniqueId){
                     $record->process = true;
-                    $save = true;
                 }
             }
         }
     }
     writeJSONWithCode($albumErrors, JSON_ALBUMERRORS);
+	echo json_encode(array('success'=>true));
+
+}
+
+function selectRows2($selArray){
+	$albumErrors = readJSONWithCode(JSON_ALBUMERRORS);
+	foreach ($albumErrors->items as $key => $record) {
+		if (!$record->done) {
+			$record->process = false;
+			foreach ($selArray as $id) {
+				if ($id == $record->uniqueId){
+					$record->process = true;
+				}
+			}
+		}
+	}
+	writeJSONWithCode($albumErrors, JSON_ALBUMERRORS);
+	echo json_encode(array('success'=>true));
 
 }
 

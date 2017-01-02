@@ -13,22 +13,22 @@ include("../model/HTML.php");
 session_start();
 $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
 if (isset($_SESSION["mp3PrettifierGlobal"])) {
-    $globalWordObj = $_SESSION["mp3PrettifierGlobal"];
+    $globalWordObj = getSessionField("mp3PrettifierGlobal");
 } else {
     $globalWordObj = new Word();
 }
 if (isset($_SESSION["mp3PrettifierArtistWord"])) {
-    $artistWordObj = $_SESSION["mp3PrettifierArtistWord"];
+    $artistWordObj = getSessionField("mp3PrettifierArtistWord");
 } else {
     $artistWordObj = new Word();
 }
 if (isset($_SESSION["mp3PrettifierArtistName"])) {
-    $artistNameObj = $_SESSION["mp3PrettifierArtistName"];
+    $artistNameObj = getSessionField("mp3PrettifierArtistName");
 } else {
     $artistNameObj = new Word();
 }
 if (isset($_SESSION["mp3PrettifierSongTitle"])) {
-    $songTitleObj = $_SESSION["mp3PrettifierSongTitle"];
+    $songTitleObj = getSessionField("mp3PrettifierSongTitle");
 } else {
     $songTitleObj = new ExtWord();
 }

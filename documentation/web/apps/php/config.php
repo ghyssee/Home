@@ -20,6 +20,13 @@ function printErrorMessage ($string_message, $class) {
 	println($msg);
 }
 
+function getSessionField($field)
+{
+	$var = $_SESSION[$field];
+	unset($_SESSION[$field]);
+	return $var;
+}
+
 function assignField(&$field, $value, $isHtml = true)
 {
 	if ($isHtml) {

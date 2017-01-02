@@ -47,11 +47,10 @@ goMenu();
 		}
 	}
 </script>
-<form onsubmit="myFunction()">
+<form onsubmit="return myFunction()">
     <input type="submit" value="Process Selected Rows">
 </form>
 
-<form action="AlbumErrorsAction.php" method="post">
 <?php
 //$tableGrid = new TableGrid();
 //$tableGrid->title = "Colors222";
@@ -90,7 +89,7 @@ $smarty->assign("fields", array(array("field" => "id", "label"=>"Id", "size" => 
 
 $smarty->display('TableGrid2.tpl');
 ?>
-    <script type="text/javascript">
+	<script type="text/javascript">
         $('#dg').datagrid({
             onLoadSuccess:function(data){
                 var rows = $(this).datagrid('getRows');
@@ -99,32 +98,54 @@ $smarty->display('TableGrid2.tpl');
                 }
             }
         });
-</script>
+	</script>
 <br>
 <?php
 goMenu();
 ?>
-<br>
+<br/>
     <div style="margin:10px 0;">
         <span>Selection Mode: </span>
         <select onchange="$('#dg').datagrid({singleSelect:(this.value==0)})">
             <option value="0">Single Row</option>
-            <option value="1">Multiple Rows</option>
-        </select><br/>
-        SelectOnCheck: <input type="checkbox" checked onchange="$('#dg').datagrid({selectOnCheck:$(this).is(':checked')})"><br/>
+            <option value="1" selected>Multiple Rows</option>
+        </select>
+		<br/>
+        SelectOnCheck: <input type="checkbox" checked onchange="$('#dg').datagrid({selectOnCheck:$(this).is(':checked')})">
+		<br/>
         CheckOnSelect: <input type="checkbox" checked onchange="$('#dg').datagrid({checkOnSelect:$(this).is(':checked')})">
     </div>
 <script type="text/javascript">
 	function myFunction(){
-		var ids = [];
+		var selectObj = { pageNumber: 1, ids: []}
+        var ids = [];
 		var rows = $('#dg').datagrid('getSelections');
 		for(var i=0; i<rows.length; i++){
 			ids.push(rows[i].uniqueId);
 		}
-	    $.post('AlbumErrorsAction.php?method=select', { selectedIds : ids}, function(response) {
-        /* do something with response*/
-        }
-        )
+        var opts = $('#dg').datagrid('options');
+        selectObj.pageNumber = opts.pageNumber;
+        selectObj.ids = ids;
+        var tmp = $.post('AlbumErrorsAction.php?method=select', { selectedIds : JSON.stringify(selectObj)}, function(data2){
+            if (data2.success){
+                //$('#dg').datagrid('gotoPage', data2.pageNumber);
+                $('#dg').datagrid('reload');
+            }
+        },'json')
+            .done(function() {
+                //alert( "second success" );
+            })
+            .fail(function() {
+                //alert( "error" );
+            })
+            .always(function() {
+                //alert( "finished" );
+            });
+        tmp.always(function() {
+            //alert( "second finished" );
+        });
+        //$('#dg').datagrid('gotoPage', 2);
+        return false;
     }
 	</script>
 

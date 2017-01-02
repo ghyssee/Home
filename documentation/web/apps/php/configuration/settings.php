@@ -25,7 +25,7 @@ $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
 <?php
 goMenu();
 if (isset($_SESSION["color"])) {
-    $color = $_SESSION["color"];
+    $color = getSessionField("color");
 } else {
     $color = new Color();
 }
@@ -59,7 +59,6 @@ if (isset($_SESSION["color"])) {
 <?php
 goMenu();
 unset($_SESSION["errors"]);
-unset($_SESSION["color"]);
 ?>
 </body>
 </html>
