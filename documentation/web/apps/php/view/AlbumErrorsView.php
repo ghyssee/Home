@@ -117,14 +117,12 @@ goMenu();
     </div>
 <script type="text/javascript">
 	function myFunction(){
-		var selectObj = { pageNumber: 1, ids: []}
+		var selectObj = { ids: []}
         var ids = [];
 		var rows = $('#dg').datagrid('getSelections');
 		for(var i=0; i<rows.length; i++){
 			ids.push(rows[i].uniqueId);
 		}
-        var opts = $('#dg').datagrid('options');
-        selectObj.pageNumber = opts.pageNumber;
         selectObj.ids = ids;
         var tmp = $.post('AlbumErrorsAction.php?method=select', { selectedIds : JSON.stringify(selectObj)}, function(data2){
             if (data2.success){
