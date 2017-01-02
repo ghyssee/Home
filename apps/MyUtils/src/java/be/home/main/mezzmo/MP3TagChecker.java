@@ -61,7 +61,7 @@ public class MP3TagChecker extends BatchJobV2{
         final String batchJob = "MP3TagChecker";
 
         //System.out.println(stripFilename("Can't Feel"));
-        //export();
+        export();
         int nr = processErrors();
         log.info("Nr Of Errors processed: " + nr);
         /*

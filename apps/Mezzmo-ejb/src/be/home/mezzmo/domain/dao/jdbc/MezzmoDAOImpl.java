@@ -2,9 +2,17 @@ package be.home.mezzmo.domain.dao.jdbc;
 
 import be.home.common.dao.jdbc.QueryBuilder;
 import be.home.common.dao.jdbc.SQLiteUtils;
+import be.home.common.database.sqlbuilder.Comparator;
+import be.home.common.database.sqlbuilder.ConditionType;
+import be.home.common.database.sqlbuilder.SQLBuilder;
 import be.home.common.enums.MP3Tag;
 import be.home.common.model.TransferObject;
+import be.home.mezzmo.domain.dao.definition.MGOAlbumArtistColumns;
+import be.home.mezzmo.domain.dao.definition.MGOFileAlbumColumns;
+import be.home.mezzmo.domain.dao.definition.MGOFileColumns;
+import be.home.mezzmo.domain.dao.definition.TablesEnum;
 import be.home.mezzmo.domain.model.*;
+import org.apache.commons.lang.SerializationUtils;
 import org.apache.log4j.Logger;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -118,23 +126,28 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
 
     public List<MGOFileAlbumCompositeTO> getCustomPlayListSongs(List <MGOFileAlbumCompositeTO> albums, int limit)
     {
-        String query = LIST_CUSTOM;
-        String orClause = "(MGOFileAlbum.data like ? AND MGOFile.ranking > ? AND MGOAlbumArtist.data like ? AND MGOFile.playcount < 2) ";
-        query = QueryBuilder.buildOrCondition(query, orClause, albums);
+        SQLBuilder query = ((SQLBuilder) SerializationUtils.clone(FILE_FIND_BASIC))
+                .orderBy("RANDOM()")
+                .limitBy(0);
 
         List params = new ArrayList();
         for (MGOFileAlbumCompositeTO album : albums){
             //query
-
-
-            params.add(album.getFileAlbumTO().getName());
+            query
+                    .groupCondition()
+                    .add(TablesEnum.MGOFile.alias(), MGOFileColumns.RANKING, Comparator.GREATER, null, ConditionType.AND)
+                    .add(TablesEnum.MGOFile.alias(), MGOFileColumns.PLAYCOUNT, Comparator.LESS, 2, ConditionType.AND)
+                    .add(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUM, Comparator.LIKE, null, ConditionType.AND)
+                    .add(TablesEnum.MGOAlbumArtist.alias(), MGOAlbumArtistColumns.ALBUMARTIST, Comparator.LIKE, null, ConditionType.AND)
+                    .close();
             params.add(0L);
+            params.add(album.getFileAlbumTO().getName());
             String albumArtist = album.getAlbumArtistTO().getName();
             params.add(albumArtist == null ? "%" : albumArtist);
         }
         params.add(limit);
 
-        List<MGOFileAlbumCompositeTO>  list = getInstance().getJDBCTemplate().query(query, new MezzmoRowMappers.CustomAlbumRowMapper(), params.toArray());
+        List<MGOFileAlbumCompositeTO>  list = getInstance().getJDBCTemplate().query(query.render(), new FileAlbumPlayCountMapper(), params.toArray());
         return list;
 
     }

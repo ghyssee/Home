@@ -1,5 +1,7 @@
 package be.home.common.database.sqlbuilder;
 
+import be.home.common.database.DatabaseColumn;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,8 +16,14 @@ public class GroupCondition {
         this.current = current;
     }
 
-    public GroupCondition add(String field1, Comparator comparator, String field2, ConditionType conditionType){
-        this.conditions.add(new Condition(field1, comparator, field2, conditionType));
+    public GroupCondition add(String alias, DatabaseColumn dbColumn, Comparator comparator, String alias2, DatabaseColumn dbColumn2, ConditionType conditionType){
+        this.conditions.add(new Condition(alias + "." + dbColumn.getColumnName(), comparator,
+                alias2 + "." + dbColumn2.getColumnName(), conditionType));
+        return this;
+    }
+    public GroupCondition add(String alias, DatabaseColumn dbColumn, Comparator comparator, Object object, ConditionType conditionType){
+        this.conditions.add(new Condition(alias + "." + dbColumn.getColumnName(), comparator,
+                SQLBuilderUtils.getValue(object), conditionType));
         return this;
     }
     public SQLBuilder close(){

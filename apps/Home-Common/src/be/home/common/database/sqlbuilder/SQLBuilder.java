@@ -179,33 +179,12 @@ public class SQLBuilder implements Cloneable, Serializable {
     4. SQLBuilder combined with comparator IN
      */
     public SQLBuilder addCondition (DatabaseColumn column, Comparator comparator, Object object){
-        conditions.add(new Condition(column.getColumnName(), comparator, getValue(object)));
+        conditions.add(new Condition(column.getColumnName(), comparator, SQLBuilderUtils.getValue(object)));
         return this;
     }
 
 
-    private String getValue(Object object){
-        String value = "";
-        if (object == null){
-            value = "?";
-        }
-        else if (object instanceof String){
-            value = "'" + (String) object + "'";
-        }
-        else if (object instanceof Integer){
-            value = String.valueOf(object);
-        }
-        else if (object instanceof Long){
-            value = String.valueOf(object);
-        }
-        else if (object instanceof SQLBuilder){
-            SQLBuilder subSQL = (SQLBuilder) object;
-            value = "(" + subSQL.render() + ")";
-        }
-        return value;
-    }
-
-    public SQLBuilder addCondition (String alias, SQLFunction function, DatabaseColumn dbColumn, Comparator comparator, Object object){
+   public SQLBuilder addCondition (String alias, SQLFunction function, DatabaseColumn dbColumn, Comparator comparator, Object object){
         StringBuilder sb = new StringBuilder();
         sb
                 .append(function == SQLFunction.NONE ? "" : function.name() + "(")
@@ -215,12 +194,12 @@ public class SQLBuilder implements Cloneable, Serializable {
                         "")
                 .append(function == SQLFunction.NONE ? "" : ")");
 
-        conditions.add(new Condition(sb.toString(), comparator, getValue(object)));
+        conditions.add(new Condition(sb.toString(), comparator, SQLBuilderUtils.getValue(object)));
         return this;
     }
 
     public SQLBuilder addCondition (String alias, DatabaseColumn dbColumn, Comparator comparator, Object object){
-        conditions.add(new Condition(alias + "." + dbColumn.getColumnName(), comparator, getValue(object)));
+        conditions.add(new Condition(alias + "." + dbColumn.getColumnName(), comparator, SQLBuilderUtils.getValue(object)));
         return this;
     }
 

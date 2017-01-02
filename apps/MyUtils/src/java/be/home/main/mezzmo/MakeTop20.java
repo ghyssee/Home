@@ -15,6 +15,10 @@ import be.home.common.utils.WinUtils;
 import be.home.domain.model.MezzmoUtils;
 import be.home.main.tools.ZipFiles;
 import be.home.mezzmo.domain.bo.MezzmoBO;
+import be.home.mezzmo.domain.dao.definition.MGOAlbumArtistColumns;
+import be.home.mezzmo.domain.dao.definition.MGOFileAlbumColumns;
+import be.home.mezzmo.domain.dao.definition.MGOFileColumns;
+import be.home.mezzmo.domain.dao.definition.TablesEnum;
 import be.home.mezzmo.domain.dao.jdbc.MezzmoDAOQueries;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.MGOFileArtistTO;
@@ -83,12 +87,16 @@ public class MakeTop20 extends BatchJobV2{
         System.out.println(
         b
                 .groupCondition()
-                    .add("test", Comparator.EQUALS, "test2", ConditionType.AND)
-                    .add("test3", Comparator.EQUALS, "test4", ConditionType.AND)
+                    .add(TablesEnum.MGOFile.alias(), MGOFileColumns.RANKING, Comparator.GREATEREQUALS, 0, ConditionType.AND)
+                    .add(TablesEnum.MGOFile.alias(), MGOFileColumns.PLAYCOUNT, Comparator.LESS, 2, ConditionType.AND)
+                    .add(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUM, Comparator.LIKE, null, ConditionType.AND)
+                    .add(TablesEnum.MGOAlbumArtist.alias(), MGOAlbumArtistColumns.ALBUMARTIST, Comparator.LIKE, null, ConditionType.AND)
                     .close()
                 .groupCondition()
-                    .add("test10", Comparator.EQUALS, "test11", ConditionType.AND)
-                    .add("test20", Comparator.EQUALS, "test21", ConditionType.AND)
+                    .add(TablesEnum.MGOFile.alias(), MGOFileColumns.RANKING, Comparator.GREATEREQUALS, 0, ConditionType.AND)
+                    .add(TablesEnum.MGOFile.alias(), MGOFileColumns.PLAYCOUNT, Comparator.LESS, 2, ConditionType.AND)
+                    .add(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUM, Comparator.LIKE, null, ConditionType.AND)
+                    .add(TablesEnum.MGOAlbumArtist.alias(), MGOAlbumArtistColumns.ALBUMARTIST, Comparator.LIKE, null, ConditionType.AND)
                     .close()
                 .render()
         );
