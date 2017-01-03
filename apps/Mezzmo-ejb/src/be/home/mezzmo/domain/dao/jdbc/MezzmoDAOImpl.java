@@ -120,15 +120,13 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
 
     public MGOFileTO findCoverArt(Long albumId){
         Object[] params = {albumId };
-        MGOFileTO fileTO = (MGOFileTO) getInstance().getJDBCTemplate().queryForObject(FIND_COVER_ART, new MezzmoRowMappers.FileNameRowMapper(), params);
+        MGOFileTO fileTO = (MGOFileTO) getInstance().getJDBCTemplate().queryForObject(FIND_COVER_ART, new FileRowMapper(), params);
         return fileTO;
     }
 
     public List<MGOFileAlbumCompositeTO> getCustomPlayListSongs(List <MGOFileAlbumCompositeTO> albums, int limit)
     {
-        SQLBuilder query = ((SQLBuilder) SerializationUtils.clone(FILE_FIND_BASIC))
-                .orderBy("RANDOM()")
-                .limitBy(0);
+        SQLBuilder query = ((SQLBuilder) SerializationUtils.clone(LIST_CUSTOM));
 
         List params = new ArrayList();
         for (MGOFileAlbumCompositeTO album : albums){
@@ -154,7 +152,7 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
 
     public List<MGOFileAlbumCompositeTO> getCustomPlayListSongsOld(List <MGOFileAlbumCompositeTO> albums, int limit)
     {
-        String query = LIST_CUSTOM;
+        String query = LIST_CUSTOM_OLD;
         String orClause = "(MGOFileAlbum.data like ? AND MGOFile.ranking > ? AND MGOAlbumArtist.data like ? AND MGOFile.playcount < 2) ";
         query = QueryBuilder.buildOrCondition(query, orClause, albums);
 
@@ -167,7 +165,7 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
         }
         params.add(limit);
 
-        List<MGOFileAlbumCompositeTO>  list = getInstance().getJDBCTemplate().query(query, new MezzmoRowMappers.CustomAlbumRowMapper(), params.toArray());
+        List<MGOFileAlbumCompositeTO>  list = getInstance().getJDBCTemplate().query(query, new CustomAlbumRowMapperOld(), params.toArray());
         return list;
 
     }

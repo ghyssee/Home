@@ -19,6 +19,8 @@ import be.home.mezzmo.domain.dao.definition.MGOAlbumArtistColumns;
 import be.home.mezzmo.domain.dao.definition.MGOFileAlbumColumns;
 import be.home.mezzmo.domain.dao.definition.MGOFileColumns;
 import be.home.mezzmo.domain.dao.definition.TablesEnum;
+import be.home.mezzmo.domain.dao.jdbc.IPodDAOImpl;
+import be.home.mezzmo.domain.dao.jdbc.MediaMonkeyDAOImpl;
 import be.home.mezzmo.domain.dao.jdbc.MezzmoDAOQueries;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.MGOFileArtistTO;
@@ -74,43 +76,18 @@ public class MakeTop20 extends BatchJobV2{
     @Override
     public void run() {
 
-        final String batchJob = "Export PlayCount";
+        final String batchJob = "Make Top20";
 
         String base = WinUtils.getOneDrivePath();
         log.info("OneDrive Path: " + base);
-        base += "\\Muziek\\Export\\";
-        //System.out.println(MezzmoDAOQueries.LIST_ALBUMS_TRACKS);
-        //Path p1 = Paths.get("c:/my data/mezzmo.db");
-        //Path p2 = Paths.get("c:/my backups/test.zip");
+        System.out.println(IPodDAOImpl.RESET_PLAYCOUNT);
+        System.out.println(IPodDAOImpl.LIST_PLAYCOUNT);
 
-        SQLBuilder b = MezzmoDAOQueries.LIST_CUSTOM2;
-        System.out.println(
-        b
-                .groupCondition()
-                    .add(TablesEnum.MGOFile.alias(), MGOFileColumns.RANKING, Comparator.GREATEREQUALS, 0, ConditionType.AND)
-                    .add(TablesEnum.MGOFile.alias(), MGOFileColumns.PLAYCOUNT, Comparator.LESS, 2, ConditionType.AND)
-                    .add(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUM, Comparator.LIKE, null, ConditionType.AND)
-                    .add(TablesEnum.MGOAlbumArtist.alias(), MGOAlbumArtistColumns.ALBUMARTIST, Comparator.LIKE, null, ConditionType.AND)
-                    .close()
-                .groupCondition()
-                    .add(TablesEnum.MGOFile.alias(), MGOFileColumns.RANKING, Comparator.GREATEREQUALS, 0, ConditionType.AND)
-                    .add(TablesEnum.MGOFile.alias(), MGOFileColumns.PLAYCOUNT, Comparator.LESS, 2, ConditionType.AND)
-                    .add(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUM, Comparator.LIKE, null, ConditionType.AND)
-                    .add(TablesEnum.MGOAlbumArtist.alias(), MGOAlbumArtistColumns.ALBUMARTIST, Comparator.LIKE, null, ConditionType.AND)
-                    .close()
-                .render()
-        );
-
-
-
-
-
-        /*
         try {
             makeTop20();
         } catch (IOException e) {
             LogUtils.logError(log, e);
-        }*/
+        }
 
 
     }
@@ -153,13 +130,13 @@ public class MakeTop20 extends BatchJobV2{
             log.info("iPodBase: " + iPodBase.toString());
             log.info("MezzmoBase: " + mezzmoBase.toString());
             String file = pathAbsolute.toString().replace(iPodBase.toString(), mezzmoBase.toString());
-            System.out.println("Replace: " + file);
+            log.info("Relativized Path: " + file);
             MGOFileTO fileTO = getMezzmoService().findByFile(file);
             if (fileTO != null && fileTO.getId() > 0){
-                log.info("FOUND: " + fileTO.getId());
+                log.info("FOUND FileID: " + fileTO.getId());
             }
             else {
-                log.info("NOT FOUND: " + file);
+                log.info("NOT FOUND FileID: " + file);
             }
 
             Path pathRelative = pathBase.relativize(pathAbsolute);

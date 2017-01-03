@@ -61,9 +61,6 @@ public class MezzmoPlaylistDAOImpl extends MezzmoDB {
             .addCondition(PlaylistColumns.ID, Comparator.EQUALS, null)
             .render();
 
-    private static final String DELETE_PLAYLIST_FILE2 = "DELETE FROM " + TablesEnum.MGOPlaylist_To_File +
-            " WHERE PlaylistID = ?";
-
     private static final String DELETE_PLAYLIST_FILE = SQLBuilder.getInstance()
             .delete()
             .addTable(TablesEnum.MGOPlaylist_To_File)

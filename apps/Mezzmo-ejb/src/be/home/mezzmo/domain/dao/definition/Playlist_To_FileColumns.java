@@ -8,7 +8,8 @@ import be.home.common.database.FieldType;
  */
 public enum Playlist_To_FileColumns implements DatabaseColumn {
     PLAYLISTID("PlaylistID", FieldType.NORMAL),
-    FILEID ("FileID", FieldType.NORMAL);
+    FILEID ("FileID", FieldType.NORMAL),
+    ROWID ("rowid", FieldType.TRANSIENT);
 
     public String columnName;
     public FieldType fieldType;

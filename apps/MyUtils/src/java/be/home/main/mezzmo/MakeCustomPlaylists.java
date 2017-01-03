@@ -81,10 +81,6 @@ public class MakeCustomPlaylists extends BatchJobV2{
 
     }
 
-    private List<String> validateAlbums(List <Playlist.Album> albums){
-        return null;
-    }
-
     private void processPlayList(Playlist playlist) throws IOException {
 
         MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSONWithCode(Constants.JSON.MP3SETTINGS, MP3Settings.class);

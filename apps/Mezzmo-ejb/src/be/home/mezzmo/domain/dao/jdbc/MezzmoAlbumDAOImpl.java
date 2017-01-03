@@ -1,7 +1,12 @@
 package be.home.mezzmo.domain.dao.jdbc;
 
 import be.home.common.dao.jdbc.MezzmoDB;
+import be.home.common.database.sqlbuilder.Comparator;
+import be.home.common.database.sqlbuilder.SQLBuilder;
+import be.home.common.database.sqlbuilder.SortOrder;
 import be.home.common.exceptions.MultipleOccurencesException;
+import be.home.common.model.TransferObject;
+import be.home.mezzmo.domain.dao.definition.*;
 import be.home.mezzmo.domain.model.MGOAlbumArtistTO;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.MGOFileAlbumTO;
@@ -16,10 +21,10 @@ import java.util.List;
 /**
  * Created by ghyssee on 14/07/2016.
  */
-public class MezzmoAlbumDAOImpl extends MezzmoDB {
+public class MezzmoAlbumDAOImpl extends MezzmoRowMappers {
 
 
-    private static final String FIND_ALBUM = "SELECT DISTINCT ALBUM.ID AS ID, " +
+    private static final String FIND_ALBUM_OLD = "SELECT DISTINCT ALBUM.ID AS ID, " +
                                                              "ALBUM.Data AS NAME, " +
                                                              "MGOAlbumArtist.data AS ALBUMARTIST " +
                                              "FROM MGOFileAlbum AS ALBUM " +
@@ -35,15 +40,22 @@ public class MezzmoAlbumDAOImpl extends MezzmoDB {
                                              "AND ALBUM.Data like ? " +
                                              "AND MGOAlbumArtist.Data like ?";
 
-
     public List<MGOFileAlbumCompositeTO> findAlbum(String album, String albumArtist){
+        List<MGOFileAlbumCompositeTO> list = null;
+        Object[] params = {album, albumArtist == null ? "%"  : albumArtist};
+        list = getInstance().getJDBCTemplate().query(FIND_ALBUM, new AlbumArtistRowMapper(), params);
+        return list;
+    }
+
+
+    public List<MGOFileAlbumCompositeTO> findAlbum2 (String album, String albumArtist){
         PreparedStatement stmt = null;
         List<MGOFileAlbumCompositeTO> list = new ArrayList <MGOFileAlbumCompositeTO> ();
         boolean error = false;
         try {
             Connection c = getInstance().getConnection();
 
-            stmt = c.prepareStatement(FIND_ALBUM);
+            stmt = c.prepareStatement(FIND_ALBUM_OLD);
             stmt.setString(1, album);
             stmt.setString(2, albumArtist == null ? "%"  : albumArtist);
             ResultSet rs = stmt.executeQuery();

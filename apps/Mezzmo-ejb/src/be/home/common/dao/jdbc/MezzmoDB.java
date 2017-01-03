@@ -12,6 +12,7 @@ public class MezzmoDB extends SQLiteJDBC {
 
     public static Map instances = new HashMap();
     private static final String database = Databases.MEZZMO.name();
+    public static final String MP3_EXT = "mp3";
 
     protected MezzmoDB(){
     }

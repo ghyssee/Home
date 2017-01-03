@@ -29,6 +29,10 @@ public class SQLBuilder implements Cloneable, Serializable {
 
     private boolean firstWhere = true;
 
+    public List<Relation> getRelations () {
+        return this.relations;
+    }
+
 
     public SQLBuilder addTable(DatabaseTables table){
         this.mainTable = table;
@@ -161,9 +165,9 @@ public class SQLBuilder implements Cloneable, Serializable {
         return addColumn(alias, column, column.name());
     }
 
-    public SQLBuilder updateColumn (DatabaseColumn column, Type type, String value) {
+    public SQLBuilder updateColumn (DatabaseColumn column, Type type, Object object) {
 
-        updateColumns.add(new UpdateColumn(column, value, type));
+        updateColumns.add(new UpdateColumn(column, SQLBuilderUtils.getValue(object), type));
         return this;
     }
 
@@ -210,6 +214,11 @@ public class SQLBuilder implements Cloneable, Serializable {
 
     public SQLBuilder addCondition (String alias, DatabaseColumn dbColumn, Comparator comparator, String alias2, DatabaseColumn dbColumn2){
         conditions.add(new Condition(alias + "." + dbColumn.getColumnName(), comparator, alias2 + "." + dbColumn2.getColumnName()));
+        return this;
+    }
+
+    public SQLBuilder addRelation( SQLBuilder sqlBuilder){
+        this.relations.addAll(sqlBuilder.relations);
         return this;
     }
 
@@ -398,7 +407,6 @@ public class SQLBuilder implements Cloneable, Serializable {
             String sep = "";
             switch (column.type){
                 case VALUE :
-                    sep = "'";
                     break;
                 case PARAMETER :
                     column.value = "?";
