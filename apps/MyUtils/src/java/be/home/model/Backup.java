@@ -12,6 +12,7 @@ public class Backup {
 
     public class Scheme {
         public String id;
+        public String backupFile;
         public List<Item> items = new ArrayList<>();
 
         public class Item {

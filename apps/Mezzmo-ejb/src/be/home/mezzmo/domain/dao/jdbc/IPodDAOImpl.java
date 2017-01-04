@@ -62,8 +62,8 @@ public class IPodDAOImpl extends IPodDB {
 
     public List<MGOFileAlbumCompositeTO> listPlayCount()
     {
-        List<MGOFileAlbumCompositeTO> customers  = getInstance().getJDBCTemplate().query(LIST_PLAYCOUNT, new FileAlbumRowMapper());
-        return customers;
+        List<MGOFileAlbumCompositeTO> list  = getInstance().getJDBCTemplate().query(LIST_PLAYCOUNT, new FileAlbumRowMapper());
+        return list;
     }
 
     public int updatePlayCount(Long pid, int playCount)  {

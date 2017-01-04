@@ -19,6 +19,8 @@ import javafx.application.Application;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.tools.generic.EscapeTool;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.io.*;
@@ -123,6 +125,7 @@ public class MP3TagChecker extends BatchJobV2{
         File file = new File(Setup.getInstance().getFullPath(Constants.FILE.ALBUMS_TO_CHECK));
         try {
             List<String> lines = FileUtils.getContents(file, StandardCharsets.UTF_8);
+            int nrAlbumsToCheck = 0;
             for (String line : lines){
                 if (StringUtils.isBlank(line)){
                     break;
@@ -133,9 +136,21 @@ public class MP3TagChecker extends BatchJobV2{
                     log.warn("No Album(s) found!!!");
                 }
                 else {
+                    int nr = 0;
+                    String base = Setup.getFullPath(Constants.Path.WEB_MUSIC) + File.separator;
+                    String template = "MP3TagChecker.vm";
+                    String outputFile = base + "MP3TagChecker.html";
                     for (MGOFileAlbumCompositeTO comp : listAlbums) {
                         log.info("AlbumID: " + comp.getFileAlbumTO().getId());
                         log.info("Album: " + comp.getFileAlbumTO().getName());
+                        try {
+                            displayStatus(comp, outputFile, template, nrAlbumsToCheck, lines.size(),
+                                    nr++, listAlbums.size());
+                        }
+                        catch (IOException e) {
+                            // don't break batch because there was a problem writing status page
+                            log.warn("Problem Making Status Page");
+                        }
                         processAlbum(comp);
                     }
                 }
@@ -151,6 +166,21 @@ public class MP3TagChecker extends BatchJobV2{
         }
     }
 
+    public void displayStatus(MGOFileAlbumCompositeTO comp, String outputFile, String template,
+                              int nrAlbumsToCheck, int totalAlbumsToCheck,
+                              int nr, int total) throws IOException {
+        VelocityUtils vu = new VelocityUtils();
+
+        VelocityContext context = new VelocityContext();
+        context.put("album", comp.getFileAlbumTO().getName());
+        context.put("progress", nrAlbumsToCheck);
+        context.put("total", totalAlbumsToCheck);
+        context.put("subProgress", nr);
+        context.put("subTotal", total);
+        context.put("esc", new EscapeTool());
+        context.put("refresh", 5);
+        vu.makeFile(template, outputFile, context);
+    }
     private void processAlbum(MGOFileAlbumCompositeTO comp){
         MGOFileAlbumCompositeTO search = new MGOFileAlbumCompositeTO();
         search.getFileAlbumTO().setId(comp.getFileAlbumTO().getId());

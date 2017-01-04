@@ -28,7 +28,7 @@ public class BackupPlanner extends BatchJobV2{
 
     public static void main(String args[]) {
         BackupPlanner instance = new BackupPlanner();
-        instance.start("Music");
+        instance.start("MusicDesktop");
 
     }
 
@@ -56,7 +56,8 @@ public class BackupPlanner extends BatchJobV2{
     public void startBackup(Backup.Scheme scheme) throws ZipException {
         ZipUtils zipUtils = new ZipUtils();
         String timeStamp = DateUtils.formatDate(new Date(), DateUtils.YYYYMMDDHHMMSS);
-        String zipFile = "C:/My Backups/Music." + timeStamp + ".zip";
+        //String zipFile = "C:/My Backups/Music." + timeStamp + ".zip";
+        String zipFile = scheme.backupFile.replaceAll("<TIMESTAMP>", timeStamp);
         for (Backup.Scheme.Item item : scheme.items){
             String realPath = Setup.replaceEnvironmentVariables(item.path);
             log.info("Item Path: " + realPath);
