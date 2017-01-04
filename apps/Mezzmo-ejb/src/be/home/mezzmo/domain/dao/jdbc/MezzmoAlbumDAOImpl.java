@@ -1,16 +1,8 @@
 package be.home.mezzmo.domain.dao.jdbc;
 
-import be.home.common.dao.jdbc.MezzmoDB;
-import be.home.common.database.sqlbuilder.Comparator;
-import be.home.common.database.sqlbuilder.SQLBuilder;
-import be.home.common.database.sqlbuilder.SortOrder;
-import be.home.common.exceptions.MultipleOccurencesException;
-import be.home.common.model.TransferObject;
-import be.home.mezzmo.domain.dao.definition.*;
 import be.home.mezzmo.domain.model.MGOAlbumArtistTO;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.MGOFileAlbumTO;
-import be.home.mezzmo.domain.model.MGOFileTO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

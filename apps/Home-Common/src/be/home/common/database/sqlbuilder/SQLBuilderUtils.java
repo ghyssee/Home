@@ -5,6 +5,14 @@ package be.home.common.database.sqlbuilder;
  */
 public class SQLBuilderUtils {
 
+
+    /* Object can be:
+    1. String
+    2. Integer
+    3. null, which means it is a parameter (?)
+    4. SQLBuilder combined with comparator IN
+     */
+
     public static String getValue(Object object){
         String value = "";
         if (object == null){

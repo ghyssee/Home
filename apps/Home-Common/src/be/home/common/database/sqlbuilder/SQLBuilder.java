@@ -176,13 +176,7 @@ public class SQLBuilder implements Cloneable, Serializable {
         return updateColumn(column, type, null);
     }
 
-    /* Object can be:
-    1. String
-    2. Integer
-    3. null, which means it is a parameter (?)
-    4. SQLBuilder combined with comparator IN
-     */
-    public SQLBuilder addCondition (DatabaseColumn column, Comparator comparator, Object object){
+   public SQLBuilder addCondition (DatabaseColumn column, Comparator comparator, Object object){
         conditions.add(new Condition(column.getColumnName(), comparator, SQLBuilderUtils.getValue(object)));
         return this;
     }
