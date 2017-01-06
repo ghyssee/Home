@@ -1,6 +1,6 @@
 package be.home.mezzmo.domain.util;
 
-import be.home.model.MP3Settings;
+import be.home.model.json.MP3Settings;
 
 import java.io.File;
 import java.nio.file.Path;

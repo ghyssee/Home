@@ -11,9 +11,13 @@ import be.home.common.utils.JSONUtils;
 import be.home.common.utils.WinUtils;
 import org.apache.log4j.Logger;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 
 import java.io.*;
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.*;
 import java.util.Date;
@@ -142,6 +146,61 @@ public class SQLiteJDBC
         else {
             ps.setInt(index, value.intValue());
         }
+    }
+
+
+    private void setValue(PreparedStatement pst, int index, Object object) throws SQLException {
+        if (object == null){
+            pst.setNull(index, Types.NULL);
+        }
+        else if (object instanceof String){
+            pst.setString(index, (String) object);
+        }
+        else if (object instanceof Integer){
+            pst.setInt(index, (Integer) object);
+        }
+        else if (object instanceof Long){
+            pst.setLong(index, (Long) object);
+        }
+        else if (object instanceof Float){
+            pst.setFloat(index, (Float) object);
+        }
+        else if (object instanceof BigDecimal){
+            pst.setBigDecimal(index, (BigDecimal) object);
+        }
+        else if (object instanceof Boolean){
+            pst.setBoolean(index, (Boolean) object);
+        }
+        else if (object instanceof Double){
+            pst.setDouble(index, (Double) object);
+        }
+        else if (object instanceof java.util.Date){
+            java.sql.Date tmpDate = new java.sql.Date(((Date) object).getTime());
+            pst.setDate(index, tmpDate);
+        }
+        else if (object instanceof Timestamp){
+            pst.setTimestamp(index, (Timestamp) object);
+        }
+    }
+
+    protected int insertJDBC(final Object[] params, final String sql, final String id){
+
+        final KeyHolder keyHolder = new GeneratedKeyHolder();
+        getJDBCTemplate().update(
+                new PreparedStatementCreator() {
+                    public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+                        PreparedStatement pst =
+                                con.prepareStatement(sql, new String[] {id});
+                        int index = 1;
+                        for (Object object : params) {
+                            setValue(pst, index++, object);
+                        }
+                        return pst;
+                    }
+                },
+                keyHolder);
+        return (Integer)keyHolder.getKey();
+
     }
 
     public static void initialize(String workingDir){

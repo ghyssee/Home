@@ -1,7 +1,7 @@
 package be.home.main;
 
 import be.home.common.mp3.Mp3Tags;
-import be.home.model.AlbumInfo;
+import be.home.model.json.AlbumInfo;
 import be.home.model.ConfigTO;
 import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
@@ -9,7 +9,7 @@ import be.home.common.exceptions.ApplicationException;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.JSONUtils;
 import be.home.domain.model.MP3Helper;
-import be.home.model.MP3PreprocessorConfig;
+import be.home.model.json.MP3PreprocessorConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 

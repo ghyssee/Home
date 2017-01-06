@@ -11,7 +11,7 @@ import be.home.common.utils.VelocityUtils;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.model.ConfigTO;
-import be.home.model.MP3Settings;
+import be.home.model.json.MP3Settings;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.apache.velocity.VelocityContext;

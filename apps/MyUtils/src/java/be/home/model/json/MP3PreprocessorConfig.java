@@ -1,4 +1,4 @@
-package be.home.model;
+package be.home.model.json;
 
 /**
  * Created by Gebruiker on 3/07/2016.

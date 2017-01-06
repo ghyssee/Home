@@ -1,7 +1,7 @@
 package be.home.common.mp3;
 
 import be.home.domain.model.MP3Helper;
-import be.home.model.AlbumInfo;
+import be.home.model.json.AlbumInfo;
 import org.apache.commons.lang3.StringUtils;
 
 /**

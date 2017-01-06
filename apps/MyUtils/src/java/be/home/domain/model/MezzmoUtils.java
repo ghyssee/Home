@@ -1,7 +1,7 @@
 package be.home.domain.model;
 
 import be.home.common.utils.NetUtils;
-import be.home.model.MP3Settings;
+import be.home.model.json.MP3Settings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 

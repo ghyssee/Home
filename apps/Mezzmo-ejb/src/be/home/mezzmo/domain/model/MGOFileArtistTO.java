@@ -1,5 +1,7 @@
 package be.home.mezzmo.domain.model;
 
+import java.lang.reflect.Field;
+
 /**
  * Created by ghyssee on 27/06/2016.
  */

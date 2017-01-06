@@ -19,7 +19,11 @@ public class MovieBO {
     public static String formattedMovieTitle(String title){
 
         String tmp = title.replaceAll(" 1/3", "");
-        tmp = tmp.replace('/',' ').replace('\\',' ').replace(":","").replace("?", "");
+        tmp = tmp
+                .replace('/',' ')
+                .replace('\\',' ')
+                .replace(":","")
+                .replace("?", "");
         String suffix = ", The";
         if (tmp.endsWith(suffix)) {
             tmp = "The " + tmp.replace(suffix, "");

@@ -1,6 +1,7 @@
 <html>
 <head>
     <link rel="stylesheet" type="text/css" href="../../css/stylesheet.css">
+    <link rel="stylesheet" type="text/css" href="../../css/form.css">
     <link rel="stylesheet" type="text/css" href="../../Themes/easyui/metro-blue/easyui.css">
     <link rel="stylesheet" type="text/css" href="../../Themes/easyui/icon.css">
     <script type="text/javascript" src="../../js/jquery-3.1.1.js"></script>
@@ -25,7 +26,9 @@ include_once("../setup.php");
 include_once("../config.php");
 include_once("../model/HTML.php");
 include_once("../html/config.php");
+$_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
 $htmlObj = readJSONWithCode(JSON_ALBUMERRORS);
+$mp3SettingsObj = readJSONWithCode(JSON_MP3SETTINGS);
 session_start();
 $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
 $_SESSION['form_location'] = basename($_SERVER['PHP_SELF']);
@@ -33,7 +36,7 @@ $_SESSION['form_location'] = basename($_SERVER['PHP_SELF']);
 <?php
 goMenu();
 ?>
-<h1>Colors</h1>
+<h1>Mezzmo / MP3 Check</h1>
 <div class="horizontalLine">.</div>
 <br>
 
@@ -47,6 +50,21 @@ goMenu();
 		}
 	}
 </script>
+<form action="AlbumErrorsAction.php?method=updateSettings" method="post">
+    <?php
+    $layout = new Layout(array('numCols' => 1));
+    $layout->checkBox(new Input(array('name' => "check",
+        'label' => 'Check for modifications',
+        'value' => $mp3SettingsObj->mezzmo->mp3Checker->check)));
+    $layout->button(new Input(array('name' => "mp3Check",
+        'col' => 1,
+        'value' => 'save',
+        'text' => 'Save',
+        'colspan' => 2)));
+    $layout->close();
+    ?>
+</form>
+
 <form onsubmit="return myFunction()">
     <input type="submit" value="Process Selected Rows">
 </form>

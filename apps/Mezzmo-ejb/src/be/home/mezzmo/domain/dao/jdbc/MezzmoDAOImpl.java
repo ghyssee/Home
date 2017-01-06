@@ -18,6 +18,7 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -299,7 +300,7 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
         return nr;
     }
 
-    public Integer insertArtist(final MGOFileArtistTO artist){
+    public Integer insertArtist2(final MGOFileArtistTO artist){
         Object[] params = {artist.getArtist()};
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -314,6 +315,12 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
                 },
                 keyHolder);
         return (Integer)keyHolder.getKey();
+    }
+
+    public Integer insertArtist(final MGOFileArtistTO artist){
+        Object[] params = {artist.getArtist()};
+        Integer key = insertJDBC(params, INSERT_ARTIST, "id");
+        return key;
     }
 
 }

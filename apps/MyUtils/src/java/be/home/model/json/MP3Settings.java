@@ -1,4 +1,4 @@
-package be.home.model;
+package be.home.model.json;
 
 import be.home.common.configuration.Setup;
 
@@ -69,8 +69,11 @@ public class MP3Settings {
         public Export export;
         public List<MezzmoBase> baseList;
         public MezzmoActiveBase activeBase;
+        public Mp3Checker mp3Checker;
+    }
 
-
+    public class Mp3Checker {
+        public boolean check;
     }
 
     public class MezzmoActiveBase {

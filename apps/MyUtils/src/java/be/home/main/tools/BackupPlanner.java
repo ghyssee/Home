@@ -4,7 +4,7 @@ import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.*;
-import be.home.model.Backup;
+import be.home.model.json.Backup;
 import net.lingala.zip4j.exception.ZipException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;

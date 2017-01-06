@@ -1,6 +1,5 @@
 package be.home.main.mezzmo;
 
-import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
 import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.logging.Log4GE;
@@ -12,8 +11,8 @@ import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.mezzmo.domain.util.Utils;
 import be.home.model.ConfigTO;
-import be.home.model.MP3Settings;
-import be.home.model.Playlist;
+import be.home.model.json.MP3Settings;
+import be.home.model.json.Playlist;
 import org.apache.log4j.Logger;
 
 import java.io.File;

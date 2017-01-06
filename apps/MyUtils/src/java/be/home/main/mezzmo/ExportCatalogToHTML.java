@@ -12,7 +12,7 @@ import be.home.common.utils.VelocityUtils;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.model.ConfigTO;
-import be.home.model.HTMLSettings;
+import be.home.model.json.HTMLSettings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.velocity.VelocityContext;

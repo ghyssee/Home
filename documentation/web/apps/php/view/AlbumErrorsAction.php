@@ -9,6 +9,8 @@ $file = getFullPath(JSON_ALBUMERRORS);
 $method = htmlspecialchars($_REQUEST['method']);
 
 switch ($method) {
+	case "updateSettings":
+		updateSettings();
 	case "list":
 		getList();
 		break;
@@ -25,6 +27,14 @@ switch ($method) {
         $sel = json_decode($_POST['selectedIds']);
         selectRows($sel);
         break;
+}
+
+function updateSettings(){
+    session_start();
+    $mp3SettingsObj = readJSONWithCode(JSON_MP3SETTINGS);
+	assignCheckbox($mp3SettingsObj->mezzmo->mp3Checker->check, "check");
+	writeJSONWithCode($mp3SettingsObj, JSON_MP3SETTINGS);
+    header("Location: " . $_SESSION["previous_location"]);
 }
 
 function selectRows($selObj){

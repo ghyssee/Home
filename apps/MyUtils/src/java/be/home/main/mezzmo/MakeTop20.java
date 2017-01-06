@@ -1,27 +1,14 @@
 package be.home.main.mezzmo;
 
-import be.home.common.archiving.Archiver;
-import be.home.common.archiving.ZipArchiver;
 import be.home.common.constants.Constants;
 import be.home.common.dao.jdbc.SQLiteJDBC;
-import be.home.common.database.sqlbuilder.*;
-import be.home.common.database.sqlbuilder.Comparator;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.JSONUtils;
-import be.home.common.utils.LogUtils;
 import be.home.common.utils.VelocityUtils;
 import be.home.common.utils.WinUtils;
 import be.home.domain.model.MezzmoUtils;
-import be.home.main.tools.ZipFiles;
-import be.home.mezzmo.domain.bo.MezzmoBO;
-import be.home.mezzmo.domain.dao.definition.MGOAlbumArtistColumns;
-import be.home.mezzmo.domain.dao.definition.MGOFileAlbumColumns;
-import be.home.mezzmo.domain.dao.definition.MGOFileColumns;
-import be.home.mezzmo.domain.dao.definition.TablesEnum;
 import be.home.mezzmo.domain.dao.jdbc.IPodDAOImpl;
-import be.home.mezzmo.domain.dao.jdbc.MediaMonkeyDAOImpl;
-import be.home.mezzmo.domain.dao.jdbc.MezzmoDAOQueries;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.MGOFileArtistTO;
 import be.home.mezzmo.domain.model.MGOFileTO;
@@ -29,20 +16,16 @@ import be.home.mezzmo.domain.service.MediaMonkeyServiceImpl;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.model.ConfigTO;
 import be.home.common.configuration.Setup;
-import be.home.model.MP3Settings;
-import net.lingala.zip4j.core.ZipFile;
-import net.lingala.zip4j.model.ZipParameters;
-import net.lingala.zip4j.util.Zip4jConstants;
+import be.home.model.json.MP3Settings;
 import org.apache.log4j.Logger;
 import org.apache.velocity.VelocityContext;
 
 
 import java.io.*;
+import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -83,13 +66,29 @@ public class MakeTop20 extends BatchJobV2{
         System.out.println(IPodDAOImpl.RESET_PLAYCOUNT);
         System.out.println(IPodDAOImpl.LIST_PLAYCOUNT);
 
+        Field field = null;
+        try {
+            field =MGOFileArtistTO.class.getDeclaredField("ID");
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+        MGOFileArtistTO artist = new MGOFileArtistTO();
+
+/*
+        MGOFileArtistTO artist = new MGOFileArtistTO();
+        artist.setArtist("TestEricArtist4");
+        MezzmoBO bo = new MezzmoBO();
+        Integer key = bo.insertArtist(artist);
+        System.out.println("key = " + key);
+
+
         try {
             makeTop20();
         } catch (IOException e) {
             LogUtils.logError(log, e);
         }
 
-
+*/
     }
 
     public void makeTop20() throws IOException {

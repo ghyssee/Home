@@ -1,4 +1,4 @@
-package be.home.model;
+package be.home.model.json;
 
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 

@@ -7,17 +7,14 @@ import be.home.common.constants.Constants;
 import be.home.common.utils.JSONUtils;
 import be.home.model.ConfigTO;
 import be.home.model.ParamTO;
-import be.home.model.UltratopConfig;
+import be.home.model.json.UltratopConfig;
 import org.apache.commons.lang3.StringUtils;
 import java.net.*;
 import java.security.CodeSource;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
-import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 
 public abstract class BatchJobV2 {
 

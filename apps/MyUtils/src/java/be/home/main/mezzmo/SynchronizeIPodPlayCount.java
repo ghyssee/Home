@@ -15,12 +15,11 @@ import be.home.mezzmo.domain.service.IPodServiceImpl;
 import be.home.mezzmo.domain.service.MediaMonkeyServiceImpl;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.model.ConfigTO;
-import be.home.model.MP3Settings;
+import be.home.model.json.MP3Settings;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.log4j.Logger;
 
 import java.io.*;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 

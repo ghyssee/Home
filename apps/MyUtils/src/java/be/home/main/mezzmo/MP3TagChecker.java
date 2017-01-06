@@ -9,14 +9,12 @@ import be.home.common.main.BatchJobV2;
 import be.home.common.model.TransferObject;
 import be.home.common.mp3.MP3Utils;
 import be.home.common.utils.*;
-import be.home.domain.model.MP3Helper;
 import be.home.domain.model.MP3TagUtils;
 import be.home.mezzmo.domain.model.*;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.model.ConfigTO;
+import be.home.model.json.MP3Settings;
 import com.mpatric.mp3agic.*;
-import javafx.application.Application;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.velocity.VelocityContext;
@@ -32,7 +30,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 public class MP3TagChecker extends BatchJobV2{
 
@@ -61,9 +58,12 @@ public class MP3TagChecker extends BatchJobV2{
     @Override
     public void run() {
         final String batchJob = "MP3TagChecker";
+        MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSONWithCode(Constants.JSON.MP3SETTINGS, MP3Settings.class);
 
         //System.out.println(stripFilename("Can't Feel"));
-        export();
+        if (mp3Settings.mezzmo.mp3Checker.check) {
+            export();
+        }
         int nr = processErrors();
         log.info("Nr Of Errors processed: " + nr);
         /*
@@ -127,6 +127,7 @@ public class MP3TagChecker extends BatchJobV2{
             List<String> lines = FileUtils.getContents(file, StandardCharsets.UTF_8);
             int nrAlbumsToCheck = 0;
             for (String line : lines){
+                nrAlbumsToCheck++;
                 if (StringUtils.isBlank(line)){
                     break;
                 }
@@ -136,7 +137,7 @@ public class MP3TagChecker extends BatchJobV2{
                     log.warn("No Album(s) found!!!");
                 }
                 else {
-                    int nr = 0;
+                    int nr = 1;
                     String base = Setup.getFullPath(Constants.Path.WEB_MUSIC) + File.separator;
                     String template = "MP3TagChecker.vm";
                     String outputFile = base + "MP3TagChecker.html";
@@ -178,7 +179,7 @@ public class MP3TagChecker extends BatchJobV2{
         context.put("subProgress", nr);
         context.put("subTotal", total);
         context.put("esc", new EscapeTool());
-        context.put("refresh", 5);
+        context.put("refresh", 2);
         vu.makeFile(template, outputFile, context);
     }
     private void processAlbum(MGOFileAlbumCompositeTO comp){

@@ -2,7 +2,7 @@ package be.home.main;
 
 import be.home.common.mp3.MP3Utils;
 import be.home.mezzmo.domain.model.Compilation;
-import be.home.model.AlbumInfo;
+import be.home.model.json.AlbumInfo;
 import be.home.model.ConfigTO;
 import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
@@ -12,7 +12,7 @@ import be.home.common.main.BatchJobV2;
 
 import be.home.common.utils.JSONUtils;
 import be.home.domain.model.MP3Helper;
-import be.home.model.MP3Settings;
+import be.home.model.json.MP3Settings;
 import com.mpatric.mp3agic.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
