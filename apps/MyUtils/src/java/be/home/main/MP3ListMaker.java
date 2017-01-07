@@ -21,8 +21,8 @@ public class MP3ListMaker extends BatchJobV2 {
 
     public static Log4GE log4GE;
     public static ConfigTO.Config config;
-    private static String LIST_TITLE = "List 2012 V2.txt";
-    private static String FILTER = "Ultratop 50 2012";
+    private static String LIST_TITLE = "List 2017 V2.txt";
+    private static String FILTER = "Ultratop 50 2017";
     private static final Logger log = getMainLog(MP3ListMaker.class);
 
     public static void main(String args[])  {
@@ -49,7 +49,8 @@ public class MP3ListMaker extends BatchJobV2 {
         log4GE.clear();
         log4GE.start("Make MP3 List File");
 
-        File destinationFile = new File(Setup.getInstance().getFullPath(Constants.Path.MUSIC_LISTS) + LIST_TITLE);
+        File destinationFile = new File(Setup.getInstance().getFullPath(Constants.Path.MUSIC_LISTS) +
+                File.separator + LIST_TITLE);
         PrintWriter writer = null;
         try {
             writer= new PrintWriter(new OutputStreamWriter(new FileOutputStream(destinationFile),
