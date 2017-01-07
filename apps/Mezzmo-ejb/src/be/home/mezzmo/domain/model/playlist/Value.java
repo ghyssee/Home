@@ -1,4 +1,4 @@
-package be.home.mezzmo.domain.model;
+package be.home.mezzmo.domain.model.playlist;
 
 /**
  * Created by Gebruiker on 21/07/2016.

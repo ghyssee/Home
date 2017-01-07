@@ -2,6 +2,8 @@ package be.home.mezzmo.domain.bo;
 
 import be.home.mezzmo.domain.dao.jdbc.MezzmoPlaylistDAOImpl;
 import be.home.mezzmo.domain.model.*;
+import be.home.mezzmo.domain.model.json.PlaylistSetup;
+import be.home.mezzmo.domain.model.playlist.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;

@@ -4,7 +4,6 @@ import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
 import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.enums.MP3Tag;
-import be.home.common.exceptions.ApplicationException;
 import be.home.common.main.BatchJobV2;
 import be.home.common.model.TransferObject;
 import be.home.common.mp3.MP3Utils;
@@ -13,6 +12,7 @@ import be.home.domain.model.MP3TagUtils;
 import be.home.mezzmo.domain.model.*;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.model.ConfigTO;
+import be.home.model.json.AlbumError;
 import be.home.model.json.MP3Settings;
 import com.mpatric.mp3agic.*;
 import org.apache.commons.lang3.StringUtils;
@@ -64,8 +64,18 @@ public class MP3TagChecker extends BatchJobV2{
         if (mp3Settings.mezzmo.mp3Checker.check) {
             export();
         }
-        int nr = processErrors();
-        log.info("Nr Of Errors processed: " + nr);
+        try {
+            int nr = processErrors();
+            log.info("Nr Of Errors processed: " + nr);
+        }
+        catch (Exception ex){
+            LogUtils.logError(log, ex);
+        }
+        try {
+            JSONUtils.writeJsonFileWithCode(this.albumErrors, Constants.JSON.ALBUMERRORS);
+        } catch (IOException e) {
+            LogUtils.logError(log, e);
+        }
         /*
         String file = "C:\\My Data\\tmp\\Java\\MP3Processor\\_test\\MNM Big Hits Best Of 2015\\05 Netsky feat. Digital Farm Animals - Work It Out.mp3";
         file = "C:\\My Data\\tmp\\Java\\MP3Processor\\_test\\MNM Big Hits Best Of 2015\\105 Christine & The Queens - Christine.mp3";
@@ -119,6 +129,9 @@ public class MP3TagChecker extends BatchJobV2{
     public void export(){
 
         TransferObject to = new TransferObject();
+        if (albumErrors == null){
+            albumErrors = new AlbumError();
+        }
         albumErrors.items = new ArrayList<>();
         //base = ""
         MGOFileAlbumTO albumTO = new MGOFileAlbumTO();
@@ -274,7 +287,6 @@ public class MP3TagChecker extends BatchJobV2{
         }
         albumLogger.close();
         this.albumErrors.items = filteredAlbumErrors;
-        JSONUtils.writeJsonFileWithCode(this.albumErrors, Constants.JSON.ALBUMERRORS);
         }
 
     private void renameFile(AlbumError.Item item){

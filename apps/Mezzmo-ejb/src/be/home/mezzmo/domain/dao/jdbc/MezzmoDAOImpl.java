@@ -319,7 +319,7 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
 
     public Integer insertArtist(final MGOFileArtistTO artist){
         Object[] params = {artist.getArtist()};
-        Integer key = insertJDBC(params, INSERT_ARTIST, "id");
+        Integer key = insertJDBC(getInstance().getJDBCTemplate(), params, INSERT_ARTIST, "id");
         return key;
     }
 

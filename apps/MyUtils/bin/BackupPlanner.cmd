@@ -4,4 +4,4 @@ set SCRIPT_PATH=%~p0
 %SCRIPT_DRIVE%
 cd %SCRIPT_PATH%
 cd..
-java -cp MyUtils-1.0.jar be.home.main.tools.BackupPlanner
+java -cp MyUtils-1.0.jar be.home.main.tools.BackupPlanner %1

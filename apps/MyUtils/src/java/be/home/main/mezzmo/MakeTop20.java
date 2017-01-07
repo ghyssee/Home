@@ -7,6 +7,7 @@ import be.home.common.main.BatchJobV2;
 import be.home.common.utils.JSONUtils;
 import be.home.common.utils.VelocityUtils;
 import be.home.common.utils.WinUtils;
+import be.home.domain.model.MP3Helper;
 import be.home.domain.model.MezzmoUtils;
 import be.home.mezzmo.domain.dao.jdbc.IPodDAOImpl;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
@@ -73,6 +74,9 @@ public class MakeTop20 extends BatchJobV2{
             e.printStackTrace();
         }
         MGOFileArtistTO artist = new MGOFileArtistTO();
+        MP3Helper helper = MP3Helper.getInstance();
+        System.out.println(helper.prettifyArtist("Sinead O'Connor"));
+
 
 /*
         MGOFileArtistTO artist = new MGOFileArtistTO();

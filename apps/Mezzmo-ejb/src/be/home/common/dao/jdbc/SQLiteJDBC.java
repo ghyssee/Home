@@ -183,10 +183,10 @@ public class SQLiteJDBC
         }
     }
 
-    protected int insertJDBC(final Object[] params, final String sql, final String id){
+    protected int insertJDBC(JdbcTemplate template, final Object[] params, final String sql, final String id){
 
         final KeyHolder keyHolder = new GeneratedKeyHolder();
-        getJDBCTemplate().update(
+        template.update(
                 new PreparedStatementCreator() {
                     public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
                         PreparedStatement pst =

@@ -9,6 +9,7 @@ import java.util.List;
 public class Backup {
 
     public List<Scheme> schemes = new ArrayList<>();
+    public List<DefaultScheme> defaultSchemes;
 
     public class Scheme {
         public String id;
@@ -22,5 +23,10 @@ public class Backup {
             public String zipPath;
         }
 
+    }
+
+    public class DefaultScheme {
+        public String host;
+        public String id;
     }
 }

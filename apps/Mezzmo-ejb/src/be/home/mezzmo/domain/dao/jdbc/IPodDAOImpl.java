@@ -79,6 +79,7 @@ public class IPodDAOImpl extends IPodDB {
             fileAlbumComposite.setFileTO(mapFileTO(rs, rowNum));
             fileAlbumComposite.setAlbumArtistTO(mapAlbumAritstTO(rs, rowNum));
             fileAlbumComposite.setFileAlbumTO(mapFileAlbumTO(rs, rowNum));
+            fileAlbumComposite.setFileArtistTO(mapArtistTO(rs, rowNum));
             return fileAlbumComposite;
         }
 
@@ -121,6 +122,13 @@ public class IPodDAOImpl extends IPodDB {
         MGOAlbumArtistTO albumArtistTO = new MGOAlbumArtistTO();
         albumArtistTO.setName(getString(rs, ItemColumns.ALBUM_ARTIST));
         return albumArtistTO;
+    }
+
+
+    private static MGOFileArtistTO mapArtistTO (ResultSet rs, int rowNum)throws SQLException{
+        MGOFileArtistTO fileArtistTO = new MGOFileArtistTO();
+        fileArtistTO.setArtist(getString(rs, ItemColumns.ARTIST));
+        return fileArtistTO;
     }
 
     private static MGOFileAlbumTO mapFileAlbumTO(ResultSet rs, int rowNum)throws SQLException{

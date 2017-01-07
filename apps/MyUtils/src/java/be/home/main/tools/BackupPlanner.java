@@ -27,8 +27,9 @@ public class BackupPlanner extends BatchJobV2{
     private static final Logger log = getMainLog(BackupPlanner.class);
 
     public static void main(String args[]) {
+        Backup backup = (Backup) JSONUtils.openJSONWithCode(Constants.JSON.BACKUP, Backup.class );
         BackupPlanner instance = new BackupPlanner();
-        instance.start("MusicDesktop");
+        instance.start(backup, args.length > 0 ? args[0] : null);
 
     }
 
@@ -37,20 +38,45 @@ public class BackupPlanner extends BatchJobV2{
 
     }
 
-    public void start(String schemeId){
-        Backup backup = (Backup) JSONUtils.openJSONWithCode(Constants.JSON.BACKUP, Backup.class );
-        for (Backup.Scheme scheme : backup.schemes){
-            if (scheme.id.equals(schemeId)){
-                log.info("Scheme found: " + schemeId);
-                try {
-                    startBackup(scheme);
-                } catch (ZipException e) {
-                    LogUtils.logError(log, e);
-                }
+    public String getDefaultSchemeId(Backup backup){
+        String host = NetUtils.getHostName().toUpperCase();
+        String defaultId = null;
+        for (Backup.DefaultScheme defaultScheme : backup.defaultSchemes){
+            if (host.equals(defaultScheme.host.toUpperCase())){
+                defaultId = defaultScheme.id;
                 break;
             }
         }
+        return defaultId;
+    }
 
+    public void start(Backup backup, String schemeId) {
+        String schemeLog = "";
+        if (schemeId == null) {
+            schemeId = getDefaultSchemeId(backup);
+            schemeLog = "Scheme Origin: Default Host";
+        }
+        else {
+            schemeLog = "Scheme Origin: Parameter";
+        }
+        boolean found = false;
+        if (schemeId != null) {
+            for (Backup.Scheme scheme : backup.schemes) {
+                if (scheme.id.equals(schemeId)) {
+                    log.info("Scheme found: " + schemeId + " / " + schemeLog);
+                    try {
+                        found = true;
+                        startBackup(scheme);
+                    } catch (ZipException e) {
+                        LogUtils.logError(log, e);
+                    }
+                    break;
+                }
+            }
+        }
+        if (!found){
+            log.warn("No Backup Scheme found for id: " + schemeId);
+        }
     }
 
     public void startBackup(Backup.Scheme scheme) throws ZipException {

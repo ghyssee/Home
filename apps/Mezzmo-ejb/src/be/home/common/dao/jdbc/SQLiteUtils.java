@@ -17,6 +17,14 @@ public class SQLiteUtils {
         return null;
     }
 
+    public static Long convertDateToLong(Date date){
+        if (date != null) {
+            Long value = date.getTime()/1000;
+            return value;
+        }
+        return null;
+    }
+
     public static java.util.Date convertiPodDateToDate(Long f){
         if (f != null && f.longValue() != 0) {
             Date date = new Date(f*1000);

@@ -8,7 +8,7 @@ import be.home.common.database.sqlbuilder.SQLBuilder;
 import be.home.common.utils.LogUtils;
 import be.home.mezzmo.domain.dao.definition.MGOFileColumns;
 import be.home.mezzmo.domain.dao.definition.TablesEnum;
-import be.home.mezzmo.domain.model.AlbumError;
+import be.home.model.json.AlbumError;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.InvalidDataException;
@@ -32,10 +32,10 @@ public class MP3TagUtils {
 
     public AlbumError albumErrors;
     private static final Logger log = Logger.getLogger(MP3TagUtils.class);
-    public static final String SUBST_A1 = "H:\\Shared\\Mijn Muziek\\Eric\\iPod\\";
-    public static final String SUBST_B1 = "T:\\My Music\\iPod\\";
-    public static final String SUBST_A = "H:\\Shared\\Mijn Muziek\\";
-    public static final String SUBST_B = "O:\\Shared\\Mijn Muziek\\";
+    public static final String SUBST_A = "H:\\Shared\\Mijn Muziek\\Eric\\iPod\\";
+    public static final String SUBST_B = "T:\\My Music\\iPod\\";
+    public static final String SUBST_A1 = "H:\\Shared\\Mijn Muziek\\";
+    public static final String SUBST_B1 = "O:\\Shared\\Mijn Muziek\\";
     //public static final String SUBST_B = "C:\\My Data\\tmp\\Java\\MP3Processor\\Album\\";
     public static final String HTML_BREAK = "<br>";
     private static long idCounter = 0;

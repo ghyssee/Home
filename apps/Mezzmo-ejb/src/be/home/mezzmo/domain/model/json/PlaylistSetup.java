@@ -1,4 +1,4 @@
-package be.home.mezzmo.domain.model;
+package be.home.mezzmo.domain.model.json;
 
 import java.util.List;
 

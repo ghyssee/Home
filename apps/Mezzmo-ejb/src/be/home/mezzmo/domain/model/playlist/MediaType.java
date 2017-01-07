@@ -1,4 +1,4 @@
-package be.home.mezzmo.domain.model;
+package be.home.mezzmo.domain.model.playlist;
 
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -7,12 +7,13 @@ import java.util.Map;
 /**
  * Created by Gebruiker on 20/07/2016.
  */
-public enum ColumnType {
+public enum MediaType {
 
-    String(1), Number(2);
+
+    MP3(1), Video(4), Photo(2), Alles(7);
 
     private final int value;
-    ColumnType(int value) {
+    MediaType(int value) {
         this.value = value;
     }
     private static final Map lookup = new HashMap();
@@ -23,12 +24,14 @@ public enum ColumnType {
 
     // Populate the lookup table on loading time
     static {
-        for (ColumnType s : EnumSet.allOf(ColumnType.class))
+        for (MediaType s : EnumSet.allOf(MediaType.class))
             lookup.put(s.name(), s);
     }
 
     // This method can be used for reverse lookup purpose
-    public static ColumnType get(String tmp) {
-        return (ColumnType) lookup.get(tmp);
+    public static MediaType get(String tmp) {
+        return (MediaType) lookup.get(tmp);
     }
+
+
 }

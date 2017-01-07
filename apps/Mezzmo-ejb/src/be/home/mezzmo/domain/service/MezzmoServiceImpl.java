@@ -2,16 +2,15 @@ package be.home.mezzmo.domain.service;
 
 import be.home.common.enums.MP3Tag;
 import be.home.common.model.TransferObject;
-import be.home.common.utils.LogUtils;
 import be.home.mezzmo.domain.bo.MezzmoBO;
 import be.home.mezzmo.domain.bo.PlaylistBO;
 import be.home.mezzmo.domain.dao.definition.TablesEnum;
 import be.home.mezzmo.domain.model.*;
+import be.home.mezzmo.domain.model.json.PlaylistSetup;
 import org.apache.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 

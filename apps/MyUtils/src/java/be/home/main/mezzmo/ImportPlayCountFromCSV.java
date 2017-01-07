@@ -250,7 +250,7 @@ public class ImportPlayCountFromCSV extends BatchJobV2{
                     dataRecord.add(fileAlbumCompositeTO.getFileTO().getFileTitle());
                     dataRecord.add(fileAlbumCompositeTO.getFileTO().getPlayCount());
                     dataRecord.add(fileAlbumCompositeTO.getFileTO().getFile());
-                    dataRecord.add(fileAlbumCompositeTO.getFileTO().getDateLastPlayed().getTime());
+                    dataRecord.add(SQLiteUtils.convertDateToLong(fileAlbumCompositeTO.getFileTO().getDateLastPlayed()));
                     dataRecord.add(fileAlbumCompositeTO.getFileAlbumTO().getName());
                     csvFilePrinter.printRecord(dataRecord);
                     log.info("File: " + fileAlbumCompositeTO.getFileTO().getFileTitle());

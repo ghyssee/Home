@@ -48,10 +48,18 @@ public class MediaMonkeyDAOImpl extends MediaMonkeyDB {
             "ORDER BY PS.SONGORDER " +
             "LIMIT 0,20 ";
 
-    private static final String RESET_PLAYCOUNT = "UPDATE songs " +
+    private static final String RESET_PLAYCOUNT_OLD = "UPDATE songs " +
                                                    "SET playcounter = 0, " +
                                                    "LASTTIMEPLAYED = 0 " +
                                                    "WHERE playcounter > 0";
+
+    private static final String RESET_PLAYCOUNT = SQLBuilder.getInstance()
+            .update()
+            .addTable(MediaMonkeyTables.Songs)
+            .updateColumn(SongsColumns.PLAYCOUNT, Type.VALUE, 0)
+            .updateColumn(SongsColumns.LASTTIMEPLAYED, Type.VALUE, 0)
+            .addCondition(SongsColumns.PLAYCOUNT, Comparator.GREATER, 0)
+            .render();
 
     private static final String RESET_DEVICETRACKS_OLD = "UPDATE devicetracks " +
             "SET playcount = 0 " +
