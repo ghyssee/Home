@@ -116,7 +116,7 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
         AlbumInfo.Config configAlbum = info.new Config();
         setAlbumTag(mp3PreprocessorConfig, configAlbum);
         configAlbum.total = 0;
-        AtomicInteger counter = new AtomicInteger(0);
+        AtomicInteger counter = new AtomicInteger(1);
         while ((line = reader2.readLine()) != null) {
             if (StringUtils.isNotBlank(line)) {
                 processLine(configAlbum, configAlbum.tracks, line, mp3PreprocessorConfig, configItem, pattern, counter);
@@ -179,6 +179,7 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
                              String sPattern, AtomicInteger counter){
         line = MP3Helper.getInstance().replaceSpecialCharacters(line.trim());
         log.info(line);
+        album.renum = mp3Config.renum;
         if (CheckSpecialTags(album, line)){
             log.info("Special Tag Found");
             counter.set(1);
