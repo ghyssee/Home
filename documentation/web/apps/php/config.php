@@ -135,6 +135,32 @@ $token = $generator->generate($tokenLength);
     return $token;
 }
 
+class CustomSort{
+
+	public $field = '';
+
+	public function ascCmp($a, $b)
+	{
+		return strcmp($a->{$this->field}, $b->{$this->field});
+	}
+
+    public function descCmp($a, $b)
+    {
+        return strcmp($b->{$this->field}, $a->{$this->field});
+    }
+
+    public function sortObjectArrayByField($array, $field, $order)
+	{
+		$this->field = $field;
+        if ($order == 'desc') {
+            usort($array, array("CustomSort", "descCmp"));
+        }
+        else {
+            usort($array, array("CustomSort", "ascCmp"));
+        }
+		return $array;
+	}
+}
 
 ?>
 

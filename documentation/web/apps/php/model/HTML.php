@@ -61,17 +61,20 @@ class Splitter
 {
   public $id;
   public $pattern;
+  public $description;
 
 
   public function __construct()
   {
     $this->id = '';    
     $this->pattern = '';
+    $this->description = '';
   }
-  public function __construct_2($id, $pattern)
+  public function __construct_2($id, $pattern, $description)
   {
     $this->id = $id;    
     $this->pattern = $pattern;
+    $this->description = $description;
   }
 }
 

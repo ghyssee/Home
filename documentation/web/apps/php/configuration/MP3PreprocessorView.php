@@ -1,7 +1,12 @@
 <html>
-<head>
-    <link rel="stylesheet" type="text/css" href="../../css/stylesheet.css">
-    <link rel="stylesheet" type="text/css" href="../../css/form.css">
+    <head>
+        <link rel="stylesheet" type="text/css" href="../../css/stylesheet.css">
+        <link rel="stylesheet" type="text/css" href="../../Themes/easyui/metro-blue/easyui.css">
+        <link rel="stylesheet" type="text/css" href="../../Themes/easyui/icon.css">
+        <link rel="stylesheet" type="text/css" href="../../css/form.css">
+        <script type="text/javascript" src="../../js/jquery-3.1.1.js"></script>
+        <script type="text/javascript" src="../../js/jquery.easyui.min.js"></script>
+    </head>
 </head>
 <body>
 
@@ -56,29 +61,6 @@ if (isset($_SESSION["splitter"])) {
     $layout->close();
     ?>
 </form>
-<h3>MP3Preprocessor Configuration</h3>
-<div class="horizontalLine">.</div>
-<form action="mp3preprocessorSave.php" method="post">
-    <?php
-        $layout = new Layout(array('numCols' => 1));
-    $layout->comboBox($mp3PreprocessorObj->fields, "id", "description",
-        new Input(array('name' => "scrollColor",
-            'label' => 'Type',
-            'default' => '')));
-    $layout->inputBox(new Input(array('name' => "configSplitter",
-        'size' => 30,
-        'label' => 'Id',
-        'value' => '')));
-    $layout->checkBox(new Input(array('name' => "configDuration",
-        'label' => 'Remove Duration At End',
-        'value' => true)));
-    $layout->button(new Input(array('name' => "mp3Preprocessor",
-        'value' => 'addConfig',
-        'text' => 'Add',
-        'colspan' => 2)));
-    $layout->close();
-    ?>
-</form>
 <?php
 //$tableGrid = new TableGrid();
 //$tableGrid->title = "Colors222";
@@ -88,14 +70,16 @@ include_once('Smarty.class.php');
 $smarty = initializeSmarty();
 $smarty->assign('title','Splitter');
 $smarty->assign('item','Splitter Item');
+$smarty->assign('tableWidth','800px');
+$smarty->assign('tableHeight','400px');
 $url = "MP3PreprocessorAction.php";
 $smarty->assign('viewUrl',$url . "?method=list");
-$smarty->assign('updateUrl',"'" . $url . "?method=update&id='+row['uniqueId']");
+$smarty->assign('updateUrl',"'" . $url . "?method=update&id='+row['id']");
 $smarty->assign('newUrl',"'" . $url . "?method=add'");
-$smarty->assign('deleteUrl',"'" . $url . "?method=delete',{id:row['uniqueId']}");
+$smarty->assign('deleteUrl',"'" . $url . "?method=delete',{id:row['id']}");
 
 $smarty->assign("contacts", array(array("field" => "id", "label"=>"Id", "size" => 10, "hidden" => "true"),
-        array("field" => "description", "label"=>"Description", "size" => 100),
+        array("field" => "description", "label"=>"Description", "size" => 100, "sortable" => true),
         array("field" => "pattern", "label"=>"Pattern", "size" => 20)
     )
 );
