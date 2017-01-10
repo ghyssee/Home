@@ -78,8 +78,9 @@ class Splitter
   }
 }
 
-class Config
+class PreprocessorConfiguration
 {
+  public $id;
   public $type;
   public $splitter;
   public $duration;
@@ -89,10 +90,12 @@ class Config
     $this->type = '';    
     $this->splitter = '';
 	$this->duration = false;
+    $this->id = '';
   }
-  public function __construct_2($type, $splitter, $duration)
+  public function __construct_2($id, $type, $splitter, $duration)
   {
-    $this->type = $type;    
+    $this->id = $id;
+    $this->type = $type;
     $this->splitter = $splitter;
 	$this->duration = $duration;
   }

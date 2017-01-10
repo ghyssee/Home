@@ -7,7 +7,6 @@
         <script type="text/javascript" src="../../js/jquery-3.1.1.js"></script>
         <script type="text/javascript" src="../../js/jquery.easyui.min.js"></script>
     </head>
-</head>
 <body>
 
 <?php
@@ -15,9 +14,19 @@ include("../setup.php");
 include("../config.php");
 include("../model/HTML.php");
 include("../html/config.php");
+$mainId = "1";
 $mp3PreprocessorObj = readJSONWithCode(JSON_MP3PREPROCESSOR);
 session_start();
 $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
+
+function getCurrentPage(){
+    return basename($_SERVER['PHP_SELF']);
+}
+
+function getAction(){
+    return "MP3PreprocessorAction.php";
+}
+
 ?>
 
 <style>
@@ -31,6 +40,18 @@ $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
 
 </style>
 
+<script>
+    window.addEventListener('load', function(){
+        var select = document.getElementById('activeconfig');
+
+        select.addEventListener('change', function(){
+            alert(this.value);
+            window.location = '<?php echo getAction()?>?method=init&id=' + this.value;
+        }, false);
+    }, false);
+
+</script>
+
 
 <?php
 goMenu();
@@ -40,27 +61,19 @@ if (isset($_SESSION["splitter"])) {
     $splitter = new Splitter();
 }
 ?>
-<h1>MP3Preprocessor Settings</h1>
-<h3>Splitters</h3>
-<div class="horizontalLine">.</div>
-<form action="mp3preprocessorSave.php" method="post">
-    <?php
-    $layout = new Layout(array('numCols' => 1));
-    $layout->inputBox(new Input(array('name' => "splitterId",
-        'size' => 30,
-        'label' => 'Id',
-        'value' => $splitter->id)));
-    $layout->inputBox(new Input(array('name' => "pattern",
-        'size' => 30,
-        'label' => 'Pattern',
-        'value' => $splitter->pattern)));
-    $layout->button(new Input(array('name' => "mp3Preprocessor",
-        'value' => 'addSplitter',
-        'text' => 'Add',
-        'colspan' => 2)));
-    $layout->close();
-    ?>
-</form>
+
+<?php
+$layout = new Layout(array('numCols' => 1));
+$layout->comboBox($mp3PreprocessorObj->configurations, "id", "id",
+    new Input(array('name' => "activeConfiguration",
+        'label' => 'Active Configuration',
+        'col' => 1,
+        'method' => 'getConfigurationText',
+        'methodArg' => 'config',
+        'fieldId' => 'activeconfig',
+        'default' => $mp3PreprocessorObj->activeConfiguration)));
+$layout->close();
+?>
 <?php
 //$tableGrid = new TableGrid();
 //$tableGrid->title = "Colors222";
@@ -72,7 +85,7 @@ $smarty->assign('title','Splitter');
 $smarty->assign('item','Splitter Item');
 $smarty->assign('tableWidth','800px');
 $smarty->assign('tableHeight','400px');
-$url = "MP3PreprocessorAction.php";
+$url = getAction();
 $smarty->assign('viewUrl',$url . "?method=list");
 $smarty->assign('updateUrl',"'" . $url . "?method=update&id='+row['id']");
 $smarty->assign('newUrl',"'" . $url . "?method=add'");
@@ -86,54 +99,106 @@ $smarty->assign("contacts", array(array("field" => "id", "label"=>"Id", "size" =
 $smarty->display('TableGridV3.tpl');
 ?>
 
+<div style="margin:10px 0">
+    <a href="javascript:void(0)" class="easyui-linkbutton" onclick="insert()">Insert Row</a>
+</div>
+
 <table id="tt"></table>
 
 
+<!--suppress JSAnnotator -->
 <script>
-    var products = [
-        {productid:'FI-SW-01',name:'Koi'},
-        {productid:'K9-DL-01',name:'Dalmation'},
-        {productid:'RP-SN-01',name:'Rattlesnake'},
-        {productid:'RP-LI-02',name:'Iguana'},
-        {productid:'FL-DSH-01',name:'Manx'},
-        {productid:'FL-DLH-02',name:'Persian'},
-        {productid:'AV-CB-01',name:'Amazon Parrot'}
-    ];
+    var fields =
+        <?php
+        global $mp3PreprocessorObj;
+        echo json_encode($mp3PreprocessorObj->fields);
+        ?>;
+    var splitters =
+        <?php
+        global $mp3PreprocessorObj;
+        echo json_encode($mp3PreprocessorObj->splitters);
+        ?>;
+
+    function getField(id){
+        for(var i = 0; i < fields.length; i++) {
+            if (fields[i].id == id){
+                return fields[i].description;
+            }
+        }
+        return "";
+    }
+
+    function getSplitter(id){
+        for(var i = 0; i < splitters.length; i++) {
+            if (splitters[i].id == id){
+                return splitters[i].description;
+            }
+        }
+        return "";
+    }
+
+    $.extend($.fn.datagrid.defaults.editors,
+        {
+            workingcheckbox:
+            {
+                init: function (container, options) {
+                    var input = $('<input type="checkbox">').appendTo(container);
+                    return input;
+                },
+                getValue: function (target) {
+                    return $(target).prop('checked');
+                },
+                setValue: function (target, value) {
+                    $(target).prop('checked', value);
+                }
+            }
+
+        });
+
     $(function(){
         $('#tt').datagrid({
             title:'Editable DataGrid',
             iconCls:'icon-edit',
-            width:660,
+            width:350,
             height:250,
             singleSelect:true,
             idField:'itemid',
-            url:'data/datagrid_data.json',
+            url:'<?php echo getAction(); ?>?method=listConfigurations',
             columns:[[
-                {field:'itemid',title:'Item ID',width:60},
-                {field:'productid',title:'Product',width:100,
+                {field:'id',title:'ID', hidden:true},
+                {field:'type',title:'Field',width:100,
                     formatter:function(value,row){
-                        return row.productname || value;
+                        //return row.productname || value;
+                        return getField(row.type);
                     },
                     editor:{
                         type:'combobox',
                         options:{
-                            valueField:'productid',
-                            textField:'name',
-                            data:products,
+                            valueField:'id',
+                            textField:'description',
+                            data:fields,
                             required:true
                         }
                     }
                 },
-                {field:'listprice',title:'List Price',width:80,align:'right',editor:{type:'numberbox',options:{precision:1}}},
-                {field:'unitcost',title:'Unit Cost',width:80,align:'right',editor:'numberbox'},
-                {field:'attr1',title:'Attribute',width:180,editor:'text'},
-                {field:'status',title:'Status',width:50,align:'center',
+                {field:'splitter',title:'Splitter',width:100,
+                    formatter:function(value,row){
+                        //return row.productname || value;
+                        return getSplitter(row.splitter);
+                    },
                     editor:{
-                        type:'checkbox',
+                        type:'combobox',
                         options:{
-                            on: 'P',
-                            off: ''
+                            valueField:'id',
+                            textField:'description',
+                            data:splitters,
+                            required:true
                         }
+                    }
+                },
+                {field:'duration',title:'Duration',width:50,align:'center',
+                    editor:{
+                        type:'workingcheckbox'
                     }
                 },
                 {field:'action',title:'Action',width:80,align:'center',
@@ -153,12 +218,13 @@ $smarty->display('TableGridV3.tpl');
             onEndEdit:function(index,row){
                 var ed = $(this).datagrid('getEditor', {
                     index: index,
-                    field: 'productid'
+                    field: 'type'
                 });
-                row.productname = $(ed.target).combobox('getText');
+                //row.productname = $(ed.target).combobox('getText');
             },
             onBeforeEdit:function(index,row){
                 row.editing = true;
+                $(this).datagrid('checkRow',index);
                 $(this).datagrid('refreshRow', index);
             },
             onAfterEdit:function(index,row){
@@ -186,6 +252,8 @@ $smarty->display('TableGridV3.tpl');
         });
     }
     function saverow(target){
+        var row = $('#tt').datagrid('getSelected');
+        update(row);
         $('#tt').datagrid('endEdit', getRowIndex(target));
     }
     function cancelrow(target){
@@ -200,17 +268,45 @@ $smarty->display('TableGridV3.tpl');
         }
         $('#tt').datagrid('insertRow', {
             index: index,
-            row:{
-                status:'P'
-            }
+            row:<?php echo getPreprocessorConfiguration()?>
         });
         $('#tt').datagrid('selectRow',index);
         $('#tt').datagrid('beginEdit',index);
     }
-</script>
 
+    function getCurrentConfig(){
+        var e = document.getElementById("activeconfig");
+        var configId = e.options[e.selectedIndex].value;
+        return configId;
+    }
+
+    function update(row){
+
+        var object = {row:row, configId:getCurrentConfig()};
+        var tmp = $.post('<?php echo getAction();?>?method=updateConfig', { selectedRow : JSON.stringify(object)}, function(data2){
+                if (data2.success){
+                    $('#dg').datagrid('reload');
+                }
+            },'json')
+            .done(function() {
+                //alert( "second success" );
+            })
+            .fail(function() {
+                //alert( "error" );
+            })
+            .always(function() {
+                //alert( "finished" );
+            });
+        tmp.always(function() {
+            //alert( "second finished" );
+        });
+        //$('#dg').datagrid('gotoPage', 2);
+        return false;
+    }
+
+
+</script>
 <div class="emptySpace"></div>
-<br><br>
 <?php
 goMenu();
 unset($_SESSION["errors"]);
@@ -218,5 +314,28 @@ unset($_SESSION["splitter"]);
 ?>
 </form>
 </body>
-</html> 
+</html>
 
+<?php
+function getPreprocessorConfiguration(){
+    $conf = new PreprocessorConfiguration();
+    return json_encode($conf);
+}
+
+function getConfigurationText($array)
+{
+$desc = "";
+foreach ($array as $key => $config) {
+if (isset($config->type)) {
+$desc = $desc . (empty($desc) ? '' : ' ') . $config->type;
+}
+if (isset($config->splitter)) {
+$desc = $desc . " " . $config->splitter;
+}
+if (!empty($config->duration)) {
+$desc = $desc . " (duration TRUE)";
+}
+}
+return $desc;
+}
+?>

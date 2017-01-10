@@ -16,6 +16,13 @@ if (isset($_POST['mp3Preprocessor'])) {
 if (isset($_REQUEST['method'])){
     $method = htmlspecialchars($_REQUEST['method']);
     switch ($method) {
+        case "listConfigurations":
+            $id = "1";
+            if (isset($_REQUEST["id"])) {
+                $id = $_REQUEST["id"];
+            }
+            getListConfigurations($id);
+            break;
         case "list":
             getList();
             break;
@@ -28,7 +35,19 @@ if (isset($_REQUEST['method'])){
         case "delete":
             delete();
             break;
+        case "updateConfig":
+            $sel = json_decode($_POST['selectedRow']);
+            //updateConfig($sel);
+            break;
     }
+}
+
+function updateConfig($sel){
+    /* contains 3 elements
+    index : the index of the selected row
+    row : the row elements
+    configId : the id of the configuration that is selected
+    */
 }
 
 function getList(){
@@ -48,6 +67,31 @@ function getList(){
     $result["total"] = count($mp3PreprocessorObj->splitters);
     $result["rows"] = $array;
 
+    echo json_encode($result);
+
+}
+
+function findConfigurationById($configurations, $id){
+    foreach ($configurations as $key => $value) {
+        if (strcmp($value->id, $id) == 0) {
+            return $value->config;
+        }
+    }
+    return null;
+
+
+}
+
+function getListConfigurations($id){
+
+    $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
+    $rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
+    $mp3PreprocessorObj = readJSONWithCode(JSON_MP3PREPROCESSOR);
+    $config = findConfigurationById($mp3PreprocessorObj->configurations, "1");
+    $array = array_slice($config, ($page-1)*$rows, $rows);
+    $result = array();
+    $result["total"] = count($config);
+    $result["rows"] = $array;
     echo json_encode($result);
 
 }

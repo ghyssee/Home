@@ -7,6 +7,7 @@ class Input
 {
     public $name;
     public $id;
+    public $fieldId;
     public $value;
     public $default;
     public $size;
@@ -250,7 +251,13 @@ class Layout extends FormLayout
         $html = "<tr" . $this->setAttribute("class", "spaceUnder") . ">" . PHP_EOL;
         $html .= "<td>" . $input->label . "</td>" . PHP_EOL;
         $html .= "<td>";
-        $html .= '<select class="inputField" name="' . $input->name . '"' .  $this->checkTabIndex() . '>';
+        //$html .= '<select class="inputField" name="' . $input->name . '"' .  $this->checkTabIndex() . '>';
+        $html .= '<select';
+        $html .=  $this->setAttribute("class", "inputField");
+        $html .=  $this->setAttribute("name", $input->name);
+        $html .=  $this->setAttribute("id", $input->fieldId);
+        $html .= $this->checkTabIndex();
+        $html .= '>';
 
         foreach($array as $key => $item) {
 
