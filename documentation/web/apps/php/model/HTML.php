@@ -81,6 +81,19 @@ class Splitter
 class PreprocessorConfiguration
 {
   public $id;
+  public $config;
+
+  public function __construct()
+  {
+    $this->id = '';
+    $this->config = Array();
+  }
+}
+
+
+class PreprocessorConfigurationItem
+{
+  public $id;
   public $type;
   public $splitter;
   public $duration;

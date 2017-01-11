@@ -14,7 +14,6 @@ include("../setup.php");
 include("../config.php");
 include("../model/HTML.php");
 include("../html/config.php");
-$mainId = "1";
 $mp3PreprocessorObj = readJSONWithCode(JSON_MP3PREPROCESSOR);
 session_start();
 $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
@@ -45,7 +44,6 @@ function getAction(){
         var select = document.getElementById('activeconfig');
 
         select.addEventListener('change', function(){
-            alert(this.value);
             window.location = '<?php echo getAction()?>?method=init&id=' + this.value;
         }, false);
     }, false);
@@ -64,14 +62,29 @@ if (isset($_SESSION["splitter"])) {
 
 <?php
 $layout = new Layout(array('numCols' => 1));
-$layout->comboBox($mp3PreprocessorObj->configurations, "id", "id",
+if (isset($_SESSION["CONFIG_ID"])){
+    $currentConfigId = $_SESSION["CONFIG_ID"];
+    unset($_SESSION["CONFIG_ID"]);
+}
+else {
+    $currentConfigId = $mp3PreprocessorObj->activeConfiguration;
+}
+$configs = $mp3PreprocessorObj->configurations;
+array_unshift($configs, new PreprocessorConfiguration());
+$layout->comboBox($configs, "id", "id",
     new Input(array('name' => "activeConfiguration",
         'label' => 'Active Configuration',
         'col' => 1,
         'method' => 'getConfigurationText',
         'methodArg' => 'config',
         'fieldId' => 'activeconfig',
-        'default' => $mp3PreprocessorObj->activeConfiguration)));
+        'default' => $currentConfigId)));
+if ($currentConfigId == ''){
+    $layout->button(new Input(array('name' => "addConfig",
+        'value' => 'ADD',
+        'text' => 'Add',
+        'colspan' => 2)));
+}
 $layout->close();
 ?>
 <?php
@@ -101,6 +114,7 @@ $smarty->display('TableGridV3.tpl');
 
 <div style="margin:10px 0">
     <a href="javascript:void(0)" class="easyui-linkbutton" onclick="insert()">Insert Row</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" onclick="insert()">Add Configuration</a>
 </div>
 
 <table id="tt"></table>
@@ -163,7 +177,7 @@ $smarty->display('TableGridV3.tpl');
             height:250,
             singleSelect:true,
             idField:'itemid',
-            url:'<?php echo getAction(); ?>?method=listConfigurations',
+            url:'<?php echo getAction(); ?>?method=listConfigurations&id=' + getCurrentConfig(),
             columns:[[
                 {field:'id',title:'ID', hidden:true},
                 {field:'type',title:'Field',width:100,
@@ -192,7 +206,7 @@ $smarty->display('TableGridV3.tpl');
                             valueField:'id',
                             textField:'description',
                             data:splitters,
-                            required:true
+                            required:false
                         }
                     }
                 },
@@ -262,7 +276,22 @@ $smarty->display('TableGridV3.tpl');
     function insert(){
         var row = $('#tt').datagrid('getSelected');
         if (row){
-            var index = $('#tt').datagrid('getRowIndex', row);
+            var index = $('#tt').datagrid('getRowIndex', row) + 1;
+        } else {
+            index = 0;
+        }
+        $('#tt').datagrid('insertRow', {
+            index: index,
+            row:<?php echo getPreprocessorConfiguration()?>
+        });
+        $('#tt').datagrid('selectRow',index);
+        $('#tt').datagrid('beginEdit',index);
+    }
+
+    function addConfig(){
+        var row = $('#tt').datagrid('getSelected');
+        if (row){
+            var index = $('#tt').datagrid('getRowIndex', row) + 1;
         } else {
             index = 0;
         }
@@ -318,23 +347,28 @@ unset($_SESSION["splitter"]);
 
 <?php
 function getPreprocessorConfiguration(){
-    $conf = new PreprocessorConfiguration();
+    $conf = new PreprocessorConfigurationItem();
     return json_encode($conf);
 }
 
 function getConfigurationText($array)
 {
 $desc = "";
-foreach ($array as $key => $config) {
-if (isset($config->type)) {
-$desc = $desc . (empty($desc) ? '' : ' ') . $config->type;
+if (empty ($array)){
+    $desc = 'New Configuration';
 }
-if (isset($config->splitter)) {
-$desc = $desc . " " . $config->splitter;
-}
-if (!empty($config->duration)) {
-$desc = $desc . " (duration TRUE)";
-}
+else {
+    foreach ($array as $key => $config) {
+        if (isset($config->type)) {
+            $desc = $desc . (empty($desc) ? '' : ' ') . $config->type;
+        }
+        if (isset($config->splitter)) {
+            $desc = $desc . " " . $config->splitter;
+        }
+        if (!empty($config->duration)) {
+            $desc = $desc . " (duration TRUE)";
+        }
+    }
 }
 return $desc;
 }

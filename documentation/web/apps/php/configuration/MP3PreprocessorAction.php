@@ -39,7 +39,16 @@ if (isset($_REQUEST['method'])){
             $sel = json_decode($_POST['selectedRow']);
             //updateConfig($sel);
             break;
+        case "init":
+            $id = $_REQUEST["id"];
+            init($id);
+            break;
     }
+}
+
+function init($id){
+    $_SESSION["CONFIG_ID"] = $id;
+    header("Location: " . $_SESSION["previous_location"]);
 }
 
 function updateConfig($sel){
@@ -87,7 +96,7 @@ function getListConfigurations($id){
     $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
     $rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
     $mp3PreprocessorObj = readJSONWithCode(JSON_MP3PREPROCESSOR);
-    $config = findConfigurationById($mp3PreprocessorObj->configurations, "1");
+    $config = findConfigurationById($mp3PreprocessorObj->configurations, $id);
     $array = array_slice($config, ($page-1)*$rows, $rows);
     $result = array();
     $result["total"] = count($config);
