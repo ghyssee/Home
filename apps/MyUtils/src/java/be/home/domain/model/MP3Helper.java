@@ -40,6 +40,8 @@ public class MP3Helper {
 
     public String replaceSpecialCharacters(String text){
         text = text.replaceAll("’", "'");
+        text = text.replaceAll("´", "'");
+        text = text.replaceAll("`", "'");
         text = text.replaceAll("''", "\"");
         return text;
     }
@@ -114,7 +116,7 @@ public class MP3Helper {
             prettifiedText = prettifiedText.trim();
             prettifiedText = checkWords(prettifiedText, Mp3Tag.ARTIST);
             for (MP3Prettifier.Word wordObj : mp3Prettifer.artist.names){
-                prettifiedText = prettifiedText.replaceAll(wordObj.oldWord, wordObj.newWord);
+               prettifiedText = prettifiedText.replaceAll(wordObj.oldWord, wordObj.newWord);
             }
         }
         return prettifiedText;

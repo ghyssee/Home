@@ -32,10 +32,10 @@ public class MP3TagUtils {
 
     public AlbumError albumErrors;
     private static final Logger log = Logger.getLogger(MP3TagUtils.class);
-    public static final String SUBST_A = "H:\\Shared\\Mijn Muziek\\Eric\\iPod\\";
-    public static final String SUBST_B = "T:\\My Music\\iPod\\";
-    public static final String SUBST_A1 = "H:\\Shared\\Mijn Muziek\\";
-    public static final String SUBST_B1 = "O:\\Shared\\Mijn Muziek\\";
+    public static final String SUBST_A1 = "H:\\Shared\\Mijn Muziek\\Eric\\iPod\\";
+    public static final String SUBST_B1 = "T:\\My Music\\iPod\\";
+    public static final String SUBST_A = "H:\\Shared\\Mijn Muziek\\";
+    public static final String SUBST_B = "O:\\Shared\\Mijn Muziek\\";
     //public static final String SUBST_B = "C:\\My Data\\tmp\\Java\\MP3Processor\\Album\\";
     public static final String HTML_BREAK = "<br>";
     private static long idCounter = 0;
@@ -170,7 +170,7 @@ public class MP3TagUtils {
 
     private int calculateLengthOfTrack(int nrOfTracks, int nrOfCds){
         if (nrOfCds > 1){
-            nrOfTracks = nrOfTracks / nrOfCds;
+            nrOfTracks = Math.max(nrOfTracks / nrOfCds, 10);
         }
         int lengthTrack = String.valueOf(nrOfTracks).length();
         return lengthTrack;
@@ -458,6 +458,8 @@ public class MP3TagUtils {
     public static String stripFilename(String filename){
         String strippedFilename = filename;
         strippedFilename = strippedFilename.replaceAll("<3", "Love");
+        strippedFilename = strippedFilename.replaceAll(" 't ", " Het ");
+        strippedFilename = strippedFilename.replaceAll("D\\*Note", "D-Note");
         strippedFilename = strippedFilename.replaceAll("B\\*\\*ch!", "Bitch!");
         strippedFilename = strippedFilename.replaceAll("\\*\\*\\*", "uck");
         strippedFilename = strippedFilename.replaceAll("\\*\\*", "uc");
@@ -474,6 +476,7 @@ public class MP3TagUtils {
         strippedFilename = strippedFilename.replaceAll("[ýÿ]", "y");
         strippedFilename = strippedFilename.replaceAll("[Ý]", "Y");
         strippedFilename = strippedFilename.replaceAll("AC/DC", "ACDC");
+        strippedFilename = strippedFilename.replaceAll("X!nk", "Xink");
         strippedFilename = strippedFilename.replace("/", "&");
         strippedFilename = strippedFilename.replace("æ", "ae");
         strippedFilename = strippedFilename.replace("Æ", "AE");

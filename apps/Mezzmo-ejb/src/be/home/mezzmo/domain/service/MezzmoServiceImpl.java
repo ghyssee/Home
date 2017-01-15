@@ -143,6 +143,17 @@ public class MezzmoServiceImpl {
         return bo.findArtist(artist);
     }
 
+    private int findAndUpdateArtist(MGOFileAlbumCompositeTO comp, MezzmoBO mezzmoBO) {
+        MGOFileArtistTO artist = mezzmoBO.findArtist(comp.getFileArtistTO());
+        artist.setArtist(comp.getFileArtistTO().getArtist());
+        mezzmoBO.updateArtist(artist);
+        MGOFileArtistTO oldArtist = comp.getFileArtistTO();
+        comp.setFileArtistTO(artist);
+        int nr = mezzmoBO.updateLinkFileArtist2(comp);
+        checkArtistLinked(oldArtist);
+        return nr;
+    }
+
     public int updateArtist (MGOFileAlbumCompositeTO comp) throws SQLException {
         MezzmoBO bo = new MezzmoBO();
         int nr = 0;
@@ -150,29 +161,35 @@ public class MezzmoServiceImpl {
         try {
             artist = bo.findArtistById(comp.getFileArtistTO());
             if (artist.getArtist().toUpperCase().equals(comp.getFileArtistTO().getArtist().toUpperCase())){
-                // artist is case insensitive equal, example Jojo == JoJo
-                // just update the artist and it is ok
-                log.info("Artist is case insensitive equal: " + comp.getFileArtistTO().getArtist());
-                nr = bo.updateArtist(comp.getFileArtistTO());
+                try {
+                    // Major Lazer Feat. Justin Bieber & Mø is Not The Same As
+                    // Major Lazer Feat. Justin Bieber & MØ
+                    // look up the artist just to be sure it does not exist
+                    nr = findAndUpdateArtist(comp, bo);
+                }
+                    catch (EmptyResultDataAccessException e){
+                        // artist is case insensitive equal, example Jojo == JoJo
+                        // look up the artist by name and update the artist (+link) and it is ok
+                        log.info("Artist is case insensitive equal: " + comp.getFileArtistTO().getArtist());
+                        nr = bo.updateArtist(comp.getFileArtistTO());
+                    }
+
             }
             else {
                 try {
-                    artist = bo.findArtist(comp.getFileArtistTO());
                     // artist is different, and exist
                     // update artist to be sure it is case sensitive correct
                     // check if there are other songs linked to the old artist, if not, delete it
                     log.info("Artist is different, but exist already: " + comp.getFileArtistTO().getArtist());
-                    artist.setArtist(comp.getFileArtistTO().getArtist());
-                    nr = bo.updateArtist(artist);
-                    MGOFileArtistTO oldArtist = comp.getFileArtistTO();
-                    comp.setFileArtistTO(artist);
-                    nr = bo.updateLinkFileArtist2(comp);
-                    checkArtistLinked(oldArtist);
+                    nr = findAndUpdateArtist(comp, bo);
                 }
                 catch (EmptyResultDataAccessException e){
                     // artist is different, and does not exist already, example Jojo Ft. Dodo <==> Jojo Feat. Dodo
                     // insert new artist and link it to the file
                     // maybe check if there are other songs linked to the old artist, if not, delete it
+                    // this situation is only for examples like: Major Lazer Feat. Justin Bieber & MØ
+                    // MØ and Mø is not case insensitive the same for SQLite, this will create a new artist for this
+                    // situation
                     Integer artistId = bo.insertArtist(comp.getFileArtistTO());
                     if (artistId != null){
                         log.info("New Artist created: " + comp.getFileArtistTO().getArtist() + "/Id: " + artistId);

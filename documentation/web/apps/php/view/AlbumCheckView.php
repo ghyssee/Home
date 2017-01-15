@@ -54,9 +54,23 @@ goMenu();
     $layout->textArea(new Input(array('name' => "albumList",
         'col' => 1,
         'cols' => 80,
-        'rows' => 30,
+        'rows' => 15,
         'label' => 'Album(s) To Check',
         'value' => $textValue)));
+
+    $file = getFullPath(FILE_ALBUMEXCLUDE);
+    $textValue = '';
+    if (file_exists($file)){
+        $textValue = read($file);
+    }
+    $layout->textArea(new Input(array('name' => "albumExclude",
+        'col' => 1,
+        'cols' => 80,
+        'rows' => 10,
+        'label' => 'Album(s) To Exclude',
+        'value' => $textValue)));
+
+
     $layout->button(new Input(array('name' => "albumCheck",
         'col' => 1,
         'value' => 'save',

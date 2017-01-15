@@ -1,5 +1,7 @@
 package be.home.main;
 
+import be.home.domain.model.MP3Helper;
+import be.home.domain.model.MP3TagUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -25,11 +27,14 @@ public class HelloWorld {
     public static void main(String args[]) throws SAXException, DocumentException, IOException, IllegalAccessException, NoSuchFieldException, ParserConfigurationException {
 
 
-        String t="Yolanda Be Cool & D-CUP";
-        String t2 = "Yolanda Be Cool & DCUP";
-        String s = t+ " TEST";
-        String o=s.replaceAll(t, t2);
-        System.out.println(o);
+        String t="Axwell Λ Ingrosso";
+        String t2 = "Axwell Λ Ingrosso";
+        System.out.println(t.equals(t2));
+        MP3Helper mp3Helper =MP3Helper.getInstance();
+        System.out.println(mp3Helper.prettifyArtist("Syke’n’Sugarstarr"));
+        System.out.println(mp3Helper.prettifySong("Got 'Til It's Gone (Dj's at work"));
+        //System.out.println(MP3TagUtils.stripFilename("Skik - 't Giet Zoals ´t Giet.mp3"));
+
     }
 
     private static void tmp() throws SAXException, DocumentException, IOException {

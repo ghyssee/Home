@@ -40,7 +40,12 @@ public class MP3Utils {
         id3v2Tag.setArtistUrl(id3v2.getArtistUrl());
         id3v2Tag.setAudiofileUrl(id3v2.getAudiofileUrl());
         id3v2Tag.setAudioSourceUrl(id3v2.getAudioSourceUrl());
-        id3v2Tag.setBPM(id3v2.getBPM());
+        try {
+            id3v2Tag.setBPM(id3v2.getBPM());
+        }
+        catch (NumberFormatException ex){
+            // ignore this error
+        }
         id3v2Tag.setChapters(id3v2.getChapters());
         id3v2Tag.setChapterTOC(id3v2.getChapterTOC());
         id3v2Tag.setCommercialUrl(id3v2.getCommercialUrl());
