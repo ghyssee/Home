@@ -4,5 +4,5 @@ package be.home.common.enums;
  * Created by ghyssee on 12/12/2016.
  */
         public enum MP3Tag {
-            ARTIST, TITLE, FILETITLE, TRACK, FILE, ALBUM, ALBUMCHECK, MP3CHECK, FILENOTFOUND, DISC;
+            ARTIST, TITLE, FILETITLE, TRACK, TRACKERROR, FILE, ALBUM, ALBUMCHECK, MP3CHECK, FILENOTFOUND, DISC;
         }

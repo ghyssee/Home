@@ -287,7 +287,21 @@ public class MP3TagUtils {
             track = StringUtils.leftPad(mp3Track, lengthTrack, '0');
         }
         boolean ok = true;
-        if (!track.equals(mp3Track)){
+        try {
+            Integer.parseInt(mp3Track);
+        }
+        catch (NumberFormatException ex){
+            ok = false;
+            addItem(comp.getFileTO().getId(),
+                    comp.getFileTO().getId(),
+                    comp.getFileTO().getFile(),
+                    comp.getFileAlbumTO().getName(),
+                    MP3Tag.TRACKERROR, mp3Track, null);
+        }
+        if (!ok){
+           // do nothing
+        }
+        else if (!track.equals(mp3Track)){
             if (mp3Track != null){
                 comp.getFileTO().setTrack(Integer.valueOf(mp3Track));
             }
@@ -499,6 +513,7 @@ public class MP3TagUtils {
         strippedFilename = strippedFilename.replace("A$AP", "ASAP");
         strippedFilename = strippedFilename.replace("^", "&");
         strippedFilename = strippedFilename.replace("P!nk", "Pink");
+        strippedFilename = strippedFilename.replace("M.I.L.F. $", "M.I.L.F. S");
         strippedFilename = strippedFilename.replace("$", "s");
         strippedFilename = strippedFilename.replace("%", "Percent");
         strippedFilename = strippedFilename.replace("/\\", "&");
