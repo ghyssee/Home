@@ -4,6 +4,7 @@ class Word
 {
   public $oldWord;
   public $newWord;
+  public $id;
 
   public function __construct()
   {
@@ -18,14 +19,19 @@ class Word
 
   public function __construct1()
   {
-    $this->oldWord = '';
-    $this->newWord = '';
+      $this->oldWord = '';
+      $this->newWord = '';
   }
   public function __construct2($oldWord, $newWord)
   {
-    $this->oldWord = $oldWord;
-    $this->newWord = $newWord;
+      $this->oldWord = $oldWord;
+      $this->newWord = $newWord;
   }
+    public function __construct3($id, $oldWord, $newWord)
+    {
+        $this->oldWord = $oldWord;
+        $this->newWord = $newWord;
+    }
 }
 
 class ExtWord extends Word {
