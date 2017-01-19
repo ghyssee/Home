@@ -5,6 +5,7 @@ import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.JSONUtils;
+import be.home.common.utils.LogUtils;
 import be.home.common.utils.VelocityUtils;
 import be.home.common.utils.WinUtils;
 import be.home.domain.model.MP3Helper;
@@ -73,17 +74,6 @@ public class MakeTop20 extends BatchJobV2{
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         }
-        MGOFileArtistTO artist = new MGOFileArtistTO();
-        MP3Helper helper = MP3Helper.getInstance();
-        System.out.println(helper.prettifyArtist("Sinead O'Connor"));
-
-
-/*
-        MGOFileArtistTO artist = new MGOFileArtistTO();
-        artist.setArtist("TestEricArtist4");
-        MezzmoBO bo = new MezzmoBO();
-        Integer key = bo.insertArtist(artist);
-        System.out.println("key = " + key);
 
 
         try {
@@ -92,7 +82,7 @@ public class MakeTop20 extends BatchJobV2{
             LogUtils.logError(log, e);
         }
 
-*/
+
     }
 
     public void makeTop20() throws IOException {
