@@ -2,6 +2,7 @@
 include_once("../setup.php");
 include_once("../config.php");
 include_once("../model/HTML.php");
+include_once("../bo/WordBO.php");
 
 $file = getFullPath(JSON_MP3PRETTIFIER);
 
@@ -27,6 +28,13 @@ function getList(){
     $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
     $rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
     $mp3Prettifier = readJSONWithCode(JSON_MP3PRETTIFIER);
+    if (isset($_POST['sort'])){
+        $field = strval($_POST['sort']);
+        $order = isset($_POST['order']) ? strval($_POST['order']) : 'asc';
+        $sort = new CustomSort();
+        $array = $sort->sortObjectArrayByField($mp3Prettifier->words, $field, $order);
+        $mp3Prettifier->words = $array;
+    }
     $array = array_slice($mp3Prettifier->words, ($page-1)*$rows, $rows);
 
     $result = array();
@@ -41,23 +49,22 @@ function addErrorMsg($msg){
 
 function update($file){
     $id = $_REQUEST['id'];
-    $htmlObj = readJSON($file);
-    $color = new Color();
-    assignField($color->description, "description");
-    assignField($color->code, "code");
-    $color->id = $id;
+    $obj = readJSON($file);
+    $word = new Word();
+    assignField($word->oldWord, "oldWord", !HTML_SPECIAL_CHAR);
+    assignField($word->newWord, "newWord", !HTML_SPECIAL_CHAR);
+    $word->id = $id;
     $save = true;
-    if (objectExist($htmlObj->colors, "code", $color->code, false, "id", $color->id)) {
+    if (objectExist($obj->words, "oldWord", $word->oldWord, true, "id", $word->id)) {
         //addError('colorCode', "Color Code already exist: " . $color->code);
-        $errors = addErrorMsg('Color Code already exist: ' . $color->code);
+        $errors = addErrorMsg('Global Word already exist: ' . $word->oldWord);
         $save = false;
     }
     if ($save) {
-        //addInfo("Color", "Modifications were updated for id " . $color->id);
-        $colorBO = new ColorBO();
-        $colorBO->saveColor($color);
+        $wordBO = new WordBO();
+        $wordBO->saveGlobalWord($word);
         $items = array();
-        array_push($items, $color);
+        array_push($items, $word);
         echo json_encode($items);
     }
     else {
@@ -69,21 +76,21 @@ function update($file){
 function add($file)
 {
 
-    $htmlObj = readJSON($file);
-    $color = new Color();
+    $obj = readJSON($file);
+    $word = new Word();
 
-    assignField($color->description, "description");
-    assignField($color->code, "code");
+    assignField($word->oldWord, "oldWord", !ESCAPE_HTML);
+    assignField($word->newWord, "newWord", !ESCAPE_HTML);
     $save = true;
-    If (objectExist($htmlObj->colors, "code", $color->code, false)) {
-        $errors = addErrorMsg('Color Code already exist: ' . $color->code);
+    If (objectExist($obj->words, "oldWord", $word->oldWord, false)) {
+        $errors = addErrorMsg('Global Word already exist: ' . $word->oldWord);
         $save = false;
     }
     if ($save) {
-        $colorBO = new ColorBO();
-        $colorBO->addColor($color);
+        $wordBO = new WordBO();
+        $wordBO->addGlobalWord($word);
         $items = array();
-        array_push($items, $color);
+        array_push($items, $word);
         echo json_encode($items);
     } else {
         echo json_encode($errors);
@@ -94,8 +101,8 @@ function add($file)
 function delete($file)
 {
     $id = $_REQUEST['id'];
-    $colorBO = new ColorBO();
-    $success = $colorBO->deleteColor($id);
+    $wordBO = new WordBO();
+    $success = $wordBO->deleteGlobalWord($id);
     echo json_encode(array('success'=>$success));
 }
 

@@ -15,6 +15,7 @@ const FILE_ALBUMCHECK = "albumsToCheck";
 const FILE_ALBUMEXCLUDE = "albumsToExclude";
 const APPEND = true;
 const ESCAPE_HTML = true;
+const JSON_ASSOCIATIVE = true;
 
 function initSetup(){
     if (isset($GLOBALS["SETUP"])){
@@ -81,10 +82,10 @@ function getOneDrivePath() {
     }
 }
 
-function readJSON($file){
+function readJSON($file, $associative = false){
     if (file_exists ($file)){
         $str = file_get_contents($file);
-        return json_decode($str);
+        return json_decode($str, $associative);
     }
     else {
         throw new Exception("File Not Found:" . $file);
@@ -92,9 +93,9 @@ function readJSON($file){
 }
 
 
-function readJSONWithCode($code){
+function readJSONWithCode($code, $associative = false){
     $file = getFullPath($code);
-    return readJSON($file);
+    return readJSON($file, $associative);
 }
 
 
