@@ -22,6 +22,7 @@ switch ($method) {
         delete($file);
         break;
 }
+return;
 
 function getList(){
 
@@ -32,13 +33,13 @@ function getList(){
         $field = strval($_POST['sort']);
         $order = isset($_POST['order']) ? strval($_POST['order']) : 'asc';
         $sort = new CustomSort();
-        $array = $sort->sortObjectArrayByField($mp3Prettifier->words, $field, $order);
+        $array = $sort->sortObjectArrayByField($mp3Prettifier->global->words, $field, $order);
         $mp3Prettifier->words = $array;
     }
-    $array = array_slice($mp3Prettifier->words, ($page-1)*$rows, $rows);
+    $array = array_slice($mp3Prettifier->global->words, ($page-1)*$rows, $rows);
 
     $result = array();
-    $result["total"] = count($mp3Prettifier->words);
+    $result["total"] = count($mp3Prettifier->global->words);
     $result["rows"] = $array;
     echo json_encode($result);
 }

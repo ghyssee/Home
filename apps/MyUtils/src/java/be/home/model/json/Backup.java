@@ -8,8 +8,18 @@ import java.util.List;
  */
 public class Backup {
 
-    public List<Scheme> schemes = new ArrayList<>();
+    public List<Scheme> schemeList = new ArrayList<>();
     public List<DefaultScheme> defaultSchemes;
+    public List<SchemeItem> schemes = new ArrayList<>();
+
+    public class SchemeItem {
+        public String id;
+        public List<SchemeId> list;
+    }
+
+    public class SchemeId {
+        public String id;
+    }
 
     public class Scheme {
         public String id;

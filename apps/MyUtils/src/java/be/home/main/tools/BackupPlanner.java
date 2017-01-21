@@ -50,7 +50,66 @@ public class BackupPlanner extends BatchJobV2{
         return defaultId;
     }
 
+
+    public Backup.SchemeItem getSchemeItem(List<Backup.SchemeItem> schemes, String schemeId){
+        for (Backup.SchemeItem schemeItem : schemes){
+            if (schemeItem.id.equals(schemeId)){
+                return schemeItem;
+            }
+        }
+        return null;
+    }
+
+    public Backup.Scheme getScheme(List<Backup.Scheme> schemes, String schemeId){
+        for (Backup.Scheme scheme : schemes){
+            if (scheme.id.equals(schemeId)){
+                return scheme;
+            }
+        }
+        return null;
+    }
+
     public void start(Backup backup, String schemeId) {
+        String schemeLog = "";
+        List <String> errors = new ArrayList();
+        if (schemeId == null) {
+            schemeId = getDefaultSchemeId(backup);
+            schemeLog = "Scheme Origin: Default Host";
+        }
+        else {
+            schemeLog = "Scheme Origin: Parameter";
+        }
+        if (schemeId != null) {
+            Backup.SchemeItem schemeItem = getSchemeItem(backup.schemes, schemeId);
+            if (schemeItem != null) {
+                for (Backup.SchemeId id : schemeItem.list) {
+                    Backup.Scheme scheme = getScheme(backup.schemeList, id.id);
+                    if (scheme != null) {
+                        log.info("Scheme found: " + schemeId + " / " + schemeLog);
+                        log.info("Backup File: " + scheme.backupFile);
+                        try {
+                            startBackup(scheme);
+                        } catch (ZipException e) {
+                            LogUtils.logError(log, e);
+                        }
+                    } else {
+                        errors.add("Backup Plan:" + schemeId + " / Scheme Not Found: " + id.id);
+                    }
+                }
+            }
+        }
+        else {
+            errors.add("No Backup Scheme found for id: " + schemeId);
+        }
+        if (errors.size() > 0){
+            for (String msg : errors){
+                log.warn(msg);
+            }
+        }
+    }
+
+    /*
+    public void startOld(Backup backup, String schemeId) {
         String schemeLog = "";
         if (schemeId == null) {
             schemeId = getDefaultSchemeId(backup);
@@ -78,6 +137,7 @@ public class BackupPlanner extends BatchJobV2{
             log.warn("No Backup Scheme found for id: " + schemeId);
         }
     }
+    */
 
     public void startBackup(Backup.Scheme scheme) throws ZipException {
         ZipUtils zipUtils = new ZipUtils();
@@ -118,7 +178,6 @@ public class BackupPlanner extends BatchJobV2{
     }
 
     public static List<Path> match(String glob, String location, int depth) throws IOException {
-
 
         List <Path> files = new ArrayList<>();
         final PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher(

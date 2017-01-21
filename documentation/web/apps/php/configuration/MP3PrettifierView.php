@@ -33,10 +33,12 @@ $smarty->assign('item','Global Word');
 $smarty->assign('tableWidth','800px');
 $smarty->assign('tableHeight','400px');
 $url = "MP3PrettifierAction.php";
+$smarty->assign('id',$fieldId);
 $smarty->assign('viewUrl',$url . "?method=list");
 $smarty->assign('updateUrl',"'" . $url . "?method=update&id='+row['" . $fieldId . "']");
 $smarty->assign('newUrl',"'" . $url . "?method=add'");
-$smarty->assign('deleteUrl',"'" . $url . "?method=delete&id='+row['" . $fieldId . "']");
+$smarty->assign('deleteUrl', $url . "?method=delete");
+
 
 $smarty->assign("contacts", array(array("field" => "id", "label"=>"Id", "size" => 50, "hidden" => "true"),
         array("field" => "oldWord", "label"=>"Old Word", "size" => 50, "sortable" => true),

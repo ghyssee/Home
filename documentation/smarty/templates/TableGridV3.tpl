@@ -100,22 +100,27 @@
 			var row = $('#dg').datagrid('getSelected');
 			if (row){
 				$.messager.confirm('Confirm','Are you sure you want to delete this {{$item}}?',function(r){
-					if (r){
-						$.post({{$deleteUrl}},function(result){
-                            if (result.success){
-								$('#dg').datagrid('reload');	// reload the user data
-							} else {
-								$.messager.show({	// show error message
-									title: 'Error',
-									msg: result.errorMsg
-								});
-							}
-						},'json');
+                    if (r){
+                        $.ajax({
+                            type:    "POST",
+                            url:     "{{$deleteUrl}}",
+                            data:    {id: row.{{$id}}},
+                            success: function(data) {
+                                $('#dg').datagrid('reload');
+                            },
+                            // vvv---- This is the new bit
+                            error:   function(jqXHR, textStatus, errorThrown) {
+                                alert("Error, status = " + textStatus + ", " +
+                                        "error thrown: " + errorThrown
+                                );
+                            }
+                        });
 					}
 				});
 			}
 		}
-	</script>
+
+    </script>
 
 	<style type="text/css">
 		#fm{

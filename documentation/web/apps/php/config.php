@@ -70,7 +70,7 @@ function execInBackground2($cmd) {
 }
 
 function goMenu(){
-	$menuObj = readJSON(getOneDrivePath() . '/Config/Java/Menu2.json');
+	$menuObj = readJSONWithCode(JSON_MENU);
 	println('<a href="' . $menuObj->root->href . '">' . $menuObj->root->description . '</a>');
 }
 

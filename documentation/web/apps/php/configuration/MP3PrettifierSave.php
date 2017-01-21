@@ -31,13 +31,14 @@ function saveGlobalWord($file, $mp3PrettifierObj){
 		addError ("oldWord", "Old Word can't be empty");
 		$save = false;
 	}
-	if (wordExist($mp3PrettifierObj->words, $oldWord)){
+	if (wordExist($mp3PrettifierObj->global->words, $oldWord)){
         addError ("oldWord", "Old Word " . $oldWord . " already exist");
 		$save = false;
 	}
     $wordObj = new Word($oldWord, $newWord);
+	$wordObj->id = getUniqueId();
 	if ($save) {
-        array_push ($mp3PrettifierObj->words, $wordObj);
+        array_push ($mp3PrettifierObj->global->words, $wordObj);
 	}
     checkSave2($save, 'mp3PrettifierGlobal', $mp3PrettifierObj, $file, $_SESSION['previous_location'], $wordObj);
 }
@@ -55,6 +56,7 @@ function saveArtistWord($file, $mp3PrettifierObj){
 		$save = false;
 	}
     $wordObj = new Word($oldWord, $newWord);
+	$wordObj->id = getUniqueId();
 	if ($save) {
 		array_push ($mp3PrettifierObj->artist->words, $wordObj);
 	}
@@ -74,6 +76,7 @@ function saveArtistName($file, $mp3PrettifierObj){
 		$save = false;
 	}
     $wordObj = new Word($oldWord, $newWord);
+	$wordObj->id = getUniqueId();
 	if ($save) {
 		array_push ($mp3PrettifierObj->artist->names, $wordObj);
 	}
@@ -94,6 +97,7 @@ function saveSongTitle($file, $mp3PrettifierObj){
 		$save = false;
 	}
     $wordObj = new ExtWord($oldWord, $newWord, $parenthesis);
+	$wordObj->id = getUniqueId();
 	if ($save) {
 		array_push ($mp3PrettifierObj->song->replacements, $wordObj);
 	}

@@ -16,14 +16,30 @@ class WordBO
         return null;
     }
 
+    function saveGlobalWord2($word)
+    {
+        $file = $GLOBALS['file'];
+        $obj = readJSON($file, JSON_ASSOCIATIVE);
+        $counter = 0;
+        foreach ($obj['global']['words'] as $key => $value) {
+            if (strcmp($value->id, $word->id) == 0) {
+                $obj['global']['words'][$counter] = $word;
+                writeJSON($obj, $file);
+                return true;
+            }
+            $counter++;
+        }
+        return false;
+    }
+
     function saveGlobalWord($word)
     {
         $file = $GLOBALS['file'];
         $obj = readJSON($file);
         $counter = 0;
-        foreach ($obj->words as $key => $value) {
+        foreach ($obj->global->words as $key => $value) {
             if (strcmp($value->id, $word->id) == 0) {
-                $obj->words[$counter] = $word;
+                $obj->global->words[$counter] = $word;
                 writeJSON($obj, $file);
                 return true;
             }
@@ -35,9 +51,18 @@ class WordBO
     function addGlobalWord($word)
     {
         $file = $GLOBALS['file'];
+        $obj = readJSON($file, JSON_ASSOCIATIVE);
+        $word->id = getUniqueId();
+        array_push($obj['global']['words'], $word);
+        writeJSON($obj, $file);
+    }
+
+    function addGlobalWord2($word)
+    {
+        $file = $GLOBALS['file'];
         $obj = readJSON($file);
         $word->id = getUniqueId();
-        array_push($obj->words, $word);
+        array_push($obj->global->words, $word);
         writeJSON($obj, $file);
     }
 
@@ -45,15 +70,15 @@ class WordBO
     {
         $file = $GLOBALS['file'];
         $obj = readJSON($file, JSON_ASSOCIATIVE);
-        $array = $obj["words"];
+        $array = $obj['global']["words"];
         $key = array_search($field, array_column($array, 'id'));
         if ($key === false) {
             return false;
 
         } else {
-            unset($obj["words"][$key]);
-            $array["words"] = array_values($obj['words']);
-            $obj["words"] = $array["words"];
+            unset($obj['global']["words"][$key]);
+            $array = array_values($obj['global']['words']);
+            $obj['global']["words"] = $array;
             writeJSON( $obj, $file);
         }
         return true;

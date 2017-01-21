@@ -149,7 +149,7 @@ public class MP3Helper {
                     word = word.substring(0, word.length()-1);
                 }
 
-                for (MP3Prettifier.Word wordObj : mp3Prettifer.words){
+                for (MP3Prettifier.Word wordObj : mp3Prettifer.global.words){
                     word = replaceWord(word, wordObj.oldWord, wordObj.newWord);
                 }
 

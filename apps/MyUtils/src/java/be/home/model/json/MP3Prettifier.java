@@ -16,6 +16,9 @@ public class MP3Prettifier {
         public boolean parenthesis;
     }
 
+    public class Global {
+        public List <Word> words;
+    }
     public class Artist {
         public List <Word> words;
         public List <Word> names;
@@ -25,7 +28,8 @@ public class MP3Prettifier {
         public List <Word> replacements;
     }
 
-    public List <Word> words;
+
+    public Global global;
     public Song song;
     public Artist artist;
 
