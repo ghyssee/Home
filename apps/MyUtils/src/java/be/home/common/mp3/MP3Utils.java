@@ -1,13 +1,57 @@
 package be.home.common.mp3;
 
 import com.mpatric.mp3agic.*;
+import com.mpatric.mp3agic.AbstractID3v2Tag;
+import com.mpatric.mp3agic.ID3v24Tag;
+import org.apache.commons.lang3.StringUtils;
+import org.jaudiotagger.tag.id3.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Created by ghyssee on 16/12/2016.
  */
 public class MP3Utils {
+
+    public static String getMP3Field(ID3v2 id3v2Tag, String field, String id){
+        if (!StringUtils.isBlank(field)){
+            id3v2Tag.clearFrameSet(id);
+        }
+        return field;
+    }
+
+    public static int getMP3Field(ID3v2 id3v2Tag, int field, String id){
+            id3v2Tag.clearFrameSet(id);
+            return field;
+    }
+
+    public static List getMP3Field(ID3v2 id3v2Tag, List field, String id){
+        if (field != null && field.size() > 0) {
+            id3v2Tag.clearFrameSet(id);
+        }
+        return field;
+    }
+
+    public static boolean getMP3Field(ID3v2 id3v2Tag, boolean field, String id){
+            id3v2Tag.clearFrameSet(id);
+        return field;
+    }
+
+    private static String getTagId(String id){
+        Map map = new HashMap();
+        map.put("TYER", "TDRC");
+        map.put("IPLS", "TIPL");
+        map.put("TORY", "TDOR");
+        String newId = (String) map.get(id);
+        if (newId == null) {
+            return id;
+        }
+        return newId;
+
+    }
 
     public static ID3v2 getId3v2Tag(Mp3File mp3File) {
         if ( !mp3File.hasId3v2Tag()){
@@ -18,8 +62,10 @@ public class MP3Utils {
             return id3v2;
         }
         ID3v2 id3v2Tag = new ID3v24Tag();
-        /*
 
+
+
+        /*
         Map<String, ID3v2FrameSet> map = mp3File.getId3v2Tag().getFrameSets();
         for (ID3v2FrameSet set : map.values()) {
             ID3v2FrameSet newFrame = new ID3v2FrameSet(set.getId());
@@ -28,12 +74,33 @@ public class MP3Utils {
             }
             //ID3v2Frame fr = new ID3v2Frame();
             //newFrame.addFrame();
-            */
-            //id3v2Tag.getFrameSets().put(set.getId(), newFrame);
-        id3v2Tag.getFrameSets().putAll(id3v2.getFrameSets());
-        id3v2Tag.setAlbumImage(id3v2.getAlbumImage(), id3v2.getAlbumImageMimeType());
-        id3v2Tag.setComment(id3v2.getComment());
 
+            id3v2Tag.getFrameSets().put(set.getId(), newFrame);
+        }
+        */
+        Map<String, ID3v2FrameSet> map = mp3File.getId3v2Tag().getFrameSets();
+        for (ID3v2FrameSet set : map.values()) {
+            if (set.getId().equals("PRIV")) {
+                // remove Private TAG from the MP3
+            }
+            else {
+                ID3v2FrameSet newFrame = new ID3v2FrameSet(set.getId());
+                for (ID3v2Frame f : set.getFrames()) {
+                    newFrame.addFrame(f);
+                }
+                id3v2Tag.getFrameSets().put(getTagId(set.getId()), newFrame);
+            }
+
+        }
+
+
+        //id3v2Tag.getFrameSets().putAll(id3v2.getFrameSets());
+        /*
+        id3v2Tag.setAlbumImage(id3v2.getAlbumImage(), id3v2.getAlbumImageMimeType());
+        if (!StringUtils.isBlank(id3v2Tag.getComment())){
+            id3v2Tag.clearFrameSet(AbstractID3v2Tag.ID_COMMENT);
+            id3v2Tag.setComment(id3v2.getComment());
+        }
         id3v2Tag.setAlbum(id3v2.getAlbum());
         id3v2Tag.setAlbumArtist(id3v2.getAlbumArtist());
         id3v2Tag.setArtist(id3v2.getArtist());
@@ -75,6 +142,7 @@ public class MP3Utils {
         id3v2Tag.setTrack(id3v2.getTrack());
         id3v2Tag.setUrl(id3v2.getUrl());
         id3v2Tag.setYear(id3v2.getYear());
+        */
 
         return id3v2Tag;
     }

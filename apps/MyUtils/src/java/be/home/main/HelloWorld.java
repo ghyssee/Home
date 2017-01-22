@@ -1,7 +1,12 @@
 package be.home.main;
 
+import be.home.common.mp3.MP3Utils;
 import be.home.domain.model.MP3Helper;
 import be.home.domain.model.MP3TagUtils;
+import com.mpatric.mp3agic.AbstractID3v2Tag;
+import com.mpatric.mp3agic.ID3v2;
+import com.mpatric.mp3agic.Mp3File;
+import com.mpatric.mp3agic.Mp3FileExt;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -31,9 +36,29 @@ public class HelloWorld {
         String t2 = "Axwell Λ Ingrosso";
         System.out.println(t.equals(t2));
         MP3Helper mp3Helper =MP3Helper.getInstance();
-        System.out.println(mp3Helper.prettifyArtist("Syke’n’Sugarstarr"));
-        System.out.println(mp3Helper.prettifySong("Got 'Til It's Gone (Dj's at work"));
-        //System.out.println(MP3TagUtils.stripFilename("Skik - 't Giet Zoals ´t Giet.mp3"));
+        System.out.println(mp3Helper.prettifyArtist("B.O.B."));
+        System.out.println(mp3Helper.prettifySong("Sunshine (DJs From Mars RMX)"));
+        //System.out.println(MP3TagUtils.stripFilename("Got 'Til It's Gone (Djs at work)"));
+        updateMP3();
+
+    }
+
+    private static void updateMP3(){
+        Mp3File mp3file = null;
+        //String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\03 Vigiland Feat Thams Sway - Shots & Squats.mp3";
+        //String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\test.mp3";
+        String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\22 The Chainsmokers Ft. Rozes - Roses.mp3";
+        try {
+            mp3file = new Mp3File(file);
+            ID3v2 id3v2Tag = MP3Utils.getId3v2Tag(mp3file);
+            id3v2Tag.setTitle("test2");
+            id3v2Tag.setArtist("Axwell Λ Ingrosso");
+                mp3file.setId3v2Tag(id3v2Tag);
+                String newFile = file + ".MP3";
+                mp3file.save(newFile);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 

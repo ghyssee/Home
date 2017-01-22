@@ -22,7 +22,6 @@ switch ($method) {
         delete($file);
         break;
 }
-return;
 
 function getList(){
 
@@ -34,7 +33,7 @@ function getList(){
         $order = isset($_POST['order']) ? strval($_POST['order']) : 'asc';
         $sort = new CustomSort();
         $array = $sort->sortObjectArrayByField($mp3Prettifier->global->words, $field, $order);
-        $mp3Prettifier->words = $array;
+        $mp3Prettifier->global->words = $array;
     }
     $array = array_slice($mp3Prettifier->global->words, ($page-1)*$rows, $rows);
 
@@ -56,7 +55,8 @@ function update($file){
     assignField($word->newWord, "newWord", !HTML_SPECIAL_CHAR);
     $word->id = $id;
     $save = true;
-    if (objectExist($obj->words, "oldWord", $word->oldWord, true, "id", $word->id)) {
+    $test = $obj->{"global"}->{"words"};
+    if (objectExist($obj->global->words, "oldWord", $word->oldWord, true, "id", $word->id)) {
         //addError('colorCode', "Color Code already exist: " . $color->code);
         $errors = addErrorMsg('Global Word already exist: ' . $word->oldWord);
         $save = false;
@@ -66,7 +66,7 @@ function update($file){
         $wordBO->saveGlobalWord($word);
         $items = array();
         array_push($items, $word);
-        echo json_encode($items);
+        echo json_encode(array('success'=>true));
     }
     else {
         //write($file, json_encode(array('errorMsg'=>'Some errors occured.')));
@@ -83,7 +83,7 @@ function add($file)
     assignField($word->oldWord, "oldWord", !ESCAPE_HTML);
     assignField($word->newWord, "newWord", !ESCAPE_HTML);
     $save = true;
-    If (objectExist($obj->words, "oldWord", $word->oldWord, false)) {
+    If (objectExist($obj->{'global'}->{'words'}, "oldWord", $word->oldWord, false)) {
         $errors = addErrorMsg('Global Word already exist: ' . $word->oldWord);
         $save = false;
     }

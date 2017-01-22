@@ -76,27 +76,46 @@
 				url = {{$updateUrl}};
 			}
 		}
-		function save(){
+		function saveOld(){
 			$('#fm').form('submit',{
 				url: url,
 				onSubmit: function(){
 					return $(this).form('validate');
 				},
 				success: function(result){
-                    var result = eval('('+result+')');
-					if (result.errorMsg){
-						$.messager.show({
-							title: 'Error',
-							msg: result.errorMsg
-						});
-					} else {
-						$('#dlg').dialog('close');		// close the dialog
-						$('#dg').datagrid('reload');	// reload the user data
-					}
+                    //var data = eval('(' + data + ')');
+                    //if (data.success) {
+                    //var obj = JSON.parse(string);
+                        $('#dlg').dialog('close');		// close the dialog
+                        $('#dg').datagrid('reload');	// reload the user data
+                    //}
 				}
 			});
 		}
-		function deleteRecord(){
+
+        function save(){
+            $('#fm').form('submit',{
+                url: url,
+                onSubmit: function(){
+                    return $(this).form('validate');
+                },
+                success: function(result){
+                    //var result = eval('('+result+')');
+                    var result = JSON.parse(result);
+                    if (result.errorMsg){
+                        $.messager.show({
+                            title: 'Error',
+                            msg: result.errorMsg
+                        });
+                    } else {
+                        $('#dlg').dialog('close');		// close the dialog
+                        $('#dg').datagrid('reload');	// reload the user data
+                    }
+                }
+            });
+        }
+
+        function deleteRecord(){
 			var row = $('#dg').datagrid('getSelected');
 			if (row){
 				$.messager.confirm('Confirm','Are you sure you want to delete this {{$item}}?',function(r){

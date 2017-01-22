@@ -76,54 +76,6 @@ public class MP3TagChecker extends BatchJobV2{
         } catch (IOException e) {
             LogUtils.logError(log, e);
         }
-        /*
-        String file = "C:\\My Data\\tmp\\Java\\MP3Processor\\_test\\MNM Big Hits Best Of 2015\\05 Netsky feat. Digital Farm Animals - Work It Out.mp3";
-        file = "C:\\My Data\\tmp\\Java\\MP3Processor\\_test\\MNM Big Hits Best Of 2015\\105 Christine & The Queens - Christine.mp3";
-        String fileOK = "C:\\My Data\\tmp\\Java\\MP3Processor\\_test\\MNM Big Hits Best Of 2015\\209 Dotan - Hungry.mp3";
-        String fileOK2 = "C:\\My Data\\tmp\\Java\\MP3Processor\\_test\\MNM Big Hits Best Of 2015\\105 Christine & The Queens - Christine.mp3";
-        String newFile = "C:\\My Data\\tmp\\Java\\MP3Processor\\_test\\test.mp3";
-        ID3v2 id3v2 = readMP3File(fileOK2);
-        readMP3File2(newFile, id3v2);
-        */
-
-    }
-
-    private ID3v2 readMP3File(String file) {
-        Mp3File mp3file = null;
-        ID3v2 id3v2Tag = null;
-        try {
-            mp3file = new Mp3File(file);
-            id3v2Tag = MP3Utils.getId3v2Tag(mp3file);
-            String artist = "Axwell Λ Ingrosso";
-            //id3v2Tag.setArtist(artist);
-            //mp3file.removeId3v2Tag();
-            //mp3file.removeCustomTag();
-            mp3file.setId3v2Tag(id3v2Tag);
-            String newFile = "C:\\My Data\\tmp\\Java\\MP3Processor\\_test\\test.mp3";
-            mp3file.save(newFile);
-            log.info("test");
-        } catch (Exception e) {
-            LogUtils.logError(log, e);
-        }
-        return id3v2Tag;
-    }
-
-
-    private void readMP3File2(String file, ID3v2 testID) {
-        Mp3File mp3file = null;
-        try {
-            mp3file = new Mp3File(file);
-            ID3v2 id3v2Tag = MP3Utils.getId3v2Tag(mp3file);
-            String artist = "Axwell Λ Ingrosso";
-            String album = "test";
-            id3v2Tag.setArtist(artist);
-            //id3v2Tag.setAlbum(album);
-            //mp3file.setId3v2Tag(id3v2Tag);
-            //String newFile = "C:\\My Data\\tmp\\Java\\MP3Processor\\_test\\test.mp3";
-            //mp3file.save(newFile);
-        } catch (Exception e) {
-            LogUtils.logError(log, e);
-        }
     }
 
     public void export(){

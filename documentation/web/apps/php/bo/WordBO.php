@@ -37,9 +37,9 @@ class WordBO
         $file = $GLOBALS['file'];
         $obj = readJSON($file);
         $counter = 0;
-        foreach ($obj->global->words as $key => $value) {
+        foreach ($obj->{'global'}->{'words'} as $key => $value) {
             if (strcmp($value->id, $word->id) == 0) {
-                $obj->global->words[$counter] = $word;
+                $obj->{'global'}->{'words'}[$counter] = $word;
                 writeJSON($obj, $file);
                 return true;
             }
@@ -48,7 +48,7 @@ class WordBO
         return false;
     }
 
-    function addGlobalWord($word)
+    function addGlobalWord1($word)
     {
         $file = $GLOBALS['file'];
         $obj = readJSON($file, JSON_ASSOCIATIVE);
@@ -57,16 +57,16 @@ class WordBO
         writeJSON($obj, $file);
     }
 
-    function addGlobalWord2($word)
+    function addGlobalWord($word)
     {
         $file = $GLOBALS['file'];
         $obj = readJSON($file);
         $word->id = getUniqueId();
-        array_push($obj->global->words, $word);
+        array_push($obj->{'global'}->{'words'}, $word);
         writeJSON($obj, $file);
     }
 
-    function deleteGlobalWord($field, $id)
+    function deleteGlobalWord3($field, $id)
     {
         $file = $GLOBALS['file'];
         $obj = readJSON($file, JSON_ASSOCIATIVE);
@@ -85,20 +85,22 @@ class WordBO
 
     }
 
-    function deleteGlobalWord2($id)
+    function deleteGlobalWord($field, $id)
     {
         $file = $GLOBALS['file'];
         $obj = readJSON($file);
-        $key = array_search($id, array_column($obj->words, 'id'));
+        $key = array_search($field, array_column($obj->{'global'}->{'words'}, 'id'));
         if ($key === false) {
             return false;
 
         } else {
-            unset($obj->words[$key]);
+            unset($obj->{'global'}->{'words'}[$key]);
             writeJSON($obj, $file);
         }
         return true;
 
+
     }
+
 }
 ?>

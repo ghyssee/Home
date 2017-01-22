@@ -12,12 +12,12 @@ public class BufferToolsExt extends BufferTools {
     protected static final String defaultCharsetName = "UTF-8";
 
     public static void stringIntoByteBuffer(String var0, int var1, int var2, byte[] var3, int var4) throws UnsupportedEncodingException {
-        stringIntoByteBuffer(var0, var1, var2, var3, var4, "UTF-8");
+        stringIntoByteBuffer(var0, var1, var2, var3, var4, defaultCharsetName);
     }
 
     public static String byteBufferToStringIgnoringEncodingIssues(byte[] var0, int var1, int var2) {
         try {
-            return byteBufferToString(var0, var1, var2, "UTF-8");
+            return byteBufferToString(var0, var1, var2, defaultCharsetName);
         } catch (UnsupportedEncodingException var4) {
             return null;
         }
