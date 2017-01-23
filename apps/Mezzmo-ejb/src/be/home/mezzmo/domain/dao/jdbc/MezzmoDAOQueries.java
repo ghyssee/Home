@@ -110,11 +110,6 @@ public class MezzmoDAOQueries extends MezzmoDB {
             .addCondition(MGOFileColumns.ID, Comparator.EQUALS, SQLBuilder.PARAMETER)
             .render();
 
-    protected static final String FILE_SYNC_PLAYCOUNT_OLD = "UPDATE MGOFile " +
-            " SET PlayCount = ?" +
-            " ,DateLastPlayed = ?" +
-            " WHERE ID = ?";
-
     protected static String LIST_ALBUMS = SQLBuilder.getInstance()
             .select()
             .enableDistinct()
@@ -172,19 +167,6 @@ public class MezzmoDAOQueries extends MezzmoDB {
             .render();
 
 
-    protected static final String LIST_TOP20_OLD = "SELECT FileTitle AS FILETITLE, PlayCount AS PLAYCOUNT, Title AS TITLE, " +
-            " FA.DATA AS ARTIST, PLL.ID AS PLAYLIST_ID, MGoFile.ID AS FILE_ID, MGOFile.File AS FILE, " +
-            " MGOFile.duration AS DURATION" +
-            " FROM MGOPlaylist_To_File AS PLF" +
-            " INNER JOIN MGOFile ON (PLF.FileID = MGOFile.ID)" +
-            " INNER JOIN MGOPlaylist AS PLL ON (PLF.PlayListID = PLL.ID)" +
-            " INNER JOIN MGOFileArtistRelationship AS FAR ON (MGOFile.ID = FAR.FileID)" +
-            " INNER JOIN MGOFileArtist AS FA ON (FAR.ID = FA.ID)" +
-            " WHERE PLL.type = 32" +
-            " AND PLL.Name = '11 Top Of The Moment'" +
-            " ORDER BY PLF.rowid " +
-            " LIMIT 0,20";
-
     protected static final String FIND_BY_FILE = SQLBuilder.getInstance()
             .select()
             .addTable(TablesEnum.MGOFile)
@@ -218,30 +200,6 @@ public class MezzmoDAOQueries extends MezzmoDB {
             "AND MGOFileExtension.data = 'mp3' " +
             "AND MGOFileAlbum.id like ? " +
             "LIMIT 0,1";
-
-    protected static final String LIST_CUSTOM_OLD = "SELECT MGOFile.File AS FILE, " +
-            "MGOFile.FileTitle AS FILETITLE, " +
-            "MGOFile.Duration AS DURATION, " +
-            "MGOFile.Playcount AS PLAYCOUNT, " +
-            "MGOFile.Title AS TITLE, " +
-            "MGOFile.Id AS FILE_ID, " +
-            "MGOFileAlbum.data AS ALBUM, " +
-            "MGOFileArtist.data AS ARTIST " +
-            "FROM MGOFileAlbumRelationship " +
-            "INNER JOIN MGOFileAlbum ON (MGOFileAlbum.ID = MGOFileAlbumRelationship.ID) " +
-            "INNER JOIN MGOAlbumArtistRelationship ON (MGOAlbumArtistRelationship.fileID = MGOFileAlbumRelationship.fileID) " +
-            "INNER JOIN MGOAlbumArtist ON (MGOAlbumArtist.ID = MGOAlbumArtistRelationship.ID) " +
-            "INNER JOIN MGOFile ON (MGOFile.ID = MGOAlbumArtistRelationship.fileID) " +
-            "INNER JOIN MGOFileExtension ON (MGOFileExtension.ID = MGOFILE.extensionID) " +
-            "INNER JOIN MGOFileArtistRelationship ON (MGOFileArtistRelationship.fileID = MGOFile.id) " +
-            "INNER JOIN MGOFileArtist ON (MGOFileArtist.id = MGOFileArtistRelationship.id) " +
-            "WHERE 1=1 " +
-            "AND MGOFileExtension.data = 'mp3' " +
-            "AND ( " +
-            "{WHERE} " +
-            ") " +
-            "ORDER BY RANDOM() " +
-            "LIMIT 0,? ";
 
     protected static SQLBuilder LIST_CUSTOM = ((SQLBuilder) SerializationUtils.clone(FILE_FIND_BASIC))
             .orderBy("RANDOM()")

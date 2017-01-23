@@ -355,15 +355,6 @@ public class SQLBuilder implements Cloneable, Serializable {
                     .append(first ? "" : ", ")
                     .append(column.field);
 
-            /*
-            String columnAlias = column.columnAlias == null ? column.column.name() : column.columnAlias;
-            sb
-                    .append(first ? "" : ", ")
-                    .append(column.dbAlias)
-                    .append(".")
-                    .append(column.column.getColumnName())
-                    .append( " AS ")
-                    .append(columnAlias);*/
             first = false;
         }
         return sb.toString();
@@ -372,13 +363,6 @@ public class SQLBuilder implements Cloneable, Serializable {
     private String insertFields(){
         boolean first = true;
         StringBuilder sb = new StringBuilder();
-        /*
-        for (Column column : this.dbColumns){
-            sb
-                    .append(first ? "" : ", ")
-                    .append(column.column.getColumnName());
-            first = false;
-        }*/
         for (DatabaseColumn column : this.mainTable.columns()) {
             if (!isSequence(column)){
                 sb
