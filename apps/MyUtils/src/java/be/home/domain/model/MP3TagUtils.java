@@ -491,6 +491,7 @@ public class MP3TagUtils {
         strippedFilename = strippedFilename.replaceAll("[Ý]", "Y");
         strippedFilename = strippedFilename.replaceAll("AC/DC", "ACDC");
         strippedFilename = strippedFilename.replaceAll("X!nk", "Xink");
+        strippedFilename = strippedFilename.replaceAll("F\\*cking", "Fucking");
         strippedFilename = strippedFilename.replace("/", "&");
         strippedFilename = strippedFilename.replace("æ", "ae");
         strippedFilename = strippedFilename.replace("Æ", "AE");

@@ -38,8 +38,8 @@ public class HelloWorld {
         MP3Helper mp3Helper =MP3Helper.getInstance();
         System.out.println(mp3Helper.prettifyArtist("B.O.B."));
         System.out.println(mp3Helper.prettifySong("Sunshine (DJs From Mars RMX)"));
-        //System.out.println(MP3TagUtils.stripFilename("Got 'Til It's Gone (Djs at work)"));
-        updateMP3();
+       // System.out.println(MP3TagUtils.stripFilename("Britt - F*cking Vet!!!.mp3"));
+        //updateMP3();
 
     }
 

@@ -38,6 +38,7 @@ public class MP3TagChecker extends BatchJobV2{
     public static ConfigTO.Config config;
     private static final Logger log = getMainLog(MP3TagChecker.class);
     public AlbumError albumErrors = (AlbumError) JSONUtils.openJSONWithCode(Constants.JSON.ALBUMERRORS, AlbumError.class);
+    public int MAX_ITEMS = 1000;
 
     public static void main(String args[]) {
 
@@ -63,6 +64,7 @@ public class MP3TagChecker extends BatchJobV2{
         //System.out.println(stripFilename("Can't Feel"));
         if (mp3Settings.mezzmo.mp3Checker.check) {
             export();
+            log.info("Nr Of Errors found: " + albumErrors.items.size());
         }
         try {
             int nr = processErrors();
@@ -76,6 +78,13 @@ public class MP3TagChecker extends BatchJobV2{
         } catch (IOException e) {
             LogUtils.logError(log, e);
         }
+    }
+
+    private boolean maxItemsReached(){
+        if (albumErrors.items.size() >= MAX_ITEMS || MAX_ITEMS == 0){
+            return true;
+        }
+        return false;
     }
 
     public void export(){
@@ -94,6 +103,9 @@ public class MP3TagChecker extends BatchJobV2{
             for (String line : lines){
                 nrAlbumsToCheck++;
                 if (StringUtils.isBlank(line)){
+                    break;
+                }
+                if (maxItemsReached()){
                     break;
                 }
                 albumTO.setName(line.trim());
@@ -118,6 +130,9 @@ public class MP3TagChecker extends BatchJobV2{
                             log.warn("Problem Making Status Page");
                         }
                         processAlbum(comp);
+                        if (maxItemsReached()){
+                            break;
+                        }
                     }
                 }
             }
