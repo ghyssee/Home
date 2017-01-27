@@ -3,11 +3,9 @@ include_once("../setup.php");
 ?>
 <html>
 <head>
-        <link rel="stylesheet" type="text/css" href="../../css/stylesheet.css">
-        <link rel="stylesheet" type="text/css" href="../../Themes/easyui/metro-blue/easyui.css">
-        <link rel="stylesheet" type="text/css" href="../../Themes/easyui/icon.css">
-        <script type="text/javascript" src="../../js/jquery-3.1.1.js"></script>
-        <script type="text/javascript" src="../../js/jquery.easyui.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="<?php echo webPath(ROOT_CSS, 'stylesheet.css')?>">
+    <link rel="stylesheet" type="text/css" href="<?php echo webPath(ROOT_CSS, 'form.css')?>">
+    <?php include documentRoot ("apps/php/templates/easyui.php");?>
 </head>
 <body style="background">
 
