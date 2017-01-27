@@ -38,7 +38,6 @@ public class MP3TagChecker extends BatchJobV2{
     public static ConfigTO.Config config;
     private static final Logger log = getMainLog(MP3TagChecker.class);
     public AlbumError albumErrors = (AlbumError) JSONUtils.openJSONWithCode(Constants.JSON.ALBUMERRORS, AlbumError.class);
-    public int MAX_ITEMS = 1000;
 
     public static void main(String args[]) {
 
@@ -63,7 +62,7 @@ public class MP3TagChecker extends BatchJobV2{
 
         //System.out.println(stripFilename("Can't Feel"));
         if (mp3Settings.mezzmo.mp3Checker.check) {
-            export();
+            export(mp3Settings.mezzmo.mp3Checker);
             log.info("Nr Of Errors found: " + albumErrors.items.size());
         }
         try {
@@ -80,14 +79,14 @@ public class MP3TagChecker extends BatchJobV2{
         }
     }
 
-    private boolean maxItemsReached(){
-        if (albumErrors.items.size() >= MAX_ITEMS || MAX_ITEMS == 0){
+    private boolean maxItemsReached(int maxErrors){
+        if (albumErrors.items.size() >= maxErrors || maxErrors == 0){
             return true;
         }
         return false;
     }
 
-    public void export(){
+    public void export(MP3Settings.Mezzmo.Mp3Checker mp3checker){
 
         TransferObject to = new TransferObject();
         if (albumErrors == null){
@@ -105,7 +104,7 @@ public class MP3TagChecker extends BatchJobV2{
                 if (StringUtils.isBlank(line)){
                     break;
                 }
-                if (maxItemsReached()){
+                if (maxItemsReached(mp3checker.maxNumberOfErrors)){
                     break;
                 }
                 albumTO.setName(line.trim());
@@ -130,7 +129,7 @@ public class MP3TagChecker extends BatchJobV2{
                             log.warn("Problem Making Status Page");
                         }
                         processAlbum(comp);
-                        if (maxItemsReached()){
+                        if (maxItemsReached(mp3checker.maxNumberOfErrors)){
                             break;
                         }
                     }

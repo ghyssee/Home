@@ -70,11 +70,14 @@ public class MP3Settings {
         public List<MezzmoBase> baseList;
         public MezzmoActiveBase activeBase;
         public Mp3Checker mp3Checker;
+
+        public class Mp3Checker {
+            public boolean check;
+            public int maxNumberOfErrors;
+        }
     }
 
-    public class Mp3Checker {
-        public boolean check;
-    }
+
 
     public class MezzmoActiveBase {
         public String defaultId;
