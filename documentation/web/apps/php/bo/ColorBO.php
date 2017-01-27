@@ -1,6 +1,6 @@
 <?php
 require_once documentPath (ROOT_PHP, "config.php");
-require_once documentPath (ROOT_PHP_HTML, "HTML.php");
+require_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 
 $htmlFile = getFullPath(JSON_HTML);
 
