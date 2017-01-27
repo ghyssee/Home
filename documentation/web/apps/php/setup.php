@@ -16,6 +16,21 @@ const FILE_ALBUMEXCLUDE = "albumsToExclude";
 const APPEND = true;
 const ESCAPE_HTML = true;
 const JSON_ASSOCIATIVE = true;
+define ('DOCUMENT_ROOT', $_SERVER["CONTEXT_DOCUMENT_ROOT"]);
+define ('WEB_ROOT', "/catalog");
+define ('ROOT_APPS', DOCUMENT_ROOT . "/apps");
+define ('ROOT_PHP', ROOT_APPS . "/php");
+define ('ROOT_PHP_BO', ROOT_PHP . "/bo");
+define ('ROOT_PHP_CONFIGURATION', ROOT_PHP . "/configuration");
+define ('ROOT_PHP_HTML', ROOT_PHP . "/html");
+define ('ROOT_PHP_JOBS', ROOT_PHP . "/jobs");
+define ('ROOT_PHP_MODEL', ROOT_PHP . "/model");
+define ('ROOT_PHP_TEMPLATES', ROOT_PHP . "/templates");
+define ('ROOT_PHP_UTILS', ROOT_PHP . "/utils");
+define ('ROOT_PHP_VIEW', ROOT_PHP . "/view");
+define ('ROOT_CSS', ROOT_APPS . "/css");
+define ('ROOT_JS', ROOT_APPS . "/js");
+define ('ROOT_THEMES', ROOT_APPS . "/themes");
 
 function initSetup(){
     if (isset($GLOBALS["SETUP"])){
@@ -30,6 +45,20 @@ function initSetup(){
         $GLOBALS["SETUP"] = $setupObj;
         return $setupObj;
     }
+}
+
+function documentRoot($string){
+    return DOCUMENT_ROOT . "/" . $string;
+}
+
+function documentPath($path, $string){
+    return $path . "/" . $string;
+}
+
+
+function webPath($path, $string){
+    $path = str_replace(DOCUMENT_ROOT, WEB_ROOT, $path);
+    return $path . "/" . $string;
 }
 
 function getFullPath($pathId)

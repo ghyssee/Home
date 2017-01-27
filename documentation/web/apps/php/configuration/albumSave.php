@@ -1,11 +1,12 @@
-<html>
-<body>
 <?php
-include_once("../config.php");
-include_once("../html/config.php");
-include_once("../model/HTML.php");
+include_once("../setup.php");
+include_once documentPath (ROOT_PHP, "config.php");
+include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
+include_once documentPath (ROOT_PHP_HTML, "config.php");
 session_start();
 ?>
+<html>
+<body>
 <style>
 .emptySpace {
 	height:100px

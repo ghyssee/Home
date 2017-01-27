@@ -36,6 +36,12 @@ function assignField(&$field, $value, $isHtml = true)
 	}
 }
 
+function assignNumber(&$field, $value, $isHtml = true)
+{
+	assignField($field, $value, $isHtml);
+    $field = intval($field);
+}
+
 function assignCheckbox(&$field, $value){
    $field = isset($_POST[$value]);
 }

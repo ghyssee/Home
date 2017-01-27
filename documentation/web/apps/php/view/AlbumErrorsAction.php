@@ -3,6 +3,7 @@ include_once("../setup.php");
 include_once("../config.php");
 include_once("../model/HTML.php");
 include_once("../bo/ColorBO.php");
+//include_once("../html/config.php");
 
 $file = getFullPath(JSON_ALBUMERRORS);
 
@@ -33,8 +34,10 @@ function updateSettings(){
     session_start();
     $mp3SettingsObj = readJSONWithCode(JSON_MP3SETTINGS);
 	assignCheckbox($mp3SettingsObj->mezzmo->mp3Checker->check, "check");
+	assignNumber($mp3SettingsObj->mezzmo->mp3Checker->maxNumberOfErrors, "maxNumberOfErrors");
 	writeJSONWithCode($mp3SettingsObj, JSON_MP3SETTINGS);
-    header("Location: " . $_SESSION["previous_location"]);
+	//addInfo("mp3SettingsObj", "Contents saved to '" . getFullPath(JSON_MP3SETTINGS));
+	header("Location: " . $_SESSION["previous_location"]);
 }
 
 function selectRows($selObj){

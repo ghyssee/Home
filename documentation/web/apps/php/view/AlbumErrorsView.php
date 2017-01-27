@@ -1,11 +1,13 @@
+<?php
+include_once("../setup.php");
+?>
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="../../css/stylesheet.css">
-    <link rel="stylesheet" type="text/css" href="../../css/form.css">
-    <link rel="stylesheet" type="text/css" href="../../Themes/easyui/metro-blue/easyui.css">
-    <link rel="stylesheet" type="text/css" href="../../Themes/easyui/icon.css">
-    <script type="text/javascript" src="../../js/jquery-3.1.1.js"></script>
-    <script type="text/javascript" src="../../js/jquery.easyui.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../css/stylesheet.css">
+        <link rel="stylesheet" type="text/css" href="../../Themes/easyui/metro-blue/easyui.css">
+        <link rel="stylesheet" type="text/css" href="../../Themes/easyui/icon.css">
+        <script type="text/javascript" src="../../js/jquery-3.1.1.js"></script>
+        <script type="text/javascript" src="../../js/jquery.easyui.min.js"></script>
 </head>
 <body style="background">
 
@@ -22,14 +24,13 @@
 </style>
 
 <?php
-include_once("../setup.php");
-include_once("../config.php");
-include_once("../model/HTML.php");
-include_once("../html/config.php");
+session_start();
+include_once documentPath (ROOT_PHP, "config.php");
+include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
+include_once documentPath (ROOT_PHP_HTML, "config.php");
 $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
 $htmlObj = readJSONWithCode(JSON_ALBUMERRORS);
 $mp3SettingsObj = readJSONWithCode(JSON_MP3SETTINGS);
-session_start();
 $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
 $_SESSION['form_location'] = basename($_SERVER['PHP_SELF']);
 ?>
@@ -56,6 +57,13 @@ goMenu();
     $layout->checkBox(new Input(array('name' => "check",
         'label' => 'Check for modifications',
         'value' => $mp3SettingsObj->mezzmo->mp3Checker->check)));
+    $layout->inputBox(new Input(array('name' => "maxNumberOfErrors",
+        'size' => 5,
+        'label' => 'Max Number Of Errors',
+        'type' => 'number',
+        'min' => '1',
+        'max' => '10000',
+        'value' => $mp3SettingsObj->mezzmo->mp3Checker->maxNumberOfErrors)));
     $layout->button(new Input(array('name' => "mp3Check",
         'col' => 1,
         'value' => 'save',

@@ -1,3 +1,6 @@
+<?php
+include("../setup.php");
+?>
 <html>
 <head>
     <link rel="stylesheet" type="text/css" href="../../css/stylesheet.css">
@@ -5,11 +8,11 @@
 <body>
 
 <?php
-include("../setup.php");
-include("../config.php");
-include("../model/HTML.php");
-include("../html/config.php");
-include("../bo/ColorBO.php");
+include_once documentPath (ROOT_PHP, "config.php");
+include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
+include_once documentPath (ROOT_PHP_HTML, "config.php");
+include_once documentPath (ROOT_PHP_BO, "ColorBO.php");
+
 $htmlObj = readJSONWithCode(JSON_HTML);
 session_start();
 $_SESSION['previous_location'] = getUrl();

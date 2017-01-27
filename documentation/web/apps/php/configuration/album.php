@@ -1,16 +1,19 @@
+<?php
+include_once("../setup.php");
+?>
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="../../css/stylesheet.css">
-    <link rel="stylesheet" type="text/css" href="../../css/form.css">
+    <link rel="stylesheet" type="text/css" href="<?php echo webPath(ROOT_CSS, 'stylesheet.css')?>">
+    <link rel="stylesheet" type="text/css" href="<?php echo webPath(ROOT_CSS, 'form.css')?>">
 </head>
 <body>
 
 <?php
 session_start();
-include_once("../setup.php");
-include_once("../config.php");
-include_once("../html/config.php");
-include_once("../model/HTML.php");
+include_once documentPath (ROOT_PHP, "config.php");
+include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
+include_once documentPath (ROOT_PHP_HTML, "config.php");
+
 $mp3SettingsObj = readJSONWithCode(JSON_MP3SETTINGS);
 $mp3PreprocessorObj = readJSONWithCode(JSON_MP3PREPROCESSOR);
 $htmlObj = readJSONWithCode(JSON_HTML);

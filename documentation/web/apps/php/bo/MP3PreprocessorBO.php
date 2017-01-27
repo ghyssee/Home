@@ -1,6 +1,7 @@
 <?php
-require_once ("../config.php");
-require_once ("../model/HTML.php");
+require_once documentPath (ROOT_PHP, "config.php");
+require_once documentPath (ROOT_PHP_HTML, "HTML.php");
+
 $mp3PreprocessOrObj = getFullPath(JSON_MP3PREPROCESSOR);
 
 class MP3PreprocessorBO
