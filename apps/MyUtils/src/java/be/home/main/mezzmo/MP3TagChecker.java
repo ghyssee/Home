@@ -122,7 +122,7 @@ public class MP3TagChecker extends BatchJobV2{
                         log.info("Album: " + comp.getFileAlbumTO().getName());
                         try {
                             displayStatus(comp, outputFile, template, nrAlbumsToCheck, lines.size(),
-                                    nr++, listAlbums.size());
+                                    nr++, listAlbums.size(), mp3checker.maxNumberOfErrors);
                         }
                         catch (IOException e) {
                             // don't break batch because there was a problem writing status page
@@ -148,7 +148,7 @@ public class MP3TagChecker extends BatchJobV2{
 
     public void displayStatus(MGOFileAlbumCompositeTO comp, String outputFile, String template,
                               int nrAlbumsToCheck, int totalAlbumsToCheck,
-                              int nr, int total) throws IOException {
+                              int nr, int total, int maxNumberOfErrors) throws IOException {
         VelocityUtils vu = new VelocityUtils();
 
         VelocityContext context = new VelocityContext();
@@ -157,6 +157,8 @@ public class MP3TagChecker extends BatchJobV2{
         context.put("total", totalAlbumsToCheck);
         context.put("subProgress", nr);
         context.put("subTotal", total);
+        context.put("numberOfErrors", this.albumErrors.items.size());
+        context.put("maxNumberOfErrors", maxNumberOfErrors);
         context.put("esc", new EscapeTool());
         context.put("refresh", 2);
         vu.makeFile(template, outputFile, context);
@@ -308,6 +310,26 @@ public class MP3TagChecker extends BatchJobV2{
     }
 
     private void updateAlbum(AlbumError.Item item){
+
+        MGOFileAlbumCompositeTO comp = new MGOFileAlbumCompositeTO();
+        comp.getFileTO().setId(item.getFileId());
+        comp.getFileAlbumTO().setId(item.getId());
+        comp.getFileAlbumTO().setName(item.getOldValue());
+        try {
+            int nr = getMezzmoService().updateAlbum(comp, item.newValue);
+            if (nr > 0) {
+                log.info("Album updated: " + "Id: " + item.getId() +
+                        " / New Album: " + item.getNewValue() + " / " + nr + " record(s)");
+                //item.setDone(true);
+                updateMP3(item);
+            }
+        } catch (SQLException e) {
+            LogUtils.logError(log, e);
+        }
+
+    }
+
+    private void updateAlbum2(AlbumError.Item item){
         MGOFileAlbumCompositeTO comp = new MGOFileAlbumCompositeTO();
         comp.getFileAlbumTO().setId(item.getId());
         comp.getFileAlbumTO().setName(item.getNewValue());

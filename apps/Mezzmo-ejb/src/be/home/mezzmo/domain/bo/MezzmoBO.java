@@ -81,6 +81,14 @@ public class MezzmoBO extends BusinessObject {
 
     }
 
+    public MGOFileAlbumTO findAlbumByName (String album, String albumArtist) {
+        return getMezzmoAlbumDAO().findAlbumByName(album, albumArtist);
+    }
+
+    public MGOFileAlbumTO findAlbumById (long id) {
+        return getMezzmoAlbumDAO().findAlbumById(id);
+    }
+
     public List<MGOPlaylistTO> findPlaylist (MGOPlaylistTO search) {
         return getMezzmoPlaylistDAO().findPlaylist(search);
 
@@ -143,10 +151,22 @@ public class MezzmoBO extends BusinessObject {
         return getMezzmoDAO().updateLinkFileArtist2(comp);
     }
 
+    public List <MGOFileAlbumCompositeTO> findLinkedAlbum(MGOFileAlbumTO album){
+        return getMezzmoDAO().findLinkedAlbum(album);
+    }
+
+    public int updateLinkFileAlbum(MGOFileAlbumCompositeTO comp, long newAlbumId){
+        return getMezzmoDAO().updateLinkFileAlbum(comp, newAlbumId);
+    }
     public int deleteArtist(MGOFileArtistTO artist){
         return getMezzmoDAO().deleteArtist(artist);
     }
-
+    public int deleteAlbum(MGOFileAlbumTO album){
+        return getMezzmoDAO().deleteAlbum(album);
+    }
+    public Integer insertAlbum(MGOFileAlbumTO album){
+        return getMezzmoDAO().insertAlbum(album);
+    }
     public Map<String, MGOFileAlbumCompositeTO> getMaxDisc() {
 
         List<MGOFileAlbumCompositeTO> list = getMezzmoDAO().getMaxDisc();

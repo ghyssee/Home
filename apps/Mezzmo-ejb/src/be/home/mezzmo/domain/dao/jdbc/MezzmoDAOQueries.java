@@ -44,6 +44,7 @@ public class MezzmoDAOQueries extends MezzmoDB {
             .addRelation(addRelationAlbumWithArtist())
             .addRelation(TablesEnum.MGOFileExtension, MGOFileExtensionColumns.ID, TablesEnum.MGOFile, MGOFileColumns.EXTENSION_ID)
             .addCondition(TablesEnum.MGOFileExtension.alias(), MGOFileExtensionColumns.DATA, Comparator.EQUALS, MP3_EXT);
+
     protected static final String FIND_ALBUM = SQLBuilder.getInstance()
             .select()
             .addTable(TablesEnum.MGOFile)
@@ -57,6 +58,13 @@ public class MezzmoDAOQueries extends MezzmoDB {
             .addCondition(TablesEnum.MGOFileExtension.alias(), MGOFileExtensionColumns.DATA, Comparator.EQUALS, MP3_EXT)
             .addCondition(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUM, Comparator.LIKE)
             .addCondition(TablesEnum.MGOAlbumArtist.alias(), MGOAlbumArtistColumns.ALBUMARTIST, Comparator.LIKE)
+            .render();
+
+    protected static final String FIND_ALBUM_BY_ID = SQLBuilder.getInstance()
+            .select()
+            .addTable(TablesEnum.MGOFileAlbum)
+            .addColumns(TablesEnum.MGOFileAlbum)
+            .addCondition(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUMID, Comparator.EQUALS)
             .render();
 
     protected static final String FILE_FIND_TAGINFO_CRITERIA = ((SQLBuilder) SerializationUtils.clone(FILE_FIND_BASIC))
@@ -281,17 +289,17 @@ public class MezzmoDAOQueries extends MezzmoDB {
             .addCondition(MGOFileColumns.ID, Comparator.EQUALS, SQLBuilder.PARAMETER)
             .render();
 
-    protected static final String FILE_UPDATE_DISC = SQLBuilder.getInstance()
-            .update()
-            .addTable(TablesEnum.MGOFile)
-            .updateColumn(MGOFileColumns.DISC, Type.PARAMETER)
-            .addCondition(MGOFileColumns.ID, Comparator.EQUALS, SQLBuilder.PARAMETER)
-            .render();
-
     protected static final String FILE_UPDATE_TRACK = SQLBuilder.getInstance()
             .update()
             .addTable(TablesEnum.MGOFile)
             .updateColumn(MGOFileColumns.TRACK, Type.PARAMETER)
+            .addCondition(MGOFileColumns.ID, Comparator.EQUALS, SQLBuilder.PARAMETER)
+            .render();
+
+    protected static final String FILE_UPDATE_DISC = SQLBuilder.getInstance()
+            .update()
+            .addTable(TablesEnum.MGOFile)
+            .updateColumn(MGOFileColumns.DISC, Type.PARAMETER)
             .addCondition(MGOFileColumns.ID, Comparator.EQUALS, SQLBuilder.PARAMETER)
             .render();
 
@@ -347,10 +355,24 @@ public class MezzmoDAOQueries extends MezzmoDB {
             .addCondition(MGOFileArtistRelationshipColumns.FILEID, Comparator.EQUALS, SQLBuilder.PARAMETER)
             .render();
 
+    protected static final String UPDATE_LINK_FILE_ALBUM = SQLBuilder.getInstance()
+            .update()
+            .addTable(TablesEnum.MGOFileAlbumRelationship)
+            .updateColumn(MGOFileAlbumRelationshipColumns.ID, Type.PARAMETER)
+            .addCondition(MGOFileAlbumRelationshipColumns.ID, Comparator.EQUALS, SQLBuilder.PARAMETER)
+            .addCondition(MGOFileAlbumRelationshipColumns.FILEID, Comparator.EQUALS, SQLBuilder.PARAMETER)
+            .render();
+
     protected static final String DELETE_ARTIST = SQLBuilder.getInstance()
             .delete()
             .addTable(TablesEnum.MGOFileArtist)
             .addCondition(MGOFileArtistColumns.ARTISTID, Comparator.EQUALS, SQLBuilder.PARAMETER)
+            .render();
+
+    protected static final String DELETE_ALBUM = SQLBuilder.getInstance()
+            .delete()
+            .addTable(TablesEnum.MGOFileAlbum)
+            .addCondition(MGOFileAlbumColumns.ALBUMID, Comparator.EQUALS, SQLBuilder.PARAMETER)
             .render();
 
     protected static final String INSERT_ARTIST = SQLBuilder.getInstance()
@@ -358,4 +380,18 @@ public class MezzmoDAOQueries extends MezzmoDB {
             .addTable(TablesEnum.MGOFileArtist)
             .addColumns(TablesEnum.MGOFileArtist)
             .render();
+
+    protected static final String INSERT_ALBUM = SQLBuilder.getInstance()
+            .insert()
+            .addTable(TablesEnum.MGOFileAlbum)
+            .addColumns(TablesEnum.MGOFileAlbum)
+            .render();
+
+    protected static final String FIND_LINKED_ALBUM = SQLBuilder.getInstance()
+            .select()
+            .addTable(TablesEnum.MGOFileAlbumRelationship)
+            .addColumns(TablesEnum.MGOFileAlbumRelationship)
+            .addCondition(MGOFileAlbumRelationshipColumns.ID, Comparator.EQUALS, SQLBuilder.PARAMETER)
+            .render();
+
 }

@@ -39,6 +39,17 @@ public class MezzmoAlbumDAOImpl extends MezzmoRowMappers {
         return list;
     }
 
+    public MGOFileAlbumTO findAlbumByName(String album, String albumArtist){
+        Object[] params = {album, albumArtist == null ? "%"  : albumArtist};
+        return (MGOFileAlbumTO) getInstance().getJDBCTemplate().queryForObject(FIND_ALBUM, new SingleAlbumRowMapper(), params);
+    }
+
+
+    public MGOFileAlbumTO findAlbumById(long id){
+        Object[] params = {id};
+        return (MGOFileAlbumTO) getInstance().getJDBCTemplate().queryForObject(FIND_ALBUM_BY_ID, new SingleAlbumRowMapper(), params);
+    }
+
 
     public List<MGOFileAlbumCompositeTO> findAlbum2 (String album, String albumArtist){
         PreparedStatement stmt = null;

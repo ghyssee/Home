@@ -83,6 +83,12 @@ public class MP3Utils {
             if (set.getId().equals("PRIV")) {
                 // remove Private TAG from the MP3
             }
+            else if (set.getId().equals("MCDI")) {
+                /* remove TAG from the MP3
+                 This frame is intended for music that comes from a CD, so that the CD
+                can be identified in databases such as the CDDB
+                */
+            }
             else {
                 ID3v2FrameSet newFrame = new ID3v2FrameSet(set.getId());
                 for (ID3v2Frame f : set.getFrames()) {

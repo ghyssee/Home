@@ -36,9 +36,11 @@ public class HelloWorld {
         String t2 = "Axwell Λ Ingrosso";
         System.out.println(t.equals(t2));
         MP3Helper mp3Helper =MP3Helper.getInstance();
-        System.out.println(mp3Helper.prettifyArtist("B.O.B."));
-        System.out.println(mp3Helper.prettifySong("Sunshine (DJs From Mars RMX)"));
-       // System.out.println(MP3TagUtils.stripFilename("Britt - F*cking Vet!!!.mp3"));
+        System.out.println(mp3Helper.prettifyArtist("R.O.O.S"));
+        System.out.println(mp3Helper.prettifyArtist("Run-D.M.C Vs. Jason Nevin"));
+        System.out.println(mp3Helper.prettifySong("L.a Song"));
+        System.out.println(mp3Helper.prettifyAlbum("Yorin Fm"));
+        //System.out.println(MP3TagUtils.stripFilename("F**k It! (I Don't Want You Back)"));
         //updateMP3();
 
     }
@@ -47,7 +49,7 @@ public class HelloWorld {
         Mp3File mp3file = null;
         //String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\03 Vigiland Feat Thams Sway - Shots & Squats.mp3";
         //String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\test.mp3";
-        String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\22 The Chainsmokers Ft. Rozes - Roses.mp3";
+        String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\108 Di-Rect - Hungry For Love.mp3";
         try {
             mp3file = new Mp3File(file);
             ID3v2 id3v2Tag = MP3Utils.getId3v2Tag(mp3file);

@@ -198,11 +198,6 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
                         comp.getFileTO().getId()};
                 nr = getInstance().getJDBCTemplate().update(FILE_UPDATE_TITLE, params);
                 break;
-            case DISC:
-                params = new Object[] {comp.getFileTO().getDisc(),
-                        comp.getFileTO().getId()};
-                nr = getInstance().getJDBCTemplate().update(FILE_UPDATE_DISC, params);
-                break;
             case ARTIST:
                 nr = updateArtist(comp.getFileArtistTO());
                 break;
@@ -225,6 +220,10 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
             case TRACK:
                 params = new Object[] {comp.getFileTO().getTrack(), comp.getFileTO().getId()};
                 nr = getInstance().getJDBCTemplate().update(FILE_UPDATE_TRACK, params);
+                break;
+            case DISC:
+                params = new Object[] {comp.getFileTO().getDisc(), comp.getFileTO().getId()};
+                nr = getInstance().getJDBCTemplate().update(FILE_UPDATE_DISC, params);
                 break;
             default:
                 log.error("Unknown Type: " + mp3Tag.name());
@@ -279,6 +278,37 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
         return nr;
     }
 
+    public int deleteAlbum(MGOFileAlbumTO album){
+        Object[] params;
+        params = new Object[] {album.getId()};
+        int nr = getInstance().getJDBCTemplate().update(DELETE_ALBUM, params);
+        return nr;
+    }
+
+    public Integer insertAlbum(final MGOFileAlbumTO album){
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        getInstance().getJDBCTemplate().update(
+                new PreparedStatementCreator() {
+                    public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+                        PreparedStatement pst =
+                                con.prepareStatement(INSERT_ALBUM, new String[] {"id"});
+                        pst.setString(1, album.getName());
+                        return pst;
+                    }
+                },
+                keyHolder);
+        return (Integer)keyHolder.getKey();
+    }
+
+    public List <MGOFileAlbumCompositeTO> findLinkedAlbum(MGOFileAlbumTO album){
+        Object[] params = {
+                album.getId()
+        };
+        List <MGOFileAlbumCompositeTO> list = getInstance().getJDBCTemplate().query(FIND_LINKED_ALBUM, new SingleFileAlbumRowMapper(), params);
+        return list;
+    }
+
     public Integer insertArtist2(final MGOFileArtistTO artist){
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -299,6 +329,12 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
         Object[] params = {artist.getArtist()};
         Integer key = insertJDBC(getInstance().getJDBCTemplate(), params, INSERT_ARTIST, "id");
         return key;
+    }
+
+    public int updateLinkFileAlbum(MGOFileAlbumCompositeTO comp, long newAlbumId){
+        Object[] params = {newAlbumId, comp.getFileAlbumTO().getId(), comp.getFileTO().getId()};
+        int nr = getInstance().getJDBCTemplate().update(UPDATE_LINK_FILE_ALBUM, params);
+        return nr;
     }
 
 }

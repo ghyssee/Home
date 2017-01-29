@@ -25,6 +25,13 @@ public class MezzmoRowMappers extends MezzmoDAOQueries {
         }
     }
 
+    public static class SingleAlbumRowMapper implements RowMapper {
+        public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+            MGOFileAlbumTO album = mapFileAlbumTO(rs, rowNum);
+            return album;
+        }
+    }
+
     public static class AlbumArtistRowMapper implements RowMapper {
         public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
             MGOFileAlbumCompositeTO fileAlbumComposite = new MGOFileAlbumCompositeTO();
@@ -168,4 +175,13 @@ public class MezzmoRowMappers extends MezzmoDAOQueries {
         }
     }
 
+    public static class SingleFileAlbumRowMapper implements RowMapper {
+        public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+            MGOFileAlbumCompositeTO comp = new MGOFileAlbumCompositeTO();
+            comp.getFileTO().setId(getLong(rs, MGOFileAlbumRelationshipColumns.FILEID));
+            comp.getFileAlbumTO().setId(getLong(rs, MGOFileAlbumRelationshipColumns.ID));
+
+            return comp;
+        }
+    }
 }

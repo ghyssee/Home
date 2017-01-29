@@ -144,7 +144,7 @@ public class MP3TagUtils {
                     comp.getFileTO().getId(),
                     comp.getFileTO().getFile(),
                     comp.getFileAlbumTO().getName(),
-                    MP3Tag.DISC, String.valueOf(discFromDB), mp3Disc);
+                    MP3Tag.DISC, String.valueOf(discFromDB), mp3Disc.trim());
             try {
                 comp.getFileTO().setDisc(Integer.parseInt(mp3Disc));
             }
@@ -473,10 +473,12 @@ public class MP3TagUtils {
         String strippedFilename = filename;
         strippedFilename = strippedFilename.replaceAll("<3", "Love");
         strippedFilename = strippedFilename.replaceAll(" 't ", " Het ");
+        strippedFilename = strippedFilename.replaceAll("\\/\\/", "&");
         strippedFilename = strippedFilename.replaceAll("D\\*Note", "D-Note");
         strippedFilename = strippedFilename.replaceAll("B\\*\\*ch!", "Bitch!");
         strippedFilename = strippedFilename.replaceAll("\\*\\*\\*", "uck");
         strippedFilename = strippedFilename.replaceAll("\\*\\*", "uc");
+        strippedFilename = strippedFilename.replaceAll("F\\*ck", "Fuck");
         strippedFilename = strippedFilename.replaceAll("[áàâäåã]", "a");
         strippedFilename = strippedFilename.replaceAll("[ÁÀÂÄÅÃ]", "A");
         strippedFilename = strippedFilename.replaceAll("[éèêë]", "e");
@@ -504,6 +506,7 @@ public class MP3TagUtils {
         strippedFilename = strippedFilename.replace("ß", "ss");
         strippedFilename = strippedFilename.replace("²", "2");
         strippedFilename = strippedFilename.replace("³", "3");
+        strippedFilename = strippedFilename.replace("$hort", "Short");
         strippedFilename = strippedFilename.replace("Ch!pz", "Chipz");
         strippedFilename = strippedFilename.replace("M:ck", "Mick");
         strippedFilename = strippedFilename.replace("$hort", "Short");

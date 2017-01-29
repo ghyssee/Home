@@ -243,6 +243,51 @@ public class MezzmoServiceImpl {
 
     }
 
+
+    public int updateAlbum (MGOFileAlbumCompositeTO comp, String newAlbum) throws SQLException {
+        MezzmoBO bo = new MezzmoBO();
+        int nr = 0;
+        MGOFileAlbumTO album = null;
+        try {
+            album = bo.findAlbumById(comp.getFileAlbumTO().getId());
+            if (album.getName().equals(newAlbum)) {
+                log.info("Album: " + comp.getFileAlbumTO().getName() + " / No Update necessary");
+                return 1;
+            } else if (album.getName().equalsIgnoreCase(newAlbum)) {
+                log.info("Album: " + comp.getFileAlbumTO().getName() + " / Update The Album");
+                return 1;
+            }
+            try {
+                album = bo.findAlbumByName(newAlbum, comp.getAlbumArtistTO().getName());
+                nr = bo.updateLinkFileAlbum(comp, album.getId());
+                checkAlbummLinked(comp.getFileAlbumTO());
+                // link the file to this album
+            } catch (EmptyResultDataAccessException e) {
+                // album not found create new one
+                MGOFileAlbumTO newAlbumTO = new MGOFileAlbumTO();
+                newAlbumTO.setName(newAlbum);
+                Long albumId = new Long(bo.insertAlbum(newAlbumTO));
+                nr = bo.updateLinkFileAlbum(comp, albumId);
+            }
+        } catch (EmptyResultDataAccessException e) {
+            log.error("Album: " + comp.getFileAlbumTO().getName() + " / AlbumId Not Found: " + comp.getFileAlbumTO().getId());
+        }
+        return nr;
+    }
+
+    private void checkAlbummLinked(MGOFileAlbumTO album) {
+
+        MezzmoBO bo = new MezzmoBO();
+        List<MGOFileAlbumCompositeTO> list = bo.findLinkedAlbum(album);
+        if (list == null || list.size() == 0) {
+            // nothing linked to it, safe to delete the link + the album
+            int del = bo.deleteAlbum(album);
+            log.info("Nr Of Albums Deleted: " + del + " /Id: " + album.getId());
+        }
+    }
+
+
+
     public synchronized static MezzmoServiceImpl getInstance() {
         if(instance == null) {
             instance = new MezzmoServiceImpl();
