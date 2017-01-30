@@ -118,7 +118,7 @@ public class MezzmoDAOQueries extends MezzmoDB {
             .addCondition(MGOFileColumns.ID, Comparator.EQUALS, SQLBuilder.PARAMETER)
             .render();
 
-    protected static String LIST_ALBUMS = SQLBuilder.getInstance()
+    protected static SQLBuilder LIST_ALBUMS = SQLBuilder.getInstance()
             .select()
             .enableDistinct()
             .addTable(TablesEnum.MGOFile)
@@ -135,9 +135,10 @@ public class MezzmoDAOQueries extends MezzmoDB {
             .addGroup(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUM)
             .addGroup(TablesEnum.MGOAlbumArtist.alias(), MGOAlbumArtistColumns.ALBUMARTIST)
             .addGroup(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUMID)
-            .orderBy(TablesEnum.MGOFileAlbum, MGOFileAlbumColumns.ALBUM, SortOrder.ASC)
-            .render();
+            .orderBy(TablesEnum.MGOFileAlbum, MGOFileAlbumColumns.ALBUM, SortOrder.ASC);
 
+    protected static String LIST_ALBUMS_DEFAULT = ((SQLBuilder) SerializationUtils.clone(LIST_ALBUMS))
+            .render();
 
     protected static String LIST_ALBUMS_TRACKS = SQLBuilder.getInstance()
             .select()

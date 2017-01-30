@@ -49,36 +49,4 @@ public class MezzmoAlbumDAOImpl extends MezzmoRowMappers {
         Object[] params = {id};
         return (MGOFileAlbumTO) getInstance().getJDBCTemplate().queryForObject(FIND_ALBUM_BY_ID, new SingleAlbumRowMapper(), params);
     }
-
-
-    public List<MGOFileAlbumCompositeTO> findAlbum2 (String album, String albumArtist){
-        PreparedStatement stmt = null;
-        List<MGOFileAlbumCompositeTO> list = new ArrayList <MGOFileAlbumCompositeTO> ();
-        boolean error = false;
-        try {
-            Connection c = getInstance().getConnection();
-
-            stmt = c.prepareStatement(FIND_ALBUM_OLD);
-            stmt.setString(1, album);
-            stmt.setString(2, albumArtist == null ? "%"  : albumArtist);
-            ResultSet rs = stmt.executeQuery();
-            while ( rs.next() ) {
-                MGOFileAlbumCompositeTO comp = new MGOFileAlbumCompositeTO();
-                MGOFileAlbumTO fileAlbumTO = comp.getFileAlbumTO();
-                fileAlbumTO.setId(rs.getLong("ID"));
-                fileAlbumTO.setName(rs.getString("NAME"));
-                MGOAlbumArtistTO albumArtistTO = comp.getAlbumArtistTO();
-                albumArtistTO.setName(rs.getString("ALBUMARTIST"));
-                list.add(comp);
-            }
-            rs.close();
-            stmt.close();
-        } catch ( Exception e ) {
-            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-            System.exit(0);
-        }
-        return list;
-    }
-
-
 }

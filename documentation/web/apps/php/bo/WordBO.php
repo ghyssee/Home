@@ -96,6 +96,8 @@ class WordBO
 
         } else {
             unset($obj->{'global'}->{'words'}[$key]);
+            $array = array_values($obj->{'global'}->{'words'});
+            $obj->{'global'}->{'words'} = $array;
             writeJSON($obj, $file);
         }
         return true;

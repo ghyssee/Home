@@ -7,12 +7,14 @@ import java.io.Serializable;
  */
 public enum Comparator implements Serializable {
     LIKE("LIKE"),
+    NOT_LIKE("NOT LIKE"),
     EQUALS("="),
     GREATER(">"),
     GREATEREQUALS(">="),
     LESS("<"),
     LESSEQUALS("<="),
-    IN("IN");
+    IN("IN"),
+    NOT_IN("NOT IN");
 
     String comparator;
 

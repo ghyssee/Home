@@ -10,8 +10,11 @@ import be.home.common.model.DataBaseConfiguration;
 import be.home.common.utils.JSONUtils;
 import be.home.common.utils.WinUtils;
 import org.apache.log4j.Logger;
+import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -27,7 +30,7 @@ public class SQLiteJDBC
     public static DataBaseConfiguration config = null;
     public static Map <String, DataBaseConfiguration.DataBase> dbMap = new HashMap <String, DataBaseConfiguration.DataBase>();
     protected Connection c = null;
-    protected JdbcTemplate jdbcTemplate = null;
+    protected NamedParameterJdbcTemplate jdbcTemplate = null;
     private static final Logger log = Logger.getLogger(SQLiteJDBC.class);
 
     protected SQLiteJDBC() {
@@ -66,7 +69,7 @@ public class SQLiteJDBC
             url = "p6spy:";
         }
         dataSource.setUrl("jdbc:" + url + "sqlite:" + file.getAbsolutePath());
-        jdbcTemplate = new JdbcTemplate(dataSource);
+        jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         linkDatabase(database, jdbcTemplate);
 
         log.info("Initializing done");
@@ -84,13 +87,18 @@ public class SQLiteJDBC
         return ds;
     }
 
+    /*
     public Connection getConnection() throws SQLException {
 
         Connection con= jdbcTemplate.getDataSource().getConnection();
         return con;
+    }*/
+
+    public JdbcOperations getJDBCTemplate(){
+        return jdbcTemplate.getJdbcOperations();
     }
 
-    public JdbcTemplate getJDBCTemplate(){
+    public NamedParameterJdbcTemplate getNamedParameterJDBCTemplate(){
         return jdbcTemplate;
     }
 
@@ -100,10 +108,10 @@ public class SQLiteJDBC
         }
     }
 
-    public void linkDatabase (DataBaseConfiguration.DataBase db, JdbcTemplate jdbcTemplate)  {
+    public void linkDatabase (DataBaseConfiguration.DataBase db, NamedParameterJdbcTemplate jdbcTemplate)  {
         if (db.linkDB != null && db.linkDB.name != null) {
             Object[] params = {db.path + db.linkDB.name, db.linkDB.alias};
-            jdbcTemplate.update("ATTACH database ? AS ?", params);
+            jdbcTemplate.getJdbcOperations().update("ATTACH database ? AS ?", params);
         }
     }
 
@@ -183,7 +191,7 @@ public class SQLiteJDBC
         }
     }
 
-    protected int insertJDBC(JdbcTemplate template, final Object[] params, final String sql, final String id){
+    protected int insertJDBC(JdbcOperations template, final Object[] params, final String sql, final String id){
 
         final KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(
@@ -199,6 +207,27 @@ public class SQLiteJDBC
                     }
                 },
                 keyHolder);
+        return (Integer)keyHolder.getKey();
+
+    }
+
+    protected int insertJDBC2(NamedParameterJdbcTemplate template, final Object[] params, final String sql, final String id){
+
+        final KeyHolder keyHolder = new GeneratedKeyHolder();
+        /*
+        template.update(
+                new PreparedStatementCreator() {
+                    public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+                        PreparedStatement pst =
+                                con.prepareStatement(sql, new String[] {id});
+                        int index = 1;
+                        for (Object object : params) {
+                            setValue(pst, index++, object);
+                        }
+                        return pst;
+                    }
+                },
+                keyHolder);*/
         return (Integer)keyHolder.getKey();
 
     }

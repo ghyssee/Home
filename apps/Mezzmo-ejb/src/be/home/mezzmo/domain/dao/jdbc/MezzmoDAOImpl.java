@@ -1,6 +1,5 @@
 package be.home.mezzmo.domain.dao.jdbc;
 
-import be.home.common.dao.jdbc.QueryBuilder;
 import be.home.common.dao.jdbc.SQLiteUtils;
 import be.home.common.database.sqlbuilder.Comparator;
 import be.home.common.database.sqlbuilder.ConditionType;
@@ -18,10 +17,11 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
-import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by ghyssee on 9/02/2016.
@@ -76,9 +76,31 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
         else {
             params = new Object[] {albumTO.getName()};
         }
-        list = getInstance().getJDBCTemplate().query(LIST_ALBUMS, new AlbumRowMapper(), params);
+        list = getInstance().getJDBCTemplate().query(LIST_ALBUMS_DEFAULT, new AlbumRowMapper(), params);
         return list;
     }
+
+    public List<MGOFileAlbumCompositeTO> getAlbumsWithExcludeList(MGOFileAlbumTO albumTO, List <String> albumsToExclude,
+                                                                  TransferObject to)
+    {
+        SQLBuilder query = ((SQLBuilder) SerializationUtils.clone(LIST_ALBUMS));
+        List params = new ArrayList();
+        if (albumTO == null) {
+            params.add("%");
+        }
+        else {
+            params.add(albumTO.getName());
+        }
+        for (String albumToExclude : albumsToExclude){
+            query.addCondition(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUM, Comparator.NOT_LIKE);
+            params.add(albumToExclude);
+        }
+        List<MGOFileAlbumCompositeTO> list = null;
+        String sql = query.render();
+        list = getInstance().getJDBCTemplate().query(sql, new AlbumRowMapper(), params.toArray());
+        return list;
+    }
+
 
 
     public List<MGOFileAlbumCompositeTO> getAlbumTracks(TransferObject to)

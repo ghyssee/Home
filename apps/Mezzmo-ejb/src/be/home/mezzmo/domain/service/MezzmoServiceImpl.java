@@ -52,6 +52,12 @@ public class MezzmoServiceImpl {
         return bo.getAlbums(albumTO, to);
     }
 
+    public List<MGOFileAlbumCompositeTO> getAlbumsWithExcludeList(MGOFileAlbumTO albumTO, List <String> list,
+                                                                  TransferObject to){
+        MezzmoBO bo = new MezzmoBO();
+        return bo.getAlbumsWithExcludeList(albumTO, list, to);
+    }
+
     public List<MGOFileAlbumCompositeTO> getAlbumTracks(TransferObject to){
         MezzmoBO bo = new MezzmoBO();
         return bo.getAlbumTracks(to);
@@ -252,10 +258,10 @@ public class MezzmoServiceImpl {
             album = bo.findAlbumById(comp.getFileAlbumTO().getId());
             if (album.getName().equals(newAlbum)) {
                 log.info("Album: " + comp.getFileAlbumTO().getName() + " / No Update necessary");
-                return 1;
+                nr = 1;
             } else if (album.getName().equalsIgnoreCase(newAlbum)) {
                 log.info("Album: " + comp.getFileAlbumTO().getName() + " / Update The Album");
-                return 1;
+                nr = updateSong(comp, MP3Tag.ALBUM);
             }
             try {
                 album = bo.findAlbumByName(newAlbum, comp.getAlbumArtistTO().getName());
@@ -264,12 +270,16 @@ public class MezzmoServiceImpl {
                 // link the file to this album
             } catch (EmptyResultDataAccessException e) {
                 // album not found create new one
+                log.info("Album: " + comp.getFileAlbumTO().getName() + " / Update The Album");
                 MGOFileAlbumTO newAlbumTO = new MGOFileAlbumTO();
                 newAlbumTO.setName(newAlbum);
                 Long albumId = new Long(bo.insertAlbum(newAlbumTO));
+                log.info("New Album created: " + comp.getFileAlbumTO().getName() + "/Id: " + albumId);
                 nr = bo.updateLinkFileAlbum(comp, albumId);
             }
-        } catch (EmptyResultDataAccessException e) {
+        }
+        catch (EmptyResultDataAccessException e) {
+            // this should never occur
             log.error("Album: " + comp.getFileAlbumTO().getName() + " / AlbumId Not Found: " + comp.getFileAlbumTO().getId());
         }
         return nr;

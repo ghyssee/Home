@@ -80,7 +80,7 @@ public class MP3TagChecker extends BatchJobV2{
     }
 
     private boolean maxItemsReached(int maxErrors){
-        if (albumErrors.items.size() >= maxErrors || maxErrors == 0){
+        if (albumErrors.items.size() >= maxErrors && maxErrors != 0){
             return true;
         }
         return false;
@@ -96,8 +96,10 @@ public class MP3TagChecker extends BatchJobV2{
         //base = ""
         MGOFileAlbumTO albumTO = new MGOFileAlbumTO();
         File file = new File(Setup.getInstance().getFullPath(Constants.FILE.ALBUMS_TO_CHECK));
+        File excludeFile = new File(Setup.getInstance().getFullPath(Constants.FILE.ALBUMS_TO_EXCLUDE));
         try {
-            List<String> lines = FileUtils.getContents(file, StandardCharsets.UTF_8);
+            List<String> lines = FileUtils.getContents(file, StandardCharsets.UTF_8, FileUtils.REMOVE_EMPTY_LINES);
+            List<String> excludeAlbums = FileUtils.getContents(excludeFile, StandardCharsets.UTF_8, FileUtils.REMOVE_EMPTY_LINES);
             int nrAlbumsToCheck = 0;
             for (String line : lines){
                 nrAlbumsToCheck++;
@@ -108,7 +110,8 @@ public class MP3TagChecker extends BatchJobV2{
                     break;
                 }
                 albumTO.setName(line.trim());
-                List<MGOFileAlbumCompositeTO> listAlbums = getMezzmoService().getAlbums(albumTO, new TransferObject());
+                List<MGOFileAlbumCompositeTO> listAlbums = getMezzmoService().getAlbumsWithExcludeList(albumTO, excludeAlbums,
+                        new TransferObject());
                 if (listAlbums == null || listAlbums.size() == 0){
                     log.warn("No Album(s) found!!!");
                 }

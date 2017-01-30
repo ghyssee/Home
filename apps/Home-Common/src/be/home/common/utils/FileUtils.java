@@ -2,6 +2,7 @@ package be.home.common.utils;
 
 import be.home.common.exceptions.ApplicationException;
 import org.apache.commons.io.input.BOMInputStream;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.*;
@@ -19,6 +20,7 @@ import java.util.List;
 public class FileUtils {
 
 	private static final Logger log = Logger.getLogger(FileUtils.class);
+    public static final boolean REMOVE_EMPTY_LINES = true;
 
 	public static boolean isJPGFile(File fileName) {
 		if (fileName != null
@@ -111,10 +113,14 @@ public class FileUtils {
         return getContents(aFile, StandardCharsets.UTF_16);
     }
 	public static List<String> getContents(File aFile, Charset charSet) throws IOException {
-        return getContents(aFile, charSet.name());
+        return getContents(aFile, charSet.name(), false);
 	}
 
-	public static List<String> getContents(File aFile, String charSet) throws IOException {
+    public static List<String> getContents(File aFile, Charset charSet, boolean removeEmptyLines) throws IOException {
+        return getContents(aFile, charSet.name(), removeEmptyLines);
+    }
+
+    public static List<String> getContents(File aFile, String charSet, boolean removeEmptyLines) throws IOException {
 		// ...checks on aFile are elided
 		List<String> lines = new ArrayList();
 
@@ -132,7 +138,9 @@ public class FileUtils {
 				 * a row.
 				 */
 				while ((line = input.readLine()) != null) {
-					lines.add(line);
+					if (removeEmptyLines && StringUtils.isNotBlank(line)) {
+						lines.add(line);
+					}
 				}
 			} finally {
 				input.close();

@@ -50,6 +50,11 @@ public class MezzmoBO extends BusinessObject {
         return getMezzmoDAO().getAlbums(albumTO, to);
     }
 
+    public List<MGOFileAlbumCompositeTO> getAlbumsWithExcludeList(MGOFileAlbumTO albumTO, List<String> list,
+                                                                  TransferObject to){
+        return getMezzmoDAO().getAlbumsWithExcludeList(albumTO, list, to);
+    }
+
     public List<MGOFileAlbumCompositeTO> getAlbumTracks(TransferObject to){
         return getMezzmoDAO().getAlbumTracks(to);
     }
