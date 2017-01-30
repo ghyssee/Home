@@ -87,13 +87,13 @@ public class SQLiteJDBC
         return ds;
     }
 
-    /*
+/*
     public Connection getConnection() throws SQLException {
 
         Connection con= jdbcTemplate.getDataSource().getConnection();
         return con;
-    }*/
-
+    }
+*/
     public JdbcOperations getJDBCTemplate(){
         return jdbcTemplate.getJdbcOperations();
     }
@@ -189,9 +189,12 @@ public class SQLiteJDBC
         else if (object instanceof Timestamp){
             pst.setTimestamp(index, (Timestamp) object);
         }
+        else {
+            pst.setObject(index, object);
+        }
     }
 
-    protected int insertJDBC(JdbcOperations template, final Object[] params, final String sql, final String id){
+    protected Long insertJDBC(JdbcOperations template, final Object[] params, final String sql, final String id){
 
         final KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(
@@ -207,7 +210,7 @@ public class SQLiteJDBC
                     }
                 },
                 keyHolder);
-        return (Integer)keyHolder.getKey();
+        return (Long) keyHolder.getKey();
 
     }
 

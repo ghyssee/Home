@@ -307,20 +307,10 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
         return nr;
     }
 
-    public Integer insertAlbum(final MGOFileAlbumTO album){
-
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        getInstance().getJDBCTemplate().update(
-                new PreparedStatementCreator() {
-                    public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-                        PreparedStatement pst =
-                                con.prepareStatement(INSERT_ALBUM, new String[] {"id"});
-                        pst.setString(1, album.getName());
-                        return pst;
-                    }
-                },
-                keyHolder);
-        return (Integer)keyHolder.getKey();
+    public Long insertAlbum(final MGOFileAlbumTO album){
+        Object[] params = {album.getName()};
+        Long key = insertJDBC(getInstance().getJDBCTemplate(), params, INSERT_ALBUM, "id");
+        return key;
     }
 
     public List <MGOFileAlbumCompositeTO> findLinkedAlbum(MGOFileAlbumTO album){
@@ -347,9 +337,9 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
         return (Integer)keyHolder.getKey();
     }
 
-    public Integer insertArtist(final MGOFileArtistTO artist){
+    public Long insertArtist(final MGOFileArtistTO artist){
         Object[] params = {artist.getArtist()};
-        Integer key = insertJDBC(getInstance().getJDBCTemplate(), params, INSERT_ARTIST, "id");
+        Long key = insertJDBC(getInstance().getJDBCTemplate(), params, INSERT_ARTIST, "id");
         return key;
     }
 
