@@ -33,10 +33,13 @@ $smarty->assign('item','Global Word');
 $smarty->assign('tableWidth','800px');
 $smarty->assign('tableHeight','400px');
 $url = "MP3PrettifierAction.php";
+$cat1 = "global";
+$cat2 = "words";
 $smarty->assign('id',$fieldId);
-$smarty->assign('viewUrl',$url . "?method=list");
+$smarty->assign('viewUrl',constructUrl($url, "list", $cat1, $cat2));
 $smarty->assign('updateUrl',"'" . $url . "?method=update&id='+row['" . $fieldId . "']");
-$smarty->assign('newUrl',"'" . $url . "?method=add'");
+$smarty->assign('newUrl',"'" . constructUrl($url, "add", $cat1, $cat2) . "'");
+//$smarty->assign('newUrl',"'" . $url . "?method=add'");
 $smarty->assign('deleteUrl', $url . "?method=delete");
 
 
@@ -51,6 +54,12 @@ $smarty->assign("contacts", array(
 //$smarty->debugging = true;
 
 $smarty->display('TableGridV3.tpl');
+
+function constructUrl($url, $method, $cat1, $cat2){
+    $newUrl = $url . "?method=" . $method . "&cat1=" . $cat1 . "&cat2=" . $cat2;
+    return $newUrl;
+}
+
 ?>
 
 <br>

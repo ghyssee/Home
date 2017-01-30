@@ -7,10 +7,12 @@ include_once("../bo/WordBO.php");
 $file = getFullPath(JSON_MP3PRETTIFIER);
 
 $method = htmlspecialchars($_REQUEST['method']);
+$cat1 = htmlspecialchars($_REQUEST['cat1']);
+$cat2 = htmlspecialchars($_REQUEST['cat2']);
 
 switch ($method) {
     case "list":
-        getList();
+        getList($cat1, $cat2);
         break;
     case "update":
         update($file);
@@ -23,7 +25,7 @@ switch ($method) {
         break;
 }
 
-function getList(){
+function getList($cat1, $cat2){
 
     $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
     $rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
@@ -32,13 +34,13 @@ function getList(){
         $field = strval($_POST['sort']);
         $order = isset($_POST['order']) ? strval($_POST['order']) : 'asc';
         $sort = new CustomSort();
-        $array = $sort->sortObjectArrayByField($mp3Prettifier->global->words, $field, $order);
+        $array = $sort->sortObjectArrayByField($mp3Prettifier->{$cat1}->{$cat2}, $field, $order);
         $mp3Prettifier->global->words = $array;
     }
-    $array = array_slice($mp3Prettifier->global->words, ($page-1)*$rows, $rows);
+    $array = array_slice($mp3Prettifier->{$cat1}->{$cat2}, ($page-1)*$rows, $rows);
 
     $result = array();
-    $result["total"] = count($mp3Prettifier->global->words);
+    $result["total"] = count($mp3Prettifier->{$cat1}->{$cat2});
     $result["rows"] = $array;
     echo json_encode($result);
 }
