@@ -120,7 +120,7 @@ public class MezzmoBO extends BusinessObject {
         return getMezzmoDAO().findLinkedArtist(artist);
     }
 
-    public Integer insertArtist(MGOFileArtistTO artist){
+    public Long insertArtist(MGOFileArtistTO artist){
         return getMezzmoDAO().insertArtist(artist);
     }
 
@@ -169,7 +169,7 @@ public class MezzmoBO extends BusinessObject {
     public int deleteAlbum(MGOFileAlbumTO album){
         return getMezzmoDAO().deleteAlbum(album);
     }
-    public Integer insertAlbum(MGOFileAlbumTO album){
+    public Long insertAlbum(MGOFileAlbumTO album){
         return getMezzmoDAO().insertAlbum(album);
     }
     public Map<String, MGOFileAlbumCompositeTO> getMaxDisc() {

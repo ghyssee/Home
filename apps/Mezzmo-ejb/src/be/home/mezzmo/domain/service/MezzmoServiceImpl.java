@@ -196,12 +196,12 @@ public class MezzmoServiceImpl {
                     // this situation is only for examples like: Major Lazer Feat. Justin Bieber & MØ
                     // MØ and Mø is not case insensitive the same for SQLite, this will create a new artist for this
                     // situation
-                    Integer artistId = bo.insertArtist(comp.getFileArtistTO());
+                    Long artistId = bo.insertArtist(comp.getFileArtistTO());
                     if (artistId != null){
                         log.info("New Artist created: " + comp.getFileArtistTO().getArtist() + "/Id: " + artistId);
                         MGOFileArtistTO oldArtist = new MGOFileArtistTO();
                         oldArtist.setID(comp.getFileArtistTO().getID());
-                        comp.getFileArtistTO().setID(new Long(artistId));
+                        comp.getFileArtistTO().setID(artistId);
                         nr = bo.updateLinkFileArtist2(comp);
                         checkArtistLinked(oldArtist);
                     }
@@ -273,7 +273,7 @@ public class MezzmoServiceImpl {
                 log.info("Album: " + comp.getFileAlbumTO().getName() + " / Update The Album");
                 MGOFileAlbumTO newAlbumTO = new MGOFileAlbumTO();
                 newAlbumTO.setName(newAlbum);
-                Long albumId = new Long(bo.insertAlbum(newAlbumTO));
+                Long albumId = bo.insertAlbum(newAlbumTO);
                 log.info("New Album created: " + comp.getFileAlbumTO().getName() + "/Id: " + albumId);
                 nr = bo.updateLinkFileAlbum(comp, albumId);
             }
