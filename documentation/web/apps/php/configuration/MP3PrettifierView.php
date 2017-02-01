@@ -1,4 +1,23 @@
 <html>
+<style>
+    #column1 {
+        float: left;
+        width: 50%;
+    }
+    #column2 {
+        float: right ;
+        width: 50% ;
+    }
+    #innercolumn1 {
+        padding-left: 5px ;
+        padding-right: 5px ;
+    }
+    #innercolumn2 {
+        padding-left: 5px ;
+        padding-right: 5px ;
+    }
+</style>
+
 <head>
     <link rel="stylesheet" type="text/css" href="../../css/stylesheet.css">
     <link rel="stylesheet" type="text/css" href="../../Themes/easyui/metro-blue/easyui.css">
@@ -11,6 +30,8 @@
 <body>
 
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 include("../setup.php");
 include("../config.php");
 include("../html/config.php");
@@ -22,49 +43,41 @@ goMenu();
 <h1>MP3 Pretttifier</h1>
 <div class="horizontalLine">.</div>
 <br>
+<div id="container">
+    <div id="column1">
+        <div id="innercolumn1">
+            <?php include "MP3PrettifierViewGlobalWord.php"; ?>
+        </div>
+    </div>
+    <div id="column2">
+        <div id="innercolumn2">
+            <?php include "MP3PrettifierViewArtistWord.php"; ?>
+        </div>
+    </div>
+</div>
+<div id="container">
+    <div id="column1">
+        <div id="innercolumn1">
+            <?php include "MP3PrettifierViewArtistName.php"; ?>
+        </div>
+    </div>
+    <div id="column2">
+        <div id="innercolumn2">
+            <?php include "MP3PrettifierViewSongTitle.php"; ?>
+        </div>
+    </div>
+</div>
+<br>
+
 
 <?php
-include_once('Smarty.class.php');
+goMenu();
 
-$fieldId = "id";
-$smarty = initializeSmarty();
-$smarty->assign('title','Global Words');
-$smarty->assign('item','Global Word');
-$smarty->assign('tableWidth','800px');
-$smarty->assign('tableHeight','400px');
-$url = "MP3PrettifierAction.php";
-$cat1 = "global";
-$cat2 = "words";
-$smarty->assign('id',$fieldId);
-$smarty->assign('viewUrl',constructUrl($url, "list", $cat1, $cat2));
-$smarty->assign('updateUrl',"'" . $url . "?method=update&id='+row['" . $fieldId . "']");
-$smarty->assign('newUrl',"'" . constructUrl($url, "add", $cat1, $cat2) . "'");
-//$smarty->assign('newUrl',"'" . $url . "?method=add'");
-$smarty->assign('deleteUrl', $url . "?method=delete");
-
-
-$smarty->assign("contacts", array(
-        array("field" => "oldWord", "label"=>"Old Word", "size" => 50, "sortable" => true),
-        array("field" => "newWord", "label"=>"New Word", "size" => 50,"sortable" => true),
-        array("field" => "id", "label"=>"Id", "size" => 50, "hidden" => "true")
-    )
-);
-
-//** un-comment the following line to show the debug console
-//$smarty->debugging = true;
-
-$smarty->display('TableGridV3.tpl');
-
-function constructUrl($url, $method, $cat1, $cat2){
-    $newUrl = $url . "?method=" . $method . "&cat1=" . $cat1 . "&cat2=" . $cat2;
+function constructUrl($url, $method, $type, $category){
+    $newUrl = $url . "?method=" . $method . "&type=" . $type . "&category=" . $category;
     return $newUrl;
 }
 
-?>
-
-<br>
-<?php
-goMenu();
 ?>
 <br>
 

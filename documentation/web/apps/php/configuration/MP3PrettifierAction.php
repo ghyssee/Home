@@ -7,25 +7,31 @@ include_once("../bo/WordBO.php");
 $file = getFullPath(JSON_MP3PRETTIFIER);
 
 $method = htmlspecialchars($_REQUEST['method']);
-$cat1 = htmlspecialchars($_REQUEST['cat1']);
-$cat2 = htmlspecialchars($_REQUEST['cat2']);
+$type = htmlspecialchars($_REQUEST['type']);
+$category = htmlspecialchars($_REQUEST['category']);
 
-switch ($method) {
-    case "list":
-        getList($cat1, $cat2);
-        break;
-    case "update":
-        update($file);
-        break;
-    case "add":
-        add($file);
-        break;
-    case "delete":
-        delete($file);
-        break;
+try {
+    switch ($method) {
+        case "list":
+            getList($type, $category);
+            break;
+        case "update":
+            update($file, $type, $category);
+            break;
+        case "add":
+            add($file, $type, $category);
+            break;
+        case "delete":
+            delete($file, $type, $category);
+            break;
+    }
+}
+catch(Error $e) {
+    echo $e->getMessage();
 }
 
-function getList($cat1, $cat2){
+
+function getList($type, $category){
 
     $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
     $rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
@@ -34,13 +40,13 @@ function getList($cat1, $cat2){
         $field = strval($_POST['sort']);
         $order = isset($_POST['order']) ? strval($_POST['order']) : 'asc';
         $sort = new CustomSort();
-        $array = $sort->sortObjectArrayByField($mp3Prettifier->{$cat1}->{$cat2}, $field, $order);
-        $mp3Prettifier->global->words = $array;
+        $array = $sort->sortObjectArrayByField($mp3Prettifier->{$type}->{$category}, $field, $order);
+        $mp3Prettifier->{$type}->{$category} = $array;
     }
-    $array = array_slice($mp3Prettifier->{$cat1}->{$cat2}, ($page-1)*$rows, $rows);
+    $array = array_slice($mp3Prettifier->{$type}->{$category}, ($page-1)*$rows, $rows);
 
     $result = array();
-    $result["total"] = count($mp3Prettifier->{$cat1}->{$cat2});
+    $result["total"] = count($mp3Prettifier->{$type}->{$category});
     $result["rows"] = $array;
     echo json_encode($result);
 }
@@ -49,7 +55,7 @@ function addErrorMsg($msg){
     return array('errorMsg'=>$msg);
 }
 
-function update($file){
+function update($file, $type, $category){
     $id = $_REQUEST['id'];
     $obj = readJSON($file);
     $word = new Word();
@@ -58,14 +64,14 @@ function update($file){
     $word->id = $id;
     $save = true;
     $test = $obj->{"global"}->{"words"};
-    if (objectExist($obj->global->words, "oldWord", $word->oldWord, true, "id", $word->id)) {
+    if (objectExist($obj->{$type}->{$category}, "oldWord", $word->oldWord, true, "id", $word->id)) {
         //addError('colorCode', "Color Code already exist: " . $color->code);
-        $errors = addErrorMsg('Global Word already exist: ' . $word->oldWord);
+        $errors = addErrorMsg($type . ' ' . $category . ' already exist: ' . $word->oldWord);
         $save = false;
     }
     if ($save) {
         $wordBO = new WordBO();
-        $wordBO->saveGlobalWord($word);
+        $wordBO->saveGlobalWord($word, $type, $category);
         $items = array();
         array_push($items, $word);
         echo json_encode(array('success'=>true));
@@ -76,7 +82,7 @@ function update($file){
     }
 }
 
-function add($file)
+function add($file, $type, $category)
 {
 
     $obj = readJSON($file);
@@ -85,13 +91,13 @@ function add($file)
     assignField($word->oldWord, "oldWord", !ESCAPE_HTML);
     assignField($word->newWord, "newWord", !ESCAPE_HTML);
     $save = true;
-    If (objectExist($obj->{'global'}->{'words'}, "oldWord", $word->oldWord, false)) {
-        $errors = addErrorMsg('Global Word already exist: ' . $word->oldWord);
+    If (objectExist($obj->{$type}->{$category}, "oldWord", $word->oldWord, false)) {
+        $errors = addErrorMsg($type . ' ' . $category . ' already exist: ' . $word->oldWord);
         $save = false;
     }
     if ($save) {
         $wordBO = new WordBO();
-        $wordBO->addGlobalWord($word);
+        $wordBO->addGlobalWord($word, $type, $category);
         $items = array();
         array_push($items, $word);
         echo json_encode($items);
@@ -101,11 +107,11 @@ function add($file)
     exit();
 }
 
-function delete($file)
+function delete($file, $type, $category)
 {
     $id = $_REQUEST['id'];
     $wordBO = new WordBO();
-    $success = $wordBO->deleteGlobalWord($id);
+    $success = $wordBO->deleteGlobalWord($id, 'id', $type, $category);
     echo json_encode(array('success'=>$success));
 }
 

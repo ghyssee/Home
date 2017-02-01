@@ -9,27 +9,31 @@ $file = getFullPath(JSON_ALBUMERRORS);
 
 $method = htmlspecialchars($_REQUEST['method']);
 
-switch ($method) {
-	case "updateSettings":
-		updateSettings();
-	case "list":
-		getList();
-		break;
-	case "update":
-		update($file);
-		break;
-	case "add":
-		add($file);
-		break;
-	case "delete":
-        delete($file);
-		break;
-    case "select":
-        $sel = json_decode($_POST['selectedIds']);
-        selectRows($sel);
-        break;
+try {
+	switch ($method) {
+		case "updateSettings":
+			updateSettings();
+		case "list":
+			getList();
+			break;
+		case "update":
+			update($file);
+			break;
+		case "add":
+			add($file);
+			break;
+		case "delete":
+			delete($file);
+			break;
+		case "select":
+			$sel = json_decode($_POST['selectedIds']);
+			selectRows($sel);
+			break;
+	}
 }
-
+catch(Error $e) {
+	echo $e->getMessage();
+}
 function updateSettings(){
     session_start();
     $mp3SettingsObj = readJSONWithCode(JSON_MP3SETTINGS);

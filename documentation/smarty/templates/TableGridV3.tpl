@@ -1,6 +1,6 @@
-	<table id="dg" title="{{$title}}" class="easyui-datagrid" style="width:{{$tableWidth}};height:{{$tableHeight}}" idField="id"
+	<table id="dg{{$tablegrid}}" title="{{$title}}" class="easyui-datagrid" style="width:{{$tableWidth}};height:{{$tableHeight}}" idField="id"
 			url="{{$viewUrl}}"
-			toolbar="#toolbar" pagination="true" nowrap="false" rownumbers="true" fitColumns="true" singleSelect="true">
+			toolbar="#toolbar{{$tablegrid}}" pagination="true" nowrap="false" rownumbers="true" fitColumns="true" singleSelect="true">
 		<thead>
 		<tr>
 			{{if isset($checkbox)}}
@@ -11,6 +11,7 @@
 				width="{{$contacts[sec1].size}}"
 				{{if isset($contacts[sec1].formatter)}} formatter="{{$contacts[sec1].formatter}}"{{/if}}
                 {{if isset($contacts[sec1].sortable)}} sortable={{if $contacts[sec1].sortable}}"true"{{else}}"false"{{/if}}{{/if}}
+                {{if isset($contacts[sec1].checkbox)}} checkbox="true"{{/if}}
             >
                 {{$contacts[sec1].label}}
 			</th>
@@ -20,81 +21,70 @@
 	</table>
 
 	<span style="font-size:20px">
-	<div id="toolbar">
+	<div id="toolbar{{$tablegrid}}">
 	{{if isset($newUrl)}}
-		<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newRecord()">New {{$item}}</a>
+		<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newRecord{{$tablegrid}}()">New {{$item}}</a>
 	{{/if}}
 	{{if isset($updateUrl)}}
-		<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editRecord()">Edit {{$item}}</a>
+		<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editRecord{{$tablegrid}}()">Edit {{$item}}</a>
 	{{/if}}
 	{{if isset($deleteUrl)}}
-		<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteRecord()">Remove {{$item}}</a>
+		<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteRecord{{$tablegrid}}()">Remove {{$item}}</a>
 	{{/if}}
 	</div>
 	</span>
 
-	<div id="dlg" class="easyui-dialog" style="width:400px;height:280px;padding:10px 20px"
-			closed="true" buttons="#dlg-buttons">
+	<div id="dlg{{$tablegrid}}" class="easyui-dialog" style="width:400px;height:280px;padding:10px 20px"
+			closed="true" buttons="#dlg-buttons{{$tablegrid}}">
 		<div class="ftitle">{{$item}} Information</div>
-		<form id="fm" method="post" novalidate>
+		<form id="fm{{$tablegrid}}" method="post" novalidate>
 		
 			{{section name=sec1 loop=$contacts}}
 			  {{if !isset($contacts[sec1].hidden) OR !$contacts[sec1].hidden}}
 				<div class="fitem">
 					<label>{{$contacts[sec1].label}}</label>
-					<input name="{{$contacts[sec1].field}}" class="easyui-textbox" required="true">
+					<input name="{{$contacts[sec1].field}}"
+                            {{if isset($contacts[sec1].required)}} required="true"{{/if}}
+                            {{if isset($contacts[sec1].checkbox)}} class="easyui-checkbox" type="checkbox"
+                            {{else}} class="easyui-textbox"
+                            {{/if}}
+                    >
 				</div>
 				{{/if}}
 			{{/section}}
 
 		</form>
 	</div>
-	<div id="dlg-buttons">
-		<a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="save()" style="width:90px">Save</a>
-		<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')" style="width:90px">Cancel</a>
+	<div id="dlg-buttons{{$tablegrid}}">
+		<a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="save{{$tablegrid}}()" style="width:90px">Save</a>
+		<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg{{$tablegrid}}').dialog('close')" style="width:90px">Cancel</a>
 	</div>
 
 
 	<script type="text/javascript">
-		$('#dg').datagrid({
+		$('#dg{{$tablegrid}}').datagrid({
 			options:[[
 				{rowHeight:100}
 			]],
 			autoRowHeight:true
 		});
 		var url;
-		function newRecord(){
-			$('#dlg').dialog('open').dialog('setTitle','New {{$item}}');
-			$('#fm').form('clear');
+		function newRecord{{$tablegrid}}(){
+			$('#dlg{{$tablegrid}}').dialog('open').dialog('setTitle','New {{$item}}');
+			$('#fm{{$tablegrid}}').form('clear');
 			url = {{$newUrl}};
 		}
-		function editRecord(){
-			var row = $('#dg').datagrid('getSelected');
+		function editRecord{{$tablegrid}}(){
+			var row = $('#dg{{$tablegrid}}').datagrid('getSelected');
 			if (row){
-				$('#dlg').dialog('open').dialog('setTitle','Edit {{$item}}');
-				$('#fm').form('load',row);
+				$('#dlg{{$tablegrid}}').dialog('open').dialog('setTitle','Edit {{$item}}');
+				$('#fm{{$tablegrid}}').form('load',row);
 				url = {{$updateUrl}};
 			}
 		}
-		function saveOld(){
-			$('#fm').form('submit',{
-				url: url,
-				onSubmit: function(){
-					return $(this).form('validate');
-				},
-				success: function(result){
-                    //var data = eval('(' + data + ')');
-                    //if (data.success) {
-                    //var obj = JSON.parse(string);
-                        $('#dlg').dialog('close');		// close the dialog
-                        $('#dg').datagrid('reload');	// reload the user data
-                    //}
-				}
-			});
-		}
 
-        function save(){
-            $('#fm').form('submit',{
+        function save{{$tablegrid}}(){
+            $('#fm{{$tablegrid}}').form('submit',{
                 url: url,
                 onSubmit: function(){
                     return $(this).form('validate');
@@ -108,15 +98,15 @@
                             msg: result.errorMsg
                         });
                     } else {
-                        $('#dlg').dialog('close');		// close the dialog
-                        $('#dg').datagrid('reload');	// reload the user data
+                        $('#dlg{{$tablegrid}}').dialog('close');		// close the dialog
+                        $('#dg{{$tablegrid}}').datagrid('reload');	// reload the user data
                     }
                 }
             });
         }
 
-        function deleteRecord(){
-			var row = $('#dg').datagrid('getSelected');
+        function deleteRecord{{$tablegrid}}(){
+			var row = $('#dg{{$tablegrid}}').datagrid('getSelected');
 			if (row){
 				$.messager.confirm('Confirm','Are you sure you want to delete this {{$item}}?',function(r){
                     if (r){
@@ -125,7 +115,7 @@
                             url:     "{{$deleteUrl}}",
                             data:    {id: row.{{$id}}},
                             success: function(data) {
-                                $('#dg').datagrid('reload');
+                                $('#dg{{$tablegrid}}').datagrid('reload');
                             },
                             // vvv---- This is the new bit
                             error:   function(jqXHR, textStatus, errorThrown) {
