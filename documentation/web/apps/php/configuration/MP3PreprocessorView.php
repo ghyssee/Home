@@ -94,6 +94,7 @@ $layout->close();
 include_once('Smarty.class.php');
 
 $smarty = initializeSmarty();
+$smarty->assign('tablegrid',"Splitters");
 $smarty->assign('title','Splitter');
 $smarty->assign('item','Splitter Item');
 $smarty->assign('tableWidth','800px');
