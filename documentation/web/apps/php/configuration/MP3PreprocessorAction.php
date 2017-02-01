@@ -64,13 +64,13 @@ function getList(){
     $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
     $rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
     $mp3PreprocessorObj = readJSONWithCode(JSON_MP3PREPROCESSOR);
-    if (isset($_POST['sort'])){
+    //if (isset($_POST['sort'])){
         $field = isset($_POST['sort']) ? strval($_POST['sort']) : 'description';
         $order = isset($_POST['order']) ? strval($_POST['order']) : 'asc';
         $sort = new CustomSort();
         $array = $sort->sortObjectArrayByField($mp3PreprocessorObj->splitters, $field, $order);
         $mp3PreprocessorObj->splitters = $array;
-    }
+    //}
     $array = array_slice($mp3PreprocessorObj->splitters, ($page-1)*$rows, $rows);
     $result = array();
     $result["total"] = count($mp3PreprocessorObj->splitters);

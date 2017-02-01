@@ -36,13 +36,13 @@ function getList($type, $category){
     $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
     $rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
     $mp3Prettifier = readJSONWithCode(JSON_MP3PRETTIFIER);
-    if (isset($_POST['sort'])){
-        $field = strval($_POST['sort']);
+    //if (isset($_POST['sort'])){
+        $field = isset($_POST['sort']) ? strval($_POST['sort']) : 'oldWord';
         $order = isset($_POST['order']) ? strval($_POST['order']) : 'asc';
         $sort = new CustomSort();
         $array = $sort->sortObjectArrayByField($mp3Prettifier->{$type}->{$category}, $field, $order);
         $mp3Prettifier->{$type}->{$category} = $array;
-    }
+    //}
     $array = array_slice($mp3Prettifier->{$type}->{$category}, ($page-1)*$rows, $rows);
 
     $result = array();
