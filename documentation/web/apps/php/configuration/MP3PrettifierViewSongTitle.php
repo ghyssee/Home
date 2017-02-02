@@ -33,3 +33,18 @@ $smarty->assign("contacts", array(
 
 $smarty->display('TableGridV3.tpl');
 ?>
+
+<script type="text/javascript">>
+    $('#dgGlobalWord').datagrid('sort', {
+        sortName: 'oldWord',
+        sortOrder: 'asc'
+    });
+    }
+    $('#dgGlobalWord').datagrid({
+        onLoadSuccess:function(data){
+            $('#dgGlobalWord').datagrid('sort', {
+                sortName: 'oldWord',
+                sortOrder: 'asc'
+            });
+        }
+</script>

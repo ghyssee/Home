@@ -86,7 +86,13 @@ function add($file, $type, $category)
 {
 
     $obj = readJSON($file);
-    $word = new Word();
+    if (isset($_POST["parenthesis"])){
+        $word = new ExtWord();
+        $word->parenthesis = true;
+    }
+    else {
+        $word = new Word();
+    }
 
     assignField($word->oldWord, "oldWord", !ESCAPE_HTML);
     assignField($word->newWord, "newWord", !ESCAPE_HTML);
