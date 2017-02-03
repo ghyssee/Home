@@ -18,13 +18,15 @@ $smarty->assign('updateUrl',"'" . constructUrl($url, "update&id='+row['" . $fiel
 $smarty->assign('newUrl',"'" . constructUrl($url, "add", $type, $category) . "'");
 //$smarty->assign('newUrl',"'" . $url . "?method=add'");
 $smarty->assign('deleteUrl', constructUrl($url, "delete", $type, $category));
+$smarty->assign('onLoadSuccess', "testData(data);");
 //$smarty->assign('deleteUrl', $url . "?method=delete");
 
 
 $smarty->assign("contacts", array(
         array("field" => "oldWord", "label"=>"Old Word", "size" => 50, "required" => true, "sortable" => true),
         array("field" => "newWord", "label"=>"New Word", "size" => 50, "sortable" => true),
-        array("field" => "parenthesis", "label"=>"Parenthesis", "size" => 50, "checkbox" => true),
+        array("field" => "parenthesis", "label"=>"Parenthesis", "size" => 15, "formatter" => "checkboxFormatter", "align" => "center", "checkbox" => true),
+        array("field" => "exactMatch", "label"=>"Exact Match", "size" => 15, "formatter" => "checkboxFormatter", "align" => "center", "checkbox" => true),
         array("field" => "id", "label"=>"Id", "size" => 50, "hidden" => "true")
     )
 );
@@ -34,7 +36,11 @@ $smarty->assign("contacts", array(
 $smarty->display('TableGridV3.tpl');
 ?>
 
-<script type="text/javascript">>
+
+<script type="text/javascript">
+    function testData(data){
+    }
+
     $('#dgGlobalWord').datagrid('sort', {
         sortName: 'oldWord',
         sortOrder: 'asc'

@@ -14,6 +14,7 @@ public class MP3Prettifier {
         public String oldWord;
         public String newWord;
         public boolean parenthesis;
+        public boolean exactMatch;
     }
 
     public class Global {

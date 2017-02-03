@@ -96,7 +96,7 @@ function saveSongTitle($file, $mp3PrettifierObj){
 		addError ("songTitleOldWord", "Old Song Title " . $oldWord . " already exist");
 		$save = false;
 	}
-    $wordObj = new ExtWord($oldWord, $newWord, $parenthesis);
+    $wordObj = new ExtWord($oldWord, $newWord, $parenthesis, false);
 	$wordObj->id = getUniqueId();
 	if ($save) {
 		array_push ($mp3PrettifierObj->song->replacements, $wordObj);

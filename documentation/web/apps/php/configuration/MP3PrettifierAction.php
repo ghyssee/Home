@@ -1,8 +1,9 @@
 <?php
 include_once("../setup.php");
-include_once("../config.php");
-include_once("../model/HTML.php");
-include_once("../bo/WordBO.php");
+
+include_once documentPath (ROOT_PHP, "config.php");
+include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
+include_once documentPath (ROOT_PHP_BO, "WordBO.php");
 
 $file = getFullPath(JSON_MP3PRETTIFIER);
 
@@ -22,7 +23,7 @@ try {
             add($file, $type, $category);
             break;
         case "delete":
-            delete($file, $type, $category);
+            delete($type, $category);
             break;
     }
 }
@@ -55,15 +56,32 @@ function addErrorMsg($msg){
     return array('errorMsg'=>$msg);
 }
 
+function isExtWord($type, $category){
+    if ($type == "song" && $category == "replacements"){
+        return true;
+    }
+    else if ($type == "artist" && $category == "names"){
+        return true;
+    }
+    return false;
+
+    }
+
 function update($file, $type, $category){
     $id = $_REQUEST['id'];
     $obj = readJSON($file);
-    $word = new Word();
+    if (isExtWord($type, $category)){
+        $word = new ExtWord();
+        assignCheckbox($word->parenthesis, "parenthesis", !HTML_SPECIAL_CHAR);
+        assignCheckbox($word->exactMatch, "exactMatch", !HTML_SPECIAL_CHAR);
+    }
+    else {
+        $word = new Word();
+    }
     assignField($word->oldWord, "oldWord", !HTML_SPECIAL_CHAR);
     assignField($word->newWord, "newWord", !HTML_SPECIAL_CHAR);
     $word->id = $id;
     $save = true;
-    $test = $obj->{"global"}->{"words"};
     if (objectExist($obj->{$type}->{$category}, "oldWord", $word->oldWord, true, "id", $word->id)) {
         //addError('colorCode', "Color Code already exist: " . $color->code);
         $errors = addErrorMsg($type . ' ' . $category . ' already exist: ' . $word->oldWord);
@@ -86,9 +104,10 @@ function add($file, $type, $category)
 {
 
     $obj = readJSON($file);
-    if (isset($_POST["parenthesis"])){
+    if (isExtWord($type, $category)){
         $word = new ExtWord();
-        $word->parenthesis = true;
+        assignCheckbox($word->parenthesis, "parenthesis", !HTML_SPECIAL_CHAR);
+        assignCheckbox($word->exactMatch, "exactMatch", !HTML_SPECIAL_CHAR);
     }
     else {
         $word = new Word();
@@ -113,7 +132,7 @@ function add($file, $type, $category)
     exit();
 }
 
-function delete($file, $type, $category)
+function delete($type, $category)
 {
     $id = $_REQUEST['id'];
     $wordBO = new WordBO();

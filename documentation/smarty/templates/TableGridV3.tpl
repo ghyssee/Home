@@ -1,5 +1,8 @@
 	<table id="dg{{$tablegrid}}" title="{{$title}}" class="easyui-datagrid" style="width:{{$tableWidth}};height:{{$tableHeight}}" idField="id"
 			url="{{$viewUrl}}"
+		   data-options='fitColumns:false,
+		                 onLoadSuccess:function(data){ {{if isset($onLoadSuccess)}}{{$onLoadSuccess}}{{/if}}  }
+		                '
 			toolbar="#toolbar{{$tablegrid}}" pagination="true" nowrap="false" rownumbers="true" fitColumns="true" singleSelect="true">
 		<thead>
 		<tr>
@@ -8,12 +11,13 @@
 			{{/if}}
 			{{section name=sec1 loop=$contacts}}
 			<th field="{{$contacts[sec1].field}}" {{if isset($contacts[sec1].hidden) && $contacts[sec1].hidden}}hidden="true"{{/if}}
-				width="{{$contacts[sec1].size}}"
+                {{if isset($contacts[sec1].size)}}width="{{$contacts[sec1].size}}"{{/if}}
+                {{if isset($contacts[sec1].align)}}align="center"{{/if}}
 				{{if isset($contacts[sec1].formatter)}} formatter="{{$contacts[sec1].formatter}}"{{/if}}
                 {{if isset($contacts[sec1].sortable)}} sortable={{if $contacts[sec1].sortable}}"true"{{else}}"false"{{/if}}{{/if}}
-                {{if isset($contacts[sec1].checkbox)}} checkbox="true"{{/if}}
+                {{if isset($contacts[sec1].selectRow)}} checkbox="true"{{/if}}
             >
-                {{$contacts[sec1].label}}
+            {{if isset($contacts[sec1].label)}}{{$contacts[sec1].label}}{{/if}}
 			</th>
 			{{/section}}
 		</tr>
@@ -40,12 +44,12 @@
 		<form id="fm{{$tablegrid}}" method="post" novalidate>
 		
 			{{section name=sec1 loop=$contacts}}
-			  {{if !isset($contacts[sec1].hidden) OR !$contacts[sec1].hidden}}
+			  {{if !isset($contacts[sec1].selectRow) AND (!isset($contacts[sec1].hidden) OR !$contacts[sec1].hidden)}}
 				<div class="fitem">
 					<label>{{$contacts[sec1].label}}</label>
 					<input name="{{$contacts[sec1].field}}"
                             {{if isset($contacts[sec1].required)}} required="true"{{/if}}
-                            {{if isset($contacts[sec1].checkbox)}} class="easyui-checkbox" type="checkbox"
+                            {{if isset($contacts[sec1].checkbox)}} class="easyui-checkbox" type="checkbox" checked value="true"
                             {{else}} class="easyui-textbox"
                             {{/if}}
                     >
@@ -128,6 +132,14 @@
 				});
 			}
 		}
+        function checkboxFormatter(val,row){
+            if (val== 1) {
+                return "√";
+            }
+            else {
+                return "";
+            }
+        }
 
     </script>
 

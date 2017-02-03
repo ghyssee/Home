@@ -54,16 +54,32 @@ public class MP3Helper {
         return prettifiedText;
     }
 
+    public String replaceString(String text, MP3Prettifier.Word word){
+        String oldWord = word.oldWord;
+        if (word.parenthesis) {
+            oldWord = replaceBetweenBrackets(oldWord);
+        }
+        if (word.exactMatch){
+            oldWord = "^" + oldWord + "$";
+        }
+        text = text.replaceAll(oldWord, word.newWord);
+        return text;
+    }
+
     public String prettifySong(String text){
         String prettifiedText = prettifyString(text);
         if (StringUtils.isNotBlank(text)){
             for (MP3Prettifier.Word wordObj : mp3Prettifer.song.replacements){
+
+                prettifiedText = replaceString(prettifiedText, wordObj);
+                /*
                 if (wordObj.parenthesis) {
                     prettifiedText = prettifiedText.replaceAll(replaceBetweenBrackets(wordObj.oldWord), wordObj.newWord);
                 }
                 else {
                     prettifiedText = prettifiedText.replaceAll(wordObj.oldWord, wordObj.newWord);
                 }
+                */
             }
             //prettifiedText = prettifiedText.replaceAll("\\[]", "(");
             //prettifiedText = prettifiedText.replaceAll("\\]]", ")");
@@ -116,7 +132,8 @@ public class MP3Helper {
             prettifiedText = prettifiedText.trim();
             prettifiedText = checkWords(prettifiedText, Mp3Tag.ARTIST);
             for (MP3Prettifier.Word wordObj : mp3Prettifer.artist.names){
-               prettifiedText = prettifiedText.replaceAll(wordObj.oldWord, wordObj.newWord);
+               //prettifiedText = prettifiedText.replaceAll(wordObj.oldWord, wordObj.newWord);
+                prettifiedText = replaceString(prettifiedText, wordObj);
             }
         }
         return prettifiedText;

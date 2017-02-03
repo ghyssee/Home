@@ -33,9 +33,10 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 include("../setup.php");
-include("../config.php");
-include("../html/config.php");
-include("../model/HTML.php");
+include_once documentPath (ROOT_PHP, "config.php");
+include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
+include_once documentPath (ROOT_PHP_HTML, "config.php");
+
 session_start();
 $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
 goMenu();

@@ -36,7 +36,17 @@ public class HelloWorld {
         String t2 = "Axwell Λ Ingrosso";
         System.out.println(t.equals(t2));
         MP3Helper mp3Helper =MP3Helper.getInstance();
-        System.out.println(mp3Helper.prettifyArtist("R.O.O.S"));
+        System.out.println(mp3Helper.prettifyArtist("Mr"));
+        System.out.println(mp3Helper.prettifyArtist("Mr Robert"));
+        System.out.println(mp3Helper.prettifyArtist("Iio"));
+        System.out.println(mp3Helper.prettifyArtist("Iio Test"));
+        System.out.println(mp3Helper.prettifyArtist("Mn 8"));
+        System.out.println(mp3Helper.prettifyArtist("Mn 8 Test"));
+
+        System.out.println(mp3Helper.prettifySong("Xo"));
+        System.out.println(mp3Helper.prettifySong("Xorest"));
+        System.out.println(mp3Helper.prettifySong("Coco"));
+        System.out.println(mp3Helper.prettifySong("Coco Flanel"));
         System.out.println(mp3Helper.prettifyArtist("Run-D.M.C Vs. Jason Nevin"));
         System.out.println(mp3Helper.prettifySong("L.a Song"));
         System.out.println(mp3Helper.prettifyAlbum("Yorin Fm"));

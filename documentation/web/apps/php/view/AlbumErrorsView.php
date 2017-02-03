@@ -26,6 +26,7 @@ session_start();
 include_once documentPath (ROOT_PHP, "config.php");
 include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 include_once documentPath (ROOT_PHP_HTML, "config.php");
+
 $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
 $htmlObj = readJSONWithCode(JSON_ALBUMERRORS);
 $mp3SettingsObj = readJSONWithCode(JSON_MP3SETTINGS);
@@ -84,13 +85,18 @@ include_once('Smarty.class.php');
 $smarty = initializeSmarty();
 $smarty->assign('title','Album Errors');
 $smarty->assign('item','Album Errors');
+$smarty->assign('tableWidth','1500px');
+$smarty->assign('tableHeight','500px');
+$smarty->assign('id',"uniqueId");
+$smarty->assign('tablegrid','');
 $url = "AlbumErrorsAction.php";
 $smarty->assign('viewUrl',$url . "?method=list");
 $smarty->assign('updateUrl',"'" . $url . "?method=update&id='+row['uniqueId']");
 $smarty->assign('newUrl',"'" . $url . "?method=add'");
 $smarty->assign('deleteUrl',"'" . $url . "?method=delete',{id:row['uniqueId']}");
 
-$smarty->assign("contacts", array(array("field" => "id", "label"=>"Id", "size" => 10, "hidden" => "true"),
+$smarty->assign("contacts", array(array("field" => "process", "selectRow" => true),
+                                  array("field" => "id", "label"=>"Id", "size" => 10, "hidden" => "true"),
 								  array("field" => "done", "label"=>"Done", "size" => 1),
 	                              array("field" => "file", "label"=>"File", "size" => 200),
 	                              array("field" => "type", "label"=>"Type",  "size" => 50),
@@ -98,20 +104,39 @@ $smarty->assign("contacts", array(array("field" => "id", "label"=>"Id", "size" =
 	                              array("field" => "newValue", "label"=>"New Value", "formatter" => "stripCell", "size" => 200)
 								  )
 				);
+
+//** un-comment the following line to show the debug console
+//$smarty->debugging = true;
+
+$smarty->display('TableGridV3.tpl');
+
 /*
-$smarty->assign("fields", array(array("field" => "id", "label"=>"Id", "size" => 10, "hidden" => true),
-	                              array("field" => "file", "label"=>"File","size" => 200, "hidden" => false),
-	                              array("field" => "type", "label"=>"Type", "size"=> 50, "hidden" => false),
-	                              array("field" => "oldValue", "label"=>"Old Value", "size" => 200, "hidden" => false),
-	                              array("field" => "newValue", "label"=>"New Value", "size" => 200, "hidden" => false)
-								)
-				);
-*/
+$smarty = initializeSmarty();
+$smarty->assign('title','Album Errors');
+$smarty->assign('item','Album Errors');
+$smarty->assign('tableWidth','1500px');
+$smarty->assign('tableHeight','500px');
+$url = "AlbumErrorsAction.php";
+$smarty->assign('viewUrl',$url . "?method=list");
+$smarty->assign('updateUrl',"'" . $url . "?method=update&id='+row['uniqueId']");
+$smarty->assign('newUrl',"'" . $url . "?method=add'");
+$smarty->assign('deleteUrl',"'" . $url . "?method=delete',{id:row['uniqueId']}");
+
+$smarty->assign("contacts", array(array("field" => "id", "label"=>"Id", "size" => 10, "hidden" => "true"),
+        array("field" => "done", "label"=>"Done", "size" => 1),
+        array("field" => "file", "label"=>"File", "size" => 200),
+        array("field" => "type", "label"=>"Type",  "size" => 50),
+        array("field" => "oldValue", "label"=>"Old Value", "formatter" => "stripCell", "size" => 200),
+        array("field" => "newValue", "label"=>"New Value", "formatter" => "stripCell", "size" => 200)
+    )
+);
 
 //** un-comment the following line to show the debug console
 //$smarty->debugging = true;
 
 $smarty->display('TableGrid2.tpl');
+*/
+
 ?>
 	<script type="text/javascript">
         $('#dg').datagrid({
