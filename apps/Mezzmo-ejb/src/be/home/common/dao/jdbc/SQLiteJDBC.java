@@ -210,7 +210,8 @@ public class SQLiteJDBC
                     }
                 },
                 keyHolder);
-        return (Long) keyHolder.getKey();
+        Number number = keyHolder.getKey();
+        return new Long(number.longValue());
 
     }
 

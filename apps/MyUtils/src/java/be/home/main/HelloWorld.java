@@ -32,34 +32,45 @@ public class HelloWorld {
     public static void main(String args[]) throws SAXException, DocumentException, IOException, IllegalAccessException, NoSuchFieldException, ParserConfigurationException {
 
 
-        String t="Axwell Λ Ingrosso";
-        String t2 = "Axwell Λ Ingrosso";
-        System.out.println(t.equals(t2));
+
+        //System.out.println(MP3TagUtils.stripFilename("(Hot S+++)"));
+        testMP3Prettifier();
+        //updateMP3();
+
+    }
+
+    private static void testMP3Prettifier(){
         MP3Helper mp3Helper =MP3Helper.getInstance();
-        System.out.println(mp3Helper.prettifyArtist("Mr"));
+        System.out.println(mp3Helper.prettifyArtist("SFB, Ronnie Flex, Lil' Kleine & Bokoesam"));
         System.out.println(mp3Helper.prettifyArtist("Mr Robert"));
         System.out.println(mp3Helper.prettifyArtist("Iio"));
         System.out.println(mp3Helper.prettifyArtist("Iio Test"));
         System.out.println(mp3Helper.prettifyArtist("Mn 8"));
         System.out.println(mp3Helper.prettifyArtist("Mn 8 Test"));
+        System.out.println(mp3Helper.prettifyArtist("Pm Project"));
+        System.out.println(mp3Helper.prettifyArtist("K.P & Envyi"));
+        System.out.println(mp3Helper.prettifyArtist("LL Cool J. Feat. Kelly Price"));
+        System.out.println(mp3Helper.prettifyArtist("Jessie J Feat. B.o.B."));
+        System.out.println(mp3Helper.prettifyArtist("Die Srv-Männer"));
+        System.out.println(mp3Helper.prettifyArtist("HiBeatz"));
+        System.out.println(mp3Helper.prettifyArtist("Riba & JMK!"));
+        System.out.println(mp3Helper.prettifyArtist("Nutty Buddy Feat. M.U.G. (Of VSA)"));
+        System.out.println(mp3Helper.prettifyArtist("R-CANE Feat. NOWLIVE.EU "));
 
-        System.out.println(mp3Helper.prettifySong("Xo"));
-        System.out.println(mp3Helper.prettifySong("Xorest"));
-        System.out.println(mp3Helper.prettifySong("Coco"));
+        System.out.println(mp3Helper.prettifySong("Ok, That's it"));
+        System.out.println(mp3Helper.prettifySong("AAA Anthem"));
+        System.out.println(mp3Helper.prettifySong("Hype It! (Original TTF Mix)"));
         System.out.println(mp3Helper.prettifySong("Coco Flanel"));
         System.out.println(mp3Helper.prettifyArtist("Run-D.M.C Vs. Jason Nevin"));
         System.out.println(mp3Helper.prettifySong("L.a Song"));
         System.out.println(mp3Helper.prettifyAlbum("Yorin Fm"));
-        //System.out.println(MP3TagUtils.stripFilename("F**k It! (I Don't Want You Back)"));
-        //updateMP3();
-
     }
 
     private static void updateMP3(){
         Mp3File mp3file = null;
-        //String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\03 Vigiland Feat Thams Sway - Shots & Squats.mp3";
+        String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\49 Sly and Robbie Presents Shaggy feat. Melissa Musique - If U Slip U Slide (You Could Be Mine).mp3";
         //String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\test.mp3";
-        String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\108 Di-Rect - Hungry For Love.mp3";
+        //String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\108 Di-Rect - Hungry For Love.mp3";
         try {
             mp3file = new Mp3File(file);
             ID3v2 id3v2Tag = MP3Utils.getId3v2Tag(mp3file);

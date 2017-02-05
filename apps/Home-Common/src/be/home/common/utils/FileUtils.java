@@ -138,7 +138,7 @@ public class FileUtils {
 				 * a row.
 				 */
 				while ((line = input.readLine()) != null) {
-					if (removeEmptyLines && StringUtils.isNotBlank(line)) {
+					if (!removeEmptyLines || (removeEmptyLines && StringUtils.isNotBlank(line))) {
 						lines.add(line);
 					}
 				}

@@ -90,6 +90,7 @@ $smarty->assign('tableHeight','500px');
 $smarty->assign('id',"uniqueId");
 $smarty->assign('tablegrid','');
 $url = "AlbumErrorsAction.php";
+$smarty->assign('singleSelect','false');
 $smarty->assign('viewUrl',$url . "?method=list");
 $smarty->assign('updateUrl',"'" . $url . "?method=update&id='+row['uniqueId']");
 $smarty->assign('newUrl',"'" . $url . "?method=add'");

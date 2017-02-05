@@ -1,9 +1,15 @@
-	<table id="dg{{$tablegrid}}" title="{{$title}}" class="easyui-datagrid" style="width:{{$tableWidth}};height:{{$tableHeight}}" idField="id"
-			url="{{$viewUrl}}"
+	<table id="dg{{$tablegrid}}" title="{{$title}}" class="easyui-datagrid" style="width:{{$tableWidth}};height:{{$tableHeight}}" idField="{{$id}}"
+		   url="{{$viewUrl}}"
 		   data-options='fitColumns:false,
 		                 onLoadSuccess:function(data){ {{if isset($onLoadSuccess)}}{{$onLoadSuccess}}{{/if}}  }
 		                '
-			toolbar="#toolbar{{$tablegrid}}" pagination="true" nowrap="false" rownumbers="true" fitColumns="true" singleSelect="true">
+		   toolbar="#toolbar{{$tablegrid}}"
+		   pagination="true"
+		   nowrap="false"
+		   rownumbers="true"
+		   fitColumns="true"
+		   singleSelect="{{if isset($singleSelect)}}{{$singleSelect}}{{else}}true{{/if}}"
+	>
 		<thead>
 		<tr>
 			{{if isset($checkbox)}}

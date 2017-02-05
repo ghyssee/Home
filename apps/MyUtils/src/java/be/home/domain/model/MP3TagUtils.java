@@ -479,6 +479,8 @@ public class MP3TagUtils {
         strippedFilename = strippedFilename.replaceAll("\\*\\*\\*", "uck");
         strippedFilename = strippedFilename.replaceAll("\\*\\*", "uc");
         strippedFilename = strippedFilename.replaceAll("F\\*ck", "Fuck");
+        strippedFilename = strippedFilename.replaceAll("Hot S\\+\\+\\+", "Hot SPlusPlusPlus");
+
         strippedFilename = strippedFilename.replaceAll("[áàâäåã]", "a");
         strippedFilename = strippedFilename.replaceAll("[ÁÀÂÄÅÃ]", "A");
         strippedFilename = strippedFilename.replaceAll("[éèêë]", "e");
@@ -493,12 +495,14 @@ public class MP3TagUtils {
         strippedFilename = strippedFilename.replaceAll("[Ý]", "Y");
         strippedFilename = strippedFilename.replaceAll("AC/DC", "ACDC");
         strippedFilename = strippedFilename.replaceAll("X!nk", "Xink");
+        strippedFilename = strippedFilename.replaceAll("F\\*CK", "FUCK");
         strippedFilename = strippedFilename.replaceAll("F\\*cking", "Fucking");
         strippedFilename = strippedFilename.replace("/", "&");
         strippedFilename = strippedFilename.replace("æ", "ae");
         strippedFilename = strippedFilename.replace("Æ", "AE");
         strippedFilename = strippedFilename.replace("ñ", "n");
         strippedFilename = strippedFilename.replace("Ñ", "N");
+        strippedFilename = strippedFilename.replaceAll("Cybersp@ce", "Cyberspace");
         strippedFilename = strippedFilename.replace("@", "At");
         strippedFilename = strippedFilename.replace("ç", "c");
         strippedFilename = strippedFilename.replace("Ç", "C");
@@ -517,6 +521,7 @@ public class MP3TagUtils {
         strippedFilename = strippedFilename.replace("A$AP", "ASAP");
         strippedFilename = strippedFilename.replace("^", "&");
         strippedFilename = strippedFilename.replace("P!nk", "Pink");
+        strippedFilename = strippedFilename.replace("Oliver $", "Oliver S");
         strippedFilename = strippedFilename.replace("M.I.L.F. $", "M.I.L.F. S");
         strippedFilename = strippedFilename.replace("$", "s");
         strippedFilename = strippedFilename.replace("%", "Percent");

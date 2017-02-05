@@ -53,6 +53,15 @@ public class MP3Utils {
 
     }
 
+    private static void addFrame(ID3v2 id3v2Tag, ID3v2FrameSet set){
+        ID3v2FrameSet newFrame = new ID3v2FrameSet(set.getId());
+        for (ID3v2Frame f : set.getFrames()) {
+            newFrame.addFrame(f);
+        }
+        id3v2Tag.getFrameSets().put(getTagId(set.getId()), set);
+        return;
+    }
+
     public static ID3v2 getId3v2Tag(Mp3File mp3File) {
         if ( !mp3File.hasId3v2Tag()){
             return new ID3v24Tag();
@@ -83,6 +92,22 @@ public class MP3Utils {
             if (set.getId().equals("PRIV")) {
                 // remove Private TAG from the MP3
             }
+            else if (set.getId().equals("TCOM")) {
+                //System.out.println( " composer lenth = " + id3v2.getComposer().length());
+                // bug with id3v24Tag : if larger than 60, id3v2 Tag can no longer be read
+                if (id3v2.getComposer() != null && id3v2.getComposer().length() > 60){
+                    // remove composer // causes problem with id3v24 Tag
+
+                }
+                else {
+                    addFrame(id3v2Tag, set);
+                }
+
+                /* remove TAG from the MP3
+                 This frame is intended for music that comes from a CD, so that the CD
+                can be identified in databases such as the CDDB
+                */
+            }
             else if (set.getId().equals("MCDI")) {
                 /* remove TAG from the MP3
                  This frame is intended for music that comes from a CD, so that the CD
@@ -90,15 +115,10 @@ public class MP3Utils {
                 */
             }
             else {
-                ID3v2FrameSet newFrame = new ID3v2FrameSet(set.getId());
-                for (ID3v2Frame f : set.getFrames()) {
-                    newFrame.addFrame(f);
-                }
-                id3v2Tag.getFrameSets().put(getTagId(set.getId()), newFrame);
+                addFrame(id3v2Tag, set);
             }
 
         }
-
 
         //id3v2Tag.getFrameSets().putAll(id3v2.getFrameSets());
         /*
