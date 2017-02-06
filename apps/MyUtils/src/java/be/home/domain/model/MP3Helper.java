@@ -167,7 +167,7 @@ public class MP3Helper {
                 }
 
                 for (MP3Prettifier.Word wordObj : mp3Prettifer.global.words){
-                    word = replaceWord(word, wordObj.oldWord, wordObj.newWord);
+                    word = replaceWord(word, wordObj);
                 }
 
                 /*
@@ -220,7 +220,7 @@ public class MP3Helper {
                 switch (tag){
                     case ARTIST:
                         for (MP3Prettifier.Word wordObj : mp3Prettifer.artist.words){
-                            word = replaceWord(word, wordObj.oldWord, wordObj.newWord);
+                            word = replaceWord(word, wordObj);
                         }
                         /*
                         word = replaceWord(word, "And", "&");
@@ -249,7 +249,18 @@ public class MP3Helper {
         return newText;
     }
 
-    private String replaceWord(String word, String oldword, String newWord){
+    private String replaceWord(String word, MP3Prettifier.Word wordObj){
+        String returnWord;
+        if (wordObj.exactMatch){
+            returnWord = replaceExactWord(word, wordObj.oldWord, wordObj.newWord);
+        }
+        else {
+            returnWord = word.replaceAll(wordObj.oldWord, wordObj.newWord);
+        }
+        return returnWord;
+    }
+
+    private String replaceExactWord(String word, String oldword, String newWord){
         String returnWord = word;
         if (StringUtils.isNotBlank(returnWord)){
             if (returnWord.equals(oldword)){
@@ -259,6 +270,12 @@ public class MP3Helper {
         return returnWord;
 
     }
+
+    private String replaceRegExWord(String word, String regExp, String newWord){
+        String returnWord = word;
+        return returnWord;
+    }
+
 
 
     private String stripSong(String text){

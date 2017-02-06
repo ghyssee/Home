@@ -13,14 +13,16 @@ function convert()
     //$mp3PrettifierObj->artist->words = convertWords($mp3PrettifierObj->artist->words);
     //$mp3PrettifierObj->artist->names = convertWords($mp3PrettifierObj->artist->names);
     //$mp3PrettifierObj->song->replacements = convertWords($mp3PrettifierObj->song->replacements);
-    $mp3PrettifierObj->artist->names = convertExactMath($mp3PrettifierObj->artist->names);
-    $mp3PrettifierObj->song->replacements = convertExactMath($mp3PrettifierObj->song->replacements);
+    //$mp3PrettifierObj->artist->names = convertExactMath($mp3PrettifierObj->artist->names);
+    //$mp3PrettifierObj->song->replacements = convertExactMath($mp3PrettifierObj->song->replacements);
+    $mp3PrettifierObj->global->words = convertExactMath($mp3PrettifierObj->global->words, true);
+    $mp3PrettifierObj->artist->words = convertExactMath($mp3PrettifierObj->artist->words, true);
 
     $file = getFullPath(JSON_MP3PRETTIFIER) . ".NEW";
     writeJSON($mp3PrettifierObj, $file);
 }
 
-function convertExactMath($objects){
+function convertExactMath($objects, $exactMatch = false){
     $array = [];
     foreach($objects as $key => $word) {
         $wordObj = new ExtWord();
@@ -33,7 +35,7 @@ function convertExactMath($objects){
         else {
             $wordObj->parenthesis = false;
         }
-        $wordObj->exactMatch = false;
+        $wordObj->exactMatch = $exactMatch;
         array_push($array, $wordObj);
     }
     return $array;

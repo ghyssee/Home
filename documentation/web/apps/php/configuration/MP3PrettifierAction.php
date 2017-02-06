@@ -57,13 +57,14 @@ function addErrorMsg($msg){
 }
 
 function isExtWord($type, $category){
+    /*
     if ($type == "song" && $category == "replacements"){
         return true;
     }
     else if ($type == "artist" && $category == "names"){
         return true;
-    }
-    return false;
+    }*/
+    return true;
 
     }
 

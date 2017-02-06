@@ -35,11 +35,27 @@ public class HelloWorld {
 
         //System.out.println(MP3TagUtils.stripFilename("(Hot S+++)"));
         testMP3Prettifier();
-        //updateMP3();
+        String test = "2k13";
+        replace2k(test);
+        test = "2k1";
+        replace2k(test);
+        test = "a2k06";
+        replace2k(test);
+        test = "552ka";
+        replace2k(test);
+        test = "2k16";
+        replace2k(test);
 
     }
 
+    private static void replace2k(String text){
+        // 2k followed by 1 or more digit
+        System.out.println(text.replaceAll("^2k([0-9]{1,2})$", "2K$1"));
+    }
+
     private static void testMP3Prettifier(){
+
+
         MP3Helper mp3Helper =MP3Helper.getInstance();
         System.out.println(mp3Helper.prettifyArtist("SFB, Ronnie Flex, Lil' Kleine & Bokoesam"));
         System.out.println(mp3Helper.prettifyArtist("Mr Robert"));
@@ -63,6 +79,7 @@ public class HelloWorld {
         System.out.println(mp3Helper.prettifySong("Coco Flanel"));
         System.out.println(mp3Helper.prettifyArtist("Run-D.M.C Vs. Jason Nevin"));
         System.out.println(mp3Helper.prettifySong("L.a Song"));
+        System.out.println(mp3Helper.prettifySong("Test Words 2k11 Test"));
         System.out.println(mp3Helper.prettifyAlbum("Yorin Fm"));
     }
 
