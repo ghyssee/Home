@@ -11,6 +11,7 @@ public class MP3Prettifier {
 
     public class Word {
 
+        public String id;
         public String oldWord;
         public String newWord;
         public boolean parenthesis;

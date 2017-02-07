@@ -35,28 +35,44 @@ public class HelloWorld {
 
         //System.out.println(MP3TagUtils.stripFilename("(Hot S+++)"));
         testMP3Prettifier();
-        String test = "2k13";
+        String test = "Lilly Wood & The Prick & Robin Schulz";
         replace2k(test);
-        test = "2k1";
-        replace2k(test);
-        test = "a2k06";
-        replace2k(test);
-        test = "552ka";
-        replace2k(test);
-        test = "2k16";
+        test = "Lilly Wood, The Prick & Robin Schulz";
         replace2k(test);
 
     }
 
     private static void replace2k(String text){
         // 2k followed by 1 or more digit
-        System.out.println(text.replaceAll("^2k([0-9]{1,2})$", "2K$1"));
+        System.out.println(text.replaceAll("Lilly Wood(,| &) The Prick & Robin Schulz", "Replaced"));
     }
 
     private static void testMP3Prettifier(){
 
 
         MP3Helper mp3Helper =MP3Helper.getInstance();
+        System.out.println(mp3Helper.prettifyArtist("T.A.T.U"));
+        System.out.println(mp3Helper.prettifyArtist("T.A.T.U."));
+        System.out.println(mp3Helper.prettifyArtist("Axwell Ingrosso"));
+        System.out.println(mp3Helper.prettifyArtist("Axwell & Ingrosso"));
+        System.out.println(mp3Helper.prettifyArtist("Axwell ? Ingrosso"));
+        System.out.println(mp3Helper.prettifyArtist("Axwell A Ingrosso"));
+        System.out.println(mp3Helper.prettifyArtist("Jessie J Feat. B.O.B"));
+        System.out.println(mp3Helper.prettifyArtist("B.o.B. F"));
+        System.out.println(mp3Helper.prettifyArtist("B.o.B T"));
+        System.out.println(mp3Helper.prettifyArtist("B.o.B. F"));
+        System.out.println(mp3Helper.prettifyArtist("D-Cup"));
+        System.out.println(mp3Helper.prettifyArtist("DCup Feat. Jessy"));
+        System.out.println(mp3Helper.prettifyArtist("D.J Bobo"));
+        System.out.println(mp3Helper.prettifyArtist("D.J. Bobo"));
+        System.out.println(mp3Helper.prettifyArtist("DJ Bobo"));
+        System.out.println(mp3Helper.prettifyArtist("L.L. Cool J."));
+        System.out.println(mp3Helper.prettifyArtist("L.L. Cool J"));
+        System.out.println(mp3Helper.prettifyArtist("Ll Cool J"));
+        System.out.println(mp3Helper.prettifyArtist("Lilly Wood & The Prick & Robin Schulz"));
+        System.out.println(mp3Helper.prettifyArtist("Lilly Wood, The Prick & Robin Schulz"));
+        System.out.println(mp3Helper.prettifyArtist("Mr Robert"));
+        System.out.println(mp3Helper.prettifyArtist("SFB, Ronnie Flex, Lil' Kleine & Bokoesam"));
         System.out.println(mp3Helper.prettifyArtist("SFB, Ronnie Flex, Lil' Kleine & Bokoesam"));
         System.out.println(mp3Helper.prettifyArtist("Mr Robert"));
         System.out.println(mp3Helper.prettifyArtist("Iio"));
