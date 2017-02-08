@@ -1,20 +1,17 @@
 package be.home.main;
 
+import be.home.common.main.BatchJobV2;
 import be.home.common.mp3.MP3Utils;
 import be.home.domain.model.MP3Helper;
-import be.home.domain.model.MP3TagUtils;
-import com.mpatric.mp3agic.AbstractID3v2Tag;
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.Mp3File;
-import com.mpatric.mp3agic.Mp3FileExt;
-import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 import org.dom4j.util.XMLErrorHandler;
-import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -28,7 +25,10 @@ import java.net.URI;
 /**
  * Created by ghyssee on 20/02/2015.
  */
-public class HelloWorld {
+public class HelloWorld extends BatchJobV2 {
+
+    private static final Logger log = getMainLog(HelloWorld.class);
+
     public static void main(String args[]) throws SAXException, DocumentException, IOException, IllegalAccessException, NoSuchFieldException, ParserConfigurationException {
 
 
@@ -84,19 +84,21 @@ public class HelloWorld {
         System.out.println(mp3Helper.prettifyArtist("LL Cool J. Feat. Kelly Price"));
         System.out.println(mp3Helper.prettifyArtist("Jessie J Feat. B.o.B."));
         System.out.println(mp3Helper.prettifyArtist("Die Srv-Männer"));
-        System.out.println(mp3Helper.prettifyArtist("HiBeatz"));
+        System.out.println(mp3Helper.prettifyArtist("Mackenzie ft Jessy"));
+        System.out.println(mp3Helper.prettifyArtist("Mackenzie ft. Jessy"));
         System.out.println(mp3Helper.prettifyArtist("Riba & JMK!"));
         System.out.println(mp3Helper.prettifyArtist("Nutty Buddy Feat. M.U.G. (Of VSA)"));
         System.out.println(mp3Helper.prettifyArtist("R-CANE Feat. NOWLIVE.EU "));
 
         System.out.println(mp3Helper.prettifySong("Ok, That's it"));
         System.out.println(mp3Helper.prettifySong("AAA Anthem"));
-        System.out.println(mp3Helper.prettifySong("Hype It! (Original TTF Mix)"));
-        System.out.println(mp3Helper.prettifySong("Coco Flanel"));
-        System.out.println(mp3Helper.prettifyArtist("Run-D.M.C Vs. Jason Nevin"));
-        System.out.println(mp3Helper.prettifySong("L.a Song"));
-        System.out.println(mp3Helper.prettifySong("Test Words 2k11 Test"));
+        System.out.println(mp3Helper.prettifySong("Mambo Nr. 5"));
+        System.out.println(mp3Helper.prettifySong("Mambo Nr5"));
+        System.out.println(mp3Helper.prettifySong("Oops! I Did It Again"));
+        System.out.println(mp3Helper.prettifySong("Oops! ... I Did It Again"));
+        System.out.println(mp3Helper.prettifySong("Oops!.. I Did It Again"));
         System.out.println(mp3Helper.prettifyAlbum("Yorin Fm"));
+        System.out.println("Oops! I Did It Again".replaceAll("Oops!? ?.?.?.? ?I Did It Again","Oops!... I Did It Again"));
     }
 
     private static void updateMP3(){
@@ -182,4 +184,8 @@ public class HelloWorld {
             writer.write( errorHandler.getErrors() );
     }
 
+    @Override
+    public void run() {
+
+    }
 }

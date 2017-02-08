@@ -6,6 +6,7 @@ import be.home.model.json.AlbumInfo;
 import be.home.model.json.MP3Prettifier;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
+import org.apache.log4j.Logger;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,6 +18,7 @@ public class MP3Helper {
 
     private static MP3Helper mp3Helper = new MP3Helper();
     private static MP3Prettifier mp3Prettifer;
+    private static final Logger log = Logger.getLogger(MP3Helper.class);
 
     private MP3Helper() {
         mp3Prettifer = (MP3Prettifier) JSONUtils.openJSONWithCode(Constants.JSON.MP3PRETTIFIER, MP3Prettifier.class);
@@ -68,43 +70,19 @@ public class MP3Helper {
 
     public String prettifySong(String text){
         String prettifiedText = prettifyString(text);
-        if (StringUtils.isNotBlank(text)){
-            for (MP3Prettifier.Word wordObj : mp3Prettifer.song.replacements){
+        if (StringUtils.isNotBlank(text)) {
+            for (MP3Prettifier.Word wordObj : mp3Prettifer.song.replacements) {
 
-                prettifiedText = replaceString(prettifiedText, wordObj);
-                /*
-                if (wordObj.parenthesis) {
-                    prettifiedText = prettifiedText.replaceAll(replaceBetweenBrackets(wordObj.oldWord), wordObj.newWord);
+                String oldText = prettifiedText;
+                prettifiedText = replaceString(oldText, wordObj);
+                if (!oldText.equals(prettifiedText)) {
+                    logRule("Song Replacements", wordObj);
                 }
-                else {
-                    prettifiedText = prettifiedText.replaceAll(wordObj.oldWord, wordObj.newWord);
-                }
-                */
+                prettifiedText = stripSong(prettifiedText);
+                prettifiedText = prettifiedText.replace("  ", " ");
+                prettifiedText = prettifiedText.trim();
+                prettifiedText = checkWords(prettifiedText, Mp3Tag.TITLE);
             }
-            //prettifiedText = prettifiedText.replaceAll("\\[]", "(");
-            //prettifiedText = prettifiedText.replaceAll("\\]]", ")");
-            /*
-            prettifiedText = prettifiedText.replaceAll(replaceBetweenBrackets("Album Version"), "");
-            prettifiedText = prettifiedText.replaceAll(replaceBetweenBrackets("Radio Edit"), "");
-            prettifiedText = prettifiedText.replace("(Radio Mix)", "");
-            prettifiedText = prettifiedText.replace("(Vocal Radio Edit)", "");
-            prettifiedText = prettifiedText.replace("(Vocal Radio Cut)", "");
-            prettifiedText = prettifiedText.replace("(Video Edit)", "");
-            prettifiedText = prettifiedText.replace("(Video Version)", "");
-            prettifiedText = prettifiedText.replace("(Single Cut)", "");
-            prettifiedText = prettifiedText.replace("(Single Edit)", "");
-            prettifiedText = prettifiedText.replace("(Single Version)", "");
-            prettifiedText = prettifiedText.replace("(Original Radio Cut)", "");
-            prettifiedText = prettifiedText.replace("(Radio Version / Original)", "");
-            prettifiedText = prettifiedText.replace("(Original)", "");
-            prettifiedText = prettifiedText.replaceAll("\\[[eE]xplicit\\]", "");
-            prettifiedText = prettifiedText.replace("(Uk Radio Version)", "");
-            */
-
-            prettifiedText = stripSong(prettifiedText);
-            prettifiedText = prettifiedText.replace("  ", " ");
-            prettifiedText = prettifiedText.trim();
-            prettifiedText = checkWords(prettifiedText, Mp3Tag.TITLE);
         }
         return prettifiedText;
     }
@@ -117,13 +95,6 @@ public class MP3Helper {
     public String prettifyArtist(String text){
         String prettifiedText = prettifyString(text);
         if (StringUtils.isNotBlank(text)) {
-            /*
-            prettifiedText = prettifiedText.replace("Fpi Project", "FPI Project");
-            prettifiedText = prettifiedText.replace("Tourist Lemc", "Tourist LeMC");
-            prettifiedText = prettifiedText.replace("Bart Kaell", "Bart Kaëll");
-            prettifiedText = prettifiedText.replace("Rene Froger", "René Froger");
-            */
-
             prettifiedText = prettifiedText.replaceAll(replaceBetweenBrackets("Remix"), "");
             prettifiedText = prettifiedText.replaceAll(replaceBetweenBrackets("Black Box Radio Edit"), "");
 
@@ -133,11 +104,19 @@ public class MP3Helper {
             prettifiedText = checkWords(prettifiedText, Mp3Tag.ARTIST);
             for (MP3Prettifier.Word wordObj : mp3Prettifer.artist.names){
                //prettifiedText = prettifiedText.replaceAll(wordObj.oldWord, wordObj.newWord);
-                prettifiedText = replaceString(prettifiedText, wordObj);
+                String oldText = prettifiedText;
+                prettifiedText = replaceString(oldText, wordObj);
+                if (!oldText.equals(prettifiedText)){
+                    logRule("Artist Names", wordObj);
+                }
             }
         }
         return prettifiedText;
 
+    }
+
+    private void logRule(String category, MP3Prettifier.Word word){
+        log.info("Rule applied: Category: " + category + " / Old Word: " + word.oldWord + " / New Word: " + word.newWord);
     }
 
     private enum Mp3Tag {
@@ -167,79 +146,27 @@ public class MP3Helper {
                 }
 
                 for (MP3Prettifier.Word wordObj : mp3Prettifer.global.words){
-                    word = replaceWord(word, wordObj);
-                }
+                    String oldWord = word;
+                    word = replaceWord(oldWord, wordObj);
+                    if (!oldWord.equals(word)){
+                        logRule("Global Words", wordObj);
+                    }
 
-                /*
-                word = replaceWord(word, "Vs", "Vs.");
-                word = replaceWord(word, "Ft", "Feat.");
-                word = replaceWord(word, "Ft.", "Feat.");
-                word = replaceWord(word, "Feat", "Feat.");
-                word = replaceWord(word, "Dj", "DJ");
-                word = replaceWord(word, "Ii", "II");
-                word = replaceWord(word, "ii", "III");
-                word = replaceWord(word, "Pm", "PM");
-                word = replaceWord(word, "Dcup", "DCup");
-                word = replaceWord(word, "Deus", "dEUS");
-                word = replaceWord(word, "Deville", "DeVille");
-                word = replaceWord(word, "Pres.", "Presents");
-                word = replaceWord(word, "Atb", "ATB");
-                word = replaceWord(word, "Mc's", "MC's");
-                word = replaceWord(word, "Mk", "MK");
-                word = replaceWord(word, "Mcs", "MC's");
-                word = replaceWord(word, "Mc", "MC");
-                word = replaceWord(word, "Sq-1", "SQ-1");
-                word = replaceWord(word, "Dnce", "DNCE");
-                word = replaceWord(word, "In-grid", "In-Grid");
-                word = replaceWord(word, "Rns", "RNS");
-                word = replaceWord(word, "P!Nk", "P!nk");
-                word = replaceWord(word, "Tp4y", "TP4Y");
-                word = replaceWord(word, "Omi", "OMI");
-                word = replaceWord(word, "Tjr", "TJR");
-                word = replaceWord(word, "Featuring", "Feat.");
-                word = replaceWord(word, "Clmd", "CLMD");
-                word = replaceWord(word, "Dna", "DNA");
-                word = replaceWord(word, "3lw", "3LW");
-                word = replaceWord(word, "Tlc", "TLC");
-                word = replaceWord(word, "Lp", "LP");
-                word = replaceWord(word, "Kt", "KT");
-                word = replaceWord(word, "O'connor", "O'Connor");
-                word = replaceWord(word, "Klubbb3", "KLUBBB3");
-                word = replaceWord(word, "Dvbbs", "DVBBS");
-                word = replaceWord(word, "Will.I.Am", "Will.i.am");
-                word = replaceWord(word, "Onerepublic", "OneRepublic");
-                word = replaceWord(word, "Lmfao", "LMFAO");
-                word = replaceWord(word, "Chef'special", "Chef'Special");
-                word = replaceWord(word, "Tiesto", "Tiësto");
-                word = replaceWord(word, "Kshmr", "KSHMR");
-                word = replaceWord(word, "W&w", "W&W");
-                word = replaceWord(word, "Kvr", "KVR");
-                word = replaceWord(word, "Mtv", "MTV");
-                */
+                }
 
                 switch (tag){
                     case ARTIST:
                         for (MP3Prettifier.Word wordObj : mp3Prettifer.artist.words){
+                            String oldWord = word;
                             word = replaceWord(word, wordObj);
+                            if (!oldWord.equals(word)){
+                                logRule("Artist Words", wordObj);
+                            }
                         }
-                        /*
-                        word = replaceWord(word, "And", "&");
-                        word = replaceWord(word, "Lvndscape", "LVNDSCAPE");
-                        word = replaceWord(word, "Redone", "RedOne");
-                        */
-
                         break;
                     case TITLE:
                         break;
                 }
-
-
-
-                // 19eighty7 => 19Eighty7
-                // (17) => remove
-
-
-
                 newText += prefix + word + suffix;
             }
         }
@@ -270,13 +197,6 @@ public class MP3Helper {
         return returnWord;
 
     }
-
-    private String replaceRegExWord(String word, String regExp, String newWord){
-        String returnWord = word;
-        return returnWord;
-    }
-
-
 
     private String stripSong(String text){
         String prettifiedText = text;
