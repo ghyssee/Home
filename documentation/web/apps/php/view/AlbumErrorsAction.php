@@ -37,7 +37,7 @@ catch(Error $e) {
 function updateSettings(){
     session_start();
     $mp3SettingsObj = readJSONWithCode(JSON_MP3SETTINGS);
-	assignCheckbox($mp3SettingsObj->mezzmo->mp3Checker->check, "check");
+	assignField($mp3SettingsObj->mezzmo->mp3Checker->status, "albumErrorsStatus");
 	assignNumber($mp3SettingsObj->mezzmo->mp3Checker->maxNumberOfErrors, "maxNumberOfErrors");
 	writeJSONWithCode($mp3SettingsObj, JSON_MP3SETTINGS);
 	//addInfo("mp3SettingsObj", "Contents saved to '" . getFullPath(JSON_MP3SETTINGS));

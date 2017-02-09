@@ -349,4 +349,10 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
         return nr;
     }
 
+    public MGOFileAlbumCompositeTO findFileById(long id){
+        Object[] params = { id };
+        MGOFileAlbumCompositeTO comp = (MGOFileAlbumCompositeTO) getInstance().getJDBCTemplate().queryForObject(FILE_FIND_BY_ID, new SongsAlbumRowMapper(), params);
+        return comp;
+    }
+
 }

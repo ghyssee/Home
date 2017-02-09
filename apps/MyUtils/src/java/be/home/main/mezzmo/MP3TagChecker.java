@@ -4,11 +4,13 @@ import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
 import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.enums.MP3Tag;
+import be.home.common.exceptions.ApplicationException;
 import be.home.common.main.BatchJobV2;
 import be.home.common.model.TransferObject;
 import be.home.common.mp3.MP3Utils;
 import be.home.common.utils.*;
 import be.home.domain.model.MP3TagUtils;
+import be.home.mezzmo.domain.enums.MP3TagCheckerStatus;
 import be.home.mezzmo.domain.model.*;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.model.ConfigTO;
@@ -20,6 +22,7 @@ import org.apache.log4j.Logger;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.tools.generic.EscapeTool;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -59,23 +62,25 @@ public class MP3TagChecker extends BatchJobV2{
     public void run() {
         final String batchJob = "MP3TagChecker";
         MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSONWithCode(Constants.JSON.MP3SETTINGS, MP3Settings.class);
-
-        //System.out.println(stripFilename("Can't Feel"));
-        if (mp3Settings.mezzmo.mp3Checker.check) {
-            export(mp3Settings.mezzmo.mp3Checker);
-            log.info("Nr Of Errors found: " + albumErrors.items.size());
-        }
+        MP3TagCheckerStatus status = MP3TagCheckerStatus.valueOf(mp3Settings.mezzmo.mp3Checker.status);
         try {
-            int nr = processErrors();
-            log.info("Nr Of Errors processed: " + nr);
+            switch (status) {
+                case SCAN_FULL:
+                    export(mp3Settings.mezzmo.mp3Checker);
+                    log.info("Nr Of Errors found: " + albumErrors.items.size());
+                    break;
+                case SCAN_FILES:
+                    processFiles();
+                    break;
+                case FIX_ERRORS:
+                    int nr = processErrors();
+                    log.info("Nr Of Errors processed: " + nr);
+                    saveErrors();
+                    break;
+            }
         }
         catch (Exception ex){
             LogUtils.logError(log, ex);
-        }
-        try {
-            JSONUtils.writeJsonFileWithCode(this.albumErrors, Constants.JSON.ALBUMERRORS);
-        } catch (IOException e) {
-            LogUtils.logError(log, e);
         }
     }
 
@@ -109,6 +114,9 @@ public class MP3TagChecker extends BatchJobV2{
                 if (maxItemsReached(mp3checker.maxNumberOfErrors)){
                     break;
                 }
+                if ((this.albumErrors.items.size() % 10) == 0){
+                    saveErrors();
+                }
                 albumTO.setName(line.trim());
                 List<MGOFileAlbumCompositeTO> listAlbums = getMezzmoService().getAlbumsWithExcludeList(albumTO, excludeAlbums,
                         new TransferObject());
@@ -138,15 +146,21 @@ public class MP3TagChecker extends BatchJobV2{
                     }
                 }
             }
-            try {
-                JSONUtils.writeJsonFileWithCode(this.albumErrors, Constants.JSON.ALBUMERRORS);
-            } catch (IOException e) {
-                LogUtils.logError(log, e, "Problem writing the AlbumErrors JSON file");
-
-            }
+            saveErrors();
         } catch (IOException e) {
             LogUtils.logError(log, e, "Problem opening file " + file.getAbsolutePath());
         }
+    }
+
+    private void saveErrors(){
+        String info = "Saving the Album Errors...";
+        log.info(info);
+        try {
+            JSONUtils.writeJsonFileWithCode(this.albumErrors, Constants.JSON.ALBUMERRORS);
+        } catch (IOException e) {
+            throw new ApplicationException("Problem writing the AlbumErrors JSON file", e);
+        }
+        log.info(info + " Done");
     }
 
     public void displayStatus(MGOFileAlbumCompositeTO comp, String outputFile, String template,
@@ -166,6 +180,36 @@ public class MP3TagChecker extends BatchJobV2{
         context.put("refresh", 2);
         vu.makeFile(template, outputFile, context);
     }
+
+    private void processFiles(){
+        log.info("Processing files that are in error again...");
+        MP3TagUtils tagUtils = new MP3TagUtils(this.albumErrors);
+        List <AlbumError.Item> oldItems = albumErrors.items;
+        albumErrors.items = new ArrayList<>();
+        for (AlbumError.Item item : oldItems) {
+            try {
+                MGOFileAlbumCompositeTO comp = getMezzmoService().findFileById(item.getFileId());
+            // get list of all files to get the max Disc
+                MGOFileAlbumCompositeTO search = new MGOFileAlbumCompositeTO();
+                search.getFileAlbumTO().setId(comp.getFileAlbumTO().getId());
+                List<MGOFileAlbumCompositeTO> list = getMezzmoService().findSongsByAlbum(search);
+                int maxDisc = getMaxDisc(list);
+                log.info("Track: " + comp.getFileTO().getTrack());
+                log.info("Artist: " + comp.getFileArtistTO().getArtist());
+                log.info("Title: " + comp.getFileTO().getTitle());
+                log.info("Max Disc: " + maxDisc);
+                log.info(StringUtils.repeat('=', 100));
+                tagUtils.processSong(comp, list.size(), maxDisc);
+            }
+            catch (IncorrectResultSizeDataAccessException e){
+                log.error(e);
+                albumErrors.items.add(item);
+            }
+        }
+        saveErrors();
+
+    }
+
     private void processAlbum(MGOFileAlbumCompositeTO comp){
         MGOFileAlbumCompositeTO search = new MGOFileAlbumCompositeTO();
         search.getFileAlbumTO().setId(comp.getFileAlbumTO().getId());
@@ -332,22 +376,6 @@ public class MP3TagChecker extends BatchJobV2{
 
     }
 
-    private void updateAlbum2(AlbumError.Item item){
-        MGOFileAlbumCompositeTO comp = new MGOFileAlbumCompositeTO();
-        comp.getFileAlbumTO().setId(item.getId());
-        comp.getFileAlbumTO().setName(item.getNewValue());
-        try {
-            int nr = getMezzmoService().updateSong(comp, MP3Tag.valueOf(item.getType()));
-            if (nr > 0) {
-                log.info("Album updated: " + "Id: " + item.getId() +
-                        " / New Album: " + item.getNewValue() + " / " + nr + " record(s)");
-                updateMP3(item);
-            }
-        } catch (SQLException e) {
-            LogUtils.logError(log, e);
-        }
-    }
-
     private void updateFileTitle(AlbumError.Item item){
         MGOFileAlbumCompositeTO comp = new MGOFileAlbumCompositeTO();
         comp.getFileTO().setId(item.getId());
@@ -412,54 +440,6 @@ public class MP3TagChecker extends BatchJobV2{
             }
         } catch (SQLException e) {
             LogUtils.logError(log, e);
-        }
-    }
-
-    private void updateArtistOld(AlbumError.Item item){
-        MGOFileAlbumCompositeTO comp = new MGOFileAlbumCompositeTO();
-        comp.getFileArtistTO().setID(item.getId());
-        comp.getFileArtistTO().setArtist(item.getNewValue());
-        MGOFileArtistTO artist = null;
-        try {
-            artist = getMezzmoService().findArtist(comp.getFileArtistTO());
-        }
-        catch (EmptyResultDataAccessException e){
-            // artist not found;
-        }
-        if (artist != null) {
-            System.out.println("artist found");
-            Result result = getMezzmoService().updateLinkFileArtist(comp.getFileArtistTO(), artist.getID());
-            log.info("Nr Of Links updated: " + result.getNr1());
-            /* update the found artist (because of case insensitive constraint on
-               field artist, so update it to be sure it is prettified (feat. => Feat.)
-             */
-            int nr = 0;
-            try {
-                comp.getFileArtistTO().setID(artist.getID());
-                nr = getMezzmoService().updateSong(comp, MP3Tag.valueOf(item.getType()));
-                if (nr > 0) {
-                    log.info("Artitst updated: " + "Id: " + item.getId() +
-                            " / New Artist: " + item.getNewValue() + " / " + nr + " record(s)");
-                    //item.setDone(true);
-                    updateMP3(item);
-                }
-            } catch (SQLException e) {
-                LogUtils.logError(log, e);
-            }
-            //System.out.println("Nr Of Old Artists deleted: " + result.getNr2());
-        }
-        else {
-            try {
-                int nr = getMezzmoService().updateSong(comp, MP3Tag.valueOf(item.getType()));
-                if (nr > 0) {
-                    log.info("Artitst updated: " + "Id: " + item.getId() +
-                            " / New Artist: " + item.getNewValue() + " / " + nr + " record(s)");
-                    //item.setDone(true);
-                    updateMP3(item);
-                }
-            } catch (SQLException e) {
-                LogUtils.logError(log, e);
-            }
         }
     }
 

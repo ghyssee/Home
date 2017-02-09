@@ -74,6 +74,10 @@ public class MezzmoDAOQueries extends MezzmoDB {
             .addCondition(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUM, Comparator.LIKE)
             .render();
 
+    protected static final String FILE_FIND_BY_ID = ((SQLBuilder) SerializationUtils.clone(FILE_FIND_BASIC))
+            .addCondition(TablesEnum.MGOFile.alias(), MGOFileColumns.ID, Comparator.EQUALS)
+            .render();
+
     protected static final String FILE_FIND_TAGINFO_BY_ALBUMID = ((SQLBuilder) SerializationUtils.clone(FILE_FIND_BASIC))
             .addCondition(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUMID, Comparator.LIKE)
             .render();

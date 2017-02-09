@@ -53,9 +53,11 @@ goMenu();
 <form action="AlbumErrorsAction.php?method=updateSettings" method="post">
     <?php
     $layout = new Layout(array('numCols' => 1));
-    $layout->checkBox(new Input(array('name' => "check",
-        'label' => 'Check for modifications',
-        'value' => $mp3SettingsObj->mezzmo->mp3Checker->check)));
+    $layout->comboBox($mp3SettingsObj->mezzmo->mp3Checker->statuses, "code", "description",
+        new Input(array('name' => "albumErrorsStatus",
+            'label' => 'Status',
+            'default' => $mp3SettingsObj->mezzmo->mp3Checker->status)));
+
     $layout->inputBox(new Input(array('name' => "maxNumberOfErrors",
         'size' => 5,
         'label' => 'Max Number Of Errors',

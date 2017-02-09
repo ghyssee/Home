@@ -296,6 +296,10 @@ public class MezzmoServiceImpl {
         }
     }
 
+    public MGOFileAlbumCompositeTO findFileById(long id){
+        MezzmoBO bo = new MezzmoBO();
+        return bo.findFileById(id);
+    }
 
 
     public synchronized static MezzmoServiceImpl getInstance() {

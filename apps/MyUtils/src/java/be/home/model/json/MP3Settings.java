@@ -72,7 +72,7 @@ public class MP3Settings {
         public Mp3Checker mp3Checker;
 
         public class Mp3Checker {
-            public boolean check;
+            public String status;
             public int maxNumberOfErrors;
         }
     }
