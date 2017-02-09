@@ -28,6 +28,7 @@ if(isset($_POST['mp3Preprocessor'])){
 		saveMP3Preprocessor(getFullPath(JSON_MP3PREPROCESSOR), $mp3PreprocessorObj);
 	}
 }*/
+const ALBUM_VIEW = "AlbumView.php";
 
 if(isset($_POST['mp3Settings'])){
 	$file = getFullPath(JSON_MP3SETTINGS);
@@ -77,7 +78,7 @@ function saveAlbum($file, $mp3Settings){
 		//printErrorMessage ('Album is either empty, or not set at all',  'errorMessage');
 		$save = false;
 	}
-	checkSave2($save, 'mp3Settings', $mp3Settings, $file, 'album.php');
+	checkSave2($save, 'mp3Settings', $mp3Settings, $file, ALBUM_VIEW);
 }
 
 function saveMezzmo($file, $mp3Settings){
@@ -108,7 +109,7 @@ function saveMezzmo($file, $mp3Settings){
 		addError ('exportiPod', 'Mezzmo Export iPod Directory is either empty, or not set at all');
 		$save = false;
 	}
-	checkSave2($save, 'mp3Settings', $mp3Settings, $file, 'album.php');
+	checkSave2($save, 'mp3Settings', $mp3Settings, $file, ALBUM_VIEW);
 }
 
 function saveiPod($file, $mp3Settings){
@@ -135,7 +136,7 @@ function saveMediaMonkey($file, $mp3Settings){
 		addError ('mediaMonkeyTop20', 'MediaMonkey Playlist Top 20 Name is either empty, or not set at all');
 		$save = false;
 	}
-    checkSave2($save, 'mp3Settings', $mp3Settings, $file, 'album.php');
+    checkSave2($save, 'mp3Settings', $mp3Settings, $file, ALBUM_VIEW);
 }
 
 function saveLastPlayed($file, $mp3Settings){
@@ -152,7 +153,7 @@ function saveLastPlayed($file, $mp3Settings){
 	else {
 		$mp3Settings->lastPlayedSong->number = $intNumber;
 	}
-    checkSave2($save, 'mp3Settings', $mp3Settings, $file, 'album.php');
+    checkSave2($save, 'mp3Settings', $mp3Settings, $file, ALBUM_VIEW);
 }
 
 ?>

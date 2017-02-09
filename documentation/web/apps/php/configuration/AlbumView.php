@@ -10,6 +10,7 @@ include_once("../setup.php");
 
 <?php
 session_start();
+$albumSave = "AlbumAction.php";
 include_once documentPath (ROOT_PHP, "config.php");
 include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 include_once documentPath (ROOT_PHP_HTML, "config.php");
@@ -45,7 +46,7 @@ if (isset($_SESSION["mp3Preprocessor"])) {
 goMenu();
 ?>
 
-<form action="albumSave.php" method="post">
+<form action="<?php echo $albumSave ?>" method="post">
     <h1>Album Configuration</h1>
     <div class="horizontalLine">.</div>
     <?php
@@ -63,7 +64,7 @@ goMenu();
 
 </form>
 
-<form action="albumSave.php" method="post">
+<form action="<?php echo $albumSave ?>" method="post">
     <h1>Mezzmo Configuration</h1>
     <div class="horizontalLine">.</div>
     <?php
@@ -99,7 +100,7 @@ goMenu();
     ?>
 </form>
 
-<form action="albumSave.php" method="post">
+<form action="<?php echo $albumSave ?>" method="post">
     <h1>Synchronizer Configuration</h1>
     <div class="horizontalLine">.</div>
     <?php
@@ -119,7 +120,7 @@ goMenu();
     ?>
 </form>
 
-<form action="albumSave.php" method="post">
+<form action="<?php echo $albumSave ?>" method="post">
     <h1>MediaMonkey Configuration</h1>
     <div class="horizontalLine">.</div>
     <?php
@@ -144,7 +145,7 @@ goMenu();
     ?>
 </form>
 
-<form action="albumSave.php" method="post">
+<form action="<?php echo $albumSave ?>" method="post">
     <h1>LastPlayed Configuration</h1>
     <div class="horizontalLine">.</div>
     <?php

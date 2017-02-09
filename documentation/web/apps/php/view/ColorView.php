@@ -46,7 +46,7 @@ include_once('Smarty.class.php');
 $smarty = initializeSmarty();
 $smarty->assign('title','Colors');
 $smarty->assign('item','Color');
-$url = "test.php";
+$url = "ColorAction.php";
 $smarty->assign('viewUrl',$url . "?method=list");
 $smarty->assign('updateUrl',"'" . $url . "?method=update&id='+row['id']");
 $smarty->assign('newUrl',"'" . $url . "?method=add'");
