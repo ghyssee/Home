@@ -16,10 +16,12 @@ public class MP3Prettifier {
         public String newWord;
         public boolean parenthesis;
         public boolean exactMatch;
+        public int priority;
     }
 
     public class Global {
         public List <Word> words;
+        public List <Word> filenames;
     }
     public class Artist {
         public List <Word> words;

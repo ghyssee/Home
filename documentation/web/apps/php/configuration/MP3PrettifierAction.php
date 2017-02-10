@@ -75,6 +75,9 @@ function update($file, $type, $category){
         $word = new ExtWord();
         assignCheckbox($word->parenthesis, "parenthesis", !HTML_SPECIAL_CHAR);
         assignCheckbox($word->exactMatch, "exactMatch", !HTML_SPECIAL_CHAR);
+        if (isset($_POST["priority"])){
+            $word->priority = (int) $_POST["priority"];
+        }
     }
     else {
         $word = new Word();
@@ -113,11 +116,14 @@ function add($file, $type, $category)
     else {
         $word = new Word();
     }
+    if (isset($_POST["priority"])){
+        $word->priority = (int) $_POST["priority"];
+    }
 
     assignField($word->oldWord, "oldWord", !ESCAPE_HTML);
     assignField($word->newWord, "newWord", !ESCAPE_HTML);
     $save = true;
-    If (objectExist($obj->{$type}->{$category}, "oldWord", $word->oldWord, false)) {
+    If (objectExist($obj->{$type}->{$category}, "oldWord", $word->oldWord, true)) {
         $errors = addErrorMsg($type . ' ' . $category . ' already exist: ' . $word->oldWord);
         $save = false;
     }

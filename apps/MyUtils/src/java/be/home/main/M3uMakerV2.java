@@ -38,12 +38,6 @@ public class M3uMakerV2 extends BatchJobV2 {
             ultratopConfig = (UltratopConfig.Config) JSONUtils.openJSONWithCode(Constants.JSON.ULTRATOP, UltratopConfig.Config.class );
             instance.processUltratopConfigurationFile(ultratopConfig);
 
-            /*
-            for (ConfigTO.Parts part : config.parts){
-                System.out.println(part.name);
-            }*/
-            //instance.run();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -162,81 +156,6 @@ public class M3uMakerV2 extends BatchJobV2 {
 
     }
 
-    /*
-    private String getUniqueSongOld(String song){
-        String tmpSong = song.toUpperCase();
-        tmpSong = tmpSong.replace(" MET ", " & ").replace(" FEAT ", " & ").replace(" FT. ", " & ").replace(" FT ", " & ");
-        tmpSong = tmpSong.replace("[BE]", "");
-        tmpSong = tmpSong.replace(" VS. ", " VS ");
-        tmpSong = tmpSong.replace("MR. ", "MR ");
-        tmpSong = tmpSong.replace("?", "");
-        tmpSong = tmpSong.replace("/", "&");
-        tmpSong = tmpSong.replace("<3", "LOVE");
-        tmpSong = tmpSong.replace("**", "UC");
-        tmpSong = tmpSong.replace("* ", "");
-        tmpSong = tmpSong.replace("*", "");
-        tmpSong = tmpSong.replace("+", "&");
-        //tmpSong = tmpSong.replace("''", "\"");
-        tmpSong = tmpSong.replace("\"", "''");
-        tmpSong = tmpSong.replace("\"", "");
-        tmpSong = tmpSong.replace("[", "(");
-        tmpSong = tmpSong.replace("]", ")");
-        tmpSong = tmpSong.replace("S.O.S", "SOS");
-        tmpSong = tmpSong.replace("Å", "A");
-        tmpSong = tmpSong.replace("å", "a");
-        tmpSong = tmpSong.replace("é", "e");
-        tmpSong = tmpSong.replace("è", "e");
-        tmpSong = tmpSong.replace("ë", "e");
-        tmpSong = tmpSong.replace("ê", "e");
-        tmpSong = tmpSong.replace("á", "a");
-        tmpSong = tmpSong.replace("à", "a");
-        tmpSong = tmpSong.replace("ä", "a");
-        tmpSong = tmpSong.replace("â", "a");
-        tmpSong = tmpSong.replace("ó", "o");
-        tmpSong = tmpSong.replace("ò", "o");
-        tmpSong = tmpSong.replace("ö", "o");
-        tmpSong = tmpSong.replace("ô", "o");
-        tmpSong = tmpSong.replace("ú", "u");
-        tmpSong = tmpSong.replace("ù", "u");
-        tmpSong = tmpSong.replace("ü", "u");
-        tmpSong = tmpSong.replace("û", "u");
-        tmpSong = tmpSong.replace("í", "i");
-        tmpSong = tmpSong.replace("ì", "i");
-        tmpSong = tmpSong.replace("ï", "i");
-        tmpSong = tmpSong.replace("î", "i");
-        tmpSong = tmpSong.replace("ý", "y");
-        tmpSong = tmpSong.replace("ÿ", "y");
-
-        tmpSong = tmpSong.replace("É", "E");
-        tmpSong = tmpSong.replace("È", "E");
-        tmpSong = tmpSong.replace("Ë", "E");
-        tmpSong = tmpSong.replace("Ê", "E");
-        tmpSong = tmpSong.replace("Á", "A");
-        tmpSong = tmpSong.replace("À", "A");
-        tmpSong = tmpSong.replace("Ä", "A");
-        tmpSong = tmpSong.replace("Â", "A");
-        tmpSong = tmpSong.replace("Ó", "O");
-        tmpSong = tmpSong.replace("Ò", "O");
-        tmpSong = tmpSong.replace("Ö", "O");
-        tmpSong = tmpSong.replace("Ô", "O");
-        tmpSong = tmpSong.replace("Ú", "U");
-        tmpSong = tmpSong.replace("Ù", "U");
-        tmpSong = tmpSong.replace("Ü", "U");
-        tmpSong = tmpSong.replace("Û", "U");
-        tmpSong = tmpSong.replace("Í", "I");
-        tmpSong = tmpSong.replace("Ì", "I");
-        tmpSong = tmpSong.replace("Ï", "I");
-        tmpSong = tmpSong.replace("Î", "I");
-        tmpSong = tmpSong.replace("Ý", "Y");
-        tmpSong = tmpSong.replace(" (DEEPEND REMIX)", "");
-        tmpSong = tmpSong.replace("Ø", "O");
-        tmpSong = tmpSong.replace("$IGN", "SIGN");
-        tmpSong = tmpSong.replace("!", "I");
-
-        return tmpSong.trim();
-    }
-    */
-
     private String removeSpecificWords(String word){
         word = word.replace("[BE]", "");
         word = word.replace("[NL]", "");
@@ -257,7 +176,7 @@ public class M3uMakerV2 extends BatchJobV2 {
         artist = MP3Helper.getInstance().prettifyArtist(artist);
         artist = MP3TagUtils.stripFilename(artist);
         artist = artist.toUpperCase();
-        artist = removeSpecificWords(artist);
+        //artist = removeSpecificWords(artist);
         return artist;
     }
     private String convertSongNameToM3uSongName(String song){

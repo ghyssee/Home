@@ -469,6 +469,34 @@ public class MP3TagUtils {
         return ok;
     }
 
+    public static String stripFilenameOld(String filename){
+        String strippedFilename = filename;
+
+        strippedFilename = strippedFilename.replace("/", "&");
+        strippedFilename = strippedFilename.replace("æ", "ae");
+        strippedFilename = strippedFilename.replace("Æ", "AE");
+        strippedFilename = strippedFilename.replace("ñ", "n");
+        strippedFilename = strippedFilename.replace("Ñ", "N");
+        strippedFilename = strippedFilename.replace("@", "At");
+        strippedFilename = strippedFilename.replace("ç", "c");
+        strippedFilename = strippedFilename.replace("Ç", "C");
+        strippedFilename = strippedFilename.replace("Λ", "&");
+        strippedFilename = strippedFilename.replace("ß", "ss");
+        strippedFilename = strippedFilename.replace("²", "2");
+        strippedFilename = strippedFilename.replace("³", "3");
+        strippedFilename = strippedFilename.replace("+", "&");
+        strippedFilename = strippedFilename.replace("A$AP", "ASAP");
+        strippedFilename = strippedFilename.replace("M.I.L.F. $", "M.I.L.F. S");
+        strippedFilename = strippedFilename.replace("$", "s");
+        strippedFilename = strippedFilename.replace("%", "Percent");
+        strippedFilename = strippedFilename.replace("/\\", "&");
+        strippedFilename = strippedFilename.replace("DELV!S", "DELVIS");
+
+        strippedFilename = strippedFilename.replaceAll("[^&()\\[\\],'. a-zA-Z0-9.-]", "");
+
+        return strippedFilename;
+    }
+
     public static String stripFilename(String filename){
         String strippedFilename = filename;
         strippedFilename = strippedFilename.replaceAll("<3", "Love");

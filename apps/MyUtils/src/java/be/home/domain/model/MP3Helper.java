@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.apache.log4j.Logger;
 
+import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,6 +23,9 @@ public class MP3Helper {
 
     private MP3Helper() {
         mp3Prettifer = (MP3Prettifier) JSONUtils.openJSONWithCode(Constants.JSON.MP3PRETTIFIER, MP3Prettifier.class);
+        MP3Prettifier.Word word;
+        Collections.sort(mp3Prettifer.global.filenames, (a1, b1) -> a1.priority - b1.priority);
+        System.out.println("sorted");
     }
 
     public static MP3Helper getInstance() {
@@ -216,23 +220,6 @@ public class MP3Helper {
         if (!StringUtils.endsWith(track.title, "Edit)")) {
             checkTrackPattern(track, FEAT, CLOSE_FEAT);
         }
-        //FEAT = ".*[\\(|\\[| ][Ff]t[.| ]";
-        //CLOSE_FEAT = "";
-        //checkTrackPattern(track, FEAT, CLOSE_FEAT);
-        /*
-        Pattern pattern = Pattern.compile(FEAT + "(.*)" + CLOSE_FEAT);
-        Matcher matcher = pattern.matcher(track.title);
-        if (matcher.matches()) {
-            String extraArtist = track.title.replaceAll(FEAT, "").replaceFirst(CLOSE_FEAT, "");
-            extraArtist = prettifyArtist(prettifySong(extraArtist));
-            track.artist += " Feat. " + extraArtist;
-            Pattern p = Pattern.compile("(.*)" + FEAT );
-            Matcher m = p.matcher(track.title);
-            if (m.find()) {
-                String s = m.group(1);
-                track.title = s.trim();
-            }
-        }*/
     }
 
     private void checkTrackPattern(AlbumInfo.Track track, String startPattern, String endPattern){
@@ -255,7 +242,6 @@ public class MP3Helper {
         String prettifiedText = title;
         if (StringUtils.isNotBlank(prettifiedText)) {
             prettifiedText = prettifyString(prettifiedText) ;
-                    //WordUtils.capitalizeFully(prettifiedText, startChars);
             prettifiedText = prettifiedText.replaceFirst("\\[[Ee]xplicit\\]", "");
             prettifiedText = checkWords(prettifiedText, Mp3Tag.ALBUM);
             prettifiedText = prettifiedText.replaceAll("R'n'b", "R'n'B");
@@ -270,6 +256,19 @@ public class MP3Helper {
         int trackSize = albumInfo.trackSize == 0 ? 2 : albumInfo.trackSize;
         return StringUtils.leftPad(track, trackSize, "0");
 
+    }
+
+    public String stripFilename(String filename) {
+        String prettifiedText = filename;
+        for (MP3Prettifier.Word wordObj : mp3Prettifer.global.filenames) {
+            String oldText = prettifiedText;
+            prettifiedText = prettifiedText.replaceAll(wordObj.oldWord, wordObj.newWord);
+            if (!oldText.equals(prettifiedText)) {
+                logRule("Global Filenames", wordObj);
+            }
+
+        }
+        return prettifiedText;
     }
 
 }

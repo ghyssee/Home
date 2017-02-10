@@ -99,6 +99,14 @@ public class HelloWorld extends BatchJobV2 {
         System.out.println(mp3Helper.prettifySong("Oops!.. I Did It Again"));
         System.out.println(mp3Helper.prettifyAlbum("Yorin Fm"));
         System.out.println("Oops! I Did It Again".replaceAll("Oops!? ?.?.?.? ?I Did It Again","Oops!... I Did It Again"));
+
+        System.out.println(mp3Helper.stripFilename("D*Note"));
+        System.out.println(mp3Helper.stripFilename("<3"));
+        System.out.println(mp3Helper.stripFilename("B**ch!"));
+        System.out.println(mp3Helper.stripFilename("A+"));
+        System.out.println(mp3Helper.stripFilename("+1"));
+        System.out.println(mp3Helper.stripFilename("8^Y"));
+
     }
 
     private static void updateMP3(){

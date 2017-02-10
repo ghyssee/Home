@@ -56,7 +56,17 @@
 					<input name="{{$contacts[sec1].field}}"
                             {{if isset($contacts[sec1].required)}} required="true"{{/if}}
                             {{if isset($contacts[sec1].checkbox)}} class="easyui-checkbox" type="checkbox" checked value="true"
-                            {{else}} class="easyui-textbox"
+                            {{else}}
+							   {{if isset($contacts[sec1].type)}}
+									{{if $contacts[sec1].type == "number"}}
+						   				class="easyui-numberbox" value="100" data-options="min:0,precision:0"
+									{{else}}
+									   class="easyui-textbox"
+									{{/if}}
+								{{else}}
+						   			class="easyui-textbox"
+								{{/if}}
+
                             {{/if}}
                     >
 				</div>

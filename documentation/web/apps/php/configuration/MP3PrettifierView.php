@@ -69,6 +69,14 @@ goMenu();
     </div>
 </div>
 <br>
+<div id="container">
+    <div id="column1">
+        <div id="innercolumn1">
+            <?php include "MP3PrettifierViewFilename.php"; ?>
+        </div>
+    </div>
+</div>
+<br>
 
 
 <?php
