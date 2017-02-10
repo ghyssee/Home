@@ -32,6 +32,7 @@ import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 public class MP3TagChecker extends BatchJobV2{
@@ -91,7 +92,7 @@ public class MP3TagChecker extends BatchJobV2{
         return false;
     }
 
-    public void export(MP3Settings.Mezzmo.Mp3Checker mp3checker){
+    public void export(MP3Settings.Mezzmo.Mp3Checker mp3checker) throws IOException {
 
         TransferObject to = new TransferObject();
         if (albumErrors == null){
@@ -100,6 +101,7 @@ public class MP3TagChecker extends BatchJobV2{
         albumErrors.items = new ArrayList<>();
         //base = ""
         MGOFileAlbumTO albumTO = new MGOFileAlbumTO();
+        MyFileWriter albumsWithoutErrorsFile = new MyFileWriter("c:\\My Programs\\SkyDrive\\Config\\Java\\AlbumsWithoutErrors.txt", MyFileWriter.NO_APPEND);
         File file = new File(Setup.getInstance().getFullPath(Constants.FILE.ALBUMS_TO_CHECK));
         File excludeFile = new File(Setup.getInstance().getFullPath(Constants.FILE.ALBUMS_TO_EXCLUDE));
         try {
@@ -139,7 +141,7 @@ public class MP3TagChecker extends BatchJobV2{
                             // don't break batch because there was a problem writing status page
                             log.warn("Problem Making Status Page");
                         }
-                        processAlbum(comp);
+                        processAlbum(comp, albumsWithoutErrorsFile);
                         if (maxItemsReached(mp3checker.maxNumberOfErrors)){
                             break;
                         }
@@ -150,6 +152,7 @@ public class MP3TagChecker extends BatchJobV2{
         } catch (IOException e) {
             LogUtils.logError(log, e, "Problem opening file " + file.getAbsolutePath());
         }
+        albumsWithoutErrorsFile.close();
     }
 
     private void saveErrors(){
@@ -186,10 +189,16 @@ public class MP3TagChecker extends BatchJobV2{
         MP3TagUtils tagUtils = new MP3TagUtils(this.albumErrors);
         List <AlbumError.Item> oldItems = albumErrors.items;
         albumErrors.items = new ArrayList<>();
+        List <Long> fileIdList = new ArrayList();
         for (AlbumError.Item item : oldItems) {
+            if (!fileIdList.contains(item.fileId)){
+                fileIdList.add(new Long(item.fileId));
+            }
+        }
+        for (Long fileId : fileIdList) {
             try {
-                MGOFileAlbumCompositeTO comp = getMezzmoService().findFileById(item.getFileId());
-            // get list of all files to get the max Disc
+                MGOFileAlbumCompositeTO comp = getMezzmoService().findFileById(fileId);
+                // get list of all files to get the max Disc
                 MGOFileAlbumCompositeTO search = new MGOFileAlbumCompositeTO();
                 search.getFileAlbumTO().setId(comp.getFileAlbumTO().getId());
                 List<MGOFileAlbumCompositeTO> list = getMezzmoService().findSongsByAlbum(search);
@@ -203,14 +212,14 @@ public class MP3TagChecker extends BatchJobV2{
             }
             catch (IncorrectResultSizeDataAccessException e){
                 log.error(e);
-                albumErrors.items.add(item);
+                //albumErrors.items.add(item);
             }
         }
         saveErrors();
 
     }
 
-    private void processAlbum(MGOFileAlbumCompositeTO comp){
+    private void processAlbum(MGOFileAlbumCompositeTO comp, MyFileWriter albumsWithoutErrorsFile) throws IOException {
         MGOFileAlbumCompositeTO search = new MGOFileAlbumCompositeTO();
         search.getFileAlbumTO().setId(comp.getFileAlbumTO().getId());
         List<MGOFileAlbumCompositeTO> list = getMezzmoService().findSongsByAlbum(search);
@@ -218,6 +227,7 @@ public class MP3TagChecker extends BatchJobV2{
         int maxDisc = getMaxDisc(list);
         log.info("Max Disc: " + maxDisc);
         MP3TagUtils tagUtils = new MP3TagUtils(this.albumErrors);
+        int errors = this.albumErrors.items.size();
         for (MGOFileAlbumCompositeTO item : list){
 
             log.info("Track: " + item.getFileTO().getTrack());
@@ -225,6 +235,9 @@ public class MP3TagChecker extends BatchJobV2{
             log.info("Title: " + item.getFileTO().getTitle());
             log.info(StringUtils.repeat('=', 100));
             tagUtils.processSong(item, list.size(), maxDisc);
+        }
+        if (errors == this.albumErrors.items.size()){
+            albumsWithoutErrorsFile.append(comp.getFileAlbumTO().getName());
         }
 
     }
