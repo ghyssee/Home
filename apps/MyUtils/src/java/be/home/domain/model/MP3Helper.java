@@ -239,7 +239,8 @@ public class MP3Helper {
     }
 
     public String prettifyAlbum(String title){
-        String prettifiedText = title;
+        String prettifiedText = prettifySong(title);
+        /*
         if (StringUtils.isNotBlank(prettifiedText)) {
             prettifiedText = prettifyString(prettifiedText) ;
             prettifiedText = prettifiedText.replaceFirst("\\[[Ee]xplicit\\]", "");
@@ -249,6 +250,7 @@ public class MP3Helper {
 
             prettifiedText = prettifiedText.trim();
         }
+        */
         return prettifiedText;
     }
 

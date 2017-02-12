@@ -35,8 +35,8 @@ public class HelloWorld extends BatchJobV2 {
 
         //System.out.println(MP3TagUtils.stripFilename("(Hot S+++)"));
 
-        //testMP3Prettifier();
-        updateMP3();
+        testMP3Prettifier();
+        //updateMP3();
 
     }
 
@@ -105,7 +105,7 @@ public class HelloWorld extends BatchJobV2 {
         System.out.println("St. Lunatics".replaceAll("(The )?St. Lunatics", "The St. Lunatics"));
         System.out.println("Run-D.M.C".replaceAll("Run(-| )(D|d)\\.(M|m)\\.(C|c)\\.?", "Run-DMC"));
         System.out.println(mp3Helper.prettifyArtist("Run D.m.c."));
-        System.out.println(mp3Helper.stripFilename("A | B | C"));
+        System.out.println(mp3Helper.prettifyAlbum("Knuffel (BE)"));
         //System.out.println(mp3Helper.prettifyArtist("Ll Cool J Feat. 7 Aurelius"));
 
     }
