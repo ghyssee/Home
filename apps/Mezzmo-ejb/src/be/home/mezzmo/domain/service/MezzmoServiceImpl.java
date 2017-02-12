@@ -260,6 +260,7 @@ public class MezzmoServiceImpl {
                 log.info("Album: " + comp.getFileAlbumTO().getName() + " / No Update necessary");
                 nr = 1;
             } else if (album.getName().equalsIgnoreCase(newAlbum)) {
+                comp.getFileAlbumTO().setName(newAlbum);
                 log.info("Album: " + comp.getFileAlbumTO().getName() + " / Update The Album");
                 nr = updateSong(comp, MP3Tag.ALBUM);
             }

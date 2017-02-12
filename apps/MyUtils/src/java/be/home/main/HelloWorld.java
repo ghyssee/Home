@@ -34,17 +34,10 @@ public class HelloWorld extends BatchJobV2 {
 
 
         //System.out.println(MP3TagUtils.stripFilename("(Hot S+++)"));
-        testMP3Prettifier();
-        String test = "Lilly Wood & The Prick & Robin Schulz";
-        replace2k(test);
-        test = "Lilly Wood, The Prick & Robin Schulz";
-        replace2k(test);
 
-    }
+        //testMP3Prettifier();
+        updateMP3();
 
-    private static void replace2k(String text){
-        // 2k followed by 1 or more digit
-        System.out.println(text.replaceAll("Lilly Wood(,| &) The Prick & Robin Schulz", "Replaced"));
     }
 
     private static void testMP3Prettifier(){
@@ -87,8 +80,6 @@ public class HelloWorld extends BatchJobV2 {
         System.out.println(mp3Helper.prettifyArtist("Mackenzie ft Jessy"));
         System.out.println(mp3Helper.prettifyArtist("Mackenzie ft. Jessy"));
         System.out.println(mp3Helper.prettifyArtist("Riba & JMK!"));
-        System.out.println(mp3Helper.prettifyArtist("Nutty Buddy Feat. M.U.G. (Of VSA)"));
-        System.out.println(mp3Helper.prettifyArtist("R-CANE Feat. NOWLIVE.EU "));
 
         System.out.println(mp3Helper.prettifySong("Ok, That's it"));
         System.out.println(mp3Helper.prettifySong("AAA Anthem"));
@@ -101,17 +92,27 @@ public class HelloWorld extends BatchJobV2 {
         System.out.println("Oops! I Did It Again".replaceAll("Oops!? ?.?.?.? ?I Did It Again","Oops!... I Did It Again"));
 
         System.out.println(mp3Helper.stripFilename("D*Note"));
-        System.out.println(mp3Helper.stripFilename("<3"));
         System.out.println(mp3Helper.stripFilename("B**ch!"));
         System.out.println(mp3Helper.stripFilename("A+"));
         System.out.println(mp3Helper.stripFilename("+1"));
         System.out.println(mp3Helper.stripFilename("8^Y"));
+        System.out.println(mp3Helper.stripFilename("M.I.L.F. $"));
+        System.out.println(mp3Helper.stripFilename("A$AP"));
+        System.out.println(mp3Helper.stripFilename("X!nk"));
+        System.out.println(mp3Helper.stripFilename("A+B"));
+        System.out.println(mp3Helper.stripFilename("A%"));
+        System.out.println(mp3Helper.stripFilename("A$|="));
+        System.out.println("St. Lunatics".replaceAll("(The )?St. Lunatics", "The St. Lunatics"));
+        System.out.println("Run-D.M.C".replaceAll("Run(-| )(D|d)\\.(M|m)\\.(C|c)\\.?", "Run-DMC"));
+        System.out.println(mp3Helper.prettifyArtist("Run D.m.c."));
+        System.out.println(mp3Helper.stripFilename("A | B | C"));
+        //System.out.println(mp3Helper.prettifyArtist("Ll Cool J Feat. 7 Aurelius"));
 
     }
 
     private static void updateMP3(){
         Mp3File mp3file = null;
-        String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\49 Sly and Robbie Presents Shaggy feat. Melissa Musique - If U Slip U Slide (You Could Be Mine).mp3";
+        String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\101 John & Yoko And The Plastic Ono Band With The Harlem Community Choir - Happy Xmas (War is Over).mp3";
         //String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\test.mp3";
         //String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\108 Di-Rect - Hungry For Love.mp3";
         try {

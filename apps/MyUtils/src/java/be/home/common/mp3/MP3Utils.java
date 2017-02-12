@@ -92,6 +92,30 @@ public class MP3Utils {
             if (set.getId().equals("PRIV")) {
                 // remove Private TAG from the MP3
             }
+            else if (set.getId().equals("GEOB")) {
+                /* In this frame any type of file can be encapsulated. After the header,
+                'Frame size' and 'Encoding' follows 'MIME type' [MIME] represented as
+                as a terminated string encoded with ISO 8859-1 [ISO-8859-1]. The
+                filename is case sensitive and is encoded as 'Encoding'. Then follows
+                    a content description as terminated string, encoded as 'Encoding'.
+                            The last thing in the frame is the actual object. The first two
+                    strings may be omitted, leaving only their terminations. MIME type is
+                    always an ISO-8859-1 text string. There may be more than one "GEOB"
+                    frame in each tag, but only one with the same content descriptor.
+                 */
+            }
+
+            else if (set.getId().equals("COMM")) {
+                // remove Comment Tag if value equals "0"
+                // causes problem with this api
+                if ("0".equals(id3v2.getComment())){
+
+                }
+                else {
+                    addFrame(id3v2Tag, set);
+                    id3v2Tag.setComment(id3v2.getComment());
+                }
+            }
             else if (set.getId().equals("TCOM")) {
                 //System.out.println( " composer lenth = " + id3v2.getComposer().length());
                 // bug with id3v24Tag : if larger than 60, id3v2 Tag can no longer be read

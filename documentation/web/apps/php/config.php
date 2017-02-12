@@ -147,12 +147,22 @@ class CustomSort{
 
 	public function ascCmp($a, $b)
 	{
-		return strcmp($a->{$this->field}, $b->{$this->field});
+		if (is_numeric($a->{$this->field})){
+			return $a->{$this->field} - $b->{$this->field};
+		}
+		else {
+			return strcmp($a->{$this->field}, $b->{$this->field});
+		}
 	}
 
     public function descCmp($a, $b)
     {
-        return strcmp($b->{$this->field}, $a->{$this->field});
+		if (is_numeric($a->{$this->field})){
+			return $b->{$this->field} - $a->{$this->field};
+		}
+        else {
+			return strcmp($b->{$this->field}, $a->{$this->field});
+		}
     }
 
     public function sortObjectArrayByField($array, $field, $order)

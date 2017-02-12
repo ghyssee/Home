@@ -86,10 +86,10 @@ public class MP3TagUtils {
                     if (checkDisc(comp, id3v2Tag.getPartOfSet())) {
                         if (checkFilename(comp, nrOfTracks, maxDisc)) {
                             // if filename is ok, an extra check for filetitle
-                            checkAlbum(comp, id3v2Tag.getAlbum());
                             checkFileTitle(comp);
                         }
                     }
+                    checkAlbum(comp, id3v2Tag.getAlbum());
 
                     System.out.println(StringUtils.repeat('=', 100));
                     System.out.println("MP3 Tag Info");
@@ -190,7 +190,7 @@ public class MP3TagUtils {
                 : "";
         String filename = cd + track + " " + comp.getFileArtistTO().getArtist() + " - " + comp.getFileTO().getTitle() + ".mp3";
         String strFilenameFromDB = pathFromDB.toString();
-        filename = stripFilename(filename);
+        filename = MP3Helper.getInstance().stripFilename(filename);
         if (!strFilenameFromDB.startsWith(SUBST_A)){
             // Path is in small letters instead of The Real Path
             int len = SUBST_A.length();
@@ -359,11 +359,11 @@ public class MP3TagUtils {
         }
         File file = new File(comp.getFileTO().getFile());
         String path = file.getParentFile().getName();
-        path = removeYearFromAlbum(path);
+        String strippedPath = removeYearFromAlbum(path);
         if (!"VARIOUS ARTISTS".equals(comp.getAlbumArtistTO().getName().toUpperCase())){
             album = comp.getAlbumArtistTO().getName() + " - " + album;
         }
-        if (!album.equals(path)){
+        if (!album.equals(path) && !album.equals(strippedPath)){
             log.warn("Path Album does not match: " + "Formatted: " + album + " / Disc: " + path);
             String possibleNewFile = file.getParentFile().getParentFile().getAbsolutePath() + File.separator + album + File.separator;
             String oldFile = file.getParentFile().getAbsolutePath() + File.separator;
@@ -470,34 +470,6 @@ public class MP3TagUtils {
     }
 
     public static String stripFilenameOld(String filename){
-        String strippedFilename = filename;
-
-        strippedFilename = strippedFilename.replace("/", "&");
-        strippedFilename = strippedFilename.replace("æ", "ae");
-        strippedFilename = strippedFilename.replace("Æ", "AE");
-        strippedFilename = strippedFilename.replace("ñ", "n");
-        strippedFilename = strippedFilename.replace("Ñ", "N");
-        strippedFilename = strippedFilename.replace("@", "At");
-        strippedFilename = strippedFilename.replace("ç", "c");
-        strippedFilename = strippedFilename.replace("Ç", "C");
-        strippedFilename = strippedFilename.replace("Λ", "&");
-        strippedFilename = strippedFilename.replace("ß", "ss");
-        strippedFilename = strippedFilename.replace("²", "2");
-        strippedFilename = strippedFilename.replace("³", "3");
-        strippedFilename = strippedFilename.replace("+", "&");
-        strippedFilename = strippedFilename.replace("A$AP", "ASAP");
-        strippedFilename = strippedFilename.replace("M.I.L.F. $", "M.I.L.F. S");
-        strippedFilename = strippedFilename.replace("$", "s");
-        strippedFilename = strippedFilename.replace("%", "Percent");
-        strippedFilename = strippedFilename.replace("/\\", "&");
-        strippedFilename = strippedFilename.replace("DELV!S", "DELVIS");
-
-        strippedFilename = strippedFilename.replaceAll("[^&()\\[\\],'. a-zA-Z0-9.-]", "");
-
-        return strippedFilename;
-    }
-
-    public static String stripFilename(String filename){
         String strippedFilename = filename;
         strippedFilename = strippedFilename.replaceAll("<3", "Love");
         strippedFilename = strippedFilename.replaceAll(" 't ", " Het ");
