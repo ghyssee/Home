@@ -182,7 +182,7 @@ public class MP3TagUtils {
         comp.getFileTO().setFile(comp.getFileTO().getFile().replace(SUBST_B, SUBST_A));
         Path pathFromDB = Paths.get(comp.getFileTO().getFile());
         String filenameFromDB = pathFromDB.getFileName().toString();
-        System.out.println("filenameDB = " + filenameFromDB);
+        log.info("filenameDB = " + filenameFromDB);
         int lengthDisc = nrOfCds > 0 ? String.valueOf(nrOfCds).length() : 0;
         int lengthTrack = calculateLengthOfTrack(nrOfTracks, nrOfCds);
         String track = StringUtils.leftPad(String.valueOf(comp.getFileTO().getTrack()), lengthTrack, '0');
@@ -231,7 +231,7 @@ public class MP3TagUtils {
             try {
                 Path realPath = path.toRealPath(LinkOption.NOFOLLOW_LINKS);
                 String realFile = realPath.getFileName().toString();
-                System.out.println(realFile);
+                log.info("Real File: " +realFile);
                 if (!realFile.equals(filenameFromDB)) {
                     addItem(comp.getFileTO().getId(),
                             comp.getFileTO().getId(),

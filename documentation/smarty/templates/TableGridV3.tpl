@@ -8,6 +8,8 @@
 		   nowrap="false"
 		   rownumbers="true"
 		   fitColumns="true"
+		   pagePosition={{if isset($pagePosition)}}"$pagePosition)}"{{else}}"bottom"{{/if}}
+		   pageSize="10"
 		   singleSelect="{{if isset($singleSelect)}}{{$singleSelect}}{{else}}true{{/if}}"
 	>
 		<thead>
