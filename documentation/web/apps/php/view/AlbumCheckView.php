@@ -49,7 +49,7 @@ goMenu();
         $textValue = read($file);
     }
     
-    $layout = new Layout(array('numCols' => 1));
+    $layout = new Layout(array('numCols' => 2));
 
     $layout->textArea(new Input(array('name' => "albumList",
         'col' => 1,
@@ -57,6 +57,19 @@ goMenu();
         'rows' => 15,
         'label' => 'Album(s) To Check',
         'value' => $textValue)));
+
+    $file = getFullPath(FILE_ALBUMWITHOUTERRORS);
+    $textValue = '';
+    if (file_exists($file)){
+        $textValue = read($file);
+    }
+    $layout->textArea(new Input(array('name' => "albmuWithoutErrors",
+        'col' => 2,
+        'cols' => 60,
+        'rows' => 10,
+        'label' => 'Album(s) Without Errors',
+        'value' => $textValue)));
+
 
     $file = getFullPath(FILE_ALBUMEXCLUDE);
     $textValue = '';

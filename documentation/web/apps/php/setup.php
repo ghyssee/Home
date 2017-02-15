@@ -13,6 +13,7 @@ const JSON_ALBUMERRORS = "albumErrors";
 const FILE_ALBUM = "albumInfo";
 const FILE_ALBUMCHECK = "albumsToCheck";
 const FILE_ALBUMEXCLUDE = "albumsToExclude";
+const FILE_ALBUMWITHOUTERRORS = "albumsWithoutErrors";
 const APPEND = true;
 const ESCAPE_HTML = true;
 const JSON_ASSOCIATIVE = true;
