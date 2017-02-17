@@ -29,9 +29,7 @@ $_SESSION['form_location'] = basename($_SERVER['PHP_SELF']);
     ?>
 </form>
 
-<form onsubmit="return myFunction()">
-    <input type="submit" value="Process Selected Rows">
-</form>
+
 
 <div style="margin:10px 0;">
     <span>Selection Mode: </span>

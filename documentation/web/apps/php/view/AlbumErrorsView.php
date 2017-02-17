@@ -28,11 +28,11 @@ session_start();
     
      #column1 {
          float: left;
-         width: 20%;
+         width: 8%;
      }
     #column2 {
         float: right ;
-        width: 80% ;
+        width: 92% ;
     }
     #innercolumn1 {
         padding-left: 5px ;
@@ -48,23 +48,42 @@ session_start();
 goMenu();
 ?>
 
-<h1>Mezzmo / MP3 Check</h1>
-<div class="horizontalLine">.</div>
-<br>
+<h3>Mezzmo / MP3 Check</h3>
 
-
-<div id="container">
-    <div id="column1">
-        <div id="innercolumn1">
-            <?php include "AlbumErrorsViewTab1.php"; ?>
-        </div>
+<div id="tt" class="easyui-tabs" data-options="selected:0" style="width:1400px;height:700px;">
+    <div title="Settings" style="padding:20px;display:none;">
+        <?php include "AlbumErrorsViewTab1.php"; ?>
     </div>
-    <div id="column2">
-        <div id="innercolumn2">
-            <?php include "AlbumErrorsViewTab2.php"; ?>
+    <div title="Errors" style="overflow:auto;padding:20px;display:none;" >
+        <div id="container">
+            <div id="column1">
+                <div id="innercolumn1">
+                    <form onsubmit="return myFunction()">
+                        <input type="submit" value="Process">
+                    </form>
+                </div>
+            </div>
+            <div id="column2">
+                <div id="innercolumn2">
+                    <?php include "AlbumErrorsViewTab2.php"; ?>
+                </div>
+            </div>
         </div>
+
     </div>
 </div>
+
+<script type="text/javascript">
+    $(function(){
+        var tabs = $('#tt').tabs().tabs('tabs');
+        for(var i=0; i<tabs.length; i++){
+            tabs[i].panel('options').tab.unbind().bind('mouseenter',{index:i},function(e){
+                $('#tt').tabs('select', e.data.index);
+            });
+        }
+    });
+</script>
+
 
 <br>
 <?php
