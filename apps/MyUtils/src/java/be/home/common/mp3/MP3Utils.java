@@ -92,6 +92,22 @@ public class MP3Utils {
             if (set.getId().equals("PRIV")) {
                 // remove Private TAG from the MP3
             }
+            else if (set.getId().equals("TALB")) {
+                // remove Private TAG from the MP3
+                id3v2Tag.setAlbum(id3v2.getAlbum());
+            }
+            else if (set.getId().equals("TYER")) {
+                id3v2Tag.setYear(id3v2.getYear());
+            }
+            else if (set.getId().equals("TCOP")) {
+                id3v2Tag.setCopyright(id3v2.getCopyright());
+            }
+            else if (set.getId().equals("TIT2")) {
+                id3v2Tag.setTitle(id3v2.getTitle());
+            }
+            else if (set.getId().equals("TPE1")) {
+                id3v2Tag.setArtist(id3v2.getArtist());
+            }
             else if (set.getId().equals("GEOB")) {
                 /* In this frame any type of file can be encapsulated. After the header,
                 'Frame size' and 'Encoding' follows 'MIME type' [MIME] represented as
@@ -108,35 +124,46 @@ public class MP3Utils {
             else if (set.getId().equals("COMM")) {
                 // remove Comment Tag if value equals "0"
                 // causes problem with this api
-                if ("0".equals(id3v2.getComment())){
+                String comment = id3v2.getComment().trim();
+                if ("0".equals(comment)) {
 
-                }
-                else {
-                    addFrame(id3v2Tag, set);
+                } else if (comment.startsWith("0000")) {
+                    // ignore the comment
+                } else {
                     id3v2Tag.setComment(id3v2.getComment());
                 }
             }
             else if (set.getId().equals("TCOM")) {
-                //System.out.println( " composer lenth = " + id3v2.getComposer().length());
-                // bug with id3v24Tag : if larger than 60, id3v2 Tag can no longer be read
-                if (id3v2.getComposer() != null && id3v2.getComposer().length() > 60){
-                    // remove composer // causes problem with id3v24 Tag
-
-                }
-                else {
-                    addFrame(id3v2Tag, set);
-                }
-
-                /* remove TAG from the MP3
-                 This frame is intended for music that comes from a CD, so that the CD
-                can be identified in databases such as the CDDB
-                */
+                id3v2Tag.setComposer(id3v2.getComposer());
             }
+            /* remove TAG from the MP3
+             This frame is intended for music that comes from a CD, so that the CD
+            can be identified in databases such as the CDDB
+            */
             else if (set.getId().equals("MCDI")) {
                 /* remove TAG from the MP3
                  This frame is intended for music that comes from a CD, so that the CD
                 can be identified in databases such as the CDDB
                 */
+            }
+            else if (set.getId().equals("TXXX")) {
+                /*
+               The text information frames are often the most important frames,
+               containing information like artist, album and more. There may only be
+               one text information frame of its kind in an tag. All text
+               information frames supports multiple strings, stored as a null
+               separated list, where null is reperesented by the termination code
+               for the charater encoding. All text frame identifiers begin with "T".
+               Only text frame identifiers begin with "T", with the exception of the
+               "TXXX" frame. All the text information frames have the following
+               format:
+
+                 <Header for 'Text information frame', ID: "T000" - "TZZZ",
+                 excluding "TXXX" described in 4.2.6.>
+                 Text encoding                $xx
+                 Information                  <text string(s) according to encoding>
+            */
+
             }
             else {
                 addFrame(id3v2Tag, set);

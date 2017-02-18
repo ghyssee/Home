@@ -77,7 +77,9 @@ function execInBackground2($cmd) {
 
 function goMenu(){
 	$menuObj = readJSONWithCode(JSON_MENU);
-	println('<a href="' . $menuObj->root->href . '">' . $menuObj->root->description . '</a>');
+	printh('<div class="centered">');
+	printh('<a href="' . $menuObj->root->href . '">' . $menuObj->root->description . '</a>');
+	printh('</div>');
 }
 
 function getUrl(){

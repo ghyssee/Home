@@ -31,6 +31,7 @@ define ('ROOT_PHP_UTILS', ROOT_PHP . "/utils");
 define ('ROOT_PHP_VIEW', ROOT_PHP . "/view");
 define ('ROOT_CSS', ROOT_APPS . "/css");
 define ('ROOT_JS', ROOT_APPS . "/js");
+define ('ROOT_JS_EASYUI', ROOT_JS . "/easyui");
 define ('ROOT_THEMES', ROOT_APPS . "/themes");
 
 function initSetup(){

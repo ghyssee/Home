@@ -101,25 +101,24 @@ public class HelloWorld extends BatchJobV2 {
         System.out.println(mp3Helper.stripFilename("X!nk"));
         System.out.println(mp3Helper.stripFilename("A+B"));
         System.out.println(mp3Helper.stripFilename("A%"));
-        System.out.println(mp3Helper.stripFilename("A$|="));
-        System.out.println("St. Lunatics".replaceAll("(The )?St. Lunatics", "The St. Lunatics"));
-        System.out.println("Run-D.M.C".replaceAll("Run(-| )(D|d)\\.(M|m)\\.(C|c)\\.?", "Run-DMC"));
-        System.out.println(mp3Helper.prettifyArtist("Run D.m.c."));
-        System.out.println(mp3Helper.prettifyAlbum("Knuffel (BE)"));
+        System.out.println(mp3Helper.prettifySong("Poker Face (JDB Edit)"));
+        System.out.println(mp3Helper.prettifyArtist("Alice Feat. Test"));
+        System.out.println("Test (4cd)".replaceAll("([0-9])cd", "$1CD"));
+        System.out.println(mp3Helper.prettifyAlbum("Test (4CD box)"));
         //System.out.println(mp3Helper.prettifyArtist("Ll Cool J Feat. 7 Aurelius"));
 
     }
 
     private static void updateMP3(){
         Mp3File mp3file = null;
-        String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\101 John & Yoko And The Plastic Ono Band With The Harlem Community Choir - Happy Xmas (War is Over).mp3";
+        String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\01 Mike Posner - I Took A Pill In Ibiza (SeeB Remix).mp3";
         //String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\test.mp3";
         //String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\108 Di-Rect - Hungry For Love.mp3";
         try {
             mp3file = new Mp3File(file);
             ID3v2 id3v2Tag = MP3Utils.getId3v2Tag(mp3file);
-            id3v2Tag.setTitle("test2");
-            id3v2Tag.setArtist("Axwell Λ Ingrosso");
+            //id3v2Tag.setTitle("test2");
+            //id3v2Tag.setArtist("Axwell Λ Ingrosso");
                 mp3file.setId3v2Tag(id3v2Tag);
                 String newFile = file + ".MP3";
                 mp3file.save(newFile);

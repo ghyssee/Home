@@ -44,28 +44,36 @@ goMenu();
 <h1>MP3 Pretttifier</h1>
 <div class="horizontalLine">.</div>
 <br>
-
-<div id="tt" class="easyui-tabs" data-options="selected:0" style="width:900px;height:500px;">
-    <div title="Global Word" style="padding:20px;display:none;">
-        <?php include "MP3PrettifierViewGlobalWord.php"; ?>
+<div id="container">
+    <div id="column1">
+        <div id="innercolumn1">
+            <?php include "MP3PrettifierViewGlobalWord.php"; ?>
+        </div>
     </div>
-    <div title="Artist Word" style="padding:20px;display:none;">
-        <?php include "MP3PrettifierViewArtistWord.php"; ?>
-    </div>
-    <div title="Artist Name" style="padding:20px;display:none;">
-        <?php include "MP3PrettifierViewArtistName.php"; ?>
-    </div>
-    <div title="Song Title" style="padding:20px;display:none;">
-        <?php include "MP3PrettifierViewSongTitle.php"; ?>
-    </div>
-    <div title="Filename" style="padding:20px;display:none;">
-        <?php include "MP3PrettifierViewFilename.php"; ?>
+    <div id="column2">
+        <div id="innercolumn2">
+            <?php include "MP3PrettifierViewArtistWord.php"; ?>
+        </div>
     </div>
 </div>
-
-<script src="<?php echo webPath(ROOT_JS_EASYUI, 'EasyUITabsMouseHover.js')?>"></script>
-
-
+<div id="container">
+    <div id="column1">
+        <div id="innercolumn1">
+            <?php include "MP3PrettifierViewArtistName.php"; ?>
+        </div>
+    </div>
+    <div id="column2">
+        <div id="innercolumn2">
+            <?php include "MP3PrettifierViewSongTitle.php"; ?>
+        </div>
+    </div>
+</div>
+<br>
+<div id="container">
+            <?php include "MP3PrettifierViewFilename.php"; ?>
+</div>
+<br>
+<br>
 <?php
 goMenu();
 

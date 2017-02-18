@@ -5,6 +5,7 @@ include_once("../setup.php");
 <head>
     <link rel="stylesheet" type="text/css" href="<?php echo webPath(ROOT_CSS, 'stylesheet.css')?>">
     <link rel="stylesheet" type="text/css" href="<?php echo webPath(ROOT_CSS, 'form.css')?>">
+    <?php include documentRoot ("apps/php/templates/easyui.php");?>
 </head>
 <body>
 
@@ -45,136 +46,25 @@ if (isset($_SESSION["mp3Preprocessor"])) {
 <?php
 goMenu();
 ?>
-
-<form action="<?php echo $albumSave ?>" method="post">
-    <h1>Album Configuration</h1>
-    <div class="horizontalLine">.</div>
-    <?php
-    $layout = new Layout(array('numCols' => 1));
-    $layout->inputBox(new Input(array('name' => "album",
-        'size' => 100,
-        'label' => 'Album',
-        'value' => $mp3SettingsObj->album)));
-    $layout->button(new Input(array('name' => "mp3Settings",
-        'value' => 'saveAlbum',
-        'text' => 'Save',
-        'colspan' => 2)));
-    $layout->close();
-    ?>
-
-</form>
-
-<form action="<?php echo $albumSave ?>" method="post">
-    <h1>Mezzmo Configuration</h1>
-    <div class="horizontalLine">.</div>
-    <?php
-    $layout = new Layout(array('numCols' => 1));
-    $layout->inputBox(new Input(array('name' => "mezzmoBase",
-        'size' => 100,
-        'label' => 'Base',
-        'value' => $mp3SettingsObj->mezzmo->base)));
-    $layout->inputBox(new Input(array('name' => "importBase",
-        'size' => 100,
-        'label' => 'Import Base',
-        'value' => $mp3SettingsObj->mezzmo->importF->base)));
-    $layout->inputBox(new Input(array('name' => "filename",
-        'size' => 50,
-        'label' => 'Import File',
-        'value' => $mp3SettingsObj->mezzmo->importF->filename)));
-    $layout->inputBox(new Input(array('name' => "exportBase",
-        'size' => 100,
-        'label' => 'Export Path',
-        'value' => $mp3SettingsObj->mezzmo->export->base)));
-    $layout->inputBox(new Input(array('name' => "exportiPod",
-        'size' => 100,
-        'label' => 'Export iPod Path',
-        'value' => $mp3SettingsObj->mezzmo->export->iPod)));
-    $layout->checkBox(new Input(array('name' => "synchronizePlaycount",
-        'label' => 'Synchronize Play Count',
-        'value' => $mp3SettingsObj->mezzmo->synchronizePlaycount)));
-    $layout->button(new Input(array('name' => "mp3Settings",
-        'value' => 'saveMezzmo',
-        'text' => 'Save',
-        'colspan' => 2)));
-    $layout->close();
-    ?>
-</form>
-
-<form action="<?php echo $albumSave ?>" method="post">
-    <h1>Synchronizer Configuration</h1>
-    <div class="horizontalLine">.</div>
-    <?php
-    $layout = new Layout(array('numCols' => 1));
-    $layout->inputBox(new Input(array('name' => "synchronizerStartDirectory",
-        'size' => 100,
-        'label' => 'Start Directory',
-        'value' => $mp3SettingsObj->synchronizer->startDirectory)));
-    $layout->checkBox(new Input(array('name' => "updateRating",
-        'label' => 'Update Rating',
-        'value' => $mp3SettingsObj->synchronizer->updateRating)));
-    $layout->button(new Input(array('name' => "mp3Settings",
-        'value' => 'saveiPod',
-        'text' => 'Save',
-        'colspan' => 2)));
-    $layout->close();
-    ?>
-</form>
-
-<form action="<?php echo $albumSave ?>" method="post">
-    <h1>MediaMonkey Configuration</h1>
-    <div class="horizontalLine">.</div>
-    <?php
-    $layout = new Layout(array('numCols' => 1));
-    $layout->inputBox(new Input(array('name' => "mediaMonkeyBase",
-        'size' => 100,
-        'label' => 'Base',
-        'value' => $mp3SettingsObj->mediaMonkey->base)));
-    $layout->inputBox(new Input(array('name' => "mediaMonkeyPlaylistPath",
-        'size' => 100,
-        'label' => 'Playlist Path',
-        'value' => $mp3SettingsObj->mediaMonkey->playlist->path)));
-    $layout->inputBox(new Input(array('name' => "mediaMonkeyTop20",
-        'size' => 100,
-        'label' => 'Top 20 Name',
-        'value' => $mp3SettingsObj->mediaMonkey->playlist->top20)));
-    $layout->button(new Input(array('name' => "mp3Settings",
-        'value' => 'saveMM',
-        'text' => 'Save',
-        'colspan' => 2)));
-    $layout->close();
-    ?>
-</form>
-
-<form action="<?php echo $albumSave ?>" method="post">
-    <h1>LastPlayed Configuration</h1>
-    <div class="horizontalLine">.</div>
-    <?php
-    $layout = new Layout(array('numCols' => 1));
-    $layout->inputBox(new Input(array('name' => "number",
-        'size' => 5,
-        'label' => 'Number',
-        'type' => 'number',
-        'min' => '1',
-        'max' => '100',
-        'value' => $mp3SettingsObj->lastPlayedSong->number)));
-    $layout->comboBox($htmlObj->colors, "code", "description",
-        new Input(array('name' => "scrollColor",
-            'label' => 'Scroll Color',
-            'default' => $mp3SettingsObj->lastPlayedSong->scrollColor)));
-    $layout->comboBox($htmlObj->colors, "code", "description",
-        new Input(array('name' => "scrollBackgroundColor",
-            'label' => 'Scroll Background Color',
-            'default' => $mp3SettingsObj->lastPlayedSong->scrollBackgroundColor)));
-    $layout->checkBox(new Input(array('name' => "scrollShowAlbum",
-        'label' => 'Show Album',
-        'value' => $mp3SettingsObj->lastPlayedSong->scrollShowAlbum)));
-    $layout->button(new Input(array('name' => "mp3Settings",
-        'value' => 'saveLastPlayed',
-        'text' => 'Save',
-        'colspan' => 2)));
-    $layout->close();
-    ?>
-</form>
+<h3 class="centered">Settings</h3>
+<div id="tt" class="easyui-tabs centered" data-options="selected:0" style="width:900px;height:500px;margin:0 auto;">
+    <div title="Album" style="padding:20px;display:none;">
+        <?php include "AlbumViewAlbum.php"; ?>
+    </div>
+    <div title="Mezzmo" style="padding:20px;display:none;">
+        <?php include "AlbumViewMezzmo.php"; ?>
+    </div>
+    <div title="Synchronizer" style="padding:20px;display:none;">
+        <?php include "AlbumViewSynchronizer.php"; ?>
+    </div>
+    <div title="MediaMonkey" style="padding:20px;display:none;">
+        <?php include "AlbumViewMediaMonkey.php"; ?>
+    </div>
+    <div title="Last Played" style="padding:20px;display:none;">
+        <?php include "AlbumViewLastPlayed.php"; ?>
+    </div>
+</div>
+<script src="<?php echo webPath(ROOT_JS_EASYUI, 'EasyUITabsMouseHover.js')?>"></script>
 
 <?php
 goMenu();
