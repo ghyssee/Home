@@ -17,14 +17,10 @@ import java.util.Date;
  */
 public class ZipUtils {
 
-    String zipFile;
     private enum ZipType {
         FILE, FOLDER;
     }
 
-    public ZipUtils(String zipfile) {
-        this.zipFile = zipFile;
-    }
     public ZipUtils() {
     }
 

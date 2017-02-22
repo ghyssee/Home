@@ -97,6 +97,9 @@ public class BackupPlanner extends BatchJobV2{
                     }
                 }
             }
+            else {
+                errors.add("No Backup Scheme found for id: " + schemeId);
+            }
         }
         else {
             errors.add("No Backup Scheme found for id: " + schemeId);
@@ -107,37 +110,6 @@ public class BackupPlanner extends BatchJobV2{
             }
         }
     }
-
-    /*
-    public void startOld(Backup backup, String schemeId) {
-        String schemeLog = "";
-        if (schemeId == null) {
-            schemeId = getDefaultSchemeId(backup);
-            schemeLog = "Scheme Origin: Default Host";
-        }
-        else {
-            schemeLog = "Scheme Origin: Parameter";
-        }
-        boolean found = false;
-        if (schemeId != null) {
-            for (Backup.Scheme scheme : backup.schemes) {
-                if (scheme.id.equals(schemeId)) {
-                    log.info("Scheme found: " + schemeId + " / " + schemeLog);
-                    try {
-                        found = true;
-                        startBackup(scheme);
-                    } catch (ZipException e) {
-                        LogUtils.logError(log, e);
-                    }
-                    break;
-                }
-            }
-        }
-        if (!found){
-            log.warn("No Backup Scheme found for id: " + schemeId);
-        }
-    }
-    */
 
     public void startBackup(Backup.Scheme scheme) throws ZipException {
         ZipUtils zipUtils = new ZipUtils();
