@@ -130,7 +130,7 @@ public class MP3Utils {
                 } else if (comment.startsWith("0000")) {
                     // ignore the comment
                 } else {
-                    id3v2Tag.setComment(id3v2.getComment());
+                    id3v2Tag.setComment(comment);
                 }
             }
             else if (set.getId().equals("TCOM")) {
