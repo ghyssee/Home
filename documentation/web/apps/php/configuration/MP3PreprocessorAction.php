@@ -41,13 +41,15 @@ if (isset($_REQUEST['method'])){
             break;
         case "init":
             $id = $_REQUEST["id"];
-            init($id);
+            $tab = $_REQUEST["tab"];
+            init($id, $tab);
             break;
     }
 }
 
-function init($id){
+function init($id, $tab){
     $_SESSION["CONFIG_ID"] = $id;
+    $_SESSION["TAB"] = $tab;
     header("Location: " . $_SESSION["previous_location"]);
 }
 
