@@ -323,8 +323,8 @@ public class MP3TagChecker extends BatchJobV2{
             } catch (IOException e) {
                 LogUtils.logError(log, e, "There was a problem flushing the Album Errors File");
             }
-            return errorsProcessed;
         }
+        return errorsProcessed;
     }
 
     private void flushAlbumErrors() throws IOException {
