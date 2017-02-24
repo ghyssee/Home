@@ -73,6 +73,7 @@ public interface Constants {
         String ALBUM_LOG = "albumLog";
         String ALBUMS_TO_CHECK = "albumsToCheck";
         String ALBUMS_TO_EXCLUDE = "albumsToExclude";
+        String ALBUMS_WITHOUT_ERRORS = "albumsWithoutErrors";
 
     }
 
