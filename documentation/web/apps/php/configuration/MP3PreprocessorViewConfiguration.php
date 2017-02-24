@@ -3,12 +3,9 @@
         var select = document.getElementById('activeconfig');
 
         select.addEventListener('change', function(){
-            alert("1");
-            var tabs = $('#preprocessorTabs').tabs();
-            alert("2");
-            var selectedTab = $("#tabs .ui-state-active a").attr("id");
-            alert(selectedTab);
-            window.location = '<?php echo getAction()?>?method=init&id=' + this.value;
+            var tab = $('#preprocessorTabs').tabs('getSelected');
+            var index = $('#preprocessorTabs').tabs('getTabIndex',tab);
+            window.location = '<?php echo getAction()?>?method=init&id=' + this.value + '&tab='+index;
         }, false);
     }, false);
 </script>
@@ -22,6 +19,7 @@ if (isset($_SESSION["CONFIG_ID"])){
 else {
     $currentConfigId = $mp3PreprocessorObj->activeConfiguration;
 }
+
 $configs = $mp3PreprocessorObj->configurations;
 array_unshift($configs, new PreprocessorConfiguration());
 $layout->comboBox($configs, "id", "id",

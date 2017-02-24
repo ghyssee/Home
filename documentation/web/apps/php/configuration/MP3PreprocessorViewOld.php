@@ -26,6 +26,14 @@ function getAction(){
     return "MP3PreprocessorAction.php";
 }
 
+if (isset($_SESSION["TAB"])){
+    $currentTab = $_SESSION["TAB"];
+    unset($_SESSION["TAB"]);
+}
+else {
+    $currentTab = "0";
+}
+
 ?>
 
 <style>
@@ -39,14 +47,11 @@ function getAction(){
 
 </style>
 
-
-
-
 <?php
 goMenu();
 ?>
 
-<div id="preprocessorTabs" class="easyui-tabs" data-options="selected:0" style="width:900px;height:500px;">
+<div id="preprocessorTabs" class="easyui-tabs" data-options="selected:<?php echo $currentTab?>" style="width:900px;height:500px;">
     <div title="Splitter" style="padding:20px;display:none;">
         <?php include "MP3PreprocessorViewSplitter.php"; ?>
     </div>
@@ -54,9 +59,6 @@ goMenu();
         <?php include "MP3PreprocessorViewConfiguration.php"; ?>
     </div>
 </div>
-
-
-
 
 <div class="emptySpace"></div>
 <?php

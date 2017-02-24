@@ -64,6 +64,7 @@ public class MP3TagChecker extends BatchJobV2{
         final String batchJob = "MP3TagChecker";
         MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSONWithCode(Constants.JSON.MP3SETTINGS, MP3Settings.class);
         MP3TagCheckerStatus status = MP3TagCheckerStatus.valueOf(mp3Settings.mezzmo.mp3Checker.status);
+        int nr = 0;
         try {
             switch (status) {
                 case SCAN_FULL:
@@ -74,7 +75,12 @@ public class MP3TagChecker extends BatchJobV2{
                     processFiles();
                     break;
                 case FIX_ERRORS:
-                    int nr = processErrors();
+                    nr = processErrors();
+                    log.info("Nr Of Errors processed: " + nr);
+                    saveErrors();
+                    break;
+                case FIX_FILETITLE:
+                    nr = processFileTitles();
                     log.info("Nr Of Errors processed: " + nr);
                     saveErrors();
                     break;
@@ -101,7 +107,7 @@ public class MP3TagChecker extends BatchJobV2{
         albumErrors.items = new ArrayList<>();
         //base = ""
         MGOFileAlbumTO albumTO = new MGOFileAlbumTO();
-        MyFileWriter albumsWithoutErrorsFile = new MyFileWriter("c:\\My Programs\\SkyDrive\\Config\\Java\\AlbumsWithoutErrors.txt", MyFileWriter.NO_APPEND);
+        MyFileWriter albumsWithoutErrorsFile = new MyFileWriter(Setup.getInstance().getFullPath(Constants.FILE.ALBUMS_WITHOUT_ERRORS), MyFileWriter.NO_APPEND);
         File file = new File(Setup.getInstance().getFullPath(Constants.FILE.ALBUMS_TO_CHECK));
         File excludeFile = new File(Setup.getInstance().getFullPath(Constants.FILE.ALBUMS_TO_EXCLUDE));
         try {
@@ -291,6 +297,32 @@ public class MP3TagChecker extends BatchJobV2{
             flushAlbumErrors();
         } catch (IOException e) {
             LogUtils.logError(log, e, "There was a problem flushing the Album Errors File");
+        }
+        return errorsProcessed;
+    }
+
+    private int processFileTitles() {
+        int errorsProcessed = 0;
+        log.info("Processing Errors");
+        if (this.albumErrors.items.size() == 0) {
+            log.info("Nothing To Process");
+            return 0;
+        }
+        for (AlbumError.Item item : this.albumErrors.items) {
+            if (!item.isDone()) {
+                switch (MP3Tag.valueOf(item.getType())) {
+                    case FILETITLE:
+                        log.info("Processing Id " + item.id + " / Type = " + item.type);
+                        errorsProcessed++;
+                        updateFileTitle(item);
+                        break;
+                }
+            }
+            try {
+                flushAlbumErrors();
+            } catch (IOException e) {
+                LogUtils.logError(log, e, "There was a problem flushing the Album Errors File");
+            }
         }
         return errorsProcessed;
     }
