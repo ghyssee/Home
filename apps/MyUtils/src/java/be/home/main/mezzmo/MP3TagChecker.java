@@ -147,7 +147,7 @@ public class MP3TagChecker extends BatchJobV2{
                             // don't break batch because there was a problem writing status page
                             log.warn("Problem Making Status Page");
                         }
-                        processAlbum(comp, albumsWithoutErrorsFile);
+                        processAlbum(comp, albumsWithoutErrorsFile, mp3checker);
                         if (maxItemsReached(mp3checker.maxNumberOfErrors)){
                             break;
                         }
@@ -225,7 +225,8 @@ public class MP3TagChecker extends BatchJobV2{
 
     }
 
-    private void processAlbum(MGOFileAlbumCompositeTO comp, MyFileWriter albumsWithoutErrorsFile) throws IOException {
+    private void processAlbum(MGOFileAlbumCompositeTO comp, MyFileWriter albumsWithoutErrorsFile, MP3Settings.Mezzmo.Mp3Checker mp3checker)
+            throws IOException {
         MGOFileAlbumCompositeTO search = new MGOFileAlbumCompositeTO();
         search.getFileAlbumTO().setId(comp.getFileAlbumTO().getId());
         List<MGOFileAlbumCompositeTO> list = getMezzmoService().findSongsByAlbum(search);
@@ -234,6 +235,7 @@ public class MP3TagChecker extends BatchJobV2{
         log.info("Max Disc: " + maxDisc);
         MP3TagUtils tagUtils = new MP3TagUtils(this.albumErrors);
         int errors = this.albumErrors.items.size();
+        boolean maxReached = false;
         for (MGOFileAlbumCompositeTO item : list){
 
             log.info("Track: " + item.getFileTO().getTrack());
@@ -241,8 +243,12 @@ public class MP3TagChecker extends BatchJobV2{
             log.info("Title: " + item.getFileTO().getTitle());
             log.info(StringUtils.repeat('=', 100));
             tagUtils.processSong(item, list.size(), maxDisc);
+            if (maxItemsReached(mp3checker.maxNumberOfErrors)){
+                maxReached = true;
+                break;
+            }
         }
-        if (errors == this.albumErrors.items.size()){
+        if (errors == this.albumErrors.items.size() && !maxReached){
             albumsWithoutErrorsFile.append(comp.getFileAlbumTO().getName());
         }
 
