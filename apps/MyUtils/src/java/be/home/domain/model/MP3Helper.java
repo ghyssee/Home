@@ -75,6 +75,7 @@ public class MP3Helper {
     public String prettifySong(String text){
         String prettifiedText = prettifyString(text);
         if (StringUtils.isNotBlank(text)) {
+            prettifiedText = checkWords(prettifiedText, Mp3Tag.TITLE);
             for (MP3Prettifier.Word wordObj : mp3Prettifer.song.replacements) {
 
                 String oldText = prettifiedText;
@@ -85,7 +86,6 @@ public class MP3Helper {
                 prettifiedText = stripSong(prettifiedText);
                 prettifiedText = prettifiedText.replace("  ", " ");
                 prettifiedText = prettifiedText.trim();
-                prettifiedText = checkWords(prettifiedText, Mp3Tag.TITLE);
             }
         }
         return prettifiedText;
