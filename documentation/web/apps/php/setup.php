@@ -10,6 +10,7 @@ const JSON_HTML = "htmlConfig";
 const JSON_JOBS = "jobs";
 const JSON_MENU = "menu";
 const JSON_ALBUMERRORS = "albumErrors";
+const JSON_SONGCORRECTIONS = "songCorrections";
 const FILE_ALBUM = "albumInfo";
 const FILE_ALBUMCHECK = "albumsToCheck";
 const FILE_ALBUMEXCLUDE = "albumsToExclude";

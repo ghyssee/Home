@@ -32,8 +32,22 @@ if (empty($songObj->artist)) {
 
 if ($save) {
     //writeJSON($obj, $file);
-    $_SESSION["SONG"] = $songObj;
-    addInfo("SongInfo", "Added Song");
+    $songsObj = readJSONWithCode(JSON_SONGCORRECTIONS);
+    $counter = 0;
+    $updated = false;
+    foreach ($songsObj->items as $key => $value) {
+        if ($value->fileId == $songObj->fileId) {
+            addInfo("SongInfo", "Updated Song");
+            $songsObj->items[$counter] = $songObj;
+            $updated = true;
+            break;
+        }
+    }
+    if (!$updated) {
+        addInfo("SongInfo", "Added Song");
+        array_push($songsObj->items, $songObj);
+    }
+    writeJSONWithCode($songsObj, JSON_SONGCORRECTIONS);
     header("Location: " . "MezzmoSongView.php");
 }
 else {
