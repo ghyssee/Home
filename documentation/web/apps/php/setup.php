@@ -22,6 +22,7 @@ define ('WEB_ROOT', "/catalog");
 define ('ROOT_APPS', DOCUMENT_ROOT . "/apps");
 define ('ROOT_PHP', ROOT_APPS . "/php");
 define ('ROOT_PHP_BO', ROOT_PHP . "/bo");
+define ('ROOT_PHP_DATABASE', ROOT_PHP . "/database");
 define ('ROOT_PHP_CONFIGURATION', ROOT_PHP . "/configuration");
 define ('ROOT_PHP_HTML', ROOT_PHP . "/html");
 define ('ROOT_PHP_JOBS', ROOT_PHP . "/jobs");

@@ -55,6 +55,10 @@ public class MP3TagUtils {
 
 
     public void processSong(MGOFileAlbumCompositeTO comp, int nrOfTracks, int maxDisc){
+        processSong(comp, nrOfTracks, maxDisc, false);
+    }
+
+    public void processSong(MGOFileAlbumCompositeTO comp, int nrOfTracks, int maxDisc, boolean update){
         File file = new File(relativizeFile((comp.getFileTO().getFile())));
         if (file.exists()){
             checkMP3Info(comp, file, nrOfTracks, maxDisc);
@@ -66,7 +70,9 @@ public class MP3TagUtils {
                     comp.getFileTO().getFile(),
                     comp.getFileAlbumTO().getName(),
                     MP3Tag.FILENOTFOUND, "",
-                    "");
+                    "",
+                    update
+                    );
 
         }
 
@@ -156,6 +162,10 @@ public class MP3TagUtils {
     }
 
     private  void addItem(Long fileId, Long id, String file, String album, MP3Tag type, String oldValue, String newValue) {
+        addItem(fileId, id, file, album, type, oldValue, newValue, false);
+    }
+
+    private  void addItem(Long fileId, Long id, String file, String album, MP3Tag type, String oldValue, String newValue, boolean update) {
         AlbumError.Item item = new AlbumError().new Item();
         item.setFileId(fileId);
         item.setId(id);
@@ -165,6 +175,7 @@ public class MP3TagUtils {
         item.setNewValue(newValue);
         item.setBasePath(FilenameUtils.getFullPath(file));
         item.setUniqueId(createID());
+        item.update = update;
         albumErrors.items.add(item);
     }
 
@@ -220,10 +231,6 @@ public class MP3TagUtils {
                     comp.getFileAlbumTO().getName(),
                     MP3Tag.FILE, comp.getFileTO().getFile(), newFile);
             ok = false;
-            /*
-            filename = filename + "+$hort²/\\";
-            System.out.println("Before Stripped: " + filename);
-            System.out.println("Stripped: " + stripFilename(filename));*/
         }
         else  {
             File file = new File(relativizeFile((comp.getFileTO().getFile())));
@@ -467,70 +474,6 @@ public class MP3TagUtils {
             ok = false;
         }
         return ok;
-    }
-
-    public static String stripFilenameOld(String filename){
-        String strippedFilename = filename;
-        strippedFilename = strippedFilename.replaceAll("<3", "Love");
-        strippedFilename = strippedFilename.replaceAll(" 't ", " Het ");
-        strippedFilename = strippedFilename.replaceAll("\\/\\/", "&");
-        strippedFilename = strippedFilename.replaceAll("D\\*Note", "D-Note");
-        strippedFilename = strippedFilename.replaceAll("B\\*\\*ch!", "Bitch!");
-        strippedFilename = strippedFilename.replaceAll("\\*\\*\\*", "uck");
-        strippedFilename = strippedFilename.replaceAll("\\*\\*", "uc");
-        strippedFilename = strippedFilename.replaceAll("F\\*ck", "Fuck");
-        strippedFilename = strippedFilename.replaceAll("Hot S\\+\\+\\+", "Hot SPlusPlusPlus");
-
-        strippedFilename = strippedFilename.replaceAll("[áàâäåã]", "a");
-        strippedFilename = strippedFilename.replaceAll("[ÁÀÂÄÅÃ]", "A");
-        strippedFilename = strippedFilename.replaceAll("[éèêë]", "e");
-        strippedFilename = strippedFilename.replaceAll("[ÉÈÊË]", "E");
-        strippedFilename = strippedFilename.replaceAll("[íìîï]", "i");
-        strippedFilename = strippedFilename.replaceAll("[ÍÌÎÏ]", "I");
-        strippedFilename = strippedFilename.replaceAll("[óòôöõø°]", "o");
-        strippedFilename = strippedFilename.replaceAll("[ÓÒÔÖÕØ]", "O");
-        strippedFilename = strippedFilename.replaceAll("[úùûüµ]", "u");
-        strippedFilename = strippedFilename.replaceAll("[ÚÙÛÜ]", "U");
-        strippedFilename = strippedFilename.replaceAll("[ýÿ]", "y");
-        strippedFilename = strippedFilename.replaceAll("[Ý]", "Y");
-        strippedFilename = strippedFilename.replaceAll("AC/DC", "ACDC");
-        strippedFilename = strippedFilename.replaceAll("X!nk", "Xink");
-        strippedFilename = strippedFilename.replaceAll("F\\*CK", "FUCK");
-        strippedFilename = strippedFilename.replaceAll("F\\*cking", "Fucking");
-        strippedFilename = strippedFilename.replace("/", "&");
-        strippedFilename = strippedFilename.replace("æ", "ae");
-        strippedFilename = strippedFilename.replace("Æ", "AE");
-        strippedFilename = strippedFilename.replace("ñ", "n");
-        strippedFilename = strippedFilename.replace("Ñ", "N");
-        strippedFilename = strippedFilename.replaceAll("Cybersp@ce", "Cyberspace");
-        strippedFilename = strippedFilename.replace("@", "At");
-        strippedFilename = strippedFilename.replace("ç", "c");
-        strippedFilename = strippedFilename.replace("Ç", "C");
-        strippedFilename = strippedFilename.replace("Λ", "&");
-        strippedFilename = strippedFilename.replace("ß", "ss");
-        strippedFilename = strippedFilename.replace("²", "2");
-        strippedFilename = strippedFilename.replace("³", "3");
-        strippedFilename = strippedFilename.replace("$hort", "Short");
-        strippedFilename = strippedFilename.replace("Ch!pz", "Chipz");
-        strippedFilename = strippedFilename.replace("M:ck", "Mick");
-        strippedFilename = strippedFilename.replace("$hort", "Short");
-        strippedFilename = strippedFilename.replace("A+", "APlus");
-        strippedFilename = strippedFilename.replace("+1", "Plus 1");
-        strippedFilename = strippedFilename.replace("+", "&");
-        strippedFilename = strippedFilename.replace("$ign", "Sign");
-        strippedFilename = strippedFilename.replace("A$AP", "ASAP");
-        strippedFilename = strippedFilename.replace("^", "&");
-        strippedFilename = strippedFilename.replace("P!nk", "Pink");
-        strippedFilename = strippedFilename.replace("Oliver $", "Oliver S");
-        strippedFilename = strippedFilename.replace("M.I.L.F. $", "M.I.L.F. S");
-        strippedFilename = strippedFilename.replace("$", "s");
-        strippedFilename = strippedFilename.replace("%", "Percent");
-        strippedFilename = strippedFilename.replace("/\\", "&");
-        strippedFilename = strippedFilename.replace("DELV!S", "DELVIS");
-
-        strippedFilename = strippedFilename.replaceAll("[^&()\\[\\],'. a-zA-Z0-9.-]", "");
-
-        return strippedFilename;
     }
 
     public static String relativizeFile(String file){

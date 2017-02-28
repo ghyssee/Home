@@ -22,6 +22,7 @@ public class AlbumError {
         public String newValue;
         public String basePath;
         public boolean done;
+        public boolean update;
 
         public boolean process;
 
