@@ -7,6 +7,7 @@ class Input
 {
     public $name;
     public $id;
+    public $disabled;
     public $fieldId;
     public $value;
     public $default;
@@ -201,6 +202,12 @@ class Layout extends FormLayout
         $this->addElement($input, $html);
     }
 
+    function hiddenField(Input $input){
+
+        $html = '<input type="hidden" name="' . $input->name . '" value="' . $input->value . '">';
+        echo $html . PHP_EOL;
+    }
+
     function inputBox(Input $input){
 
         $type = empty($input->type) ? 'text' : $input->type;
@@ -212,7 +219,7 @@ class Layout extends FormLayout
         $html .= "<td>";
         $html .= '<input class="inputField" size="' . $input->size .  '"' . $this->checkMinMax($input) . ' type="' . $type . '"';
         $html.= ' name="' . $input->name . '" value="' . $input->value . '"';
-        $html .= $this->checkTabIndex() . $this->checkAutofocus($hasError);
+        $html .= $this->checkTabIndex() . $this->checkAutofocus($hasError) . $this->setCheckAttribute("disabled", $input->disabled);
         $html .= '>';
         $html .= "</td>" . PHP_EOL;
         if (!empty($error)){

@@ -138,5 +138,12 @@ class TableGrid
   }
 }
 
+class SongCorrection{
+  public $fileId;
+  public $title;
+  public $artist;
+    public $track;
+}
+
 ?>
 

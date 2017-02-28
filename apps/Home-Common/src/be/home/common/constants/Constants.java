@@ -64,6 +64,7 @@ public interface Constants {
         String MP3PRETTIFIER = "mp3PrettifierConfig";
         String PLAYLIST = "playlistConfig";
         String PLAYLISTSETUP = "playlistSetup";
+        String SONGCORRECTIONS = "songCorrections";
         String ALBUMERRORS = "albumErrors";
         String ULTRATOP = "ultratop";
         String BACKUP = "backup";
