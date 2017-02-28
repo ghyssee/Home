@@ -88,7 +88,6 @@ public class MP3TagChecker extends MP3TagBase {
             albumErrors = new AlbumError();
         }
         albumErrors.items = new ArrayList<>();
-        //base = ""
         MGOFileAlbumTO albumTO = new MGOFileAlbumTO();
         MyFileWriter albumsWithoutErrorsFile = new MyFileWriter(Setup.getInstance().getFullPath(Constants.FILE.ALBUMS_WITHOUT_ERRORS), MyFileWriter.NO_APPEND);
         File file = new File(Setup.getInstance().getFullPath(Constants.FILE.ALBUMS_TO_CHECK));

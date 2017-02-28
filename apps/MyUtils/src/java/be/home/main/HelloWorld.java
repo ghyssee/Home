@@ -101,9 +101,9 @@ public class HelloWorld extends BatchJobV2 {
         System.out.println(mp3Helper.stripFilename("X!nk"));
         System.out.println(mp3Helper.stripFilename("A+B"));
         System.out.println(mp3Helper.stripFilename("A%"));
-        System.out.println(mp3Helper.prettifySong("Poker Face (JDB Edit)"));
-        System.out.println(mp3Helper.prettifyArtist("Alice Feat. Test"));
-        System.out.println("Test (4cd)".replaceAll("([0-9])cd", "$1CD"));
+        System.out.println(mp3Helper.prettifySong("Float In A Dream Of EX-TC"));
+        System.out.println(mp3Helper.prettifyArtist("7 pm"));
+        System.out.println("HandzUp Motherfuckers".replaceAll("Handz[U|u]p Motherfuckers", "blabla"));
         System.out.println(mp3Helper.prettifyAlbum("Test (4CD box)"));
         //System.out.println(mp3Helper.prettifyArtist("Ll Cool J Feat. 7 Aurelius"));
 
