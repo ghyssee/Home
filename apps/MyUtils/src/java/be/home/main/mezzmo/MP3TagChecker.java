@@ -118,9 +118,14 @@ public class MP3TagChecker extends MP3TagBase {
                     String base = Setup.getFullPath(Constants.Path.WEB_MUSIC) + File.separator;
                     String template = "MP3TagChecker.vm";
                     String outputFile = base + "MP3TagChecker.html";
+                    boolean exit = false;
                     for (MGOFileAlbumCompositeTO comp : listAlbums) {
                         log.info("AlbumID: " + comp.getFileAlbumTO().getId());
                         log.info("Album: " + comp.getFileAlbumTO().getName());
+                        processAlbum(comp, albumsWithoutErrorsFile, mp3checker);
+                        if (maxItemsReached(mp3checker.maxNumberOfErrors)){
+                            exit = true;
+                        }
                         try {
                             displayStatus(comp, outputFile, template, nrAlbumsToCheck, lines.size(),
                                     nr++, listAlbums.size(), mp3checker.maxNumberOfErrors);
@@ -129,8 +134,7 @@ public class MP3TagChecker extends MP3TagBase {
                             // don't break batch because there was a problem writing status page
                             log.warn("Problem Making Status Page");
                         }
-                        processAlbum(comp, albumsWithoutErrorsFile, mp3checker);
-                        if (maxItemsReached(mp3checker.maxNumberOfErrors)){
+                        if (exit){
                             break;
                         }
                     }
