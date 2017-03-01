@@ -3,6 +3,9 @@
 include_once('Smarty.class.php');
 
 const PATH_CONFIG = "config";
+const PATH_LOCAL_CONFIG = "localConfig";
+const JSON_LOCAL_DATABASE = "localDatabase";
+const JSON_DATABASE = "database";
 const JSON_MP3SETTINGS = "mp3SettingsConfig";
 const JSON_MP3PREPROCESSOR = "mp3PreprocessorConfig";
 const JSON_MP3PRETTIFIER = "mp3PrettifierConfig";

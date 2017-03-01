@@ -1,5 +1,6 @@
 <?php
 include_once("../model/HTML.php");
+include_once("../setup.php");
 
 /* Just extend the class, add our method */
 class MezzmoSQLiteDatabase extends PDO {
@@ -44,6 +45,7 @@ class MezzmoSQLiteDatabase extends PDO {
             ;
         return $cols;
     }
+
     public function convertToSongUpdateObj($result){
         $songObj = new SongCorrection();
         $songObj->fileId = $result['ID'];
@@ -53,6 +55,36 @@ class MezzmoSQLiteDatabase extends PDO {
         return $songObj;
     }
 
+    public function joinAlbum(){
+        $join = "INNER JOIN mgofilealbum AS FILEALBUM " .
+                 "ON ( FILEALBUM.id = FILEALBUMREL.id ) " .
+                 "INNER JOIN mgofilealbumrelationship AS FILEALBUMREL " .
+                 "ON ( FILEALBUMREL.fileid = FILE.id ) ";
+        return $join;
+    }
+
+    public function joinArtist(){
+        $join = "INNER JOIN mgofileartist AS FILEARTIST " .
+                "ON ( FILEARTIST.id = FILEARTISTREL.id ) " .
+                "INNER JOIN mgofileartistrelationship AS FILEARTISTREL " .
+                "ON ( FILEARTISTREL.fileid = FILE.id ) " ;
+        return $join;
+    }
+
+    public function joinAlbumArtist(){
+        $join = "INNER JOIN mgoalbumartist AS ALBUMARTIST " .
+                "ON ( ALBUMARTIST.id = ALBUMARTISTREL.id ) ".
+                "INNER JOIN mgoalbumartistrelationship AS ALBUMARTISTREL " .
+                "ON ( ALBUMARTISTREL.fileid = FILEALBUMREL.fileid ) " ;
+        return $join;
+    }
+
+    public function joinFileExtension(){
+        $join = "INNER JOIN mgofileextension AS FILEEXTENSION " .
+                "ON ( FILEEXTENSION.id = FILE.extensionid ) ";
+        return $join;
+    }
+
     public function getMezzmoSong($id){
 
         $query = "SELECT " .
@@ -60,20 +92,10 @@ class MezzmoSQLiteDatabase extends PDO {
                   $this->getAlbumColumns() . "," .
                   $this->getArtistColumns() .
                  "FROM MGOFile AS FILE " .
-                 "INNER JOIN mgofilealbum AS FILEALBUM " .
-                 "ON ( FILEALBUM.id = FILEALBUMREL.id ) ".
-                 "INNER JOIN mgofilealbumrelationship AS FILEALBUMREL " .
-                 "ON ( FILEALBUMREL.fileid = FILE.id ) ".
-                 "INNER JOIN mgofileartist AS FILEARTIST " .
-                 "ON ( FILEARTIST.id = FILEARTISTREL.id ) " .
-                 "INNER JOIN mgofileartistrelationship AS FILEARTISTREL " .
-                 "ON ( FILEARTISTREL.fileid = FILE.id ) " .
-                 "INNER JOIN mgoalbumartist AS ALBUMARTIST " .
-                 "ON ( ALBUMARTIST.id = ALBUMARTISTREL.id ) ".
-                 "INNER JOIN mgoalbumartistrelationship AS ALBUMARTISTREL " .
-                 "ON ( ALBUMARTISTREL.fileid = FILEALBUMREL.fileid ) " .
-                 "INNER JOIN mgofileextension AS FILEEXTENSION " .
-                 "ON ( FILEEXTENSION.id = FILE.extensionid ) ".
+                  $this->joinAlbum() .
+                  $this->joinArtist() .
+                  $this->joinAlbumArtist() .
+                  $this->joinFileExtension() .
                  "WHERE  FILEEXTENSION.data = 'mp3' " .
                  "AND FILE.id = :id ";
 //        $result = $this->query($query);
@@ -99,9 +121,36 @@ class MezzmoSQLiteDatabase extends PDO {
 
 }
 
+function lookupDatabase ($list, $id){
+    foreach($list as $dbObj){
+        if ($dbObj->id == $id){
+            return $dbObj;
+        }
+    }
+    return null;
+}
+
 function openDatabase()
 {
-    $database = "C:/My Data/Mezzmo/mezzmo.db";
+    $dbFile = getFullPath(JSON_DATABASE);
+    $dbLocal = getFullPath(JSON_LOCAL_DATABASE);
+    $hostname = gethostname();
+    $dbLocal = str_replace("%HOST%", $hostname, $dbLocal);
+    $dbObj = null;
+    $id = "MEZZMO";
+    if (file_exists($dbLocal)){
+        $localDbConfig = readJSON($dbLocal);
+        $dbObj = lookupDatabase($localDbConfig->databases, $id);
+    }
+    if ($dbObj == null){
+        $localDbConfig = readJSON($dbFile);
+        $dbObj = lookupDatabase($localDbConfig->databases, $id);
+    }
+    if ($dbObj == null){
+        throw error("NO DB Definition found for " . $id);
+        exit(0);
+    }
+    $database = $dbObj->path . $dbObj->name;
 
     if (file_exists($database)) {
         $db = new MezzmoSQLiteDatabase("sqlite:" . $database);
