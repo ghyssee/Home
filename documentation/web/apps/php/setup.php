@@ -29,6 +29,8 @@ define ('ROOT_PHP_HTML', ROOT_PHP . "/html");
 define ('ROOT_PHP_JOBS', ROOT_PHP . "/jobs");
 define ('ROOT_PHP_MODEL', ROOT_PHP . "/model");
 define ('ROOT_PHP_TEMPLATES', ROOT_PHP . "/templates");
+define ('ROOT_APPS_MUSIC', ROOT_APPS . "/music");
+define ('ROOT_APPS_MUSIC_SONGS', ROOT_APPS_MUSIC . "/songs");
 define ('ROOT_PHP_UTILS', ROOT_PHP . "/utils");
 define ('ROOT_PHP_VIEW', ROOT_PHP . "/view");
 define ('ROOT_CSS', ROOT_APPS . "/css");

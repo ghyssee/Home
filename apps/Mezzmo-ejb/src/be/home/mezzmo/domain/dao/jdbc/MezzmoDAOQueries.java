@@ -157,6 +157,7 @@ public class MezzmoDAOQueries extends MezzmoDB {
             .addRelation(addRelationFileWithAritst())
             .addRelation(addRelationAlbumWithArtist())
             .addCondition(TablesEnum.MGOFileExtension.alias(), MGOFileExtensionColumns.DATA, Comparator.EQUALS, MP3_EXT)
+            //.addCondition(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUM, Comparator.LIKE, "De Ap%")
             .addGroup(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUM)
             .addGroup(TablesEnum.MGOAlbumArtist.alias(), MGOAlbumArtistColumns.ALBUMARTIST)
             .addGroup(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUMID)

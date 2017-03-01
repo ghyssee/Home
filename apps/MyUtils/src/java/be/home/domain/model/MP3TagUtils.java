@@ -31,6 +31,8 @@ import java.nio.file.Paths;
 public class MP3TagUtils {
 
     public AlbumError albumErrors;
+    // indicates if it is an update and not a default check
+    public boolean update;
     private static final Logger log = Logger.getLogger(MP3TagUtils.class);
     public static final String SUBST_A1 = "H:\\Shared\\Mijn Muziek\\Eric\\iPod\\";
     public static final String SUBST_B1 = "T:\\My Music\\iPod\\";
@@ -49,16 +51,15 @@ public class MP3TagUtils {
         return idCounter++;
     }
 
-    public MP3TagUtils(AlbumError albumErrors){
+    public MP3TagUtils(AlbumError albumErrors, boolean update){
+
         this.albumErrors = albumErrors;
+        this.update = update;
+
     }
 
 
     public void processSong(MGOFileAlbumCompositeTO comp, int nrOfTracks, int maxDisc){
-        processSong(comp, nrOfTracks, maxDisc, false);
-    }
-
-    public void processSong(MGOFileAlbumCompositeTO comp, int nrOfTracks, int maxDisc, boolean update){
         File file = new File(relativizeFile((comp.getFileTO().getFile())));
         if (file.exists()){
             checkMP3Info(comp, file, nrOfTracks, maxDisc);
@@ -70,8 +71,7 @@ public class MP3TagUtils {
                     comp.getFileTO().getFile(),
                     comp.getFileAlbumTO().getName(),
                     MP3Tag.FILENOTFOUND, "",
-                    "",
-                    update
+                    ""
                     );
 
         }
@@ -162,17 +162,19 @@ public class MP3TagUtils {
     }
 
     private  void addItem(Long fileId, Long id, String file, String album, MP3Tag type, String oldValue, String newValue) {
-        addItem(fileId, id, file, album, type, oldValue, newValue, false);
-    }
-
-    private  void addItem(Long fileId, Long id, String file, String album, MP3Tag type, String oldValue, String newValue, boolean update) {
         AlbumError.Item item = new AlbumError().new Item();
         item.setFileId(fileId);
         item.setId(id);
         item.setFile(file);
         item.setType(type.name());
-        item.setOldValue(oldValue);
-        item.setNewValue(newValue);
+        if (this.update) {
+            item.setOldValue(newValue);
+            item.setNewValue(oldValue);
+        }
+        else {
+            item.setOldValue(oldValue);
+            item.setNewValue(newValue);
+        }
         item.setBasePath(FilenameUtils.getFullPath(file));
         item.setUniqueId(createID());
         item.update = update;
@@ -299,16 +301,25 @@ public class MP3TagUtils {
         }
         catch (NumberFormatException ex){
             ok = false;
-            addItem(comp.getFileTO().getId(),
-                    comp.getFileTO().getId(),
-                    comp.getFileTO().getFile(),
-                    comp.getFileAlbumTO().getName(),
-                    MP3Tag.TRACKERROR, mp3Track, null);
+            if (!this.update) {
+                addItem(comp.getFileTO().getId(),
+                        comp.getFileTO().getId(),
+                        comp.getFileTO().getFile(),
+                        comp.getFileAlbumTO().getName(),
+                        MP3Tag.TRACKERROR, mp3Track, null);
+            }
+            else {
+                addItem(comp.getFileTO().getId(),
+                        comp.getFileTO().getId(),
+                        comp.getFileTO().getFile(),
+                        comp.getFileAlbumTO().getName(),
+                        MP3Tag.TRACK, String.valueOf(comp.getFileTO().getTrack()), null);
+            }
         }
         if (!ok){
            // do nothing
         }
-        else if (!track.equals(mp3Track)){
+        else if (!this.update && !track.equals(mp3Track)){
             if (mp3Track != null){
                 comp.getFileTO().setTrack(Integer.valueOf(mp3Track));
             }
@@ -333,7 +344,9 @@ public class MP3TagUtils {
                     comp.getFileTO().getFile(),
                     comp.getFileAlbumTO().getName(),
                     MP3Tag.TRACK, String.valueOf(comp.getFileTO().getTrack()), track);
-            comp.getFileTO().setTrack(Integer.valueOf(track));
+            if (!this.update) {
+                comp.getFileTO().setTrack(Integer.valueOf(track));
+            }
             ok = false;
         }
         return ok;
@@ -342,7 +355,7 @@ public class MP3TagUtils {
     private boolean checkAlbum(MGOFileAlbumCompositeTO comp, String mp3Album){
         String album = MP3Helper.getInstance().prettifyAlbum(mp3Album);
         boolean ok = true;
-        if (!album.equals(mp3Album)){
+        if (!update && !album.equals(mp3Album)){
             log.warn("Album does not match: " + "mp3: " + mp3Album + " / Formatted: " + album);
             /* update mp3 + DB */
             comp.getFileAlbumTO().setName(album);
@@ -361,7 +374,9 @@ public class MP3TagUtils {
                     comp.getFileTO().getFile(),
                     comp.getFileAlbumTO().getName(),
                     MP3Tag.ALBUM, comp.getFileAlbumTO().getName(), album);
-            comp.getFileAlbumTO().setName(album);
+            if (!this.update) {
+                comp.getFileAlbumTO().setName(album);
+            }
             ok = false;
         }
         File file = new File(comp.getFileTO().getFile());
@@ -423,7 +438,7 @@ public class MP3TagUtils {
     private boolean checkArtist(MGOFileAlbumCompositeTO comp, String mp3Artist){
         String artist = MP3Helper.getInstance().prettifyArtist(mp3Artist);
         boolean ok = true;
-        if (!artist.equals(mp3Artist)){
+        if (!this.update && !artist.equals(mp3Artist)){
             log.warn("Artist does not match: " + "mp3: " + mp3Artist + " / Formatted: " + artist);
             /* update mp3 + DB */
             comp.getFileArtistTO().setArtist(artist);
@@ -442,7 +457,9 @@ public class MP3TagUtils {
                     comp.getFileTO().getFile(),
                     comp.getFileAlbumTO().getName(),
                     MP3Tag.ARTIST, comp.getFileArtistTO().getArtist(), artist);
-            comp.getFileArtistTO().setArtist(artist);
+            if (!this.update) {
+                comp.getFileArtistTO().setArtist(artist);
+            }
             ok = false;
         }
         return ok;
@@ -451,7 +468,7 @@ public class MP3TagUtils {
     private boolean checkTitle(MGOFileAlbumCompositeTO comp, String mp3Title){
         boolean ok = true;
         String title = MP3Helper.getInstance().prettifySong(mp3Title);
-        if (!title.equals(mp3Title)){
+        if (!this.update && !title.equals(mp3Title)){
             log.warn("Title does not match: " + "mp3: " + mp3Title + " / Formatted: " + title);
             /* update mp3 + DB */
             comp.getFileTO().setTitle(title);
@@ -470,7 +487,9 @@ public class MP3TagUtils {
                     comp.getFileTO().getFile(),
                     comp.getFileAlbumTO().getName(),
                     MP3Tag.TITLE, comp.getFileTO().getTitle(), title);
-            comp.getFileTO().setTitle(title);
+            if (!this.update) {
+                comp.getFileTO().setTitle(title);
+            }
             ok = false;
         }
         return ok;

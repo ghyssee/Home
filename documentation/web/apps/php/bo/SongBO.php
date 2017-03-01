@@ -1,6 +1,7 @@
 <?php
 require_once documentPath (ROOT_PHP, "config.php");
 require_once documentPath (ROOT_PHP_MODEL, "HTML.php");
+include_once documentPath (ROOT_PHP_DATABASE, "MezzmoDatabase.php");
 
 $htmlFile = getFullPath(JSON_SONGCORRECTIONS);
 
@@ -13,10 +14,18 @@ class SongBO
         foreach ($obj->items as $key => $value) {
             if (strcmp($value->fileId, $id) == 0) {
                 $song = $value;
+                $song->source = "JSON";
                 return $song;
             }
         }
-        return null;
+        // song not found in JSON file, look up in DB
+        $db = openDatabase();
+        $result = $db->getMezzmoSong($id);
+        $songObj = $db->convertToSongUpdateObj($result);
+        $songObj->source = "DB";
+        $db = NULL;
+
+        return $songObj;
     }
 
     function saveSong($song)

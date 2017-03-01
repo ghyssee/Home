@@ -4,6 +4,7 @@ include_once documentPath (ROOT_PHP, "config.php");
 include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 include_once documentPath (ROOT_PHP_HTML, "config.php");
 include_once documentPath (ROOT_PHP_DATABASE, "MezzmoDatabase.php");
+include_once documentPath (ROOT_PHP_BO, "SongBO.php");
 session_start();
 ?>
 
@@ -19,11 +20,16 @@ session_start();
 
 
 <?php
-goMenu();
-?>
-
-<?php
 $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
+if (isset($_REQUEST["forward"])) {
+    $forward = webPath (ROOT_APPS_MUSIC_SONGS, htmlspecialchars($_REQUEST['forward']));
+    showUrl($forward, "Back");
+}
+else {
+    $forward = $_SESSION['previous_location'];
+}
+
+$_SESSION['save_location'] = $forward;
 if (isset($_REQUEST["id"])) {
     $id = htmlspecialchars($_REQUEST['id']);
 }
@@ -36,16 +42,14 @@ if (isset($_SESSION["SONG"])) {
     unset($_SESSION["SONG"]);
 }
 else {
-    $db = openDatabase();
+    $songBO = new SongBO();
     try {
-        $result = $db->getMezzmoSong($id);
+        $songObj = $songBO->lookupSong($id);
     }
     catch (Exception $e){
         echo $e->getMessage();
         exit(0);
     }
-    $songObj = $db->convertToSongUpdateObj($result);
-    $db = NULL;
 }
 $mezzmoSongSave = "MezzmoSongAction.php";
 ?>
@@ -62,6 +66,11 @@ $mezzmoSongSave = "MezzmoSongAction.php";
         'label' => 'FileId',
         'disabled' => true,
         'value' => $songObj->fileId)));
+    $layout->inputBox(new Input(array('name' => "source",
+        'size' => 10,
+        'label' => 'Source',
+        'disabled' => true,
+        'value' => $songObj->source)));
     $layout->inputBox(new Input(array('name' => "track",
         'size' => 5,
         'type' => 'number',

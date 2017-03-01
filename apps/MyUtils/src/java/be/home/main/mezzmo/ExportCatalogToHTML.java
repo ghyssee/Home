@@ -9,6 +9,7 @@ import be.home.common.utils.DateUtils;
 import be.home.common.utils.JSONUtils;
 import be.home.common.utils.LogUtils;
 import be.home.common.utils.VelocityUtils;
+import be.home.domain.model.MP3Helper;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.model.ConfigTO;
@@ -137,9 +138,17 @@ public class ExportCatalogToHTML extends BatchJobV2{
             }
         }
         int idx = 1;
+        if (others.size() > 0){
+            HTMLSettings.Group dummyGroup = (new HTMLSettings()).new Group();
+            dummyGroup.setFrom("Others");
+            dummyGroup.setTo("Others");
+            dummyGroup.list = others;
+            htmlSettings.export.groups.add(dummyGroup);
+        }
         for (HTMLSettings.Group group : htmlSettings.export.groups){
             log.info("Processing group " + group.from + "-" + group.to);
             group.setFilename(Setup.getPath(Constants.Path.WEB_MUSIC_ALBUMS) + File.separator + group.from + "_" + group.to + ".html");
+            //group.setFilename(MP3Helper.getInstance().stripFilename(group.getFilename()));
             try {
                 if (group.list != null) {
                     for (MGOFileAlbumCompositeTO comp : group.list) {
@@ -213,6 +222,11 @@ public class ExportCatalogToHTML extends BatchJobV2{
     public void exportAlbumSongs(MGOFileAlbumCompositeTO comp, List<MGOFileAlbumCompositeTO> list, String outputFile) throws Exception {
         VelocityUtils vu = new VelocityUtils();
         VelocityContext context = new VelocityContext();
+        for (MGOFileAlbumCompositeTO song : list){
+            song.setUrl("/catalog/apps/php/view/MezzmoSongView.php?id=" +
+                    song.getFileTO().getId() + "&forward=" + comp.getFilename()
+                       );
+        }
         context.put("album", comp);
         context.put("list", list);
         context.put("date",new DateTool());
