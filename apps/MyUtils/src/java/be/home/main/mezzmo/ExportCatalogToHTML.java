@@ -69,19 +69,19 @@ public class ExportCatalogToHTML extends BatchJobV2{
 
         if (group.names != null){
             for (HTMLSettings.Name name : group.names) {
-                if (album.toUpperCase().startsWith(name.name)){
+                if (album.startsWith(name.name)){
                     return true;
                 }
             }
         }
         else {
-            if (album.toUpperCase().substring(0, fromLength).compareTo(group.from) >= 0 &&
-                album.toUpperCase().substring(0, toLength).compareTo(group.to) <= 0) {
+            if (album.substring(0, fromLength).compareTo(group.from) >= 0 &&
+                album.substring(0, toLength).compareTo(group.to) <= 0) {
 
                 boolean exceptionFound = false;
                 if (group.exceptions != null) {
                     for (HTMLSettings.Exception ex : group.exceptions) {
-                        if (album.toUpperCase().startsWith(ex.name)) {
+                        if (album.startsWith(ex.name)) {
                             exceptionFound = true;
                             break;
                         }
