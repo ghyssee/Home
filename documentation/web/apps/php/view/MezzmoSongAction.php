@@ -1,8 +1,9 @@
 <?php
 include_once("../setup.php");
-include_once("../config.php");
-include_once("../model/HTML.php");
-include_once("../html/config.php");
+include_once documentPath (ROOT_PHP, "config.php");
+include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
+include_once documentPath (ROOT_PHP_HTML, "config.php");
+include_once documentPath (ROOT_PHP_BO, "SongBO.php");
 session_start();
 
 $songObj = new SongCorrection();
@@ -32,6 +33,9 @@ if (empty($songObj->artist)) {
 
 if ($save) {
     //writeJSON($obj, $file);
+    $songBo = new SongBO();
+    $songBo->saveSong($songObj);
+    /*
     $songsObj = readJSONWithCode(JSON_SONGCORRECTIONS);
     $counter = 0;
     $updated = false;
@@ -48,6 +52,7 @@ if ($save) {
         array_push($songsObj->items, $songObj);
     }
     writeJSONWithCode($songsObj, JSON_SONGCORRECTIONS);
+    */
     header("Location: " . $_SESSION["save_location"] . "?show");
 }
 else {

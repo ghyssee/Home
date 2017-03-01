@@ -22,6 +22,8 @@ public class VelocityUtils {
     public void makeFile(String template, String outputFile, VelocityContext context) throws IOException {
         Properties p = new Properties();
         p.setProperty("file.resource.loader.path", Setup.getInstance().getFullPath(Constants.Path.VELOCITY));
+        p.setProperty("input.encoding", "UTF-8");
+        p.setProperty("output.encoding", "UTF-8");
 
         VelocityEngine ve = new VelocityEngine();
         ve.init(p);

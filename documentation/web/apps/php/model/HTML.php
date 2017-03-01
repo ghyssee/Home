@@ -142,7 +142,8 @@ class SongCorrection{
   public $fileId;
   public $title;
   public $artist;
-    public $track;
+  public $track;
+  public $source;
 }
 
 ?>
