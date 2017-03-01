@@ -7,10 +7,10 @@ session_start();
 
 $songObj = new SongCorrection();
 
-assignField($songObj->fileId, "fileId");
-assignField($songObj->track, "track");
-assignField($songObj->title, "title");
-assignField($songObj->artist, "artist");
+assignField($songObj->fileId, "fileId", !HTML_SPECIAL_CHAR);
+assignField($songObj->track, "track", !HTML_SPECIAL_CHAR);
+assignField($songObj->title, "title", !HTML_SPECIAL_CHAR);
+assignField($songObj->artist, "artist", !HTML_SPECIAL_CHAR);
 $save = true;
 
 if (empty($songObj->fileId)) {
@@ -48,7 +48,7 @@ if ($save) {
         array_push($songsObj->items, $songObj);
     }
     writeJSONWithCode($songsObj, JSON_SONGCORRECTIONS);
-    header("Location: " . "MezzmoSongView.php");
+    header("Location: " . $_SESSION["save_location"] . "?show");
 }
 else {
     $_SESSION["SONG"] = $songObj;

@@ -10,8 +10,9 @@ public class MGOFileAlbumCompositeTO {
     private MGOAlbumArtistTO albumArtistTO;
     private MGOPlaylistTO playlistTO;
     private MGOFileArtistTO fileArtistTO;
-    private String filename = null;
 
+    private String filename = null;
+    private String url = null;
     private boolean currentlyPlaying = false;
 
     public MGOFileAlbumCompositeTO() {
@@ -77,6 +78,14 @@ public class MGOFileAlbumCompositeTO {
 
     public void setCurrentlyPlaying(boolean currentlyPlaying) {
         this.currentlyPlaying = currentlyPlaying;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
 

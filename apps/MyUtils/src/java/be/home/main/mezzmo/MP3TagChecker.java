@@ -29,6 +29,7 @@ public class MP3TagChecker extends MP3TagBase {
 
     public static ConfigTO.Config config;
     private static final Logger log = getMainLog(MP3TagChecker.class);
+    private final boolean UPDATE = true;
 
     public static void main(String args[]) {
 
@@ -145,7 +146,7 @@ public class MP3TagChecker extends MP3TagBase {
 
     private void processFiles(){
         log.info("Processing files that are in error again...");
-        MP3TagUtils tagUtils = new MP3TagUtils(this.albumErrors);
+        MP3TagUtils tagUtils = new MP3TagUtils(this.albumErrors, !UPDATE);
         List <AlbumError.Item> oldItems = albumErrors.items;
         albumErrors.items = new ArrayList<>();
         List <Long> fileIdList = new ArrayList();
@@ -186,7 +187,7 @@ public class MP3TagChecker extends MP3TagBase {
         log.info("Album: " + comp.getFileAlbumTO().getName());
         int maxDisc = getMaxDisc(list);
         log.info("Max Disc: " + maxDisc);
-        MP3TagUtils tagUtils = new MP3TagUtils(this.albumErrors);
+        MP3TagUtils tagUtils = new MP3TagUtils(this.albumErrors, !UPDATE);
         int errors = this.albumErrors.items.size();
         boolean maxReached = false;
         for (MGOFileAlbumCompositeTO item : list){
@@ -278,7 +279,7 @@ public class MP3TagChecker extends MP3TagBase {
 
     private void processUpdateSongs(){
         SongCorrections songCorrections = (SongCorrections) JSONUtils.openJSONWithCode(Constants.JSON.SONGCORRECTIONS, SongCorrections.class);
-        MP3TagUtils tagUtils = new MP3TagUtils(this.albumErrors);
+        MP3TagUtils tagUtils = new MP3TagUtils(this.albumErrors, UPDATE);
         albumErrors.items = new ArrayList<>();
 
         for (SongCorrections.Item item : songCorrections.items) {
@@ -297,8 +298,7 @@ public class MP3TagChecker extends MP3TagBase {
                 log.info("Title: " + comp.getFileTO().getTitle());
                 log.info("Max Disc: " + maxDisc);
                 log.info(StringUtils.repeat('=', 100));
-                final boolean UPDATE = true;
-                tagUtils.processSong(comp, list.size(), maxDisc, UPDATE);
+                tagUtils.processSong(comp, list.size(), maxDisc);
             }
             catch (IncorrectResultSizeDataAccessException e){
                 log.error(e);

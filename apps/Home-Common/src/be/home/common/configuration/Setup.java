@@ -37,13 +37,13 @@ public class Setup {
                 path = tmp.get("path") + path;
                 parent = (String) tmp.get("parent");
                 if (parent != null) {
+                    if (type.equals(parent)){
+                        throw new ApplicationException("Parent Path can not be the same as the current Path: " + parent);
+                    }
                     path = File.separator + path;
                     tmp = (Map<String, Object>) map.get(parent);
                     if (tmp == null){
                         throw new ApplicationException("Parent Not Found: " + parent);
-                    }
-                    if (type.equals(parent)){
-                        throw new ApplicationException("Parent Path can not be the same as the current Path: " + parent);
                     }
                 }
             }

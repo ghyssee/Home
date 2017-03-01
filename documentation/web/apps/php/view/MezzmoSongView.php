@@ -19,11 +19,16 @@ session_start();
 
 
 <?php
-goMenu();
-?>
-
-<?php
 $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
+if (isset($_REQUEST["forward"])) {
+    $forward = webPath (ROOT_APPS_MUSIC_SONGS, htmlspecialchars($_REQUEST['forward']));
+    showUrl($forward, "Back");
+}
+else {
+    $forward = $_SESSION['previous_location'];
+}
+
+$_SESSION['save_location'] = $forward;
 if (isset($_REQUEST["id"])) {
     $id = htmlspecialchars($_REQUEST['id']);
 }
@@ -57,6 +62,11 @@ $mezzmoSongSave = "MezzmoSongAction.php";
     $layout = new Layout(array('numCols' => 1));
     $layout->hiddenField(new Input(array('name' => "fileId",
         'value' => $songObj->fileId)));
+    $layout->inputBox(new Input(array('name' => "forward",
+        'size' => 50,
+        'label' => 'Forward',
+        'disabled' => true,
+        'value' => $forward)));
     $layout->inputBox(new Input(array('name' => "fileId",
         'size' => 10,
         'label' => 'FileId',
