@@ -75,6 +75,7 @@ public interface Constants {
         String ALBUMS_TO_CHECK = "albumsToCheck";
         String ALBUMS_TO_EXCLUDE = "albumsToExclude";
         String ALBUMS_WITHOUT_ERRORS = "albumsWithoutErrors";
+        String MUSIC_INDEX = "musicIndex";
 
     }
 

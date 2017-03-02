@@ -27,7 +27,7 @@ public interface InitConstants {
   public static final String WEBSHOTS_PREFIX = "prefix";
   public static final String WEBSHOTS_SUFFIX = "suffix";
   public static final String WEBSHOTS_CSV = "importCSV";
-  public static final String WEBSHOTS_EXPORTFILE = "export";
+  public static final String WEBSHOTS_EXPORTFILE = "exportAlbumList";
   public static final String WEBSHOTS_RENAMEFILE = "rename";
 
   public static final String WEBSHOTS_URLFILE = "url";

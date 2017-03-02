@@ -2,6 +2,8 @@
 include_once("../model/HTML.php");
 include_once("../setup.php");
 
+const MEZZMO = "MEZZMO";
+
 /* Just extend the class, add our method */
 class MezzmoSQLiteDatabase extends PDO {
 
@@ -106,13 +108,13 @@ class MezzmoSQLiteDatabase extends PDO {
         $nr = count($result);
         switch ($nr) {
             case 0 :
-                throw new Exception("No result found for id " .$id);
+                throw new ApplicationException("No result found for id " .$id);
                 break;
             case 1:
                 $songRec = $result[0];
                 break;
             default:
-                throw new Exception("Multiple results found for id " . $id);
+                throw new ApplicationException("Multiple results found for id " . $id);
                 break;
         }
         return $songRec;
@@ -130,14 +132,13 @@ function lookupDatabase ($list, $id){
     return null;
 }
 
-function openDatabase()
+function openDatabase($id)
 {
     $dbFile = getFullPath(JSON_DATABASE);
     $dbLocal = getFullPath(JSON_LOCAL_DATABASE);
     $hostname = gethostname();
     $dbLocal = str_replace("%HOST%", $hostname, $dbLocal);
     $dbObj = null;
-    $id = "MEZZMO";
     if (file_exists($dbLocal)){
         $localDbConfig = readJSON($dbLocal);
         $dbObj = lookupDatabase($localDbConfig->databases, $id);
@@ -147,7 +148,7 @@ function openDatabase()
         $dbObj = lookupDatabase($localDbConfig->databases, $id);
     }
     if ($dbObj == null){
-        throw error("NO DB Definition found for " . $id);
+        throw new ApplicationException("NO DB Definition found for " . $id);
         exit(0);
     }
     $database = $dbObj->path . $dbObj->name;
@@ -157,7 +158,7 @@ function openDatabase()
         return $db;
     }
     else {
-        throw error("DB does not exist: " . $database);
+        throw new ApplicationException("DB does not exist: " . $database);
     }
 }
 

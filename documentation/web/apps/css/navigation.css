@@ -1,0 +1,29 @@
+.nav ul {
+    list-style-type: none;
+    background-color: #3092c0;
+    color: white;
+    position: relative;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    width: 100%;
+}
+.nav li a {
+    font-family: 'Oswald', sans-serif;
+    font-size: 17px;
+    line-height: 25px;
+    height: 25px;
+    float: left; /* horizontal navigation bar */
+    text-decoration: none;
+    padding: 8px;
+    color: white;
+}
+.nav li:hover a:hover {
+    background-color: white;
+    color: #3092c0;
+    transition: .3s background-color;
+}
+.nav .active {
+    background-color: #4CAF50;
+    color: white;
+}

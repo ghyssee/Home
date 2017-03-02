@@ -19,7 +19,7 @@ class SongBO
             }
         }
         // song not found in JSON file, look up in DB
-        $db = openDatabase();
+        $db = openDatabase(MEZZMO);
         $result = $db->getMezzmoSong($id);
         $songObj = $db->convertToSongUpdateObj($result);
         $songObj->source = "DB";

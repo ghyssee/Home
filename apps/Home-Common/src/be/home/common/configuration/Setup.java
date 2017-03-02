@@ -20,6 +20,8 @@ public class Setup {
 
     private static Setup setup = new Setup();
 
+    public static final int CONTEXT = 1;
+
     private Setup() {
         map = (Map<String, Object>) JSONUtils.openJSON(WinUtils.getOneDrivePath() + File.separator + "config/Setup.json", map.getClass());
     }
@@ -29,18 +31,27 @@ public class Setup {
     }
 
     public static String getFullPath(String type) {
+        return getFullPath(type, 0);
+    }
+
+    public static String getFullPath(String type, int context) {
         Map<String, Object> tmp = (Map<String, Object>) map.get(type);
         String path = "";
         String parent = null;
         if (tmp != null) {
             do {
-                path = tmp.get("path") + path;
                 parent = (String) tmp.get("parent");
+                if (parent == null && context == CONTEXT){
+                    path = tmp.get("contextRoot") + path;
+                }
+                else {
+                    path = tmp.get("path") + path;
+                }
                 if (parent != null) {
                     if (type.equals(parent)){
                         throw new ApplicationException("Parent Path can not be the same as the current Path: " + parent);
                     }
-                    path = File.separator + path;
+                    path = (context == CONTEXT ? "/" : File.separator) + path;
                     tmp = (Map<String, Object>) map.get(parent);
                     if (tmp == null){
                         throw new ApplicationException("Parent Not Found: " + parent);
