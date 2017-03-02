@@ -287,6 +287,9 @@ public class MP3TagChecker extends MP3TagBase {
         albumErrors.items = new ArrayList<>();
 
         for (SongCorrections.Item item : songCorrections.items) {
+            if (item.done){
+                continue;
+            }
             try {
                 MGOFileAlbumCompositeTO comp = getMezzmoService().findFileById(item.fileId);
                 comp.getFileTO().setTrack(item.track);
@@ -324,9 +327,11 @@ public class MP3TagChecker extends MP3TagBase {
                if (nr > 0) {
                    log.info("File updated: " + "Id: " + item.getId() +
                            " / New File: " + item.getNewValue() + " / " + nr + " record(s)");
-                   item.setDone(true);
+                   setDone(item);
                }
            } catch (SQLException e) {
+               LogUtils.logError(log, e);
+           } catch (IOException e) {
                LogUtils.logError(log, e);
            }
        }

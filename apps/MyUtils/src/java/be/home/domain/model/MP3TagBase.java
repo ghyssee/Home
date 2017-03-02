@@ -117,7 +117,7 @@ public abstract class MP3TagBase extends BatchJobV2 {
 
     }
 
-    protected void updateFileTitle(AlbumError.Item item){
+    protected void updateFileTitle(AlbumError.Item item)  {
         MGOFileAlbumCompositeTO comp = new MGOFileAlbumCompositeTO();
         comp.getFileTO().setId(item.getId());
         comp.getFileTO().setFileTitle(item.getNewValue());
@@ -127,9 +127,11 @@ public abstract class MP3TagBase extends BatchJobV2 {
             if (nr > 0) {
                 log.info("FileTitle updated: " + "Id: " + item.getId() +
                         " / New FileTitle: " + item.getNewValue() + " / " + nr + " record(s)");
-                item.setDone(true);
+                setDone(item);
             }
         } catch (SQLException e) {
+            LogUtils.logError(log, e);
+        } catch (IOException e) {
             LogUtils.logError(log, e);
         }
     }
@@ -297,15 +299,25 @@ public abstract class MP3TagBase extends BatchJobV2 {
         }
     }
 
-    private void setDone(AlbumError.Item item) throws IOException {
+    protected void setDone(AlbumError.Item item) throws IOException {
         item.setDone(true);
+        boolean done = true;
         if (item.update){
-            // remove it from the JSON update file
-            SongCorrections songCorrections = (SongCorrections) JSONUtils.openJSONWithCode(Constants.JSON.SONGCORRECTIONS, SongCorrections.class);
-            for (SongCorrections.Item songItem : songCorrections.items){
-                if (item.fileId == item.fileId){
-                    songItem.done = true;
-                    JSONUtils.writeJsonFileWithCode(songCorrections, Constants.JSON.SONGCORRECTIONS);
+            // check if other errors for same id need to be processed
+            for (AlbumError.Item errorItem : this.albumErrors.items){
+                if (!errorItem.isDone() && item.fileId.equals(errorItem.fileId)){
+                    done = false;
+                    break;
+                }
+            }
+            if (done) {
+                // remove it from the JSON update file
+                SongCorrections songCorrections = (SongCorrections) JSONUtils.openJSONWithCode(Constants.JSON.SONGCORRECTIONS, SongCorrections.class);
+                for (SongCorrections.Item songItem : songCorrections.items) {
+                    if (songItem.fileId.equals(item.fileId)) {
+                        songItem.done = true;
+                        JSONUtils.writeJsonFileWithCode(songCorrections, Constants.JSON.SONGCORRECTIONS);
+                    }
                 }
             }
         }

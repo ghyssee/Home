@@ -167,14 +167,8 @@ public class MP3TagUtils {
         item.setId(id);
         item.setFile(file);
         item.setType(type.name());
-        if (this.update) {
-            item.setOldValue(newValue);
-            item.setNewValue(oldValue);
-        }
-        else {
-            item.setOldValue(oldValue);
-            item.setNewValue(newValue);
-        }
+        item.setOldValue(oldValue);
+        item.setNewValue(newValue);
         item.setBasePath(FilenameUtils.getFullPath(file));
         item.setUniqueId(createID());
         item.update = update;
@@ -313,7 +307,7 @@ public class MP3TagUtils {
                         comp.getFileTO().getId(),
                         comp.getFileTO().getFile(),
                         comp.getFileAlbumTO().getName(),
-                        MP3Tag.TRACK, String.valueOf(comp.getFileTO().getTrack()), null);
+                        MP3Tag.TRACK, null, String.valueOf(comp.getFileTO().getTrack()));
             }
         }
         if (!ok){
@@ -339,11 +333,17 @@ public class MP3TagUtils {
             /* example : Track is 1 => update to 01
                 only update the mp3 tag, DB stores it as int
              */
+            String oldValue = String.valueOf(comp.getFileTO().getTrack());
+            String newValue = track;
+            if (this.update){
+                oldValue = track;
+                newValue = String.valueOf(comp.getFileTO().getTrack());
+            }
             addItem(comp.getFileTO().getId(),
                     comp.getFileTO().getId(),
                     comp.getFileTO().getFile(),
                     comp.getFileAlbumTO().getName(),
-                    MP3Tag.TRACK, String.valueOf(comp.getFileTO().getTrack()), track);
+                    MP3Tag.TRACK, oldValue, newValue);
             if (!this.update) {
                 comp.getFileTO().setTrack(Integer.valueOf(track));
             }
@@ -369,11 +369,17 @@ public class MP3TagUtils {
         else if (!album.equals(comp.getFileAlbumTO().getName())){
             log.warn("Album does not match: " + "formatted: " + mp3Album + " / DB: " + comp.getFileAlbumTO().getName());
             /* update mp3 + DB */
+            String oldValue = comp.getFileAlbumTO().getName();
+            String newValue = album;
+            if (this.update){
+                oldValue = album;
+                newValue = comp.getFileAlbumTO().getName();
+            }
             addItem(comp.getFileTO().getId(),
                     comp.getFileAlbumTO().getId(),
                     comp.getFileTO().getFile(),
                     comp.getFileAlbumTO().getName(),
-                    MP3Tag.ALBUM, comp.getFileAlbumTO().getName(), album);
+                    MP3Tag.ALBUM, oldValue, newValue);
             if (!this.update) {
                 comp.getFileAlbumTO().setName(album);
             }
@@ -452,11 +458,17 @@ public class MP3TagUtils {
         else if (!artist.equals(comp.getFileArtistTO().getArtist())){
             log.warn("Artist does not match: " + "DB: " + comp.getFileArtistTO().getArtist() + " / Formatted: " + artist);
             /* update mp3 + DB */
+            String oldValue = comp.getFileArtistTO().getArtist();
+            String newValue = artist;
+            if (this.update){
+                oldValue = artist;
+                newValue = comp.getFileArtistTO().getArtist();
+            }
             addItem(comp.getFileTO().getId(),
                     comp.getFileArtistTO().getID(),
                     comp.getFileTO().getFile(),
                     comp.getFileAlbumTO().getName(),
-                    MP3Tag.ARTIST, comp.getFileArtistTO().getArtist(), artist);
+                    MP3Tag.ARTIST, oldValue, newValue);
             if (!this.update) {
                 comp.getFileArtistTO().setArtist(artist);
             }
@@ -482,11 +494,17 @@ public class MP3TagUtils {
         else if (!title.equals( comp.getFileTO().getTitle())){
             log.warn("Title does not match: " + "DB: " + comp.getFileTO().getTitle() + " / Formatted: " + title);
             /* update mp3 + DB */
+            String oldValue = comp.getFileTO().getTitle();
+            String newValue = title;
+            if (this.update){
+                oldValue = title;
+                newValue = comp.getFileTO().getTitle();
+            }
             addItem(comp.getFileTO().getId(),
                     comp.getFileTO().getId(),
                     comp.getFileTO().getFile(),
                     comp.getFileAlbumTO().getName(),
-                    MP3Tag.TITLE, comp.getFileTO().getTitle(), title);
+                    MP3Tag.TITLE, oldValue, newValue);
             if (!this.update) {
                 comp.getFileTO().setTitle(title);
             }
