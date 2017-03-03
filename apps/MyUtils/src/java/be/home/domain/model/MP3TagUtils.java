@@ -10,6 +10,7 @@ import be.home.mezzmo.domain.dao.definition.MGOFileColumns;
 import be.home.mezzmo.domain.dao.definition.TablesEnum;
 import be.home.model.json.AlbumError;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
+import be.home.model.json.MP3Settings;
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.Mp3File;
@@ -24,15 +25,18 @@ import java.io.UnsupportedEncodingException;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Gebruiker on 17/12/2016.
  */
 public class MP3TagUtils {
 
-    public AlbumError albumErrors;
+    private AlbumError albumErrors;
     // indicates if it is an update and not a default check
-    public boolean update;
+    public boolean update = false;
+    MP3Settings.Mezzmo.Mp3Checker.RelativePath relativePath;
     private static final Logger log = Logger.getLogger(MP3TagUtils.class);
     public static final String SUBST_A1 = "H:\\Shared\\Mijn Muziek\\Eric\\iPod\\";
     public static final String SUBST_B1 = "T:\\My Music\\iPod\\";
@@ -51,11 +55,32 @@ public class MP3TagUtils {
         return idCounter++;
     }
 
-    public MP3TagUtils(AlbumError albumErrors, boolean update){
+    public MP3TagUtils(AlbumError albumErrors, MP3Settings.Mezzmo.Mp3Checker.RelativePath relativePath){
 
         this.albumErrors = albumErrors;
+        this.relativePath = relativePath;
         this.update = update;
 
+    }
+
+    public void enableUpdateMode(){
+        this.update = true;
+    }
+
+    public void clearErrorList(){
+        this.albumErrors.items = new ArrayList<AlbumError.Item>();
+    }
+
+    public List<AlbumError.Item> getErrorList(){
+        return this.albumErrors.items;
+    }
+
+    public void setErrorList(List<AlbumError.Item> list){
+        this.albumErrors.items = list;
+    }
+
+    public AlbumError getAlbumError(){
+        return this.albumErrors;
     }
 
 
@@ -513,11 +538,12 @@ public class MP3TagUtils {
         return ok;
     }
 
-    public static String relativizeFile(String file){
+    public String relativizeFile(String file){
 
-        String SUBST_1 = "h:\\shared\\mijn muziek\\eric\\ipod\\";
-        file = file.replace(SUBST_A, SUBST_B);
-        file = file.replace(SUBST_1, SUBST_B);
+        //String SUBST_1 = "h:\\shared\\mijn muziek\\eric\\ipod\\";
+        //file = file.replace(SUBST_A, SUBST_B);
+        //file = file.replace(SUBST_1, SUBST_B);
+        file = file.replace(this.relativePath.original, this.relativePath.substitute);
         return file;
     }
 

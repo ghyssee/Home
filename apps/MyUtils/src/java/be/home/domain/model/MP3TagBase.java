@@ -10,6 +10,7 @@ import be.home.common.utils.*;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.model.json.AlbumError;
+import be.home.model.json.MP3Settings;
 import be.home.model.json.SongCorrections;
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.Mp3File;
@@ -32,7 +33,7 @@ import java.util.List;
  */
 public abstract class MP3TagBase extends BatchJobV2 {
 
-    public AlbumError albumErrors = (AlbumError) JSONUtils.openJSONWithCode(Constants.JSON.ALBUMERRORS, AlbumError.class);
+    public MP3TagUtils mp3TagUtils;
     private static final Logger log = getMainLog(MP3TagBase.class);
     public static MezzmoServiceImpl mezzmoService = null;
 
@@ -47,7 +48,7 @@ public abstract class MP3TagBase extends BatchJobV2 {
         context.put("total", totalAlbumsToCheck);
         context.put("subProgress", nr);
         context.put("subTotal", total);
-        context.put("numberOfErrors", this.albumErrors.items.size());
+        context.put("numberOfErrors", mp3TagUtils.getErrorList().size());
         context.put("maxNumberOfErrors", maxNumberOfErrors);
         context.put("esc", new EscapeTool());
         context.put("refresh", 2);
@@ -55,17 +56,28 @@ public abstract class MP3TagBase extends BatchJobV2 {
     }
 
     protected boolean maxItemsReached(int maxErrors){
-        if (albumErrors.items.size() >= maxErrors && maxErrors != 0){
+        if (mp3TagUtils.getErrorList().size() >= maxErrors && maxErrors != 0){
             return true;
         }
         return false;
+    }
+
+    protected void saveUpdateSongInfo(SongCorrections songCorrections){
+        String info = "Saving the Song Corrections...";
+        log.info(info);
+        try {
+            JSONUtils.writeJsonFileWithCode(songCorrections, Constants.JSON.SONGCORRECTIONS);
+        } catch (IOException e) {
+            throw new ApplicationException("Problem writing the Song Corrections JSON file", e);
+        }
+        log.info(info + " Done");
     }
 
     protected void saveErrors(){
         String info = "Saving the Album Errors...";
         log.info(info);
         try {
-            JSONUtils.writeJsonFileWithCode(this.albumErrors, Constants.JSON.ALBUMERRORS);
+            JSONUtils.writeJsonFileWithCode(mp3TagUtils.getAlbumError(), Constants.JSON.ALBUMERRORS);
         } catch (IOException e) {
             throw new ApplicationException("Problem writing the AlbumErrors JSON file", e);
         }
@@ -85,7 +97,7 @@ public abstract class MP3TagBase extends BatchJobV2 {
         String logAlbum = Setup.getInstance().getFullPath(Constants.FILE.ALBUM_LOG);
         logAlbum = logAlbum.replace("<DATE>", DateUtils.formatYYYYMMDD(new Date()));
         MyFileWriter albumLogger = new MyFileWriter(logAlbum, MyFileWriter.APPEND);
-        for (AlbumError.Item item : this.albumErrors.items){
+        for (AlbumError.Item item : mp3TagUtils.getErrorList()){
             if (item.isDone()) {
                 albumLogger.append("ID: " + item.getId());
                 albumLogger.append("File: " + item.getFile());
@@ -99,7 +111,7 @@ public abstract class MP3TagBase extends BatchJobV2 {
             }
         }
         albumLogger.close();
-        this.albumErrors.items = filteredAlbumErrors;
+        mp3TagUtils.setErrorList(filteredAlbumErrors);
     }
 
     protected String getSetSortTitle(String title){
@@ -224,7 +236,7 @@ public abstract class MP3TagBase extends BatchJobV2 {
     }
 
     private void updateMP3(AlbumError.Item item) {
-        String file = MP3TagUtils.relativizeFile(item.getFile());
+        String file = this.mp3TagUtils.relativizeFile(item.getFile());
         Mp3File mp3file = null;
         try {
             mp3file = new Mp3File(file);
@@ -304,7 +316,7 @@ public abstract class MP3TagBase extends BatchJobV2 {
         boolean done = true;
         if (item.update){
             // check if other errors for same id need to be processed
-            for (AlbumError.Item errorItem : this.albumErrors.items){
+            for (AlbumError.Item errorItem : this.mp3TagUtils.getErrorList()){
                 if (!errorItem.isDone() && item.fileId.equals(errorItem.fileId)){
                     done = false;
                     break;
@@ -314,9 +326,10 @@ public abstract class MP3TagBase extends BatchJobV2 {
                 // remove it from the JSON update file
                 SongCorrections songCorrections = (SongCorrections) JSONUtils.openJSONWithCode(Constants.JSON.SONGCORRECTIONS, SongCorrections.class);
                 for (SongCorrections.Item songItem : songCorrections.items) {
-                    if (songItem.fileId.equals(item.fileId)) {
+                    if (songItem.fileId.equals(item.fileId) && !songItem.done) {
                         songItem.done = true;
-                        JSONUtils.writeJsonFileWithCode(songCorrections, Constants.JSON.SONGCORRECTIONS);
+                        saveUpdateSongInfo(songCorrections);
+                        break;
                     }
                 }
             }

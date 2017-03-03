@@ -109,9 +109,15 @@ public class FileUtils {
 		copy(src2, dst, true);
 	}
 
-    public static List<String> getContents(File aFile) throws IOException {
+	public static void writeContents(File aFile, List<String> list) throws IOException {
+        String name = StandardCharsets.UTF_8.name();
+        org.apache.commons.io.FileUtils.writeLines(aFile, StandardCharsets.UTF_8.name(), list);
+	}
+
+	public static List<String> getContents(File aFile) throws IOException {
         return getContents(aFile, StandardCharsets.UTF_16);
     }
+
 	public static List<String> getContents(File aFile, Charset charSet) throws IOException {
         return getContents(aFile, charSet.name(), false);
 	}

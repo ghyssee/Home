@@ -24,6 +24,11 @@
     $layout->checkBox(new Input(array('name' => "synchronizePlaycount",
         'label' => 'Synchronize Play Count',
         'value' => $mp3SettingsObj->mezzmo->synchronizePlaycount)));
+    $layout->comboBox($mp3SettingsObj->mezzmo->mp3Checker->relativePaths, "id", "description",
+        new Input(array('name' => "currentRelativePath",
+            'label' => 'Current Relative Path',
+            'col' => 1,
+            'default' => $mp3SettingsObj->mezzmo->mp3Checker->currentRelativePath)));
     $layout->button(new Input(array('name' => "mp3Settings",
         'value' => 'saveMezzmo',
         'text' => 'Save',

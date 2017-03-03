@@ -4,8 +4,10 @@ import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
 import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.enums.MP3Tag;
+import be.home.common.exceptions.ApplicationException;
 import be.home.common.model.TransferObject;
 import be.home.common.utils.*;
+import be.home.common.utils.FileUtils;
 import be.home.domain.model.MP3TagBase;
 import be.home.domain.model.MP3TagUtils;
 import be.home.mezzmo.domain.enums.MP3TagCheckerStatus;
@@ -14,8 +16,10 @@ import be.home.model.ConfigTO;
 import be.home.model.json.AlbumError;
 import be.home.model.json.MP3Settings;
 import be.home.model.json.SongCorrections;
+import org.apache.commons.io.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.apache.velocity.texen.util.FileUtil;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import java.io.*;
@@ -47,11 +51,28 @@ public class MP3TagChecker extends MP3TagBase {
 
     }
 
+    private MP3Settings.Mezzmo.Mp3Checker.RelativePath getRelativePath (MP3Settings mp3Settings){
+        String id = mp3Settings.mezzmo.mp3Checker.currentRelativePath;
+        MP3Settings.Mezzmo.Mp3Checker.RelativePath currentRelativePath = null;
+        for (MP3Settings.Mezzmo.Mp3Checker.RelativePath relativePath : mp3Settings.mezzmo.mp3Checker.relativePaths){
+            if (relativePath.id.equals(id)){
+                currentRelativePath = relativePath;
+            }
+        }
+        return currentRelativePath;
+    }
+
     @Override
     public void run() {
         final String batchJob = "MP3TagChecker";
         MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSONWithCode(Constants.JSON.MP3SETTINGS, MP3Settings.class);
         MP3TagCheckerStatus status = MP3TagCheckerStatus.valueOf(mp3Settings.mezzmo.mp3Checker.status);
+        MP3Settings.Mezzmo.Mp3Checker.RelativePath relativePath = getRelativePath(mp3Settings);
+        AlbumError albumErrors = (AlbumError) JSONUtils.openJSONWithCode(Constants.JSON.ALBUMERRORS, AlbumError.class);
+        this.mp3TagUtils = new MP3TagUtils(albumErrors, relativePath);
+        if (relativePath == null){
+            throw new ApplicationException("Relative Path with id " + mp3Settings.mezzmo.mp3Checker.currentRelativePath + " not found!");
+        }
         int nr = 0;
         try {
             switch (status) {
@@ -85,10 +106,7 @@ public class MP3TagChecker extends MP3TagBase {
     public void export(MP3Settings.Mezzmo.Mp3Checker mp3checker) throws IOException {
 
         TransferObject to = new TransferObject();
-        if (albumErrors == null){
-            albumErrors = new AlbumError();
-        }
-        albumErrors.items = new ArrayList<>();
+        this.mp3TagUtils.clearErrorList();
         MGOFileAlbumTO albumTO = new MGOFileAlbumTO();
         MyFileWriter albumsWithoutErrorsFile = new MyFileWriter(Setup.getInstance().getFullPath(Constants.FILE.ALBUMS_WITHOUT_ERRORS), MyFileWriter.NO_APPEND);
         File file = new File(Setup.getInstance().getFullPath(Constants.FILE.ALBUMS_TO_CHECK));
@@ -105,7 +123,7 @@ public class MP3TagChecker extends MP3TagBase {
                 if (maxItemsReached(mp3checker.maxNumberOfErrors)){
                     break;
                 }
-                if ((this.albumErrors.items.size() % 10) == 0){
+                if ((this.mp3TagUtils.getErrorList().size() % 10) == 0){
                     saveErrors();
                 }
                 albumTO.setName(line.trim());
@@ -150,9 +168,8 @@ public class MP3TagChecker extends MP3TagBase {
 
     private void processFiles(){
         log.info("Processing files that are in error again...");
-        MP3TagUtils tagUtils = new MP3TagUtils(this.albumErrors, !UPDATE);
-        List <AlbumError.Item> oldItems = albumErrors.items;
-        albumErrors.items = new ArrayList<>();
+        List <AlbumError.Item> oldItems = this.mp3TagUtils.getErrorList();
+        this.mp3TagUtils.clearErrorList();
         List <Long> fileIdList = new ArrayList();
         for (AlbumError.Item item : oldItems) {
             if (!fileIdList.contains(item.fileId)){
@@ -167,12 +184,8 @@ public class MP3TagChecker extends MP3TagBase {
                 search.getFileAlbumTO().setId(comp.getFileAlbumTO().getId());
                 List<MGOFileAlbumCompositeTO> list = getMezzmoService().findSongsByAlbum(search);
                 int maxDisc = getMaxDisc(list);
-                log.info("Track: " + comp.getFileTO().getTrack());
-                log.info("Artist: " + comp.getFileArtistTO().getArtist());
-                log.info("Title: " + comp.getFileTO().getTitle());
-                log.info("Max Disc: " + maxDisc);
-                log.info(StringUtils.repeat('=', 100));
-                tagUtils.processSong(comp, list.size(), maxDisc);
+                logItem(comp, maxDisc);
+                this.mp3TagUtils.processSong(comp, list.size(), maxDisc);
             }
             catch (IncorrectResultSizeDataAccessException e){
                 log.error(e);
@@ -191,21 +204,17 @@ public class MP3TagChecker extends MP3TagBase {
         log.info("Album: " + comp.getFileAlbumTO().getName());
         int maxDisc = getMaxDisc(list);
         log.info("Max Disc: " + maxDisc);
-        MP3TagUtils tagUtils = new MP3TagUtils(this.albumErrors, !UPDATE);
-        int errors = this.albumErrors.items.size();
+        int errors = this.mp3TagUtils.getErrorList().size();
         boolean maxReached = false;
         for (MGOFileAlbumCompositeTO item : list){
-            log.info("Track: " + item.getFileTO().getTrack());
-            log.info("Artist: " + item.getFileArtistTO().getArtist());
-            log.info("Title: " + item.getFileTO().getTitle());
-            log.info(StringUtils.repeat('=', 100));
-            tagUtils.processSong(item, list.size(), maxDisc);
+            logItem(comp, maxDisc);
+            this.mp3TagUtils.processSong(item, list.size(), maxDisc);
             if (maxItemsReached(mp3checker.maxNumberOfErrors)){
                 maxReached = true;
                 break;
             }
         }
-        if (errors == this.albumErrors.items.size() && !maxReached){
+        if (errors == this.mp3TagUtils.getErrorList().size() && !maxReached){
             albumsWithoutErrorsFile.append(comp.getFileAlbumTO().getName());
         }
     }
@@ -213,11 +222,11 @@ public class MP3TagChecker extends MP3TagBase {
     private int processErrors(){
         int errorsProcessed = 0;
         log.info("Processing Errors");
-        if (this.albumErrors.items.size() == 0){
+        if (this.mp3TagUtils.getErrorList().size() == 0){
             log.info("Nothing To Process");
             return 0;
         }
-        for (AlbumError.Item item : this.albumErrors.items){
+        for (AlbumError.Item item : this.mp3TagUtils.getErrorList()){
             if (!item.isDone() && item.isProcess()) {
                 errorsProcessed++;
                 log.info("Processing Id " + item.id + " / Type = " + item.type);
@@ -258,11 +267,11 @@ public class MP3TagChecker extends MP3TagBase {
     private int processFileTitles() {
         int errorsProcessed = 0;
         log.info("Processing Errors");
-        if (this.albumErrors.items.size() == 0) {
+        if (this.mp3TagUtils.getErrorList().size() == 0) {
             log.info("Nothing To Process");
             return 0;
         }
-        for (AlbumError.Item item : this.albumErrors.items) {
+        for (AlbumError.Item item : this.mp3TagUtils.getErrorList()) {
             if (!item.isDone()) {
                 switch (MP3Tag.valueOf(item.getType())) {
                     case FILETITLE:
@@ -283,8 +292,9 @@ public class MP3TagChecker extends MP3TagBase {
 
     private void processUpdateSongs(){
         SongCorrections songCorrections = (SongCorrections) JSONUtils.openJSONWithCode(Constants.JSON.SONGCORRECTIONS, SongCorrections.class);
-        MP3TagUtils tagUtils = new MP3TagUtils(this.albumErrors, UPDATE);
-        albumErrors.items = new ArrayList<>();
+        this.mp3TagUtils.enableUpdateMode();
+        this.mp3TagUtils.clearErrorList();
+        boolean saveUpdateSongFile = false;
 
         for (SongCorrections.Item item : songCorrections.items) {
             if (item.done){
@@ -300,12 +310,15 @@ public class MP3TagChecker extends MP3TagBase {
                 search.getFileAlbumTO().setId(comp.getFileAlbumTO().getId());
                 List<MGOFileAlbumCompositeTO> list = getMezzmoService().findSongsByAlbum(search);
                 int maxDisc = getMaxDisc(list);
-                log.info("Track: " + comp.getFileTO().getTrack());
-                log.info("Artist: " + comp.getFileArtistTO().getArtist());
-                log.info("Title: " + comp.getFileTO().getTitle());
-                log.info("Max Disc: " + maxDisc);
-                log.info(StringUtils.repeat('=', 100));
-                tagUtils.processSong(comp, list.size(), maxDisc);
+                logItem(comp, maxDisc);
+                int nrOfErrors = this.mp3TagUtils.getErrorList().size();
+                this.mp3TagUtils.processSong(comp, list.size(), maxDisc);
+                if (nrOfErrors == this.mp3TagUtils.getErrorList().size()){
+                    // no errors found processing this update
+                    item.done = true;
+                    saveUpdateSongFile = true;
+                    addAlbumToAlbumsToCheck(comp.getFileAlbumTO().getName());
+                }
             }
             catch (IncorrectResultSizeDataAccessException e){
                 log.error(e);
@@ -313,11 +326,42 @@ public class MP3TagChecker extends MP3TagBase {
             }
         }
         saveErrors();
+        if (saveUpdateSongFile){
+            saveUpdateSongInfo(songCorrections);
+        }
 
     }
 
+    private void addAlbumToAlbumsToCheck(String album){
+        String file = Setup.getInstance().getFullPath(Constants.FILE.ALBUMS_TO_CHECK);
+        boolean albumFound = false;
+        try {
+            List<String> lines = FileUtils.getContents(new File(file), StandardCharsets.UTF_8, FileUtils.REMOVE_EMPTY_LINES);
+            for (String line : lines){
+                if (album.equals(line.trim())){
+                    albumFound = true;
+                }
+            }
+            if (!albumFound){
+                lines.add(album);
+                log.warn("No Error(s) Found for this song. Add album to list of albums to check: " + album);
+                FileUtils.writeContents(new File(file), lines);
+            }
+        } catch (IOException e) {
+            log.error("Problem updating file " + file, e);
+        }
+    }
+
+    private void logItem(MGOFileAlbumCompositeTO comp, int maxDisc){
+        log.info("Track: " + comp.getFileTO().getTrack());
+        log.info("Artist: " + comp.getFileArtistTO().getArtist());
+        log.info("Title: " + comp.getFileTO().getTitle());
+        log.info("Max Disc: " + maxDisc);
+        log.info(StringUtils.repeat('=', 100));
+    }
+
     private void renameFile(AlbumError.Item item){
-       if (FileUtils.renameFile(MP3TagUtils.relativizeFile(item.oldValue), MP3TagUtils.relativizeFile(item.newValue))) {
+       if (FileUtils.renameFile(this.mp3TagUtils.relativizeFile(item.oldValue), this.mp3TagUtils.relativizeFile(item.newValue))) {
            MGOFileAlbumCompositeTO comp = new MGOFileAlbumCompositeTO();
            comp.getFileTO().setId(item.getId());
            comp.getFileTO().setFile(item.getNewValue());

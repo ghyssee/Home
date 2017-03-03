@@ -88,6 +88,7 @@ function saveMezzmo($file, $mp3Settings){
 	assignField($mp3Settings->mezzmo->importF->filename, "filename");
 	assignField($mp3Settings->mezzmo->export->base, "exportBase");
 	assignField($mp3Settings->mezzmo->export->iPod, "exportiPod");
+	assignField($mp3Settings->mezzmo->mp3Checker->currentRelativePath, "currentRelativePath");
 	$save = true;
 	if (empty($mp3Settings->mezzmo->base)) {
 		addError ('mezzmoBase', 'Mezzmo Base Directory is either empty, or not set at all');

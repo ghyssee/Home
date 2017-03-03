@@ -74,6 +74,16 @@ public class MP3Settings {
         public class Mp3Checker {
             public String status;
             public int maxNumberOfErrors;
+            public List<RelativePath> relativePaths;
+            public String currentRelativePath;
+
+
+            public class RelativePath {
+                public String id;
+                public String original;
+                public String substitute;
+                public String description;
+            }
         }
     }
 
