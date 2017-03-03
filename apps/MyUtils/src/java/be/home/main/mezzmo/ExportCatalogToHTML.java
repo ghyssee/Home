@@ -106,9 +106,12 @@ public class ExportCatalogToHTML extends BatchJobV2{
     public void processAlbums(HTMLSettings htmlSettings) {
         List<MGOFileAlbumCompositeTO> list = getMezzmoService().getAlbumTracks(new TransferObject());
         List<MGOFileAlbumCompositeTO> others = new ArrayList<MGOFileAlbumCompositeTO>();
-        String indexNname = Setup.getFullPath(Constants.FILE.MUSIC_INDEX);
+        String indexName = Setup.getFullPath(Constants.FILE.MUSIC_INDEX);
         NavigationBar bar = new NavigationBar();
-        bar.add(new NavigationItem(1, Setup.getFullPath(Constants.FILE.MUSIC_INDEX, Setup.CONTEXT), "Index"));
+        bar.add(new NavigationItem(Setup.getFullPath(Constants.Path.CONTEXTROOT, Setup.CONTEXT), "Home"));
+        bar.add(new NavigationItem(Setup.getFullPath(Constants.FILE.MUSIC_INDEX, Setup.CONTEXT), "Index"));
+        Integer levelAlbum = bar.addLevel();
+        Integer levelSongs = bar.addLevel();
         /* sort array
          */
         List <HTMLSettings.Group> list2 = htmlSettings.export.groups;
@@ -153,16 +156,15 @@ public class ExportCatalogToHTML extends BatchJobV2{
         for (HTMLSettings.Group group : htmlSettings.export.groups){
             log.info("Processing group " + group.from + "-" + group.to);
             String filename = group.from + "_" + group.to + ".html";
-            bar.add(new NavigationItem(2,
-                    Setup.getFullPath(Constants.Path.WEB_MUSIC_ALBUMS, Setup.CONTEXT) + "/" + filename,
-                    group.from + "_" + group.to));
+            bar.add(levelAlbum, new NavigationItem(Setup.getFullPath(Constants.Path.WEB_MUSIC_ALBUMS,
+                    Setup.CONTEXT) + "/" + filename, group.from + "_" + group.to));
             group.setFilename(Setup.getPath(Constants.Path.WEB_MUSIC_ALBUMS) + File.separator + filename);
             //group.setFilename(MP3Helper.getInstance().stripFilename(group.getFilename()));
             try {
                 if (group.list != null) {
                     for (MGOFileAlbumCompositeTO comp : group.list) {
                         comp.setFilename("s" + idx + ".html");
-                        processAlbumSongs(bar, comp);
+                        processAlbumSongs(bar, levelSongs, comp);
                         idx++;
                     }
                     exportAlbumList(bar, group.list, group.getFilename());
@@ -172,21 +174,20 @@ public class ExportCatalogToHTML extends BatchJobV2{
             }
         }
         try {
-            exportAlbumIndex(bar, htmlSettings.export.groups, indexNname);
+            exportAlbumIndex(bar, htmlSettings.export.groups, indexName);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
 
-    public void processAlbumSongs(NavigationBar bar, MGOFileAlbumCompositeTO comp) throws IOException {
+    public void processAlbumSongs(NavigationBar bar, Integer level, MGOFileAlbumCompositeTO comp) throws IOException {
         List<MGOFileAlbumCompositeTO> songs = getMezzmoService().getSongsAlbum(new Long(comp.getFileAlbumTO().getId()),
                                                                                new Long(comp.getAlbumArtistTO().getId()));
         log.info("ALBUM:" + comp.getFileAlbumTO().getName());
         if (songs != null && songs.size() > 0) {
             String file = Setup.getFullPath(Constants.Path.WEB_MUSIC_SONGS) + File.separator + comp.getFilename();
-            bar.add(new NavigationItem(3,
-                    Setup.getFullPath(Constants.Path.WEB_MUSIC_SONGS, Setup.CONTEXT) + "/" + comp.getFilename(),
+            bar.add(level, new NavigationItem (Setup.getFullPath(Constants.Path.WEB_MUSIC_SONGS, Setup.CONTEXT) + "/" + comp.getFilename(),
                     comp.getFileAlbumTO().getName()));
             try {
                 exportAlbumSongs(bar, comp, songs, file);

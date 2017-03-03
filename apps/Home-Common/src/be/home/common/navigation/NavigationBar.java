@@ -8,12 +8,27 @@ import java.util.*;
 public class NavigationBar {
 
     Map<Integer, NavigationItem> nav = new HashMap();
+    Integer level = 0;
 
     public NavigationBar(){
     }
 
+    public Integer addLevel(){
+        return level++;
+    }
+
+    public Integer getLevel(){
+        return level;
+    }
     public void add(NavigationItem navItem){
-        nav.put(navItem.level, navItem);
+        level++;
+        navItem.setLevel(level);
+        nav.put(level, navItem);
+    }
+
+    public void add(Integer level, NavigationItem navItem){
+        navItem.setLevel(level);
+        nav.put(level, navItem);
     }
 
     public List getSortedList(){

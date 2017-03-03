@@ -32,6 +32,7 @@ public interface Constants {
     }
 
     interface Path {
+        String CONTEXTROOT = "contextRoot";
         String BASEDIR = "mp3Processor";
         String ALBUM = "album";
         String TMP = "tmp";

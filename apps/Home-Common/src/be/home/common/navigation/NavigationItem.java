@@ -5,13 +5,13 @@ package be.home.common.navigation;
  */
 public class NavigationItem {
 
-    public int level;
+    public Integer level;
     public String url;
 
     public String description;
 
-    public NavigationItem(int level, String url, String description){
-        this.level = level;
+    public NavigationItem(String url, String description){
+        this.level = null;
         this.url = url;
         this.description = description;
     }
@@ -24,11 +24,11 @@ public class NavigationItem {
         this.description = description;
     }
 
-    public int getLevel() {
+    public Integer getLevel() {
         return level;
     }
 
-    public void setLevel(int level) {
+    public void setLevel(Integer level) {
         this.level = level;
     }
 
