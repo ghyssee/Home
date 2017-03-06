@@ -9,12 +9,13 @@ public class NavigationBar {
 
     Map<Integer, NavigationItem> nav = new HashMap();
     Integer level = 0;
+    Integer active = 0;
 
     public NavigationBar(){
     }
 
     public Integer addLevel(){
-        return level++;
+        return ++level;
     }
 
     public Integer getLevel(){
@@ -32,8 +33,16 @@ public class NavigationBar {
     }
 
     public List getSortedList(){
-        List list = new ArrayList(nav.values());
+        Collection <NavigationItem> values = nav.values();
+        List <NavigationItem> list = new ArrayList();
+        for (NavigationItem item : values){
+            if (item.getLevel().intValue() == this.active.intValue()){
+                item.activate();
+            }
+            list.add(item);
+        }
         return list;
+
     }
 
     public List getSortedList(int level){
@@ -41,6 +50,9 @@ public class NavigationBar {
         List <NavigationItem> list = new ArrayList();
         for (NavigationItem item : values){
             if (item.getLevel() <= level){
+                if (item.getLevel().intValue() == this.active.intValue()){
+                    item.activate();
+                }
                 list.add(item);
             }
         }

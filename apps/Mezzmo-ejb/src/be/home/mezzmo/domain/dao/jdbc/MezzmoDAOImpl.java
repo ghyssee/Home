@@ -91,6 +91,7 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
         else {
             params.add(albumTO.getName());
         }
+        //query.addCondition(TablesEnum.MGOFile.alias(), MGOFileColumns.TRACK, Comparator.GREATER, 500);
         for (String albumToExclude : albumsToExclude){
             query.addCondition(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUM, Comparator.NOT_LIKE);
             params.add(albumToExclude);

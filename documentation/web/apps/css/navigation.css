@@ -8,6 +8,15 @@
     overflow: hidden;
     width: 100%;
 }
+
+.nav li {
+    border-right: 10px solid #bbb;
+}
+
+.nav li:last-child a:last-child {
+    border-right: none;
+}
+
 .nav li a {
     font-family: 'Oswald', sans-serif;
     font-size: 17px;
@@ -17,12 +26,15 @@
     text-decoration: none;
     padding: 8px;
     color: white;
+    border-right: 1px solid #bbb;
 }
-.nav li:hover a:hover {
+
+.nav li a:hover:not(.active) {
     background-color: white;
     color: #3092c0;
     transition: .3s background-color;
 }
+
 .nav .active {
     background-color: #4CAF50;
     color: white;

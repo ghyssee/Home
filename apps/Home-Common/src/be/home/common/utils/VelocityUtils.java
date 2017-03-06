@@ -33,7 +33,7 @@ public class VelocityUtils {
         Path file = Paths.get(outputFile);
         BufferedWriter writer = null;
         try {
-            writer = Files.newBufferedWriter(file, Charset.defaultCharset());
+            writer = Files.newBufferedWriter(file, Charset.forName("UTF-8"));
             t.merge(context, writer);
         } finally {
             if (writer != null){

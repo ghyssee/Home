@@ -411,7 +411,7 @@ public class MP3TagUtils {
             ok = false;
         }
         File file = new File(comp.getFileTO().getFile());
-        String path = file.getParentFile().getName();
+        String path = getAlbumPath(file);
         String strippedPath = removeYearFromAlbum(path);
         if (!"VARIOUS ARTISTS".equals(comp.getAlbumArtistTO().getName().toUpperCase())){
             album = comp.getAlbumArtistTO().getName() + " - " + album;
@@ -434,6 +434,20 @@ public class MP3TagUtils {
             ok = false;
         }
         return ok;
+    }
+
+    public static String getAlbumPath(File file){
+        String path = file.getParentFile().getName();
+        /* check if path is a subdivision, ex. 0001 - 0100
+           Main Path is than the parent of the parent of the file
+         */
+        if (path.matches("[0-9]{3,4} ?- ?[0-9]{3,4}")){
+            File parent = file.getParentFile().getParentFile();
+            if (parent != null) {
+                path = parent.getName();
+            }
+        }
+        return path;
     }
 
     private String getAlbumCheckInfoOld(String line1, String line2, String line3, String line4){
