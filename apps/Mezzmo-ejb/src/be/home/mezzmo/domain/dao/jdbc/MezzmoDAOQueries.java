@@ -139,7 +139,9 @@ public class MezzmoDAOQueries extends MezzmoDB {
             .addGroup(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUM)
             .addGroup(TablesEnum.MGOAlbumArtist.alias(), MGOAlbumArtistColumns.ALBUMARTIST)
             .addGroup(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUMID)
-            .orderBy(TablesEnum.MGOFileAlbum, MGOFileAlbumColumns.ALBUM, SortOrder.ASC);
+            .orderBy(TablesEnum.MGOFileAlbum, MGOFileAlbumColumns.ALBUM, SortOrder.ASC)
+            .orderBy(TablesEnum.MGOFile, MGOFileColumns.DISC, SortOrder.ASC)
+            .orderBy(TablesEnum.MGOFile, MGOFileColumns.TRACK, SortOrder.ASC);
 
     protected static String LIST_ALBUMS_DEFAULT = ((SQLBuilder) SerializationUtils.clone(LIST_ALBUMS))
             .render();

@@ -8,6 +8,8 @@ public class NavigationItem {
     public Integer level;
     public String url;
 
+    public boolean active = false;
+
     public String description;
 
     public NavigationItem(String url, String description){
@@ -40,6 +42,13 @@ public class NavigationItem {
         this.url = url;
     }
 
+    public boolean isActive() {
+        return active;
+    }
+
+    public void activate() {
+        this.active = true;
+    }
 
 
 }

@@ -110,6 +110,7 @@ public class ExportCatalogToHTML extends BatchJobV2{
         NavigationBar bar = new NavigationBar();
         bar.add(new NavigationItem(Setup.getFullPath(Constants.Path.CONTEXTROOT, Setup.CONTEXT), "Home"));
         bar.add(new NavigationItem(Setup.getFullPath(Constants.FILE.MUSIC_INDEX, Setup.CONTEXT), "Index"));
+        Integer levelIndex = bar.getLevel();
         Integer levelAlbum = bar.addLevel();
         Integer levelSongs = bar.addLevel();
         /* sort array
@@ -167,14 +168,14 @@ public class ExportCatalogToHTML extends BatchJobV2{
                         processAlbumSongs(bar, levelSongs, comp);
                         idx++;
                     }
-                    exportAlbumList(bar, group.list, group.getFilename());
+                    exportAlbumList(bar, levelAlbum, group.list, group.getFilename());
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
         try {
-            exportAlbumIndex(bar, htmlSettings.export.groups, indexName);
+            exportAlbumIndex(bar, levelIndex, htmlSettings.export.groups, indexName);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -201,11 +202,7 @@ public class ExportCatalogToHTML extends BatchJobV2{
 
     }
 
-    public void setNavigation(List navList, int level, String file){
-        navList.set(level-1, file);
-    }
-
-    public void exportAlbumIndex(NavigationBar bar, List<HTMLSettings.Group> list, String outputFile) throws IOException {
+    public void exportAlbumIndex(NavigationBar bar, Integer level, List<HTMLSettings.Group> list, String outputFile) throws IOException {
 
         // sort the list on from
         Collections.sort(list, new Comparator<HTMLSettings.Group>() {
@@ -218,19 +215,19 @@ public class ExportCatalogToHTML extends BatchJobV2{
 
         /*  create a context and add data */
         VelocityContext context = new VelocityContext();
-        context.put("navigation",  bar.getSortedList(1));
+        context.put("navigation",  bar.getSortedList(level));
         context.put("esc",new EscapeTool());
         context.put("list", list);
         vu.makeFile("music/MusicCatalog.htm", outputFile, context);
         log.info("Album Catalog created: " + outputFile);
     }
 
-    public void exportAlbumList(NavigationBar bar, List<MGOFileAlbumCompositeTO> list, String outputFile) throws IOException {
+    public void exportAlbumList(NavigationBar bar, Integer level, List<MGOFileAlbumCompositeTO> list, String outputFile) throws IOException {
         VelocityUtils vu = new VelocityUtils();
         outputFile = Setup.getFullPath(Constants.Path.WEB_MUSIC) + File.separator + outputFile;
 
         VelocityContext context = new VelocityContext();
-        context.put("navigation",  bar.getSortedList(2));
+        context.put("navigation",  bar.getSortedList(level));
         context.put("esc",new EscapeTool());
         context.put("list", list);
         vu.makeFile("music/Album.htm", outputFile, context);

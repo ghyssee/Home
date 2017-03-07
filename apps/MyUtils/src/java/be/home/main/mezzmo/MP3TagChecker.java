@@ -207,7 +207,7 @@ public class MP3TagChecker extends MP3TagBase {
         int errors = this.mp3TagUtils.getErrorList().size();
         boolean maxReached = false;
         for (MGOFileAlbumCompositeTO item : list){
-            logItem(comp, maxDisc);
+            logItem(item, maxDisc);
             this.mp3TagUtils.processSong(item, list.size(), maxDisc);
             if (maxItemsReached(mp3checker.maxNumberOfErrors)){
                 maxReached = true;
