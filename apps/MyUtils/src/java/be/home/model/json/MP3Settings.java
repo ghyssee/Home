@@ -17,6 +17,7 @@ public class MP3Settings {
     public Mezzmo mezzmo;
     public MediaMonkey mediaMonkey;
     public LastPlayedSong lastPlayedSong;
+    public Filename filename;
 
     public LastPlayedSong getLastPlayedSong() {
         return lastPlayedSong;
@@ -53,6 +54,14 @@ public class MP3Settings {
     public class Import {
         public String base;
         public String filename;
+    }
+
+    public class Filename {
+        public boolean renameEnabled;
+        public String trackArtistSeperator;
+        public String artistTitleSeperator;
+        public String paddingForTrackInFilename;
+
     }
 
     public class MezzmoBase {

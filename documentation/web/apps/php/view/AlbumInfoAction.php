@@ -18,6 +18,7 @@ function updateAlbumInfo($mp3PreprocessorObj){
     assignField($mp3SettingsObj->album, "albumLocation", !HTML_SPECIAL_CHAR);
     assignField($mp3SettingsObj->albumArtist, "albumArtist");
     assignField($mp3SettingsObj->albumYear, "albumYear");
+    assignCheckbox($mp3SettingsObj->filename->renameEnabled, "filenameRenameEnabled");
     assignField($albumInfo, "albumContent", !HTML_SPECIAL_CHAR);
     assignField($mp3PreprocessorObj->cdTag, "cdTag");
     assignField($mp3PreprocessorObj->prefix, "prefix");

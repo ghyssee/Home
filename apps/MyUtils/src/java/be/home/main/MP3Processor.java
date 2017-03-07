@@ -239,8 +239,16 @@ public class MP3Processor extends BatchJobV2 {
         }
 
         mp3file.setId3v2Tag(id3v2Tag);
-        File originalFile = new File(fileName);
-        File newFile = new File(Setup.getInstance().getFullPath(Constants.Path.NEW) + File.separator + prefixFileName + originalFile.getName());
+
+        File newFile;
+        if (mp3Settings.filename.renameEnabled){
+            String newFilename = constructFilename(mp3Settings, album, track, FilenameUtils.getExtension(fileName));
+            newFile = new File(Setup.getInstance().getFullPath(Constants.Path.NEW) + File.separator  + newFilename);
+        }
+        else {
+            File originalFile = new File(fileName);
+            newFile = new File(Setup.getInstance().getFullPath(Constants.Path.NEW) + File.separator + prefixFileName + originalFile.getName());
+        }
         System.out.println("New File " + newFile);
         //if (track.artist.contains("Λ")){
         //    id3v2Tag.setArtist(track.artist.replaceAll("Λ", "&"));
@@ -253,6 +261,21 @@ public class MP3Processor extends BatchJobV2 {
         //  System.err.println("There was a problem deleting the file " + fileName);
         //}*/
         mp3file.save(newFile.getAbsolutePath());
+    }
+
+    private String constructFilename(MP3Settings mp3Settings, AlbumInfo.Config album, AlbumInfo.Track track, String ext){
+        int lengthDisc = album.total > 0 ? String.valueOf(album.total).length() : 0;
+        String disc = (StringUtils.isBlank(track.cd) ? "" : String.valueOf(album.total));
+        disc = StringUtils.leftPad(disc, lengthDisc, mp3Settings.filename.paddingForTrackInFilename);
+        String customTrack = StringUtils.leftPad(track.track, album.trackSize, mp3Settings.filename.paddingForTrackInFilename);
+        customTrack = disc + customTrack;
+        String filename =  customTrack + mp3Settings.filename.trackArtistSeperator +
+                           track.artist + mp3Settings.filename.artistTitleSeperator +
+                           track.title;
+        filename = MP3Helper.getInstance().stripFilename(filename);
+        filename += "." + ext;
+
+        return filename;
     }
 
     private AlbumInfo.Track findMP3File(AlbumInfo.Config album, int trackNumber){
