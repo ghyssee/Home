@@ -109,7 +109,7 @@ public class MP3Helper {
             for (MP3Prettifier.Word wordObj : mp3Prettifer.artist.names){
                //prettifiedText = prettifiedText.replaceAll(wordObj.oldWord, wordObj.newWord);
                 String oldText = prettifiedText;
-                System.out.println(wordObj.oldWord);
+                //System.out.println(wordObj.oldWord);
                 prettifiedText = replaceString(oldText, wordObj);
                 if (!oldText.equals(prettifiedText)){
                     logRule("Artist Names", wordObj);
