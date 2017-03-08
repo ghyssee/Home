@@ -85,7 +85,6 @@ public class HelloWorld extends BatchJobV2 {
         System.out.println(mp3Helper.prettifyArtist("Lilly Wood, The Prick & Robin Schulz"));
         System.out.println(mp3Helper.prettifyArtist("Mr Robert"));
         System.out.println(mp3Helper.prettifyArtist("SFB, Ronnie Flex, Lil' Kleine & Bokoesam"));
-        System.out.println(mp3Helper.prettifyArtist("SFB, Ronnie Flex, Lil' Kleine & Bokoesam"));
         System.out.println(mp3Helper.prettifyArtist("Mr Robert"));
         System.out.println(mp3Helper.prettifyArtist("Iio"));
         System.out.println(mp3Helper.prettifyArtist("Iio Test"));
@@ -123,10 +122,10 @@ public class HelloWorld extends BatchJobV2 {
         System.out.println(mp3Helper.prettifyArtist("The Underdog Project Feat. Sunclu"));
         System.out.println(mp3Helper.prettifyArtist("The Underdog Project Vs The Sunclub"));
         System.out.println(mp3Helper.prettifyArtist("Zhi Vago"));
-        System.out.println(mp3Helper.prettifyArtist("3oh3"));
-        System.out.println("A Teens".replaceAll("A([B|b][B|b][A|a])? ?[T|t]eens", "Blabla"));
+        System.out.println(mp3Helper.prettifyArtist("Axwell A Ingrosso\n"));
+        System.out.println("Mambo Nr. 5".replaceAll("Mambo N[r|o|\\u00b0].? ?5( ?\\(A Little Bit Of ?((\\.){0,3}|…)\\))?", "Blabla"));
         System.out.println(mp3Helper.prettifyAlbum("Q-music Top 1000 (2014)"));
-        System.out.println(mp3Helper.prettifySong("Mambo Nr. 5"));
+        System.out.println(mp3Helper.prettifySong("Mambo Nr. 5 "));
         //System.out.println(mp3Helper.prettifyArtist("Ll Cool J Feat. 7 Aurelius"));
 
     }
