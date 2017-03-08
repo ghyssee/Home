@@ -2,9 +2,11 @@ package be.home.main;
 
 import be.home.common.main.BatchJobV2;
 import be.home.common.mp3.MP3Utils;
+import be.home.common.utils.FileUtils;
 import be.home.domain.model.MP3Helper;
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.Mp3File;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -21,6 +23,7 @@ import javax.xml.parsers.SAXParserFactory;
 import javax.xml.validation.SchemaFactory;
 import java.io.*;
 import java.net.URI;
+import java.util.List;
 
 /**
  * Created by ghyssee on 20/02/2015.
@@ -35,9 +38,25 @@ public class HelloWorld extends BatchJobV2 {
 
         //System.out.println(MP3TagUtils.stripFilename("(Hot S+++)"));
 
+        processArtistFile();
         testMP3Prettifier();
         //updateMP3();
 
+    }
+
+    private static void processArtistFile(){
+        File file = new File("C:\\My Programs\\OneDrive\\Config\\ListOfArtistsToCheck.txt");
+        MP3Helper mp3Helper =MP3Helper.getInstance();
+        try {
+            List<String> lines = FileUtils.getContents(file);
+            for (String line : lines){
+                if (StringUtils.isNotBlank(line)){
+                    System.out.println(line + " => " + mp3Helper.prettifyArtist(line));
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void testMP3Prettifier(){
@@ -100,11 +119,14 @@ public class HelloWorld extends BatchJobV2 {
         System.out.println(mp3Helper.stripFilename("A$AP"));
         System.out.println(mp3Helper.stripFilename("X!nk"));
         System.out.println(mp3Helper.stripFilename("A+B"));
-        System.out.println(mp3Helper.stripFilename("A%"));
-        System.out.println(mp3Helper.prettifySong("Moi Lolita"));
-        System.out.println(mp3Helper.prettifyArtist("Ali B. & Yes-R Feat. Party Squad"));
-        System.out.println("Ooh Aah... Just A Little Bit".replaceAll("Ooh Aah\\.?\\.?\\.? ?(\\[|\\()?[J|j]ust A Little Bit(\\]|\\))?", "Blabla"));
+        System.out.println(mp3Helper.stripFilename("Mambo No. 5 (A Little Bit of...)"));
+        System.out.println(mp3Helper.prettifyArtist("The Underdog Project Feat. Sunclu"));
+        System.out.println(mp3Helper.prettifyArtist("The Underdog Project Vs The Sunclub"));
+        System.out.println(mp3Helper.prettifyArtist("Zhi Vago"));
+        System.out.println(mp3Helper.prettifyArtist("3oh3"));
+        System.out.println("A Teens".replaceAll("A([B|b][B|b][A|a])? ?[T|t]eens", "Blabla"));
         System.out.println(mp3Helper.prettifyAlbum("Q-music Top 1000 (2014)"));
+        System.out.println(mp3Helper.prettifySong("Mambo Nr. 5"));
         //System.out.println(mp3Helper.prettifyArtist("Ll Cool J Feat. 7 Aurelius"));
 
     }
