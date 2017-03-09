@@ -3,6 +3,7 @@ package be.home.main;
 import be.home.common.main.BatchJobV2;
 import be.home.common.mp3.MP3Utils;
 import be.home.common.utils.FileUtils;
+import be.home.common.utils.MyFileWriter;
 import be.home.domain.model.MP3Helper;
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.Mp3File;
@@ -48,10 +49,12 @@ public class HelloWorld extends BatchJobV2 {
         File file = new File("C:\\My Programs\\OneDrive\\Config\\ListOfArtistsToCheck.txt");
         MP3Helper mp3Helper =MP3Helper.getInstance();
         try {
+            MyFileWriter newFile = new MyFileWriter("C:\\My Programs\\OneDrive\\Config\\ArtistResult.txt", MyFileWriter.NO_APPEND);
             List<String> lines = FileUtils.getContents(file);
             for (String line : lines){
                 if (StringUtils.isNotBlank(line)){
                     System.out.println(line + " => " + mp3Helper.prettifyArtist(line));
+                    newFile.append(line + " => " + mp3Helper.prettifyArtist(line));
                 }
             }
         } catch (IOException e) {
@@ -122,10 +125,11 @@ public class HelloWorld extends BatchJobV2 {
         System.out.println(mp3Helper.prettifyArtist("The Underdog Project Feat. Sunclu"));
         System.out.println(mp3Helper.prettifyArtist("The Underdog Project Vs The Sunclub"));
         System.out.println(mp3Helper.prettifyArtist("Zhi Vago"));
-        System.out.println(mp3Helper.prettifyArtist("Axwell A Ingrosso\n"));
-        System.out.println("Mambo Nr. 5".replaceAll("Mambo N[r|o|\\u00b0].? ?5( ?\\(A Little Bit Of ?((\\.){0,3}|…)\\))?", "Blabla"));
+        System.out.println(mp3Helper.prettifyArtist("The Partysquad Feat. Jayh, Sjaak & Reverse"));
         System.out.println(mp3Helper.prettifyAlbum("Q-music Top 1000 (2014)"));
         System.out.println(mp3Helper.prettifySong("Mambo Nr. 5 "));
+        System.out.println("The Partysquad & Reverse Feat. Gers, Adje & Jayh".replaceAll("((Gers|Adje|Jayh|Reverse)( Feat. | ?& ?|, ?| |\\\\. ?|$)){4}", "Dio, Sef, Sjaak & Reverse"));
+        //System.out.println("The Partysquad Feat. Sjaak, Dio, Sef".replaceAll("((Sef|Dio|Sjaak)( ?& ?|, ?| |\\.|$)){3,}", "Dio, Sef & Sjaak"));
         //System.out.println(mp3Helper.prettifyArtist("Ll Cool J Feat. 7 Aurelius"));
 
     }
