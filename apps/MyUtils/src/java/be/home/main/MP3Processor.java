@@ -265,7 +265,7 @@ public class MP3Processor extends BatchJobV2 {
 
     private String constructFilename(MP3Settings mp3Settings, AlbumInfo.Config album, AlbumInfo.Track track, String ext){
         int lengthDisc = album.total > 0 ? String.valueOf(album.total).length() : 0;
-        String disc = (StringUtils.isBlank(track.cd) ? "" : String.valueOf(album.total));
+        String disc = (StringUtils.isBlank(track.cd) ? "" : String.valueOf(track.cd));
         disc = StringUtils.leftPad(disc, lengthDisc, mp3Settings.filename.paddingForTrackInFilename);
         String customTrack = StringUtils.leftPad(track.track, album.trackSize, mp3Settings.filename.paddingForTrackInFilename);
         customTrack = disc + customTrack;

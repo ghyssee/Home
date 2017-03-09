@@ -124,7 +124,7 @@ public class HelloWorld extends BatchJobV2 {
         System.out.println(mp3Helper.stripFilename("Mambo No. 5 (A Little Bit of...)"));
         System.out.println(mp3Helper.prettifyArtist("The Underdog Project Feat. Sunclu"));
         System.out.println(mp3Helper.prettifyArtist("The Underdog Project Vs The Sunclub"));
-        System.out.println(mp3Helper.prettifyArtist("Zhi Vago"));
+        System.out.println(mp3Helper.prettifyArtist("Rag 'n‘ Bone Man"));
         System.out.println(mp3Helper.prettifyArtist("The Partysquad Feat. Jayh, Sjaak & Reverse"));
         System.out.println(mp3Helper.prettifyAlbum("Q-music Top 1000 (2014)"));
         System.out.println(mp3Helper.prettifySong("Mambo Nr. 5 "));

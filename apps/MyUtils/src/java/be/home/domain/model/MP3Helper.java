@@ -47,6 +47,7 @@ public class MP3Helper {
     public String replaceSpecialCharacters(String text){
         text = text.replaceAll("’", "'");
         text = text.replaceAll("´", "'");
+        text = text.replaceAll("‘", "'");
         text = text.replaceAll("`", "'");
         text = text.replaceAll("''", "\"");
         return text;
