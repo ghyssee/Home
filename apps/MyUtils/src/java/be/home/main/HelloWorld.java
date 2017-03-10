@@ -1,5 +1,7 @@
 package be.home.main;
 
+import be.home.common.configuration.Setup;
+import be.home.common.constants.Constants;
 import be.home.common.main.BatchJobV2;
 import be.home.common.mp3.MP3Utils;
 import be.home.common.utils.FileUtils;
@@ -46,10 +48,12 @@ public class HelloWorld extends BatchJobV2 {
     }
 
     private static void processArtistFile(){
-        File file = new File("C:\\My Programs\\OneDrive\\Config\\ListOfArtistsToCheck.txt");
+        File file = new File(Setup.getInstance().getFullPath(Constants.Path.MAIN_CONFIG) +
+                File.separator + "ListOfArtistsToCheck.txt");
         MP3Helper mp3Helper =MP3Helper.getInstance();
         try {
-            MyFileWriter newFile = new MyFileWriter("C:\\My Programs\\OneDrive\\Config\\ArtistResult.txt", MyFileWriter.NO_APPEND);
+            MyFileWriter newFile = new MyFileWriter(Setup.getInstance().getFullPath(Constants.Path.MAIN_CONFIG) +
+                    File.separator + "ArtistResult.txt", MyFileWriter.NO_APPEND);
             List<String> lines = FileUtils.getContents(file);
             for (String line : lines){
                 if (StringUtils.isNotBlank(line)){
@@ -127,7 +131,7 @@ public class HelloWorld extends BatchJobV2 {
         System.out.println(mp3Helper.prettifyArtist("Rag 'n‘ Bone Man"));
         System.out.println(mp3Helper.prettifyArtist("The Partysquad Feat. Jayh, Sjaak & Reverse"));
         System.out.println(mp3Helper.prettifyAlbum("Q-music Top 1000 (2014)"));
-        System.out.println(mp3Helper.prettifySong("Mambo Nr. 5 "));
+        System.out.println(mp3Helper.prettifySong("Mambo Nr. 5 (Track/vocal)"));
         System.out.println("The Partysquad & Reverse Feat. Gers, Adje & Jayh".replaceAll("((Gers|Adje|Jayh|Reverse)( Feat. | ?& ?|, ?| |\\\\. ?|$)){4}", "Dio, Sef, Sjaak & Reverse"));
         //System.out.println("The Partysquad Feat. Sjaak, Dio, Sef".replaceAll("((Sef|Dio|Sjaak)( ?& ?|, ?| |\\.|$)){3,}", "Dio, Sef & Sjaak"));
         //System.out.println(mp3Helper.prettifyArtist("Ll Cool J Feat. 7 Aurelius"));
