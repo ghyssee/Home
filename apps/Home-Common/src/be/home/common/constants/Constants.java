@@ -41,6 +41,7 @@ public interface Constants {
         String PROCESS = "process";
         String NEW = "new";
         String ONEDRIVE = "oneDrive";
+        String MAIN_CONFIG = "mainConfig";
         String CONFIG = "config";
         String DATA = "data";
         String PLAYLIST = "playlist";

@@ -126,13 +126,13 @@ public class HelloWorld extends BatchJobV2 {
         System.out.println(mp3Helper.stripFilename("X!nk"));
         System.out.println(mp3Helper.stripFilename("A+B"));
         System.out.println(mp3Helper.stripFilename("Mambo No. 5 (A Little Bit of...)"));
-        System.out.println(mp3Helper.prettifyArtist("The Underdog Project Feat. Sunclu"));
+        System.out.println(mp3Helper.prettifyArtist("Partysquad"));
         System.out.println(mp3Helper.prettifyArtist("The Underdog Project Vs The Sunclub"));
         System.out.println(mp3Helper.prettifyArtist("Rag 'n‘ Bone Man"));
-        System.out.println(mp3Helper.prettifyArtist("The Partysquad Feat. Jayh, Sjaak & Reverse"));
+        System.out.println(mp3Helper.prettifyArtist("Blackstreet & Mya Feat. Mase & Blinky Blink"));
         System.out.println(mp3Helper.prettifyAlbum("Q-music Top 1000 (2014)"));
-        System.out.println(mp3Helper.prettifySong("Mambo Nr. 5 (Track/vocal)"));
-        System.out.println("The Partysquad & Reverse Feat. Gers, Adje & Jayh".replaceAll("((Gers|Adje|Jayh|Reverse)( Feat. | ?& ?|, ?| |\\\\. ?|$)){4}", "Dio, Sef, Sjaak & Reverse"));
+        System.out.println(mp3Helper.prettifySong("Lovin, Livin And Givin"));
+        System.out.println("Partysquad".replaceAll("(The )?Party ?[s|S]quad", "blabla"));
         //System.out.println("The Partysquad Feat. Sjaak, Dio, Sef".replaceAll("((Sef|Dio|Sjaak)( ?& ?|, ?| |\\.|$)){3,}", "Dio, Sef & Sjaak"));
         //System.out.println(mp3Helper.prettifyArtist("Ll Cool J Feat. 7 Aurelius"));
 
