@@ -145,8 +145,8 @@ public class MP3Helper {
                     prefix = word.substring(0,1);
                     word = word.substring(1);
                 }
-                // check if word ends with a " or a (
-                if (word.matches(".*(\\)|\")$")){
+                // check if word ends with a " or a )
+                if (word.matches(".*(\\)|\"|,)$")){
                     suffix = word.substring(word.length()-1,word.length());
                     word = word.substring(0, word.length()-1);
                 }
