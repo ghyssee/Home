@@ -411,26 +411,26 @@ public class MP3TagUtils {
             ok = false;
         }
         File file = new File(comp.getFileTO().getFile());
-        String path = getAlbumPath(file);
-        String strippedPath = removeYearFromAlbum(path);
+        String physicalPath = getAlbumPath(file);
+        String strippedPhysicalPath = removeYearFromAlbum(physicalPath);
         if (!"VARIOUS ARTISTS".equals(comp.getAlbumArtistTO().getName().toUpperCase())){
             album = comp.getAlbumArtistTO().getName() + " - " + album;
         }
-        if (!album.equals(path) && !album.equals(strippedPath)){
-            log.warn("Path Album does not match: " + "Formatted: " + album + " / Disc: " + path);
-            String possibleNewFile = file.getParentFile().getParentFile().getAbsolutePath() + File.separator + album + File.separator;
+        String strippedAlbum = MP3Helper.getInstance().stripFilename(album);
+        if (!strippedAlbum.equals(physicalPath) && !strippedAlbum.equals(strippedPhysicalPath)){
+            log.warn("Path Album does not match: " + "Formatted: " + album + " / Disc: " + physicalPath);
+            String possibleNewFile = file.getParentFile().getParentFile().getAbsolutePath() + File.separator + strippedPhysicalPath + File.separator;
             String oldFile = file.getParentFile().getAbsolutePath() + File.separator;
             addItem(comp.getFileTO().getId(),
                     comp.getFileAlbumTO().getId(),
                     comp.getFileTO().getFile(),
                     comp.getFileAlbumTO().getName(),
-                    MP3Tag.ALBUMCHECK, getAlbumCheckInfoOld("Disc:", path, "MP3:", album),
+                    MP3Tag.ALBUMCHECK, getAlbumCheckInfoOld("Disc:", physicalPath, "MP3:", album),
                                               getAlbumCheckInfoNew(
                                                       //file.getParentFile().getAbsolutePath(),
                                                       comp.getFileTO().getId(),
                                                       oldFile,
                                                       possibleNewFile));
-            comp.getFileArtistTO().setArtist(album);
             ok = false;
         }
         return ok;

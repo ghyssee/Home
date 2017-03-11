@@ -70,6 +70,8 @@ public interface Constants {
         String ALBUMERRORS = "albumErrors";
         String ULTRATOP = "ultratop";
         String BACKUP = "backup";
+        String ARTISTS = "artists";
+        String MULTIARTISTCONFiG = "multiArtistConfig";
     }
     interface FILE {
         String ALBUM = "albumInfo";

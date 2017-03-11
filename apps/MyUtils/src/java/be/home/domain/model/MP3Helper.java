@@ -2,13 +2,18 @@ package be.home.domain.model;
 
 import be.home.common.constants.Constants;
 import be.home.common.utils.JSONUtils;
+import be.home.mezzmo.domain.bo.ArtistBO;
 import be.home.model.json.AlbumInfo;
-import be.home.model.json.MP3Prettifier;
+import be.home.mezzmo.domain.model.json.Artists;
+import be.home.mezzmo.domain.model.json.MP3Prettifier;
+import be.home.mezzmo.domain.model.json.MultiArtistConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.apache.log4j.Logger;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,10 +25,12 @@ public class MP3Helper {
     private static MP3Helper mp3Helper = new MP3Helper();
     private static MP3Prettifier mp3Prettifer;
     private static final Logger log = Logger.getLogger(MP3Helper.class);
+    private static List<MP3Prettifier.Word> multiArtistNames;
 
     private MP3Helper() {
         mp3Prettifer = (MP3Prettifier) JSONUtils.openJSONWithCode(Constants.JSON.MP3PRETTIFIER, MP3Prettifier.class);
-        MP3Prettifier.Word word;
+        Map<String, Artists.Artist> map = ArtistBO.getInstance().getArtistNames();
+        multiArtistNames = ArtistBO.getInstance().construct();
         Collections.sort(mp3Prettifer.global.filenames, (a1, b1) -> a1.priority - b1.priority);
         Collections.sort(mp3Prettifer.artist.names, (a1, b1) -> a1.priority - b1.priority);
     }
@@ -107,6 +114,9 @@ public class MP3Helper {
             prettifiedText = prettifiedText.replace("  ", " ");
             prettifiedText = prettifiedText.trim();
             prettifiedText = checkWords(prettifiedText, Mp3Tag.ARTIST);
+            prettifiedText = checkArtistNames(mp3Prettifer.artist.names, prettifiedText, "Artist Names");
+            prettifiedText = checkArtistNames(multiArtistNames, prettifiedText, "Multi Artist Names");
+            /*
             for (MP3Prettifier.Word wordObj : mp3Prettifer.artist.names){
                //prettifiedText = prettifiedText.replaceAll(wordObj.oldWord, wordObj.newWord);
                 String oldText = prettifiedText;
@@ -115,10 +125,21 @@ public class MP3Helper {
                 if (!oldText.equals(prettifiedText)){
                     logRule("Artist Names", wordObj);
                 }
-            }
+            }*/
         }
         return prettifiedText;
 
+    }
+
+    private String checkArtistNames(List<MP3Prettifier.Word> list, String text, String logMsg){
+        for (MP3Prettifier.Word wordObj : list){
+            String oldText = text;
+            text = replaceString(oldText, wordObj);
+            if (!oldText.equals(text)){
+                logRule(logMsg, wordObj);
+            }
+        }
+        return text;
     }
 
     private void logRule(String category, MP3Prettifier.Word word){

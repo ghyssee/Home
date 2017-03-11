@@ -1,4 +1,4 @@
-package be.home.model.json;
+package be.home.mezzmo.domain.model.json;
 
 /**
  * Created by Gebruiker on 3/07/2016.
