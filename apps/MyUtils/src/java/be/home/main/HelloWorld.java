@@ -45,8 +45,10 @@ public class HelloWorld extends BatchJobV2 {
         //System.out.println(MP3TagUtils.stripFilename("(Hot S+++)"));
 
         processArtistFile();
-        testMP3Prettifier();
-        //updateMP3();
+        //testMP3Prettifier();
+        updateMP3();
+
+
         //testAlbumArtist();
 
     }
@@ -168,7 +170,7 @@ private static void testAlbumArtist(){
 
     private static void updateMP3(){
         Mp3File mp3file = null;
-        String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\01 Mike Posner - I Took A Pill In Ibiza (SeeB Remix).mp3";
+        String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\01 Belle Perez - Light Of My Life.mp3";
         //String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\test.mp3";
         //String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\108 Di-Rect - Hungry For Love.mp3";
         try {

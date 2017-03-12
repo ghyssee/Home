@@ -295,7 +295,7 @@ public abstract class MP3TagBase extends BatchJobV2 {
                     }
                     else {
                         update = true;
-                        id3v2Tag.setArtist(item.getNewValue());
+                        id3v2Tag.setAlbumArtist(item.getNewValue());
                     }
                     break;
                 case TITLE:

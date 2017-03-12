@@ -29,7 +29,6 @@ public class MP3Helper {
 
     private MP3Helper() {
         mp3Prettifer = (MP3Prettifier) JSONUtils.openJSONWithCode(Constants.JSON.MP3PRETTIFIER, MP3Prettifier.class);
-        Map<String, Artists.Artist> map = ArtistBO.getInstance().getArtistNames();
         multiArtistNames = ArtistBO.getInstance().construct();
         Collections.sort(mp3Prettifer.global.filenames, (a1, b1) -> a1.priority - b1.priority);
         Collections.sort(mp3Prettifer.artist.names, (a1, b1) -> a1.priority - b1.priority);
