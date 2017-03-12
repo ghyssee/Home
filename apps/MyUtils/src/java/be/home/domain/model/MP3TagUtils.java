@@ -1,5 +1,6 @@
 package be.home.domain.model;
 
+import be.home.common.constants.Constants;
 import be.home.common.database.sqlbuilder.Comparator;
 import be.home.common.database.sqlbuilder.Type;
 import be.home.common.enums.MP3Tag;
@@ -120,6 +121,7 @@ public class MP3TagUtils {
                             checkFileTitle(comp);
                         }
                     }
+                    checkAlbumArtist(comp, id3v2Tag.isCompilation(), id3v2Tag.getAlbumArtist());
                     checkAlbum(comp, id3v2Tag.getAlbum());
 
                     System.out.println(StringUtils.repeat('=', 100));
@@ -512,6 +514,50 @@ public class MP3TagUtils {
                 comp.getFileArtistTO().setArtist(artist);
             }
             ok = false;
+        }
+        return ok;
+    }
+
+    private boolean addAlbumArtistError(MGOFileAlbumCompositeTO comp, boolean update, String oldValue, String newValue){
+        addItem(comp.getFileTO().getId(),
+                comp.getAlbumArtistTO().getId(),
+                comp.getFileTO().getFile(),
+                comp.getFileAlbumTO().getName(),
+                MP3Tag.ALBUMARTIST, oldValue, newValue);
+        if (!update) {
+            comp.getAlbumArtistTO().setName(newValue);
+        }
+        return false;
+    }
+
+    private boolean checkAlbumArtist(MGOFileAlbumCompositeTO comp, boolean compilation, String mp3AlbumArtist){
+        String albumArtist = MP3Helper.getInstance().prettifyArtist(mp3AlbumArtist);
+        boolean ok = true;
+        if (compilation){
+           if (!albumArtist.equals(Constants.AlbumArtist.name)){
+               log.warn("Compilation CD: Album Artist must be " + Constants.AlbumArtist.name);
+               ok = addAlbumArtistError(comp, update, albumArtist, Constants.AlbumArtist.name);
+           }
+            else if (!mp3AlbumArtist.equals(Constants.AlbumArtist.name)) {
+               log.warn("Compilation CD: Album Artist must be " + Constants.AlbumArtist.name);
+               ok = addAlbumArtistError(comp, update, mp3AlbumArtist, Constants.AlbumArtist.name);
+           }
+        }
+        else if (!this.update && !albumArtist.equals(mp3AlbumArtist)){
+            log.warn("Album Artist does not match: " + "mp3: " + mp3AlbumArtist + " / Formatted: " + albumArtist);
+            ok = addAlbumArtistError(comp, update, mp3AlbumArtist, albumArtist);
+        }
+        else if (!albumArtist.equals(comp.getAlbumArtistTO().getName())){
+            log.warn("Album Artist does not match: " + "DB: " + comp.getAlbumArtistTO().getName() + " / Formatted: " + albumArtist);
+            /* update mp3 + DB */
+            String oldValue = comp.getAlbumArtistTO().getName();
+            String newValue = albumArtist;
+            if (this.update){
+                // updated the value through the update screen, overruling the info from the mp3 file
+                oldValue = albumArtist;
+                newValue = comp.getAlbumArtistTO().getName();
+            }
+            ok = addAlbumArtistError(comp, update, oldValue, newValue);
         }
         return ok;
     }

@@ -2,11 +2,14 @@ package be.home.main;
 
 import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
+import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.main.BatchJobV2;
 import be.home.common.mp3.MP3Utils;
 import be.home.common.utils.FileUtils;
 import be.home.common.utils.MyFileWriter;
 import be.home.domain.model.MP3Helper;
+import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
+import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.Mp3File;
 import org.apache.commons.lang.StringUtils;
@@ -26,6 +29,7 @@ import javax.xml.parsers.SAXParserFactory;
 import javax.xml.validation.SchemaFactory;
 import java.io.*;
 import java.net.URI;
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -38,13 +42,37 @@ public class HelloWorld extends BatchJobV2 {
     public static void main(String args[]) throws SAXException, DocumentException, IOException, IllegalAccessException, NoSuchFieldException, ParserConfigurationException {
 
 
-
         //System.out.println(MP3TagUtils.stripFilename("(Hot S+++)"));
 
         processArtistFile();
         testMP3Prettifier();
         //updateMP3();
+        //testAlbumArtist();
 
+    }
+
+private static void testAlbumArtist(){
+    SQLiteJDBC.initialize(workingDir);
+    // update Album Artist With New Name
+    MGOFileAlbumCompositeTO comp = testAlbumArtistItem(140342L, 4594L, "Sven Van HeesXX");
+    // reset it to the Original Name
+    comp = testAlbumArtistItem(comp.getFileTO().getId(), comp.getAlbumArtistTO().getId(), "Sven Van Hees");
+    comp = testAlbumArtistItem(comp.getFileTO().getId(), comp.getAlbumArtistTO().getId(), "Various Artists");
+    comp = testAlbumArtistItem(comp.getFileTO().getId(), comp.getAlbumArtistTO().getId(), "Sven Van Hees");
+    comp = testAlbumArtistItem(comp.getFileTO().getId(), comp.getAlbumArtistTO().getId(), "Sven Van HEES");
+    comp = testAlbumArtistItem(comp.getFileTO().getId(), comp.getAlbumArtistTO().getId(), "Sven Van Hees");
+}
+    private static MGOFileAlbumCompositeTO testAlbumArtistItem(long fileId, long albumArtistId, String name){
+        MGOFileAlbumCompositeTO comp = new MGOFileAlbumCompositeTO();
+        comp.getFileTO().setId(fileId);
+        comp.getAlbumArtistTO().setId(albumArtistId);
+        comp.getAlbumArtistTO().setName(name);
+        try {
+            MezzmoServiceImpl.getInstance().updateAlbumArtist(comp);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return comp;
     }
 
     private static void processArtistFile(){

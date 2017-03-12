@@ -1,13 +1,8 @@
 package be.home.mezzmo.domain.dao.jdbc;
 
-import be.home.mezzmo.domain.model.MGOAlbumArtistTO;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.MGOFileAlbumTO;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,7 +30,7 @@ public class MezzmoAlbumDAOImpl extends MezzmoRowMappers {
     public List<MGOFileAlbumCompositeTO> findAlbum(String album, String albumArtist){
         List<MGOFileAlbumCompositeTO> list = null;
         Object[] params = {album, albumArtist == null ? "%"  : albumArtist};
-        list = getInstance().getJDBCTemplate().query(FIND_ALBUM, new AlbumArtistRowMapper(), params);
+        list = getInstance().getJDBCTemplate().query(FIND_ALBUM, new FileAlbumAlbumArtistRowMapper(), params);
         return list;
     }
 

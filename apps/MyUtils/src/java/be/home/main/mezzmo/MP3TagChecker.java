@@ -240,6 +240,9 @@ public class MP3TagChecker extends MP3TagBase {
                     case ARTIST:
                         updateArtist(item);
                         break;
+                    case ALBUMARTIST:
+                        updateAlbumArtist(item);
+                        break;
                     case TITLE:
                         updateSong(item);
                         break;

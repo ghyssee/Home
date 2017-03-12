@@ -402,4 +402,60 @@ public class MezzmoDAOQueries extends MezzmoDB {
             .addCondition(MGOFileAlbumRelationshipColumns.ID, Comparator.EQUALS, SQLBuilder.PARAMETER)
             .render();
 
+    protected static final String FIND_ALBUM_ARTIST = SQLBuilder.getInstance()
+            .select()
+            .addTable(TablesEnum.MGOAlbumArtist)
+            .addColumns(TablesEnum.MGOAlbumArtist)
+            .addCondition(MGOAlbumArtistColumns.ALBUMARTIST, Comparator.LIKE, SQLBuilder.PARAMETER)
+            //.addOption("COLLATE BINARY")
+            .render();
+
+    protected static final String FIND_ALBUM_ARTIST_BY_ID = SQLBuilder.getInstance()
+            .select()
+            .addTable(TablesEnum.MGOAlbumArtist)
+            .addColumns(TablesEnum.MGOAlbumArtist)
+            .addCondition(MGOAlbumArtistColumns.ALBUMARTISTID, Comparator.EQUALS, SQLBuilder.PARAMETER)
+            //.addOption("COLLATE BINARY")
+            .render();
+
+    protected static final String FILE_UPDATE_ALBUM_ARTIST = SQLBuilder.getInstance()
+            .update()
+            .addTable(TablesEnum.MGOAlbumArtist)
+            .updateColumn(MGOAlbumArtistColumns.ALBUMARTIST, Type.PARAMETER)
+            .addCondition(MGOAlbumArtistColumns.ALBUMARTISTID, Comparator.EQUALS, SQLBuilder.PARAMETER)
+            .render();
+
+    protected static final String UPDATE_LINK_FILE_ALBUM_ARTIST = SQLBuilder.getInstance()
+            .update()
+            .addTable(TablesEnum.MGOAlbumArtistRelationship)
+            .updateColumn(MGOAlbumArtistRelationshipColumns.ID, Type.PARAMETER)
+            .addCondition(MGOAlbumArtistRelationshipColumns.ID, Comparator.EQUALS, SQLBuilder.PARAMETER)
+            .render();
+
+    protected static final String UPDATE_LINK_FILE_ALBUM_ARTIST2 = SQLBuilder.getInstance()
+            .update()
+            .addTable(TablesEnum.MGOAlbumArtistRelationship)
+            .updateColumn(MGOAlbumArtistRelationshipColumns.ID, Type.PARAMETER)
+            .addCondition(MGOAlbumArtistRelationshipColumns.FILEID, Comparator.EQUALS, SQLBuilder.PARAMETER)
+            .render();
+
+    protected static final String FIND_LINKED_ALBUM_ARTIST = SQLBuilder.getInstance()
+            .select()
+            .addTable(TablesEnum.MGOAlbumArtistRelationship)
+            .addColumns(TablesEnum.MGOAlbumArtistRelationship)
+            .addCondition(MGOAlbumArtistRelationshipColumns.ID, Comparator.EQUALS, SQLBuilder.PARAMETER)
+            .render();
+
+    protected static final String DELETE_ALBUM_ARTIST = SQLBuilder.getInstance()
+            .delete()
+            .addTable(TablesEnum.MGOAlbumArtist)
+            .addCondition(MGOAlbumArtistColumns.ALBUMARTISTID, Comparator.EQUALS, SQLBuilder.PARAMETER)
+            .render();
+
+    protected static final String INSERT_ALBUM_ARTIST = SQLBuilder.getInstance()
+            .insert()
+            .addTable(TablesEnum.MGOAlbumArtist)
+            .addColumns(TablesEnum.MGOAlbumArtist)
+            .render();
+
 }

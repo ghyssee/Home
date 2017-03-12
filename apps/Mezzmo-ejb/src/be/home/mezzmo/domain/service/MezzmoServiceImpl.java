@@ -2,6 +2,7 @@ package be.home.mezzmo.domain.service;
 
 import be.home.common.enums.MP3Tag;
 import be.home.common.model.TransferObject;
+import be.home.mezzmo.domain.bo.AlbumArtistBO;
 import be.home.mezzmo.domain.bo.MezzmoBO;
 import be.home.mezzmo.domain.bo.PlaylistBO;
 import be.home.mezzmo.domain.dao.definition.TablesEnum;
@@ -249,7 +250,6 @@ public class MezzmoServiceImpl {
 
     }
 
-
     public int updateAlbum (MGOFileAlbumCompositeTO comp, String newAlbum) throws SQLException {
         MezzmoBO bo = new MezzmoBO();
         int nr = 0;
@@ -295,6 +295,12 @@ public class MezzmoServiceImpl {
             int del = bo.deleteAlbum(album);
             log.info("Nr Of Albums Deleted: " + del + " /Id: " + album.getId());
         }
+    }
+
+    public int updateAlbumArtist (MGOFileAlbumCompositeTO comp) throws SQLException {
+        AlbumArtistBO bo = new AlbumArtistBO();
+        return bo.update(comp);
+
     }
 
     public MGOFileAlbumCompositeTO findFileById(long id){

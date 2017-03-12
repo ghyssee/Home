@@ -235,6 +235,24 @@ public abstract class MP3TagBase extends BatchJobV2 {
         }
     }
 
+    protected void updateAlbumArtist(AlbumError.Item item){
+        MGOFileAlbumCompositeTO comp = new MGOFileAlbumCompositeTO();
+        comp.getFileTO().setId(item.getFileId());
+        comp.getAlbumArtistTO().setId(item.getId());
+        comp.getAlbumArtistTO().setName(item.getNewValue());
+        try {
+            int nr = getMezzmoService().updateAlbumArtist(comp);
+            if (nr > 0) {
+                log.info("Album Artist updated: " + "Id: " + item.getId() +
+                        " / New Album Artist: " + item.getNewValue() + " / " + nr + " record(s)");
+                //item.setDone(true);
+                updateMP3(item);
+            }
+        } catch (SQLException e) {
+            LogUtils.logError(log, e);
+        }
+    }
+
     private void updateMP3(AlbumError.Item item) {
         String file = this.mp3TagUtils.relativizeFile(item.getFile());
         Mp3File mp3file = null;
@@ -260,6 +278,18 @@ public abstract class MP3TagBase extends BatchJobV2 {
                     if (item.getNewValue().equals(id3v2Tag.getArtist())) {
                         log.info("No Update needed for " + item.getFile());
                         log.info("MP3 Artist Info: " + id3v2Tag.getArtist());
+                        log.info("Update Info: " + item.getType());
+                        setDone(item);
+                    }
+                    else {
+                        update = true;
+                        id3v2Tag.setArtist(item.getNewValue());
+                    }
+                    break;
+                case ALBUMARTIST :
+                    if (item.getNewValue().equals(id3v2Tag.getAlbumArtist())) {
+                        log.info("No Update needed for " + item.getFile());
+                        log.info("MP3 Album Artist Info: " + id3v2Tag.getAlbumArtist());
                         log.info("Update Info: " + item.getType());
                         setDone(item);
                     }

@@ -31,6 +31,10 @@ public interface Constants {
         }
     }
 
+    interface AlbumArtist {
+        String name = "Various Artists";
+    }
+
     interface Path {
         String CONTEXTROOT = "contextRoot";
         String BASEDIR = "mp3Processor";
