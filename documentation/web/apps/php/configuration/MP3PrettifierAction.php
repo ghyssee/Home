@@ -42,8 +42,10 @@ try {
             break;
         case "listMultiArtists":
             listMultiArtists();
+            break;
         case "listArtists":
             listArtists();
+            break;
     }
 }
 catch(Error $e) {

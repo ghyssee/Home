@@ -107,30 +107,30 @@
 					url = {{$updateUrl}};
 				}
 			}
-		{{/if}}
-
-        function save{{$tablegrid}}(){
-            $('#fm{{$tablegrid}}').form('submit',{
-                url: url,
-                onSubmit: function(){
-                    return $(this).form('validate');
-                },
-                success: function(result){
-                    //var result = eval('('+result+')');
-                    var result = JSON.parse(result);
-                    if (result.errorMsg){
-                        $.messager.show({
-                            title: 'Error',
-                            msg: result.errorMsg
-                        });
-                    } else {
-                        $('#dlg{{$tablegrid}}').dialog('close');		// close the dialog
-                        $('#dg{{$tablegrid}}').datagrid('reload');	// reload the user data
+            function save{{$tablegrid}}(){
+                $('#fm{{$tablegrid}}').form('submit',{
+                    url: url,
+                    onSubmit: function(){
+                        return $(this).form('validate');
+                    },
+                    success: function(result){
+                        //var result = eval('('+result+')');
+                        var result = JSON.parse(result);
+                        if (result.errorMsg){
+                            $.messager.show({
+                                title: 'Error',
+                                msg: result.errorMsg
+                            });
+                        } else {
+                            $('#dlg{{$tablegrid}}').dialog('close');		// close the dialog
+                            $('#dg{{$tablegrid}}').datagrid('reload');	// reload the user data
+                        }
                     }
-                }
-            });
-        }
-		{{if isset($deleteUrl)}}
+                });
+            }
+        {{/if}}
+
+        {{if isset($deleteUrl)}}
 			function deleteRecord{{$tablegrid}}(){
 				var row = $('#dg{{$tablegrid}}').datagrid('getSelected');
 				if (row){
