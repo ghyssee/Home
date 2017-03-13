@@ -42,6 +42,8 @@ try {
             break;
         case "listMultiArtists":
             listMultiArtists();
+        case "listArtists":
+            listArtists();
     }
 }
 catch(Error $e) {
@@ -263,14 +265,36 @@ function listMultiArtists(){
             $artistList .= $artistObj->name . "|";
         }
         $value->description = $artistList;
+        $artistNewSeq = "";
+        foreach($value->artistSequence as $artistItem) {
+            $artistObj = $artistBO->lookupArtist($artists->list, $artistItem->artistId);
+            $artistNewSeq .= $artistObj->name;
+            $splitter = lookupSplitter($multi->splitters, $artistItem->splitterId);
+            $artistNewSeq .= $splitter->value2;
+        }
+        $value->description2 = $artistNewSeq;
     }
 
     $result = array();
     $result["total"] = count($multi->list);
     $result["rows"] = $array;
-    echo json_encode($result);
+    echo json_encode($array);
 }
 
+function lookupSplitter ($splitters, $id){
+    foreach ($splitters as $key => $value) {
+        if ($value->id == $id){
+            return $value;
+        }
+    }
+    return null;
 
+}
+
+function listArtists(){
+    $artists = readJSONWithCode(JSON_ARTISTS);
+    //if (isset($_POST['sort'])){
+    echo json_encode($artists->list);
+}
 
 ?>

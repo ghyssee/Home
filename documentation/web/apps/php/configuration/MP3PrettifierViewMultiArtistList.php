@@ -17,6 +17,7 @@ $smarty->assign('deleteUrl', $url . "?method=deleteMultiArtistLine");
 
 $smarty->assign("contacts", array(
         array("field" => "description", "label"=>"Description", "size" => 50, "required" => true, "sortable" => true),
+        array("field" => "description2", "label"=>"Description2", "size" => 50, "required" => true, "sortable" => true),
         array("field" => "id", "label"=>"Id", "size" => 50, "hidden" => "true")
     )
 );

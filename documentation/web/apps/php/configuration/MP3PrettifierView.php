@@ -64,8 +64,11 @@ goMenu();
     <div title="Artists" style="padding:20px;display:none;">
         <?php include "MP3PrettifierViewArtists.php"; ?>
     </div>
-    <div title="Artists" style="padding:20px;display:none;">
+    <div title="Multi Artist" style="padding:20px;display:none;">
         <?php include "MP3PrettifierViewMultiArtistList.php"; ?>
+    </div>
+    <div title="Multi Artist Config" style="padding:20px;display:none;">
+        <?php include "MP3PrettifierViewMultiArtistConfig.php"; ?>
     </div>
 </div>
 

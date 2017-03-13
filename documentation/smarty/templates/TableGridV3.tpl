@@ -90,20 +90,24 @@
 			]],
 			autoRowHeight:true
 		});
-		var url;
-		function newRecord{{$tablegrid}}(){
-			$('#dlg{{$tablegrid}}').dialog('open').dialog('setTitle','New {{$item}}');
-			$('#fm{{$tablegrid}}').form('clear');
-			url = {{$newUrl}};
-		}
-		function editRecord{{$tablegrid}}(){
-			var row = $('#dg{{$tablegrid}}').datagrid('getSelected');
-			if (row){
-				$('#dlg{{$tablegrid}}').dialog('open').dialog('setTitle','Edit {{$item}}');
-				$('#fm{{$tablegrid}}').form('load',row);
-				url = {{$updateUrl}};
+		{{if isset($newUrl)}}
+			var url;
+			function newRecord{{$tablegrid}}(){
+				$('#dlg{{$tablegrid}}').dialog('open').dialog('setTitle','New {{$item}}');
+				$('#fm{{$tablegrid}}').form('clear');
+				url = {{$newUrl}};
 			}
-		}
+		{{/if}}
+		{{if isset($updateUrl)}}
+			function editRecord{{$tablegrid}}(){
+				var row = $('#dg{{$tablegrid}}').datagrid('getSelected');
+				if (row){
+					$('#dlg{{$tablegrid}}').dialog('open').dialog('setTitle','Edit {{$item}}');
+					$('#fm{{$tablegrid}}').form('load',row);
+					url = {{$updateUrl}};
+				}
+			}
+		{{/if}}
 
         function save{{$tablegrid}}(){
             $('#fm{{$tablegrid}}').form('submit',{
@@ -126,30 +130,31 @@
                 }
             });
         }
-
-        function deleteRecord{{$tablegrid}}(){
-			var row = $('#dg{{$tablegrid}}').datagrid('getSelected');
-			if (row){
-				$.messager.confirm('Confirm','Are you sure you want to delete this {{$item}}?',function(r){
-                    if (r){
-                        $.ajax({
-                            type:    "POST",
-                            url:     "{{$deleteUrl}}",
-                            data:    {id: row.{{$id}}},
-                            success: function(data) {
-                                $('#dg{{$tablegrid}}').datagrid('reload');
-                            },
-                            // vvv---- This is the new bit
-                            error:   function(jqXHR, textStatus, errorThrown) {
-                                alert("Error, status = " + textStatus + ", " +
-                                        "error thrown: " + errorThrown
-                                );
-                            }
-                        });
-					}
-				});
+		{{if isset($deleteUrl)}}
+			function deleteRecord{{$tablegrid}}(){
+				var row = $('#dg{{$tablegrid}}').datagrid('getSelected');
+				if (row){
+					$.messager.confirm('Confirm','Are you sure you want to delete this {{$item}}?',function(r){
+						if (r){
+							$.ajax({
+								type:    "POST",
+								url:     "{{$deleteUrl}}",
+								data:    {id: row.{{$id}}},
+								success: function(data) {
+									$('#dg{{$tablegrid}}').datagrid('reload');
+								},
+								// vvv---- This is the new bit
+								error:   function(jqXHR, textStatus, errorThrown) {
+									alert("Error, status = " + textStatus + ", " +
+											"error thrown: " + errorThrown
+									);
+								}
+							});
+						}
+					});
+				}
 			}
-		}
+		{{/if}}
         function checkboxFormatter(val,row){
             if (val== 1) {
                 return "√";
