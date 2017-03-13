@@ -2,18 +2,15 @@ package be.home.domain.model;
 
 import be.home.common.constants.Constants;
 import be.home.common.utils.JSONUtils;
-import be.home.mezzmo.domain.bo.ArtistBO;
+import be.home.mezzmo.domain.bo.ArtistConfigBO;
 import be.home.model.json.AlbumInfo;
-import be.home.mezzmo.domain.model.json.Artists;
 import be.home.mezzmo.domain.model.json.MP3Prettifier;
-import be.home.mezzmo.domain.model.json.MultiArtistConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.apache.log4j.Logger;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,7 +26,7 @@ public class MP3Helper {
 
     private MP3Helper() {
         mp3Prettifer = (MP3Prettifier) JSONUtils.openJSONWithCode(Constants.JSON.MP3PRETTIFIER, MP3Prettifier.class);
-        multiArtistNames = ArtistBO.getInstance().construct();
+        multiArtistNames = ArtistConfigBO.getInstance().construct();
         Collections.sort(mp3Prettifer.global.filenames, (a1, b1) -> a1.priority - b1.priority);
         Collections.sort(mp3Prettifer.artist.names, (a1, b1) -> a1.priority - b1.priority);
     }

@@ -61,6 +61,12 @@ goMenu();
     <div title="Filename" style="padding:20px;display:none;">
         <?php include "MP3PrettifierViewFilename.php"; ?>
     </div>
+    <div title="Artists" style="padding:20px;display:none;">
+        <?php include "MP3PrettifierViewArtists.php"; ?>
+    </div>
+    <div title="Artists" style="padding:20px;display:none;">
+        <?php include "MP3PrettifierViewMultiArtistList.php"; ?>
+    </div>
 </div>
 
 <script src="<?php echo webPath(ROOT_JS_EASYUI, 'EasyUITabsMouseHover.js')?>"></script>

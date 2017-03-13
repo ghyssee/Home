@@ -118,7 +118,7 @@ public class MP3TagChecker extends MP3TagBase {
             for (String line : lines){
                 nrAlbumsToCheck++;
                 if (StringUtils.isBlank(line)){
-                    break;
+                    continue;
                 }
                 if (maxItemsReached(mp3checker.maxNumberOfErrors)){
                     break;

@@ -146,5 +146,10 @@ class SongCorrection{
   public $source;
 }
 
+class Artist{
+  public $id;
+  public $name;
+}
+
 ?>
 

@@ -14,16 +14,16 @@ package be.home.mezzmo.domain.bo;
         import java.util.Map;
         import java.util.stream.Collectors;
 
-public class ArtistBO {
+public class ArtistConfigBO {
 
-    private static ArtistBO artistBO = new ArtistBO();
+    private static ArtistConfigBO artistConfigBO = new ArtistConfigBO();
     private static Artists artists;
     private static MultiArtistConfig multiArtistConfig;
-    private static final Logger log = Logger.getLogger(ArtistBO.class);
+    private static final Logger log = Logger.getLogger(ArtistConfigBO.class);
     private static Map<String, Artists.Artist> mapArtists;
     private static Map<String, MultiArtistConfig.Splitter> mapSplitters;
 
-    private ArtistBO() {
+    private ArtistConfigBO() {
         artists = (Artists) JSONUtils.openJSONWithCode(Constants.JSON.ARTISTS, Artists.class);
         mapArtists =
                 artists.list.stream().collect(Collectors.toMap(Artists.Artist::getId, artist -> artist));
@@ -32,8 +32,8 @@ public class ArtistBO {
                 multiArtistConfig.splitters.stream().collect(Collectors.toMap(MultiArtistConfig.Splitter::getId, c -> c));
     }
 
-    public static ArtistBO getInstance() {
-        return artistBO;
+    public static ArtistConfigBO getInstance() {
+        return artistConfigBO;
     }
 
     public Map<String, Artists.Artist> getArtistNames(){
