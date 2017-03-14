@@ -71,10 +71,21 @@ include_once documentPath (ROOT_PHP_HTML, "config.php");
                     width:400,
                     height:250,
                     singleSelect:true,
-                    idField:'itemid',
+                    idField:'id',
                     onStopDrag: function(row){
-                        alert("onstopdrag");
-                        $('#artistDl').datagrid('beginEdit', 0);
+                        var rowIndex = $('#artistDl').datagrid('getRowIndex', row);
+                        var ed = $(artistDl).datagrid('getEditor', {
+                            index: rowIndex+1,
+                            field: 'splitterId'
+                        });
+                        alert(row);
+                        row.splitterId = $(ed.target).combobox('getValue');
+                        //console.log(JSON.stringify(ed, null, 4));
+                        console.log(JSON.stringify(row, null, 4));
+                        //console.log(JSON.stringify(ed, null, 4));
+                        $('#artistDl').datagrid('endEdit', rowIndex);
+                        $('#artistDl').datagrid('beginEdit', rowIndex);
+                        alert(rowIndex);
                     },
                     columns:[[
                         {field:'id',title:'ID',hidden:true},
@@ -97,9 +108,10 @@ include_once documentPath (ROOT_PHP_HTML, "config.php");
                             index: index,
                             field: 'type'
                         });
-                        row.value2 = $(ed.target).combobox('getText');
+                        row.splitterId = $(ed.target).combobox('getText');
                     },
                     onBeforeEdit:function(index,row){
+                        //alert("onbeforeedit");
                         row.editing = true;
                         $(this).datagrid('checkRow',index);
                         $(this).datagrid('refreshRow', index);
