@@ -1,3 +1,11 @@
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+include("../setup.php");
+include_once documentPath (ROOT_PHP, "config.php");
+include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
+include_once documentPath (ROOT_PHP_HTML, "config.php");
+?>
 <html>
 <style>
     #column1 {
@@ -17,73 +25,124 @@
         padding-right: 5px ;
     }
 </style>
+<script>
+    var data = {"total":2,"rows":[
+        {"id":"FI-SW-01","name":"BlaBlaKoi"},
+        {"id":"K9-DL-01","name":"Dalmation"}
+    ]};
+</script>
 
 <head>
-    <link rel="stylesheet" type="text/css" href="../../css/stylesheet.css">
-    <link rel="stylesheet" type="text/css" href="../../Themes/easyui/metro-blue/easyui.css">
-    <link rel="stylesheet" type="text/css" href="../../Themes/easyui/icon.css">
-    <link rel="stylesheet" type="text/css" href="../../css/form.css">
-    <script type="text/javascript" src="../../js/jquery-3.1.1.js"></script>
-    <script type="text/javascript" src="../../js/jquery.easyui.min.js"></script>
+    <?php include documentRoot ("apps/php/templates/easyui.php");?>
 </head>
 
 <body>
 
-<?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-include("../setup.php");
-include_once documentPath (ROOT_PHP, "config.php");
-include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
-include_once documentPath (ROOT_PHP_HTML, "config.php");
-
-session_start();
-$_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
-goMenu();
-?>
-<h1>MP3 Pretttifier</h1>
-<div class="horizontalLine">.</div>
-<br>
 <div id="container">
     <div id="column1">
         <div id="innercolumn1">
-            <?php include "MP3PrettifierViewGlobalWord.php"; ?>
+            <div id="innercolumn2">
+                <div id="dl" class="easyui-datalist" title="Remote Data" style="width:200px;height:250px"
+                     data-options="
+                                url: 'MP3PrettifierAction.php?method=listArtists',
+                                method: 'get',
+                                lines: 'true',
+                                valueField: 'id',
+                                singleSelect: false,
+                                textField: 'name'
+                             "
+                >
+                </div>
+            </div>
         </div>
     </div>
     <div id="column2">
-        <div id="innercolumn2">
-            <?php include "MP3PrettifierViewArtistWord.php"; ?>
-        </div>
-    </div>
-</div>
-<div id="container">
-    <div id="column1">
-        <div id="innercolumn1">
-            <?php include "MP3PrettifierViewArtistName.php"; ?>
-        </div>
-    </div>
-    <div id="column2">
-        <div id="innercolumn2">
-            <?php include "MP3PrettifierViewSongTitle.php"; ?>
-        </div>
-    </div>
-</div>
-<br>
-<div id="container">
-            <?php include "MP3PrettifierViewFilename.php"; ?>
-</div>
-<br>
-<br>
-<?php
-goMenu();
+        <table id="artistDl"></table>
+        <script>
+            var products = [
+                {id:'FEAT',value2:' Feat '},
+                {id:'AMP',value2:' & '},
+                {id:'WITH',value2:' With '}
+            ];
+            $(function(){
+                $('#artistDl').datagrid({
+                    title:'Editable DataGrid',
+                    iconCls:'icon-edit',
+                    width:400,
+                    height:250,
+                    singleSelect:true,
+                    idField:'itemid',
+                    columns:[[
+                        {field:'id',title:'ID',hidden:true},
+                        {field:'name', title:'Name', width:100},
+                        {field:'splitterId',title:'Splitter',width:100,
+                            formatter:function(value,row){
+                                return value;
+                            },
+                            editor:{
+                                type:'combobox',
+                                options:{
+                                    valueField:'id',
+                                    textField:'value2',
+                                    data:products,
+                                    required:true
+                                }
+                            }
+                        }
+                    ]]
+                });
+            });
+        </script>
 
-function constructUrl($url, $method, $type, $category){
-    $newUrl = $url . "?method=" . $method . "&type=" . $type . "&category=" . $category;
-    return $newUrl;
-}
+    </div>
+</div>
+<button onclick="insert()">Click me</button>
+<button onclick="clear()">Clear</button>
+<button onclick="save()">Save</button>
+<script>
+    $('#artistDl').datagrid('enableDnd');
+    function clear(){
+        $('#artistDl').datagrid('loadData', {"total":0,"rows":[]});
+        $('#artistDl').datagrid('enableDnd');
+    }
+    function insert(){
+        var row = $('#dl').datagrid('getSelected');
+        if (row){
+            var rows = $('#artistDl').datagrid('getRows');
+            var alreadyAdded = false;
+            for(var i=0; i<rows.length; i++){
+                if (rows[i].id == row.id) {
+                    alreadyAdded = true;
+                    break;
+                }
+            }
+            if (!alreadyAdded) {
+                var index = $('#artistDl').datagrid('getRows').length;
+                $('#artistDl').datagrid('appendRow',{
+                    id: row.id,
+                    name: row.name,
+                    splitterId: 'FEAT'
+                });
+                $('#dl').datagrid('clearSelections');
+                $('#artistDl').datagrid('enableDnd');
+                $('#artistDl').datagrid('selectRow', index);
+                $('#artistDl').datagrid('beginEdit', index);
+            }
+            else {
+                alert("already added");
+            }
+        } else {
+            alert("Please select an artist");
+        }
+    }
+    function save(){
+        var rows = $('#artistDl').datagrid('getRows');
+        if (rows == null || rows.length <= 1){
+            alert("At least two rows must be added!");
+        }
+    }
+</script>
 
-?>
-<br>
 
 </body>
 </html>

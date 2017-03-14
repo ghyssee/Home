@@ -46,6 +46,9 @@ try {
         case "listArtists":
             listArtists();
             break;
+        case "emptyList":
+            emptyList();
+            break;
     }
 }
 catch(Error $e) {
@@ -297,6 +300,17 @@ function listArtists(){
     $artists = readJSONWithCode(JSON_ARTISTS);
     //if (isset($_POST['sort'])){
     echo json_encode($artists->list);
+}
+
+function emptyList(){
+    //if (isset($_POST['sort'])){
+    $artists = readJSONWithCode(JSON_ARTISTS);
+    $array = array_slice($artists->list, 0, 2);
+    $result = array();
+    $result["total"] = 2;
+    $result["rows"] = $array;
+    echo json_encode($result);
+
 }
 
 ?>

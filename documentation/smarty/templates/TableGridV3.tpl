@@ -1,7 +1,10 @@
 	<table id="dg{{$tablegrid}}" title="{{$title}}" class="easyui-datagrid" style="width:{{$tableWidth}};height:{{$tableHeight}}" idField="{{$id}}"
 		   url="{{$viewUrl}}"
 		   data-options='fitColumns:false,
-		                 onLoadSuccess:function(data){ {{if isset($onLoadSuccess)}}{{$onLoadSuccess}}{{/if}}  }
+		                 onLoadSuccess:function(data){
+		                 {{if isset($onLoadSuccess)}}{{$onLoadSuccess}}{{/if}}
+		                 {{if isset($dragAndDrop)}}$(this).datagrid("enableDnd"){{/if}}
+		                 }
 		                '
 		   toolbar="#toolbar{{$tablegrid}}"
 		   pagination="true"
