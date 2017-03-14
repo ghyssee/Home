@@ -72,13 +72,14 @@ include_once documentPath (ROOT_PHP_HTML, "config.php");
                     height:250,
                     singleSelect:true,
                     idField:'itemid',
+                    onStopDrag: function(row){
+                        alert("onstopdrag");
+                        $('#artistDl').datagrid('beginEdit', 0);
+                    },
                     columns:[[
                         {field:'id',title:'ID',hidden:true},
                         {field:'name', title:'Name', width:100},
                         {field:'splitterId',title:'Splitter',width:100,
-                            formatter:function(value,row){
-                                return value;
-                            },
                             editor:{
                                 type:'combobox',
                                 options:{
@@ -89,7 +90,25 @@ include_once documentPath (ROOT_PHP_HTML, "config.php");
                                 }
                             }
                         }
-                    ]]
+                    ]],
+                    onEndEdit:function(index,row){
+                        alert("onendedit");
+                        var ed = $(this).datagrid('getEditor', {
+                            index: index,
+                            field: 'type'
+                        });
+                        row.value2 = $(ed.target).combobox('getText');
+                    },
+                    onBeforeEdit:function(index,row){
+                        row.editing = true;
+                        $(this).datagrid('checkRow',index);
+                        $(this).datagrid('refreshRow', index);
+                    },
+                    onAfterEdit:function(index,row){
+                        alert("afteredit");
+                        row.editing = false;
+                        $(this).datagrid('refreshRow', index);
+                    },
                 });
             });
         </script>
@@ -134,6 +153,11 @@ include_once documentPath (ROOT_PHP_HTML, "config.php");
         } else {
             alert("Please select an artist");
         }
+    }
+    function saverow(target){
+        var row = $('#tt').datagrid('getSelected');
+        update(row);
+        $('#tt').datagrid('endEdit', getRowIndex(target));
     }
     function save(){
         var rows = $('#artistDl').datagrid('getRows');
