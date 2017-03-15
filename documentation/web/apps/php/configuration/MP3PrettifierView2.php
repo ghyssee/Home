@@ -33,7 +33,13 @@ include_once documentPath (ROOT_PHP_HTML, "config.php");
 </script>
 
 <head>
-    <?php include documentRoot ("apps/php/templates/easyui.php");?>
+    <link rel="stylesheet" type="text/css" href="<?php echo webPath(ROOT_THEMES, 'easyui/metro-blue/easyui.css')?>">
+    <link rel="stylesheet" type="text/css" href="<?php echo webPath(ROOT_THEMES, 'easyui/icon.css')?>">
+    <script type="text/javascript" src="<?php echo webPath(ROOT_JS, 'jquery-3.1.1.js')?>"></script>
+    <script type="text/javascript" src="<?php echo webPath(ROOT_JS_EASYUI, 'jquery.easyui.min.js')?>"></script>
+    <script type="text/javascript" src="<?php echo webPath(ROOT_JS_EASYUI, 'jquery.edatagrid.js')?>"></script>
+    <script type="text/javascript" src="<?php echo webPath(ROOT_JS_EASYUI, 'datagrid-dnd.js')?>"></script>
+
 </head>
 
 <body>
@@ -57,7 +63,6 @@ include_once documentPath (ROOT_PHP_HTML, "config.php");
         </div>
     </div>
     <div id="column2">
-        <table id="artistDl"></table>
         <script>
             var products = [
                 {id:'FEAT',value2:' Feat '},
@@ -65,65 +70,34 @@ include_once documentPath (ROOT_PHP_HTML, "config.php");
                 {id:'WITH',value2:' With '}
             ];
             $(function(){
-                $('#artistDl').datagrid({
-                    title:'Editable DataGrid',
-                    iconCls:'icon-edit',
-                    width:400,
-                    height:250,
-                    singleSelect:true,
-                    idField:'id',
-                    onStopDrag: function(row){
-                        var rowIndex = $('#artistDl').datagrid('getRowIndex', row);
-                        var ed = $(artistDl).datagrid('getEditor', {
-                            index: rowIndex+1,
-                            field: 'splitterId'
-                        });
-                        alert(row);
-                        row.splitterId = $(ed.target).combobox('getValue');
-                        //console.log(JSON.stringify(ed, null, 4));
-                        console.log(JSON.stringify(row, null, 4));
-                        //console.log(JSON.stringify(ed, null, 4));
-                        $('#artistDl').datagrid('endEdit', rowIndex);
-                        $('#artistDl').datagrid('beginEdit', rowIndex);
-                        alert(rowIndex);
-                    },
-                    columns:[[
-                        {field:'id',title:'ID',hidden:true},
-                        {field:'name', title:'Name', width:100},
-                        {field:'splitterId',title:'Splitter',width:100,
-                            editor:{
-                                type:'combobox',
-                                options:{
-                                    valueField:'id',
-                                    textField:'value2',
-                                    data:products,
-                                    required:true
-                                }
-                            }
-                        }
-                    ]],
-                    onEndEdit:function(index,row){
-                        alert("onendedit");
-                        var ed = $(this).datagrid('getEditor', {
-                            index: index,
-                            field: 'type'
-                        });
-                        row.splitterId = $(ed.target).combobox('getText');
-                    },
-                    onBeforeEdit:function(index,row){
-                        //alert("onbeforeedit");
-                        row.editing = true;
-                        $(this).datagrid('checkRow',index);
-                        $(this).datagrid('refreshRow', index);
-                    },
-                    onAfterEdit:function(index,row){
-                        alert("afteredit");
-                        row.editing = false;
-                        $(this).datagrid('refreshRow', index);
-                    },
+                $('#artistDl').edatagrid({
                 });
             });
         </script>
+            <table id="artistDl" style="width:400px;height:200px"
+            title="Editable DataGrid"
+            singleSelect="true">
+                <thead>
+                <tr>
+                <th field="id" width="100" hidden="true">ID</th>
+            <th field="name" width="198">Artist</th>
+            <th field="splitterId" width="100" align="right"
+                    data-options="
+                        formatter:function(value,row){
+                            return getSplitter(value);
+                        }"
+                editor="{type:'combobox',
+                         options:{valueField:'id',
+                                  textField:'value2',
+                                  data:products,
+                                  required:true
+                                 }
+                         }
+                       ">Splitter
+            </th>
+                </tr>
+                </thead>
+                </table>
 
     </div>
 </div>
@@ -131,7 +105,7 @@ include_once documentPath (ROOT_PHP_HTML, "config.php");
 <button onclick="clear()">Clear</button>
 <button onclick="save()">Save</button>
 <script>
-    $('#artistDl').datagrid('enableDnd');
+    $('#artistDl').edatagrid('enableDnd');
     function clear(){
         $('#artistDl').datagrid('loadData', {"total":0,"rows":[]});
         $('#artistDl').datagrid('enableDnd');
@@ -139,7 +113,8 @@ include_once documentPath (ROOT_PHP_HTML, "config.php");
     function insert(){
         var row = $('#dl').datagrid('getSelected');
         if (row){
-            var rows = $('#artistDl').datagrid('getRows');
+            var rows = $('#artistDl').edatagrid('getRows');
+            console.log(JSON.stringify(rows, null, 4));
             var alreadyAdded = false;
             for(var i=0; i<rows.length; i++){
                 if (rows[i].id == row.id) {
@@ -148,16 +123,18 @@ include_once documentPath (ROOT_PHP_HTML, "config.php");
                 }
             }
             if (!alreadyAdded) {
-                var index = $('#artistDl').datagrid('getRows').length;
-                $('#artistDl').datagrid('appendRow',{
-                    id: row.id,
-                    name: row.name,
-                    splitterId: 'FEAT'
+                var index = $('#artistDl').edatagrid('getRows').length;
+                $('#artistDl').edatagrid('addRow',{
+                    index: index,
+                    row:{
+                        id: row.id,
+                        name: row.name,
+                        splitterId: 'AMP'
+                    }
                 });
+
                 $('#dl').datagrid('clearSelections');
-                $('#artistDl').datagrid('enableDnd');
-                $('#artistDl').datagrid('selectRow', index);
-                $('#artistDl').datagrid('beginEdit', index);
+                $('#artistDl').edatagrid('enableDnd');
             }
             else {
                 alert("already added");
@@ -166,6 +143,16 @@ include_once documentPath (ROOT_PHP_HTML, "config.php");
             alert("Please select an artist");
         }
     }
+
+    function getSplitter(id){
+        for (var i=0; i < products.length; i++){
+            if (products[i].id == id){
+                return products[i].value2;
+            }
+        }
+        return "";
+    }
+
     function saverow(target){
         var row = $('#tt').datagrid('getSelected');
         update(row);

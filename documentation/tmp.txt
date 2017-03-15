@@ -1,0 +1,80 @@
+        <script>
+            var products = [
+                {id:'FEAT',value2:' Feat '},
+                {id:'AMP',value2:' & '},
+                {id:'WITH',value2:' With '}
+            ];
+            $(function(){
+                $('#artistDl').datagrid({
+                    title:'Editable DataGrid',
+                    iconCls:'icon-edit',
+                    width:400,
+                    height:250,
+                    singleSelect:true,
+                    idField:'id',
+                    onStopDrag: function(row){
+                        var rowIndex = $('#artistDl').datagrid('getRowIndex', row);
+                        var ed = $(artistDl).datagrid('getEditor', {
+                            index: rowIndex+1,
+                            field: 'splitterId'
+                        });
+
+                        console.log(JSON.stringify(row, null, 4));
+                        row.splitterId = $(ed.target).combobox('getValue');
+                        console.log(JSON.stringify(row, null, 4));
+                        //console.log(JSON.stringify(ed, null, 4));
+                        //console.log(JSON.stringify(ed, null, 4));
+                        $('#artistDl').datagrid('endEdit', rowIndex);
+                        $('#artistDl').datagrid('beginEdit', rowIndex);
+                        alert(rowIndex);
+                    },
+                    columns:[[
+                        {field:'id',title:'ID',hidden:true},
+                        {field:'name', title:'Name', width:100},
+                        {field:'splitterId',title:'Splitter',width:100,
+                            editor:{
+                                type:'combobox',
+                                options:{
+                                    valueField:'id',
+                                    textField:'value2',
+                                    data:products,
+                                    required:true
+                                }
+                            }
+                        }
+                    ]],
+                    onStartDrag:function(row) {
+                        var rowIndex = $('#artistDl').datagrid('getRowIndex', row);
+                        console.log("rowIndex = " + rowIndex);
+                        var ed = $(artistDl).datagrid('getEditor', {
+                            index: rowIndex+1,
+                            field: 'splitterId'
+                        });
+
+                        console.log(JSON.stringify(row, null, 4));
+                        row.splitterId = $(ed.target).combobox('getValue');
+                        console.log(JSON.stringify(row, null, 4));
+                    },
+                    onEndEdit:function(index,row){
+                        alert("onendedit");
+                        var ed = $(this).datagrid('getEditor', {
+                            index: index,
+                            field: 'type'
+                        });
+                        row.splitterId = $(ed.target).combobox('getText');
+                    },
+                    onBeforeEdit:function(index,row){
+                        //alert("onbeforeedit");
+                        row.editing = true;
+                        $(this).datagrid('checkRow',index);
+                        $(this).datagrid('refreshRow', index);
+                    },
+                    onAfterEdit:function(index,row){
+                        alert("afteredit");
+                        row.editing = false;
+                        $(this).datagrid('refreshRow', index);
+                    },
+                });
+            });
+        </script>
+		
