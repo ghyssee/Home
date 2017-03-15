@@ -76,21 +76,25 @@ include_once documentPath (ROOT_PHP_HTML, "config.php");
         </script>
             <table id="artistDl" style="width:400px;height:200px"
             title="Editable DataGrid"
-            singleSelect="true">
+            singleSelect="true"
+            >
                 <thead>
                 <tr>
                 <th field="id" width="100" hidden="true">ID</th>
             <th field="name" width="198">Artist</th>
             <th field="splitterId" width="100" align="right"
                     data-options="
-                        formatter:function(value,row){
-                            return getSplitter(value);
+                            formatter:function(value,row){
+                            return row.splitterName;
                         }"
                 editor="{type:'combobox',
                          options:{valueField:'id',
                                   textField:'value2',
                                   data:products,
-                                  required:true
+                                  required:true,
+                                  onSelect:function(row) {
+                                    onEndEdit2(row);
+                                    }
                                  }
                          }
                        ">Splitter
@@ -106,10 +110,48 @@ include_once documentPath (ROOT_PHP_HTML, "config.php");
 <button onclick="save()">Save</button>
 <script>
     $('#artistDl').edatagrid('enableDnd');
-    function clear(){
-        $('#artistDl').datagrid('loadData', {"total":0,"rows":[]});
-        $('#artistDl').datagrid('enableDnd');
+    $('#artistDl').edatagrid({
+        onEndEdit:function(index,row){
+            alert("onendedit");
+            var ed = $(this).datagrid('getEditor', {
+                index: index,
+                field: 'id'
+            });
+            row.splitterName = $(ed.target).combobox('getText');
+        },
+        onBeforeSave: function(index){
+            alert("onbeforesave");
+            var ed = $(this).edatagrid('getEditor', {
+                index: index,
+                field: 'id'
+            });
+            var row = $(this).edatagrid('getRows')[index];
+            row.splitterName = $(ed.target).combobox('getText');
+        }
+    });
+    function onEndEdit2(row){
+        var selectedrow = $("#artistDl").edatagrid("getSelected");
+        if (selectedrow != null){
+            var rowIndex = $("#artistDl").edatagrid("getRowIndex", selectedrow);
+
+            var ed = $("#artistDl").edatagrid('getEditor', {
+                index: rowIndex,
+                field: 'splitterId'
+            });
+            console.log($(ed.target).combobox('getText'));
+            /*
+            console.log(JSON.stringify(ed, null, 4));
+            selectedrow.splitterName = $(ed.target).combobox('getText');
+            */
+        }
     }
+
+    function clear(){
+        $('#artistDl').edatagrid('loadData', {"total":0,"rows":[]});
+        $('#artistDl').edatagrid('enableDnd');
+    }
+
+
     function insert(){
         var row = $('#dl').datagrid('getSelected');
         if (row){
@@ -135,6 +177,8 @@ include_once documentPath (ROOT_PHP_HTML, "config.php");
 
                 $('#dl').datagrid('clearSelections');
                 $('#artistDl').edatagrid('enableDnd');
+                $('#artistDl').edatagrid('selectRow', index);
+                $('#artistDl').edatagrid('editRow', index);
             }
             else {
                 alert("already added");
