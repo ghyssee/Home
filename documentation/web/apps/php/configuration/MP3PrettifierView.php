@@ -7,24 +7,6 @@
     include_once documentPath (ROOT_PHP_HTML, "config.php");
 ?>
 <html>
-<style>
-    #column1 {
-        float: left;
-        width: 50%;
-    }
-    #column2 {
-        float: right ;
-        width: 50% ;
-    }
-    #innercolumn1 {
-        padding-left: 5px ;
-        padding-right: 5px ;
-    }
-    #innercolumn2 {
-        padding-left: 5px ;
-        padding-right: 5px ;
-    }
-</style>
 
 <head>
     <link rel="stylesheet" type="text/css" href="<?php echo webPath(ROOT_CSS, 'stylesheet.css')?>">
