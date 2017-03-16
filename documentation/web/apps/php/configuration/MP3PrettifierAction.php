@@ -49,6 +49,9 @@ try {
         case "emptyList":
             emptyList();
             break;
+        case "saveMulti":
+            echo json_encode(array('success'=>false));
+            break;
     }
 }
 catch(Error $e) {

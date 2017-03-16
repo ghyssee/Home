@@ -16,7 +16,7 @@ $smarty->assign('viewUrl',constructUrl($url, "list", $type, $category));
 $smarty->assign('updateUrl',"'" . constructUrl($url, "update&id='+row['" . $fieldId . "']+'", $type, $category) . "'");
 $smarty->assign('newUrl',"'" . constructUrl($url, "add", $type, $category) . "'");
 $smarty->assign('deleteUrl', constructUrl($url, "delete", $type, $category));
-$smarty->assign('onLoadSuccess', "testData(data);");
+$smarty->assign('onLoadSuccess', "");
 
 $smarty->assign("contacts", array(
         array("field" => "oldWord", "label"=>"Old Word", "size" => 50, "required" => true, "sortable" => true),
@@ -32,23 +32,3 @@ $smarty->assign("contacts", array(
 $smarty->display('TableGridV3.tpl');
 ?>
 
-
-<script type="text/javascript">
-    function testData(data){
-        alert("test");
-    }
-
-    $('#dgGlobalWord').datagrid('sort', {
-        sortName: 'oldWord',
-        sortOrder: 'asc'
-    });
-    }
-    $('#dgGlobalWord').datagrid({
-        onLoadSuccess:function(data){
-            alert("test");
-            $('#dgGlobalWord').datagrid('sort', {
-                sortName: 'oldWord',
-                sortOrder: 'asc'
-            });
-        }
-</script>
