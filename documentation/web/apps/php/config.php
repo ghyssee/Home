@@ -173,7 +173,7 @@ class CustomSort{
 		}
     }
 
-    public function sortObjectArrayByField($array, $field, $order)
+    public function sortObjectArrayByField($array, $field, $order = 'asc')
 	{
 		$this->field = $field;
         if ($order == 'desc') {

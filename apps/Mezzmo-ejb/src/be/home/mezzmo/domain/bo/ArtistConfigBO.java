@@ -68,7 +68,7 @@ public class ArtistConfigBO {
                 artistSearch += separator + artistObj.name;
             }
             artistSearch += ")";
-            word.oldWord = "(" + artistSearch + splitterText + "){" + item.artistSequence.size() + "}";
+            word.oldWord = "(" + artistSearch + splitterText + "){" + item.artists.size() + "}";
             // construct new Artist Name
             word.newWord = "";
             for (MultiArtistConfig.Item.ArtistSequenceItem artistSequenceItem : item.artistSequence){
@@ -101,6 +101,9 @@ public class ArtistConfigBO {
 
     public MultiArtistConfig.Splitter getSplitter(String id){
         MultiArtistConfig.Splitter splitter = mapSplitters.get(id);
+        if (splitter != null){
+            splitter.value2 = splitter.id.equals(multiArtistConfig.splitterEndId) ? "": splitter.value2;
+        }
         return splitter;
     }
 }

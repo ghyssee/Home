@@ -5,20 +5,21 @@ include("../setup.php");
 include_once documentPath (ROOT_PHP, "config.php");
 include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 include_once documentPath (ROOT_PHP_HTML, "config.php");
+$multiArtist = readJSONWithCode(JSON_MULTIARTIST);
 ?>
 <html xmlns:OnChange="http://www.w3.org/1999/xhtml">
 <style>
     #column1 {
         float: left;
-        width: 15%;
+        width: 30%;
     }
     #column2 {
         float: left ;
-        width: 8% ;
+        width: 20% ;
     }
     #column3 {
         float: left ;
-        width: 20% ;
+        width: 50% ;
     }    #innercolumn {
         padding-left: 5px ;
         padding-right: 5px ;
@@ -45,7 +46,7 @@ include_once documentPath (ROOT_PHP_HTML, "config.php");
                             method: 'get',
                             lines: 'true',
                             valueField: 'id',
-                            singleSelect: false,
+                            singleSelect: true,
                             textField: 'name'
                          "
             >
@@ -57,6 +58,8 @@ include_once documentPath (ROOT_PHP_HTML, "config.php");
             <div><button onclick="insert()">Add</button></div>
             <div><button onclick="clear1()">Clear</button></div>
             <div><button onclick="validateAndSave()">Save</button></div>
+            <div><button onclick="removeArtist('dgArtist')">Remove A1</button></div>
+            <div><button onclick="removeArtist('dgArtistSeq')">Remove A2</button></div>
         </div>
     </div>
     <div id="column3">
@@ -75,11 +78,13 @@ include_once documentPath (ROOT_PHP_HTML, "config.php");
 
 
             <script>
-                var splitters = [
+                var splitters1 = [
                     {id:'FEAT',value2:' Feat '},
                     {id:'AMP',value2:' & '},
                     {id:'WITH',value2:' With '}
                 ];
+                var splitters = <?php echo getSplitters(); ?>;
+                var SPLITTER_EOL = <?php echo getEOL(); ?>;
                 var DEFAULT_SPLITTER = splitters[0];
                 $(function(){
                     $('#dgArtistSeq').edatagrid({
@@ -87,13 +92,13 @@ include_once documentPath (ROOT_PHP_HTML, "config.php");
                 });
             </script>
             <table  id="dgArtistSeq" style="width:400px;height:150px"
-                    title="Editable DataGrid"
+                    title="Artist Sequence"
                     singleSelect="true"
             >
                 <thead>
                 <tr>
-                <th field="id" width="100" hidden="true">ID</th>
-                <th field="name" width="198">Artist</th>
+                <th field="artistId" width="100" hidden="true">ID</th>
+                <th field="artistName" width="198">Artist</th>
                 <th field="splitterId" width="100" align="right"
                     data-options="
                             formatter:function(value,row){
@@ -120,8 +125,6 @@ include_once documentPath (ROOT_PHP_HTML, "config.php");
     </div>
 </div>
 <script>
-    $('#dgArtistSeq').datagrid('enableDnd');
-
     function saveCombo(){
         var selectedrow = $("#dgArtistSeq").edatagrid("getSelected");
         if (selectedrow != null){
@@ -133,10 +136,35 @@ include_once documentPath (ROOT_PHP_HTML, "config.php");
             selectedrow.splitterId = $(ed.target).combobox('getValue');
             selectedrow.splitterName = $(ed.target).combobox('getText');
         }
+        console.log(JSON.stringify(selectedrow, null, 4));
     }
 
     function clear1(){
         $('#dgArtistSeq').edatagrid('loadData',[]);
+        $('#dgArtist').datagrid('loadData',[]);
+    }
+
+    function removeArtist(datagridName){
+        datagridName = "#" + datagridName;
+        var selectedRow = $(datagridName).edatagrid("getSelected");
+        if (selectedRow == null){
+            alert("Please select an artist to remove!");
+        }
+        else {
+            var rowIndex = $(datagridName).edatagrid("getRowIndex", selectedRow);
+            $(datagridName).edatagrid("deleteRow", rowIndex);
+        }
+    }
+
+    function removeArtistSequence(){
+        var selectedRow = $("#dgArtistSeq").edatagrid("getSelected");
+        if (selectedRow == null){
+            alert("Please select an artist to remove!");
+        }
+        else {
+            var rowIndex = $("#dgArtistSeq").edatagrid("getRowIndex", selectedRow);
+            $("#dgArtistSeq").edatagrid("deleteRow", rowIndex);
+        }
     }
 
 
@@ -144,7 +172,6 @@ include_once documentPath (ROOT_PHP_HTML, "config.php");
         var row = $('#dl').datagrid('getSelected');
         if (row){
             var rows = $('#dgArtistSeq').edatagrid('getRows');
-            console.log(JSON.stringify(rows, null, 4));
             var alreadyAdded = false;
             for(var i=0; i<rows.length; i++){
                 if (rows[i].id == row.id) {
@@ -161,8 +188,8 @@ include_once documentPath (ROOT_PHP_HTML, "config.php");
                 $('#dgArtistSeq').edatagrid('addRow',{
                     index: index,
                     row:{
-                        id: row.id,
-                        name: row.name,
+                        artistId: row.id,
+                        artistName: row.name,
                         splitterId: DEFAULT_SPLITTER.id,
                         splitterName: DEFAULT_SPLITTER.value2
                     }
@@ -171,9 +198,7 @@ include_once documentPath (ROOT_PHP_HTML, "config.php");
                 $('#dl').datagrid('clearSelections');
                 $('#dgArtistSeq').datagrid('enableDnd');
                 $('#dgArtistSeq').edatagrid('selectRow', index);
-                var selectedRow = $("#dgArtistSeq").edatagrid("getSelected");
                 saveCombo();
-                //$('#dgArtistSeq').edatagrid('editRow', index);
             }
             else {
                 alert("already added");
@@ -192,22 +217,28 @@ include_once documentPath (ROOT_PHP_HTML, "config.php");
         return "";
     }
 
-    function save(rows){
+    function save(rowsArtists, rowsSeq){
 
-        var object = {artists:rows, artistSequence:'blabla2'};
+        var object = {artists:rowsArtists, artistSequence:rowsSeq};
         var tmp = $.post('MP3PrettifierAction.php?method=saveMulti', { config : JSON.stringify(object)}, function(data2){
-                if (data2.success){
-                    $('#dgArtistSeq').datagrid('loadData', {"total":0,"rows":[]});
+            if (data2.success){
+                    clear1();
+                    alert("Multi Artist Config Item successfully saved");
                 }
                 else {
-                    alert("Data Not Saved!");
+                    if (data2.message != null && data2.message != '') {
+                        alert(data2.message);
+                    }
+                    else {
+                        alert("Data Not Saved!");
+                    }
                 }
             },'json')
             .done(function() {
                 //alert( "second success" );
             })
-            .fail(function() {
-                //alert( "error" );
+            .fail(function(response) {
+                alert( "error: "  + response.responseText);
             })
             .always(function() {
                 //alert( "finished" );
@@ -215,21 +246,38 @@ include_once documentPath (ROOT_PHP_HTML, "config.php");
         tmp.always(function() {
             //alert( "second finished" );
         });
-        //$('#dg').datagrid('gotoPage', 2);
         return false;
     }
 
     function validateAndSave(){
-        var rows = $('#dgArtistSeq').datagrid('getRows');
-        if (rows == null || rows.length <= 1){
+        var rowsSeq = $('#dgArtistSeq').datagrid('getRows');
+        var rowsArtists = $('#dgArtist').datagrid('getRows');
+        if (rowsSeq == null || rowsSeq.length <= 1){
             alert("At least two rows must be added!");
         }
         else {
-            console.log(JSON.stringify(rows, null, 4));
+            // set last Splitter to EOL
+            lastRow = rowsSeq[rowsSeq.length-1];
+            lastRow.splitterId = SPLITTER_EOL;
+            //console.log(JSON.stringify(rowsArtists, rowsSeq, null, 4));
+            save(rowsArtists, rowsSeq);
         }
     }
 </script>
 
+<?php
+function getSplitters(){
+    global $multiArtist;
+    $tmp1 = json_encode($multiArtist->splitters);
+    return $tmp1;
+}
+function getEOL(){
+    global $multiArtist;
+    $tmp1 = json_encode($multiArtist->splitterEndId);
+    return $tmp1;
+
+}
+?>
 
 </body>
 </html>

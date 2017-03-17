@@ -3,6 +3,7 @@ require_once documentPath (ROOT_PHP, "config.php");
 require_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 
 $fileArtist = getFullPath(JSON_ARTISTS);
+$multiArtistConfig = getFullPath(JSON_MULTIARTIST);
 
 class ArtistBO
 {
@@ -60,6 +61,24 @@ class ArtistBO
     function deleteArtist($id)
     {
         $file = $GLOBALS['fileArtist'];
+        $obj = readJSON($file);
+        $array = $obj->list;
+        $key = array_search($id, array_column($array, 'id'));
+        if ($key === false || $key == NULL) {
+            return false;
+
+        } else {
+            unset($obj->list[$key]);
+            $array = array_values($obj->list);
+            $obj->list = $array;
+            writeJSON( $obj, $file);
+        }
+        return true;
+
+    }
+
+    function deleteMultiAristConfig($id){
+        $file = $GLOBALS['multiArtistConfig'];
         $obj = readJSON($file);
         $array = $obj->list;
         $key = array_search($id, array_column($array, 'id'));

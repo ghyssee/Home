@@ -11,7 +11,7 @@ $url = "MP3PrettifierAction.php";
 $smarty->assign('tablegrid',"MultiArtistList");
 $smarty->assign('id',$fieldId);
 $smarty->assign('viewUrl',$url . "?method=listMultiArtists");
-$smarty->assign('deleteUrl', $url . "?method=deleteMultiArtistLine");
+$smarty->assign('deleteUrl', $url . "?method=deleteMultiArtist");
 //$smarty->assign('deleteUrl', $url . "?method=delete");
 
 

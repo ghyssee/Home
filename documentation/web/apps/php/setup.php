@@ -16,6 +16,7 @@ const JSON_JOBS = "jobs";
 const JSON_MENU = "menu";
 const JSON_ALBUMERRORS = "albumErrors";
 const JSON_SONGCORRECTIONS = "songCorrections";
+const FILE_ERROR_LOG = "errorLog";
 const FILE_ALBUM = "albumInfo";
 const FILE_ALBUMCHECK = "albumsToCheck";
 const FILE_ALBUMEXCLUDE = "albumsToExclude";
@@ -147,6 +148,12 @@ function writeJSON($json, $file){
 
 function write ($file, $text, $append = APPEND){
     file_put_contents($file, $text . PHP_EOL, ($append ? FILE_APPEND : 0) | LOCK_EX);
+}
+
+function logError ($class, $line, $msg){
+    $file = getFullPath(FILE_ERROR_LOG);
+    $msg = "File: " . $class . PHP_EOL . "Line: " . $line . PHP_EOL . "Message: " . $msg;
+    file_put_contents($file, $msg . PHP_EOL, FILE_APPEND | LOCK_EX);
 }
 
 function read ($file){

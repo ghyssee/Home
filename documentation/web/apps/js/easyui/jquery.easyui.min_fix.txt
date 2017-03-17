@@ -1,0 +1,6 @@
+﻿line 10441 adapted: added condition ir row != null
+
+if (row != null){
+_630(_785.selectedRows,opts.idField,row[opts.idField]);
+_630(_785.checkedRows,opts.idField,row[opts.idField]);
+}

@@ -149,6 +149,44 @@ class SongCorrection{
 class Artist{
   public $id;
   public $name;
+    public function __construct()
+    {
+    }
+
+    public function __construct_2($id, $name)
+  {
+    $this->id = $id;
+    $this->name = $name;
+  }
+}
+
+class ArtistItem{
+    public $id;
+    public function __construct($id)
+    {
+        $this->id = $id;
+    }
+}
+
+class MultiArtist{
+  public $id;
+  public $artists;
+  public $artistSequence;
+    public function __construct()
+    {
+        $this->artists = array();
+        $this->artistSequence = array();
+    }
+}
+
+class ArtistSequence{
+  public $artistId;
+  public $splitterId;
+  public function __construct($artistId, $splitterId)
+  {
+    $this->artistId = $artistId;
+    $this->splitterId = $splitterId;
+  }
 }
 
 ?>

@@ -8,6 +8,7 @@ import java.util.List;
 public class MultiArtistConfig {
 
     public List<Splitter> splitters;
+    public String splitterEndId;
 
     public class Splitter {
 

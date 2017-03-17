@@ -3,6 +3,7 @@ include_once("../setup.php");
 
 include_once documentPath (ROOT_PHP, "config.php");
 include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
+include_once documentPath (ROOT_PHP_BO, "WordBO.php");
 include_once documentPath (ROOT_PHP_BO, "ArtistBO.php");
 
 $file = getFullPath(JSON_MP3PRETTIFIER);
@@ -16,7 +17,7 @@ if (isset($_REQUEST['category'])) {
 }
 try {
     switch ($method) {
-        case "listArtists":
+        case "getListArtists":
             getListArtists();
             break;
         case "addArtist":
@@ -46,16 +47,19 @@ try {
         case "listArtists":
             listArtists();
             break;
-        case "emptyList":
-            emptyList();
+        case "listSplitters":
+            listSplitters();
             break;
+        case "deleteMultiArtist":
+            deleteMultiArtist();
         case "saveMulti":
-            echo json_encode(array('success'=>false));
+            saveMulti();
             break;
     }
 }
 catch(Error $e) {
-    echo $e->getMessage();
+//    echo $e->getMessage();
+    logError($e->getFile(), $e->getLine(), $e->getMessage());
 }
 
 function getListArtists(){
@@ -259,7 +263,7 @@ function listMultiArtists(){
     $sort = new CustomSort();
 //    $array = $sort->sortObjectArrayByField($multi->list, "description", $order);
 //    $multi->list = $array;
-    $array = $multi->list;
+//    $array = $multi->list;
     //}
     $array = array_slice($multi->list, ($page-1)*$rows, $rows);
     $artistBO = new ArtistBO();
@@ -278,7 +282,7 @@ function listMultiArtists(){
             $artistObj = $artistBO->lookupArtist($artists->list, $artistItem->artistId);
             $artistNewSeq .= $artistObj->name;
             $splitter = lookupSplitter($multi->splitters, $artistItem->splitterId);
-            $artistNewSeq .= $splitter->value2;
+            $artistNewSeq .= $splitter->id == $multi->splitterEndId ? "" : $splitter->value2;
         }
         $value->description2 = $artistNewSeq;
     }
@@ -286,7 +290,7 @@ function listMultiArtists(){
     $result = array();
     $result["total"] = count($multi->list);
     $result["rows"] = $array;
-    echo json_encode($array);
+    echo json_encode($result);
 }
 
 function lookupSplitter ($splitters, $id){
@@ -301,19 +305,73 @@ function lookupSplitter ($splitters, $id){
 
 function listArtists(){
     $artists = readJSONWithCode(JSON_ARTISTS);
-    //if (isset($_POST['sort'])){
-    echo json_encode($artists->list);
+    $sort = new CustomSort();
+    $array = $sort->sortObjectArrayByField($artists->list, "name");
+    echo json_encode($array);
 }
 
-function emptyList(){
-    //if (isset($_POST['sort'])){
-    $artists = readJSONWithCode(JSON_ARTISTS);
-    $array = array_slice($artists->list, 0, 2);
-    $result = array();
-    $result["total"] = 2;
-    $result["rows"] = $array;
-    echo json_encode($result);
+function listSplitters(){
+    $multiArtist = readJSONWithCode(JSON_MULTIARTIST);
+    echo json_encode($multiArtist->splitters);
 
+}
+
+function saveMulti(){
+    $multiArtist = readJSONWithCode(JSON_MULTIARTIST);
+    $success = false;
+    $msg = '';
+    if (isset($_POST['config'])){
+        $config = json_decode($_POST['config']);
+        $saveConfig = new MultiArtist();
+        $saveConfig->id = getUniqueId();
+        $multiArtistLine = new MultiArtist();
+        $multiArtistLine->id = getUniqueId();
+        foreach ($config->artists as $value){
+            $multiArtistLine->artists[] = new ArtistItem($value->id);
+        }
+        foreach ($config->artistSequence as $value){
+            $multiArtistLine->artistSequence[] = new ArtistSequence($value->artistId, $value->splitterId);
+        }
+        $existAlready = checkMultiArtistConfigExist($multiArtist, $multiArtistLine);
+        if ($existAlready){
+            $success = false;
+            $msg = 'Multi Artist Config exist already';
+        }
+        else {
+            $multiArtist->list[] = $multiArtistLine;
+            writeJSONWithCode($multiArtist, JSON_MULTIARTIST);
+            $success = true;
+        }
+    }
+    else {
+        $success = false;
+    }
+    echo json_encode(array('success'=>$success,'message'=>$msg));
+
+}
+
+function checkMultiArtistConfigExist($multiArtist, $multiArtistLine){
+    $nrOfItems = count($multiArtistLine->artists);
+    foreach($multiArtist->list as $multiArtistItem){
+        if (count($multiArtistItem->artists) == $nrOfItems){
+            $diff = array_udiff($multiArtistItem->artists, $multiArtistLine->artists,
+                function ($obj_a, $obj_b) {
+                    return strcmp($obj_a->id, $obj_b->id) ;
+                }
+            );
+            if (count($diff) == 0){
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+function deleteMultiArtist(){
+    $id = $_REQUEST['id'];
+    $artistBO = new ArtistBO();
+    $success = $artistBO->deleteMultiAristConfig($id);
+    echo json_encode(array('success'=>$success));
 }
 
 ?>

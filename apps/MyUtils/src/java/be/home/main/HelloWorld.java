@@ -46,7 +46,7 @@ public class HelloWorld extends BatchJobV2 {
 
         processArtistFile();
         //testMP3Prettifier();
-        updateMP3();
+        //updateMP3();
 
 
         //testAlbumArtist();
