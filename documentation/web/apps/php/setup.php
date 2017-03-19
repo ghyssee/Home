@@ -44,6 +44,9 @@ define ('ROOT_JS', ROOT_APPS . "/js");
 define ('ROOT_JS_EASYUI', ROOT_JS . "/easyui");
 define ('ROOT_THEMES', ROOT_APPS . "/themes");
 
+const MULTIARTIST_RADIO_ARTISTS = "artists";
+const MULTIARTIST_RADIO_ARTISTSEQUENCE = "artistSequence";
+
 function initSetup(){
     if (isset($GLOBALS["SETUP"])){
         return $GLOBALS["SETUP"];

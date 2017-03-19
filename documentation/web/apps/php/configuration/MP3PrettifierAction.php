@@ -55,6 +55,9 @@ try {
         case "saveMulti":
             saveMulti();
             break;
+        case "updateMultiArtist":
+            updateMultiArtist();
+            break;
     }
 }
 catch(Error $e) {
@@ -257,20 +260,10 @@ function listMultiArtists(){
     $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
     $rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
     $multi = readJSONWithCode(JSON_MULTIARTIST);
-    //if (isset($_POST['sort'])){
-    $field = isset($_POST['sort']) ? strval($_POST['sort']) : 'description';
-    $order = isset($_POST['order']) ? strval($_POST['order']) : 'asc';
-    $sort = new CustomSort();
-//    $array = $sort->sortObjectArrayByField($multi->list, "description", $order);
-//    $multi->list = $array;
-//    $array = $multi->list;
-    //}
-    $array = array_slice($multi->list, ($page-1)*$rows, $rows);
     $artistBO = new ArtistBO();
-    $artistList = "";
     $artists = readJSONWithCode(JSON_ARTISTS);
 
-    foreach ($array as $key => $value) {
+    foreach ($multi->list as $key => $value) {
         $artistList = "";
         foreach($value->artists as $artistItem) {
             $artistObj = $artistBO->lookupArtist($artists->list, $artistItem->id);
@@ -286,6 +279,19 @@ function listMultiArtists(){
         }
         $value->description2 = $artistNewSeq;
     }
+
+    //if (isset($_POST['sort'])){
+    $field = isset($_POST['sort']) ? strval($_POST['sort']) : 'description';
+    if ($field != 'description') {
+        $order = isset($_POST['order']) ? strval($_POST['order']) : 'asc';
+        $sort = new CustomSort();
+        $array = $sort->sortObjectArrayByField($multi->list, $field, $order);
+    }
+    else {
+        $array = $multi->list;
+    }
+    //}
+    $array = array_slice($array, ($page-1)*$rows, $rows);
 
     $result = array();
     $result["total"] = count($multi->list);
@@ -326,6 +332,8 @@ function saveMulti(){
         $saveConfig->id = getUniqueId();
         $multiArtistLine = new MultiArtist();
         $multiArtistLine->id = getUniqueId();
+        $multiArtistLine->exactPosition = $config->exactPosition;
+        $multiArtistLine->master = $config->master;
         foreach ($config->artists as $value){
             $multiArtistLine->artists[] = new ArtistItem($value->id);
         }
@@ -374,4 +382,19 @@ function deleteMultiArtist(){
     echo json_encode(array('success'=>$success));
 }
 
+function updateMultiArtist(){
+    $multiArtist = new MultiArtist();
+    $multiArtist->id = $_REQUEST['id'];
+    assignCheckbox($multiArtist->exactPosition, "exactPosition", !HTML_SPECIAL_CHAR);
+    $artistBO = new ArtistBO();
+    $success = $artistBO->saveMultiAristConfig($multiArtist);
+    if ($success) {
+        echo json_encode(array('success' => true));
+    }
+    else {
+        echo json_encode(addErrorMsg("There was a problem updating the Multi Artist with ID " . $multiArtist->id));
+    }
+}
+
 ?>
+

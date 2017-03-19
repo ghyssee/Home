@@ -34,3 +34,4 @@ $smarty->assign("contacts", array(
 
 $smarty->display('TableGridV3.tpl');
 ?>
+

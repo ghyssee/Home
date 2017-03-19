@@ -1,3 +1,12 @@
+
+<script>
+    function customSaveArtistCRUD(){
+        console.log("Save Artist");
+        saveArtistCRUD();
+        $('#dlArtistList').datagrid('reload');
+    }
+</script>
+
 <?php
 include_once('Smarty.class.php');
 
@@ -10,6 +19,7 @@ $smarty->assign('tableHeight','400px');
 $url = "MP3PrettifierAction.php";
 $smarty->assign('tablegrid',"ArtistCRUD");
 $smarty->assign('id',$fieldId);
+$smarty->assign('customSave', 'customSaveArtistCRUD()');
 $smarty->assign('viewUrl',$url . "?method=getListArtists");
 $smarty->assign('updateUrl',"'" . $url . "?method=updateArtist&id='+row['" . $fieldId . "']");
 //$smarty->assign('updateUrl',"'" . $url . "?method=update&id='+row['" . $fieldId . "']");

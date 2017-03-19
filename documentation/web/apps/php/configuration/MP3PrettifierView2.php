@@ -40,7 +40,7 @@ $multiArtist = readJSONWithCode(JSON_MULTIARTIST);
 <div id="container">
     <div id="column1">
         <div id="innercolumn">
-            <div id="dl" class="easyui-datalist" title="Remote Data" style="width:200px;height:400px"
+            <div id="dlArtistList" class="easyui-datalist" title="Remote Data" style="width:200px;height:400px"
                  data-options="
                             url: 'MP3PrettifierAction.php?method=listArtists',
                             method: 'get',
@@ -56,10 +56,11 @@ $multiArtist = readJSONWithCode(JSON_MULTIARTIST);
     <div id="column2">
         <div id="innercolumn">
             <div><button onclick="insert()">Add</button></div>
-            <div><button onclick="clear1()">Clear</button></div>
+            <div><button onclick="clearArtists()">Clear</button></div>
             <div><button onclick="validateAndSave()">Save</button></div>
             <div><button onclick="removeArtist('dgArtist')">Remove A1</button></div>
             <div><button onclick="removeArtist('dgArtistSeq')">Remove A2</button></div>
+            <div><button onclick="refreshList('dlArtistList')">Refresh Art.</button></div>
         </div>
     </div>
     <div id="column3">
@@ -73,16 +74,8 @@ $multiArtist = readJSONWithCode(JSON_MULTIARTIST);
                 </tr>
                 </thead>
             </table>
-
             <br>
-
-
             <script>
-                var splitters1 = [
-                    {id:'FEAT',value2:' Feat '},
-                    {id:'AMP',value2:' & '},
-                    {id:'WITH',value2:' With '}
-                ];
                 var splitters = <?php echo getSplitters(); ?>;
                 var SPLITTER_EOL = <?php echo getEOL(); ?>;
                 var DEFAULT_SPLITTER = splitters[0];
@@ -125,6 +118,10 @@ $multiArtist = readJSONWithCode(JSON_MULTIARTIST);
     </div>
 </div>
 <script>
+    function refreshList(datagridName){
+        datagridName = "#" + datagridName;
+        $(datagridName).datagrid('reload');
+    }
     function saveCombo(){
         var selectedrow = $("#dgArtistSeq").edatagrid("getSelected");
         if (selectedrow != null){
@@ -139,7 +136,7 @@ $multiArtist = readJSONWithCode(JSON_MULTIARTIST);
         console.log(JSON.stringify(selectedrow, null, 4));
     }
 
-    function clear1(){
+    function clearArtists(){
         $('#dgArtistSeq').edatagrid('loadData',[]);
         $('#dgArtist').datagrid('loadData',[]);
     }
@@ -169,7 +166,7 @@ $multiArtist = readJSONWithCode(JSON_MULTIARTIST);
 
 
     function insert(){
-        var row = $('#dl').datagrid('getSelected');
+        var row = $('#dlArtistList').datagrid('getSelected');
         if (row){
             var rows = $('#dgArtistSeq').edatagrid('getRows');
             var alreadyAdded = false;
@@ -195,7 +192,7 @@ $multiArtist = readJSONWithCode(JSON_MULTIARTIST);
                     }
                 });
 
-                $('#dl').datagrid('clearSelections');
+                $('#dlArtistList').datagrid('clearSelections');
                 $('#dgArtistSeq').datagrid('enableDnd');
                 $('#dgArtistSeq').edatagrid('selectRow', index);
                 saveCombo();
@@ -222,8 +219,9 @@ $multiArtist = readJSONWithCode(JSON_MULTIARTIST);
         var object = {artists:rowsArtists, artistSequence:rowsSeq};
         var tmp = $.post('MP3PrettifierAction.php?method=saveMulti', { config : JSON.stringify(object)}, function(data2){
             if (data2.success){
-                    clear1();
+                    clearArtists();
                     alert("Multi Artist Config Item successfully saved");
+                    $('#dgMultiArtistList').datagrid('reload');
                 }
                 else {
                     if (data2.message != null && data2.message != '') {
@@ -268,13 +266,11 @@ $multiArtist = readJSONWithCode(JSON_MULTIARTIST);
 <?php
 function getSplitters(){
     global $multiArtist;
-    $tmp1 = json_encode($multiArtist->splitters);
-    return $tmp1;
+    return json_encode($multiArtist->splitters);
 }
 function getEOL(){
     global $multiArtist;
-    $tmp1 = json_encode($multiArtist->splitterEndId);
-    return $tmp1;
+    return json_encode($multiArtist->splitterEndId);
 
 }
 ?>

@@ -81,7 +81,8 @@
 		</form>
 	</div>
 	<div id="dlg-buttons{{$tablegrid}}">
-		<a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="save{{$tablegrid}}()" style="width:90px">Save</a>
+		<a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok"
+		   onclick="{{if isset($customSave)}}{{$customSave}}{{else}}save{{$tablegrid}}(){{/if}}" style="width:90px">Save</a>
 		<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg{{$tablegrid}}').dialog('close')" style="width:90px">Cancel</a>
 	</div>
 

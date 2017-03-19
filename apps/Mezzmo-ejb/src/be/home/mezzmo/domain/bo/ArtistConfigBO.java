@@ -3,6 +3,7 @@ package be.home.mezzmo.domain.bo;
         import be.home.common.constants.Constants;
         import be.home.common.exceptions.ApplicationException;
         import be.home.common.utils.JSONUtils;
+        import be.home.mezzmo.domain.enums.MultiArtistMaster;
         import be.home.mezzmo.domain.model.json.Artists;
         import be.home.mezzmo.domain.model.json.MP3Prettifier;
         import be.home.mezzmo.domain.model.json.MultiArtistConfig;
@@ -57,33 +58,16 @@ public class ArtistConfigBO {
             MP3Prettifier.Word word = new MP3Prettifier().new Word();
             word.oldWord = "";
             word.oldWord += "(";
-            // construct artist Search String
-            String artistSearch = "(";
-            for (MultiArtistConfig.Item.Artist artist : item.artists){
-                Artists.Artist artistObj = getArtist(artist.id);
-                if (artistObj == null){
-                    throw new ApplicationException(("Artist Id not found in config:" + artist.id));
-                }
-                String separator = artist.equals(item.artists.get(0)) ? "" : "|";
-                artistSearch += separator + artistObj.name;
+            if (!item.exactPosition) {
+                // construct artist Search String
+                int size = getMultiArtistMasterSize(item);
+                word.oldWord = constructArtistSearch(item.artists, splitterText, size);
             }
-            artistSearch += ")";
-            word.oldWord = "(" + artistSearch + splitterText + "){" + item.artists.size() + "}";
+            else {
+                word.oldWord = constructArtistSearchExact(item.artists, splitterText);
+            }
             // construct new Artist Name
-            word.newWord = "";
-            for (MultiArtistConfig.Item.ArtistSequenceItem artistSequenceItem : item.artistSequence){
-
-                Artists.Artist artistObj = getArtist(artistSequenceItem.artistId);
-                if (artistObj == null){
-                    throw new ApplicationException(("Artist Id not found in config:" + artistSequenceItem.artistId));
-                }
-
-                MultiArtistConfig.Splitter splitterObj = getSplitter(artistSequenceItem.splitterId);
-                if (splitterObj == null){
-                    throw new ApplicationException(("Splitter Id not found in config:" + artistSequenceItem.splitterId));
-                }
-                word.newWord += artistObj.name + splitterObj.value2;
-            }
+            word.newWord = constructNewArtistName(item.artistSequence);
 
             //String tst = "Bodyrox & Luciana".replaceAll(word.oldWord, word.newWord);
             log.info("Artist Name Old Word: " + word.oldWord);
@@ -91,6 +75,78 @@ public class ArtistConfigBO {
             names.add(word);
         }
         return names;
+    }
+
+    private int getMultiArtistMasterSize(MultiArtistConfig.Item item){
+        MultiArtistMaster multiArtistMaster;
+        int size = item.artistSequence.size();
+        try {
+            multiArtistMaster = MultiArtistMaster.valueOf(item.master);
+        }
+        catch (IllegalArgumentException e){
+            multiArtistMaster = MultiArtistMaster.artistSequence;
+        }
+        catch (NullPointerException e){
+            multiArtistMaster = MultiArtistMaster.artistSequence;
+        }
+        switch (multiArtistMaster){
+            case artists :
+                size = item.artists.size();
+                break;
+            case artistSequence :
+                size = item.artistSequence.size();
+                break;
+        }
+        return size;
+    }
+
+    private String constructArtistSearchExact(List<MultiArtistConfig.Item.Artist> list, String splitterText){
+        //((Person A)( Feat\. | ?& ?|, ?| |$)(Person B))
+        String artistSearch = "";
+        for (MultiArtistConfig.Item.Artist artist : list){
+            artistSearch += "(";
+            boolean lastItem = list.indexOf(artist) == list.size()-1;
+            Artists.Artist artistObj = getArtist(artist.id);
+            if (artistObj == null){
+                throw new ApplicationException(("Artist Id not found in config:" + artist.id));
+            }
+            String separator = lastItem ? "" : splitterText;
+            artistSearch += artistObj.name + ")" + separator;
+        }
+        return artistSearch;
+    }
+
+    private String constructArtistSearch(List<MultiArtistConfig.Item.Artist> list, String splitterText, int size){
+        String artistSearch = "(";
+        for (MultiArtistConfig.Item.Artist artist : list){
+            Artists.Artist artistObj = getArtist(artist.id);
+            if (artistObj == null){
+                throw new ApplicationException(("Artist Id not found in config:" + artist.id));
+            }
+            String separator = artist.equals(list.get(0)) ? "" : "|";
+            artistSearch += separator + artistObj.name;
+        }
+        artistSearch += ")";
+        String word = "(" + artistSearch + splitterText + "){" + size + "}";
+        return word;
+    }
+
+    private String constructNewArtistName(List<MultiArtistConfig.Item.ArtistSequenceItem> list){
+        String word = "";
+        for (MultiArtistConfig.Item.ArtistSequenceItem artistSequenceItem : list){
+
+            Artists.Artist artistObj = getArtist(artistSequenceItem.artistId);
+            if (artistObj == null){
+                throw new ApplicationException(("Artist Id not found in config:" + artistSequenceItem.artistId));
+            }
+
+            MultiArtistConfig.Splitter splitterObj = getSplitter(artistSequenceItem.splitterId);
+            if (splitterObj == null){
+                throw new ApplicationException(("Splitter Id not found in config:" + artistSequenceItem.splitterId));
+            }
+            word += artistObj.name + splitterObj.value2;
+        }
+        return word;
     }
 
     public Artists.Artist getArtist(String id){

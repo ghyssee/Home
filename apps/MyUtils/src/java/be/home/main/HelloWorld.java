@@ -45,7 +45,7 @@ public class HelloWorld extends BatchJobV2 {
         //System.out.println(MP3TagUtils.stripFilename("(Hot S+++)"));
 
         processArtistFile();
-        //testMP3Prettifier();
+        testMP3Prettifier();
         //updateMP3();
 
 
@@ -159,10 +159,11 @@ private static void testAlbumArtist(){
         System.out.println(mp3Helper.prettifyArtist("Partysquad"));
         System.out.println(mp3Helper.prettifyArtist("The Underdog Project Vs The Sunclub"));
         System.out.println(mp3Helper.prettifyArtist("Rag 'n‘ Bone Man"));
-        System.out.println(mp3Helper.prettifyArtist("Bob Sinclar & Sean Paul"));
         System.out.println(mp3Helper.prettifyAlbum("ELV1S: 30 #1 Hits"));
         System.out.println(mp3Helper.prettifySong("Lovin, Livin And Givin"));
-        System.out.println("Partysquad".replaceAll("(The )?Party ?[s|S]quad", "blabla"));
+        System.out.println("Person A & Person B".replaceAll("(Person A)( Feat\\. | ?& ?|, ?| |$)(Person B)", "blabla"));
+        System.out.println(mp3Helper.prettifyArtist("Enrique Iglesias & Pitbull"));
+        System.out.println(mp3Helper.prettifyArtist("Pitbull & Enrique Iglesias"));
         //System.out.println("The Partysquad Feat. Sjaak, Dio, Sef".replaceAll("((Sef|Dio|Sjaak)( ?& ?|, ?| |\\.|$)){3,}", "Dio, Sef & Sjaak"));
         //System.out.println(mp3Helper.prettifyArtist("Ll Cool J Feat. 7 Aurelius"));
 

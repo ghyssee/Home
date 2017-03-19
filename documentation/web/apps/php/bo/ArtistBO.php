@@ -64,7 +64,7 @@ class ArtistBO
         $obj = readJSON($file);
         $array = $obj->list;
         $key = array_search($id, array_column($array, 'id'));
-        if ($key === false || $key == NULL) {
+        if ($key === false || $key === NULL) {
             return false;
 
         } else {
@@ -82,7 +82,7 @@ class ArtistBO
         $obj = readJSON($file);
         $array = $obj->list;
         $key = array_search($id, array_column($array, 'id'));
-        if ($key === false || $key == NULL) {
+        if ($key === false || $key === NULL) {
             return false;
 
         } else {
@@ -94,5 +94,21 @@ class ArtistBO
         return true;
 
     }
+
+function saveMultiAristConfig($multiArtistObj)
+{
+    $file = $GLOBALS['multiArtistConfig'];
+    $obj = readJSON($file);
+    $array = $obj->list;
+    $key = array_search($multiArtistObj->id, array_column($array, 'id'));
+    if ($key === false || $key === NULL) {
+        return false;
+    } else {
+        $obj->list[$key]->exactPosition = $multiArtistObj->exactPosition;
+        writeJSON( $obj, $file);
+    }
+    return true;
+}
+
 }
 ?>

@@ -170,12 +170,15 @@ class ArtistItem{
 
 class MultiArtist{
   public $id;
+  public $exactPosition;
+  public $master;
   public $artists;
   public $artistSequence;
     public function __construct()
     {
         $this->artists = array();
         $this->artistSequence = array();
+        $this->exactPosition = false;
     }
 }
 

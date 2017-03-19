@@ -7,7 +7,7 @@ convert();
 
 function convert()
 {
-    $mp3PrettifierObj = readJSONWithCode(JSON_MP3PRETTIFIER);
+    //$mp3PrettifierObj = readJSONWithCode(JSON_MP3PRETTIFIER);
     //$mp3PrettifierObj->words = convertWords($mp3PrettifierObj->words);
     //$mp3PrettifierObj->artist->words = convertWords($mp3PrettifierObj->artist->words);
     //$mp3PrettifierObj->artist->words = convertWords($mp3PrettifierObj->artist->words);
@@ -15,11 +15,20 @@ function convert()
     //$mp3PrettifierObj->song->replacements = convertWords($mp3PrettifierObj->song->replacements);
     //$mp3PrettifierObj->artist->names = convertExactMath($mp3PrettifierObj->artist->names);
     //$mp3PrettifierObj->song->replacements = convertExactMath($mp3PrettifierObj->song->replacements);
-    $mp3PrettifierObj->global->words = convertExactMath($mp3PrettifierObj->global->words, true);
-    $mp3PrettifierObj->artist->words = convertExactMath($mp3PrettifierObj->artist->words, true);
+    //$mp3PrettifierObj->global->words = convertExactMath($mp3PrettifierObj->global->words, true);
+    //$mp3PrettifierObj->artist->words = convertExactMath($mp3PrettifierObj->artist->words, true);
+    $multiArtistObj = readJSONWithCode(JSON_MULTIARTIST);
 
-    $file = getFullPath(JSON_MP3PRETTIFIER) . ".NEW";
-    writeJSON($mp3PrettifierObj, $file);
+    $file = getFullPath(JSON_MULTIARTIST) . ".NEW";
+    convertArtistSequence($multiArtistObj);
+    writeJSON($multiArtistObj, $file);
+}
+
+function convertArtistSequence($multiArtistObj){
+    foreach($multiArtistObj->list as $record){
+        echo "Record Id: " . $record->id . "<br>";
+        $record->master = "artistSequence";
+    }
 }
 
 function convertExactMath($objects, $exactMatch = false){

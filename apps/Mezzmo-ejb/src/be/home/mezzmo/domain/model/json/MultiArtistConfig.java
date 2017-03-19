@@ -24,6 +24,8 @@ public class MultiArtistConfig {
 
     public class Item{
 
+        public boolean exactPosition;
+        public String master;
         public List<Artist> artists;
         public List<ArtistSequenceItem> artistSequence;
         public class Artist {
