@@ -98,7 +98,7 @@ $multiArtist = readJSONWithCode(JSON_MULTIARTIST);
                 </thead>
             </table>
             <table>
-                <tr><td colspan=""2">Master</td></tr>
+                <tr><td colspan="2">Master</td></tr>
                 <tr><td>
                         <input type="radio" name="master"
                                value="<?php echo MULTIARTIST_RADIO_ARTISTS ?>">Artist
@@ -108,7 +108,8 @@ $multiArtist = readJSONWithCode(JSON_MULTIARTIST);
                                value="<?php echo MULTIARTIST_RADIO_ARTISTSEQUENCE ?>">Artist Sequence
                 </td>
                 </tr>
-                <tr><td colspan = 2><input type="checkbox" id="exactPosition" name="exactPosition" value="0">Exact Position</tr>
+                <tr><td colspan = 2><input type="checkbox" id="exactPosition" name="exactPosition" value="0">Exact Position</td></tr>
+                <tr><td>Config</td><td><input id="multiArtistConfig" name="multiArtistConfig"><button onclick="addConfig()">Add</button></td></tr>
 
             </table>
         </div>
@@ -268,6 +269,42 @@ $multiArtist = readJSONWithCode(JSON_MULTIARTIST);
             save(rowsArtists, rowsSeq);
         }
     }
+
+    function addConfig(){
+
+        alert("addconfig");
+        var object = {multiArtistConfig:($("#multiArtistConfig").val())
+                     };
+        var tmp = $.post('MP3PrettifierMultiArtistAction.php?method=addMulti', { config : JSON.stringify(object)}, function(data2){
+                if (data2.success){
+                    clearArtists();
+                    alert("Multi Artist Config Item successfully saved");
+                    $('#dgMultiArtistList').datagrid('reload');
+                }
+                else {
+                    if (data2.message != null && data2.message != '') {
+                        alert(data2.message);
+                    }
+                    else {
+                        alert("Data Not Saved!");
+                    }
+                }
+            },'json')
+            .done(function() {
+                //alert( "second success" );
+            })
+            .fail(function(response) {
+                alert( "error: "  + response.responseText);
+            })
+            .always(function() {
+                //alert( "finished" );
+            });
+        tmp.always(function() {
+            //alert( "second finished" );
+        });
+        return false;
+    }
+
 </script>
 
 <?php
