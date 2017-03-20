@@ -120,6 +120,11 @@ $multiArtist = readJSONWithCode(JSON_MULTIARTIST);
         alert($('input[name=master]:checked').val());
     }
 
+    function refreshAllLists(){
+        refreshList('dlArtistList');
+        refreshList('dgMultiArtistList');
+    }
+
     function refreshList(datagridName){
         datagridName = "#" + datagridName;
         $(datagridName).datagrid('reload');
@@ -272,18 +277,23 @@ $multiArtist = readJSONWithCode(JSON_MULTIARTIST);
 
     function addConfig(){
 
-        alert("addconfig");
         var object = {multiArtistConfig:($("#multiArtistConfig").val())
                      };
+        if (!object.multiArtistConfig){
+            alert("Multi Artist Config field must be filled in!");
+            return;
+        }
         var tmp = $.post('MP3PrettifierMultiArtistAction.php?method=addMulti', { config : JSON.stringify(object)}, function(data2){
                 if (data2.success){
                     clearArtists();
                     alert("Multi Artist Config Item successfully saved");
+                    alert(JSON.stringify(data2, null, 4));
                     $('#dgMultiArtistList').datagrid('reload');
                 }
                 else {
-                    if (data2.message != null && data2.message != '') {
-                        alert(data2.message);
+                    alert(JSON.stringify(data2, null, 4));
+                    if (data2.errorMsg) {
+                        alert(data2.errorMsg);
                     }
                     else {
                         alert("Data Not Saved!");

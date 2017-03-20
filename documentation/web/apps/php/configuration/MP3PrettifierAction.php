@@ -69,6 +69,7 @@ catch(ApplicationException $e) {
     logError($e->getFile(), $e->getLine(), $e->getMessage());
     echo 'Caught exception: ',  $e->getMessage(), "\n";
 }
+exit(0);
 
 function getListArtists(){
     $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
@@ -269,19 +270,7 @@ function listMultiArtists(){
 
     foreach ($multi->list as $key => $item) {
         $item->description = $multiArtistBO->constructMultiArtistDescription($artistBO, $item);
-        $artistNewSeq = "";
-        foreach($item->artistSequence as $artistItem) {
-            $artistObj = $artistBO->lookupArtist($artistItem->artistId);
-            if ($artistObj === null){
-                $artistNewSeq .= "UNKNOWN ARTIST - ID: " . $artistItem->artistId;
-            }
-            else {
-                $artistNewSeq .= $artistObj->name;
-            }
-            $splitter = $multiArtistBO->lookupDelimiter($artistItem->splitterId);
-            $artistNewSeq .= $splitter->id == $multi->splitterEndId ? "" : $splitter->value2;
-        }
-        $item->description2 = $artistNewSeq;
+        $item->description2 = $multiArtistBO->constructMultiArtistSequeceDescription($artistBO, $item);
     }
 
     //if (isset($_POST['sort'])){
@@ -363,7 +352,6 @@ function updateMultiArtist(){
     assignCheckbox($multiArtist->exactPosition, "exactPosition", !HTML_SPECIAL_CHAR);
     $multiArtistBO = new MultiArtistBO();
     $success = $multiArtistBO->saveMultiAristConfig($multiArtist);
-    $success = true;
     if ($success) {
         echo json_encode(array('success' => true));
     }

@@ -5,15 +5,19 @@ include_once documentPath (ROOT_PHP, "config.php");
 include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 include_once documentPath (ROOT_PHP_BO, "ArtistBO.php");
 
-$file = getFullPath(JSON_MP3PRETTIFIER);
-
-$method = "addMulti";//htmlspecialchars($_REQUEST['method']);
+$method = htmlspecialchars($_REQUEST['method']);
 try {
     switch ($method) {
         case "addMulti":
+            addMultiArtist();
+            break;
+        default :
             addMultiArtist2();
             break;
     }
+}
+catch(Exception $e){
+    logError($e->getFile(), $e->getLine(), $e->getMessage());
 }
 catch(Error $e) {
 //    echo $e->getMessage();
@@ -22,6 +26,18 @@ catch(Error $e) {
 
 function addErrorMsg($msg){
     return array('errorMsg'=>$msg);
+}
+
+function addMultiArtist(){
+    if (isset($_POST['config'])) {
+        $config = json_decode($_POST['config']);
+        $multiArtistBO = new MultiArtistBO();
+        $result = $multiArtistBO->addMultiAristConfig($config->multiArtistConfig);
+        echo json_encode($result);
+    }
+    else {
+        echo json_encode(array('success' => false, 'message' => 'Config Object Not Found'));
+    }
 }
 
 function addMultiArtist2(){

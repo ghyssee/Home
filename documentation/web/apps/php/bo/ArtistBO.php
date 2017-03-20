@@ -150,11 +150,9 @@ class MultiArtistBO {
                 if ($singleArtistObj === null){
                     $artist = new Artist();
                     $artist->name = $value;
-                    println("NOT FOUND: " . $value);
                     $artistArray[] = $artist;
                 }
                 else {
-                    println("FOUND: " . $value);
                     $artistArray[] = $singleArtistObj;
                 }
             }
@@ -188,7 +186,6 @@ class MultiArtistBO {
                         $errorObj->errorFound = true;
                         break;
                     } else {
-                        println("Delimiter found. ID: " . $delimiterObj->id);
                         $delimiterArray[] = $delimiterObj;
                     }
                 }
@@ -222,7 +219,7 @@ class MultiArtistBO {
             }
             return null;
         }
-    
+
     function constructMultiArtistDescription($artistBO, $multiArtist){
         $description = '';
         $first = true;
@@ -237,6 +234,25 @@ class MultiArtistBO {
             $first = false;
         }
         return $description;
+    }
+    
+    function constructMultiArtistSequeceDescription($artistBO, $multiArtist){
+        $description = "";
+        foreach($multiArtist->artistSequence as $artistItem) {
+
+            $artistObj = $artistBO->lookupArtist($artistItem->artistId);
+
+            if ($artistObj === null){
+                $description .= "UNKNOWN ARTIST - ID: " . $artistItem->artistId;
+            }
+            else {
+                $description .= $artistObj->name;
+            }
+
+            $splitter = $this->lookupDelimiter($artistItem->splitterId);
+            $description .= ($splitter->id === $this->multiArtistObj->splitterEndId ? "" : $splitter->value2);
+        }
+       return $description;
     }
 
     function checkMultiArtistConfigExist($multiArtistLine){
@@ -305,6 +321,7 @@ class MultiArtistBO {
                 else {
                     $this->addMultiArtist($multiArtist);
                     $errorObj->multiArtist = $multiArtist;
+                    $errorObj->success = true;
                 }
             }
             return $errorObj;
