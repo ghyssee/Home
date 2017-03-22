@@ -161,10 +161,11 @@ class MultiArtistBO {
 
     function buildDelimiters($multiArtistTxt, $errorObj, $artistArray, &$delimiterArray)
     {
+        $multiArtistTxt = $multiArtistTxt;
         $searchStr = '/(';
         $first = true;
         foreach ($artistArray as $value) {
-            $searchStr .= ($first ? '' : '|') . $value->name;
+            $searchStr .= ($first ? '' : '|') . preg_quote($value->name);
             $first = false;
         }
         $searchStr .= ')/';
@@ -240,17 +241,25 @@ class MultiArtistBO {
         $description = "";
         foreach($multiArtist->artistSequence as $artistItem) {
 
+
             $artistObj = $artistBO->lookupArtist($artistItem->artistId);
 
             if ($artistObj === null){
-                $description .= "UNKNOWN ARTIST - ID: " . $artistItem->artistId;
+                $description .= 'UNKNOWN ARTIST - ID: ' . $artistItem->artistId;
             }
             else {
                 $description .= $artistObj->name;
             }
 
             $splitter = $this->lookupDelimiter($artistItem->splitterId);
-            $description .= ($splitter->id === $this->multiArtistObj->splitterEndId ? "" : $splitter->value2);
+            if (isset($splitter)){
+                $description .= ($splitter->id === $this->multiArtistObj->splitterEndId ? '' : $splitter->value2);
+            }
+            else {
+                $tmp = '';
+            }
+            //$description .= ($splitter->id === $this->multiArtistObj->splitterEndId ? '' : $splitter->value2);
+
         }
        return $description;
     }

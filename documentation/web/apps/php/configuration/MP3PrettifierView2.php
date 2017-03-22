@@ -29,6 +29,16 @@ include_once documentPath (ROOT_PHP_HTML, "config.php");
 				}]">
 </div>
 
+<div id="p" class="easyui-panel" title="Basic Panel" style="width:430px;height:200px;">
+    <header>
+        <span style="display:inline-block;line-height:20px">title</span>
+		<span style="float:right;">
+			<a href="#" class="easyui-linkbutton" plain="true" iconCls="icon-save" style="height:20px">Save</a>
+			<a href="#" class="easyui-linkbutton" plain="true" iconCls="icon-add" style="height:20px">Add</a>
+		</span>
+    </header>
+</div>
+
 <h2>Basic Layout</h2>
 <p>The layout contains north,south,west,east and center regions.</p>
 <div style="margin:20px 0;"></div>

@@ -270,6 +270,7 @@ function listMultiArtists(){
 
     foreach ($multi->list as $key => $item) {
         $item->description = $multiArtistBO->constructMultiArtistDescription($artistBO, $item);
+        $item->description2 = $multiArtistBO->constructMultiArtistDescription($artistBO, $item);
         $item->description2 = $multiArtistBO->constructMultiArtistSequeceDescription($artistBO, $item);
     }
 

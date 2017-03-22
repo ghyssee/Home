@@ -52,6 +52,15 @@ public class Reconciliation extends BatchJobV2 {
         public String type;
         public String length;
         public boolean required;
+        public String description;
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
 
         public String getName() {
             return name;
@@ -95,11 +104,12 @@ public class Reconciliation extends BatchJobV2 {
             this.required = required;
         }
 
-        Field(String name, String type, String length, boolean required){
+        Field(String name, String type, String length, boolean required, String description){
             this.name = name;
             this.type = type;
             this.length = length;
             this.required = required;
+            this.description = description;
         }
     }
 
@@ -111,40 +121,41 @@ public class Reconciliation extends BatchJobV2 {
         createCommonTables(MATCH_ENGINE,
                 "01_DML_MATCHENGINE.sql"
         );
-        Field f = new Field("CATEGORY", "VARCHAR2", "100", false);
-        createMatchingTables(Arrays.asList(
-                new Field("CATEGORY", "VARCHAR2", "100", false),
-                new Field("DEST_DATE", "VARCHAR2", "50", false),
-                new Field("CODE", "VARCHAR2", "100", true),
-                new Field("WEIGHT", "VARCHAR2", "50", false),
-                new Field("LETTER", "VARCHAR2", "50", false),
-                new Field("EMS", "VARCHAR2", "50", false),
-                new Field("SV", "VARCHAR2", "50", false),
-                new Field("ARRIVAL_CENTER", "VARCHAR2", "100", false)
-                ),
+        List<Field> fieldsStream1 = Arrays.asList(
+                new Field("CATEGORY", "VARCHAR2", "100", false, "Category"),
+                new Field("DEST_DATE", "VARCHAR2", "50", false, "Destination Date"),
+                new Field("CODE", "VARCHAR2", "100", true, "Flight Code"),
+                new Field("WEIGHT", "VARCHAR2", "50", false, "Weight"),
+                new Field("LETTER", "VARCHAR2", "50", false, "Letter"),
+                new Field("EMS", "VARCHAR2", "50", false, "EMS"),
+                new Field("SV", "VARCHAR2", "50", false, "CV"),
+                new Field("ARRIVAL_CENTER", "VARCHAR2", "100", false, "Arrival Center")
+        );
+        List<Field> fieldsStream2 = Arrays.asList(
+                new Field("CODE", "VARCHAR2", "100", false, "Flight Code"),
+                new Field("MAIL_NO", "VARCHAR2", "20", false, "Mail No"),
+                new Field("DISP_OFFICE", "VARCHAR2", "20", false, "Disposit Office"),
+                new Field("DEST_OFFICE", "VARCHAR2", "20", false, "Destination Office"),
+                new Field("DEST_DATE", "VARCHAR2", "50", false, "Destination Date"),
+                new Field("CATEGORY", "VARCHAR2", "100", false, "Category"),
+                new Field("MAIL_LCAO", "VARCHAR2", "50", false, "Mail LCAO"),
+                new Field("MAIL_CP", "VARCHAR2", "50", false, "Mail CP"),
+                new Field("MAIL_EMS", "VARCHAR2", "50", false, "Mail EMS"),
+                new Field("SORTE", "VARCHAR2", "50", false, "Sorte"),
+                new Field("TYPE_POSTE", "VARCHAR2", "50", false, "Type Post"),
+                new Field("WEIGHT", "VARCHAR2", "100", false, "Weight"),
+                new Field("FORMAT", "VARCHAR2", "100", false, "Format"),
+                new Field("WEIGHT_LCAO", "VARCHAR2", "20", false, "Wieght LCAO"),
+                new Field("WEIGHT_EMS", "VARCHAR2", "20", false, "Weight EMS"),
+                new Field("SERIAL_NBR", "VARCHAR2", "20", false, "Wieght NBR"),
+                new Field("GROSS_WEIGHT", "VARCHAR2", "20", false, "Gross Weight")
+        );
+
+        createMatchingTables(fieldsStream1,
                 dataSource1, dataType,
                 "02_DML_ILPOST.sql"
         );
-
-        createMatchingTables(Arrays.asList(
-                new Field("CODE", "VARCHAR2", "100", false),
-                new Field("MAIL_NO", "VARCHAR2", "20", false),
-                new Field("DISP_OFFICE", "VARCHAR2", "20", false),
-                new Field("DEST_OFFICE", "VARCHAR2", "20", false),
-                new Field("DEST_DATE", "VARCHAR2", "50", false),
-                new Field("CATEGORY", "VARCHAR2", "100", false),
-                new Field("MAIL_LCAO", "VARCHAR2", "50", false),
-                new Field("MAIL_CP", "VARCHAR2", "50", false),
-                new Field("MAIL_EMS", "VARCHAR2", "50", false),
-                new Field("SORTE", "VARCHAR2", "50", false),
-                new Field("TYPE_POSTE", "VARCHAR2", "50", false),
-                new Field("WEIGHT", "VARCHAR2", "100", false),
-                new Field("FORMAT", "VARCHAR2", "100", false),
-                new Field("WEIGHT_LCAO", "VARCHAR2", "20", false),
-                new Field("WEIGHT_EMS", "VARCHAR2", "20", false),
-                new Field("SERIAL_NBR", "VARCHAR2", "20", false),
-                new Field("GROSS_WEIGHT", "VARCHAR2", "20", false)
-                ),
+        createMatchingTables(fieldsStream2,
                 dataSource2, dataType,
                 "03_DML_ILPOST_SUP.sql"
         );
@@ -172,7 +183,6 @@ public class Reconciliation extends BatchJobV2 {
         return BASE + outputFile;
     }
 
-
     public void createCommonTables(String matchEngine, String outputFile) {
 
         outputFile = getOutputFile(outputFile);
@@ -194,28 +204,6 @@ public class Reconciliation extends BatchJobV2 {
     }
 
     public void createMatchingTables(List<Field> fields, String dataSource, String dataType,
-                                     String outputFile) {
-        outputFile = getOutputFile(outputFile);
-
-        VelocityUtils vu = new VelocityUtils();
-        VelocityContext context = new VelocityContext();
-        setObjects(context);
-        context.put("dataType", dataType);
-        context.put("dataSource", dataSource);
-        context.put("columns", fields);
-
-        context.put("date", new DateTool());
-        context.put("esc", new EscapeTool());
-        context.put("du", new DateUtils());
-        context.put("su", new StringUtils());
-        try {
-            vu.makeFile("reconciliation/RECON_2_GEN_STREAM.sql", outputFile, context);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void createMatchingTablesOld(List<String> fields, String dataSource, String dataType,
                                      String outputFile) {
         outputFile = getOutputFile(outputFile);
 
