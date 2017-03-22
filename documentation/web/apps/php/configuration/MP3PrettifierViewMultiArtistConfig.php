@@ -147,6 +147,7 @@ $multiArtist = readJSONWithCode(JSON_MULTIARTIST);
         $('#dgArtistSeq').edatagrid('loadData',[]);
         $('#dgArtist').datagrid('loadData',[]);
         $( "#exactPosition").prop('checked', false);
+        document.getElementById("multiArtistConfig").value=""
     }
 
     function removeArtist(datagridName){
