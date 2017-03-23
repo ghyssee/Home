@@ -24,6 +24,7 @@ public class VelocityUtils {
         p.setProperty("file.resource.loader.path", Setup.getInstance().getFullPath(Constants.Path.VELOCITY));
         p.setProperty("input.encoding", "UTF-8");
         p.setProperty("output.encoding", "UTF-8");
+        p.setProperty("userdirective", "be.home.common.utils.Ifnull");
 
         VelocityEngine ve = new VelocityEngine();
         ve.init(p);
