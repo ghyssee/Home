@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<HTML lang="nl">
+<HEAD>
+<TITLE>Album</TITLE>
+<LINK title="regular" href="../css/eric.css" rel="stylesheet" type="text/css">
+
+<META http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="cache-control" content="max-age=0" />
+<meta http-equiv="cache-control" content="no-cache" />
+<META http-equiv="expires" content="0">	 
+<META http-equiv="Pragma" content="no-cache">   	
+<meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+<meta http-equiv="refresh" content="$refresh"> 
+
+<script type="text/javascript" src="../js/jquery-3.1.1.js"></script>
+<script type="text/javascript" src="../js/jquery.pause.min.js"></script>
+<script type="text/javascript" src="../js/jquery.easing.1.3.js"></script>
+<script type="text/javascript" src="../js/jquery.pause.min.js"></script>
+<script type="text/javascript" src="../js/jquery.marquee.min.js"></script>
+
+<style type="text/css">
+body {
+    background-color: $lastPlayedSong.scrollBackgroundColor;
+	color:$lastPlayedSong.scrollColor;
+}
+ .leftAligned {
+    text-align: left;
+}
+ .rightAligned {
+    text-align: right;
+}
+ .centered {
+    text-align: center;
+}
+
+.title {
+   font-size:80px;
+   font-weight:bold;
+   height: 80px;
+   
+}
+.footnote {
+   font-size:12px;
+   font-weight:normal;
+   position: absolute;
+   top: 0;
+   right: 0;
+   width: 200px;
+   text-align:right;
+}
+.marquee {
+  width: 100%;
+  overflow: hidden;
+  background: $lastPlayedSong.scrollBackgroundColor;
+  color: $lastPlayedSong.scrollColor;
+  font-size:250px;
+  font-weight:bold;
+  white-space:nowrap;
+}
+</style>
+
+<body>
+
+   #if ($song.currentlyPlaying)
+		#set ($playMsg = "Now Playing")
+   #else
+		#set ($playMsg = "Last Played Song")
+   #end
+	<div class="centered title">$playMsg
+	<div class="footnote">Refresh: $refresh</div>
+  </div>
+   </br>
+   #set ($title = "$esc.html($song.fileArtistTO.artist) - $esc.html($song.fileTO.title)")
+   #if ($lastPlayedSong.scrollShowAlbum)
+		#set ($title = "$title ($song.fileAlbumTO.name)")
+   #end
+<div class="marquee">$title</div>
+
+<script>
+
+$(function() {
+  $('.marquee').marquee({
+//If you wish to always animate using jQuery
+	  allowCss3Support: true,
+	  //works when allowCss3Support is set to true - for full list see http://www.w3.org/TR/2013/WD-css3-transitions-20131119/#transition-timing-function
+	  css3easing: 'linear',
+	  //requires jQuery easing plugin. Default is 'linear'
+	  easing: 'linear',
+	  //pause time before the next animation turn in milliseconds
+	  delayBeforeStart: 5,
+	  direction: 'left',
+	  //true or false - should the marquee be duplicated to show an effect of continues flow
+	  duplicated: false,
+	  //speed in milliseconds of the marquee in milliseconds
+	  duration: 5000,
+	  //gap in pixels between the tickers
+	  gap: 20,
+	  //on cycle pause the marquee
+	  pauseOnCycle: false,
+	  //on hover pause the marquee - using jQuery plugin https://github.com/tobia/Pause
+	  pauseOnHover: false,
+	  //the marquee is visible initially positioned next to the border towards it will be moving
+	  startVisible: false
+  });
+});
+	
+</script>
+
+
+</body>
+</HTML>

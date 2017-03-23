@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<HTML lang="nl">
+<HEAD>
+<TITLE>Album</TITLE>
+<link rel="stylesheet" type="text/css" href="/catalog/apps/css/navigation.css">
+
+<META http-equiv="content-type" content="text/html; charset=UTF-8">
+<META http-equiv="expires" content="0">	 
+<META http-equiv="Pragma" content="no-cache">   	 
+
+<body>
+    <div class="nav centered">
+      <ul>
+		#foreach( $item in $navigation )
+			<li><a href="$item.url">$item.description</a></li>
+		#end   
+      </ul>
+    </div>
+
+<style>
+.tabuler_data tr:nth-child(odd):hover td, tbody tr.odd:hover td {background:#8888ff;}
+.tabuler_data tr:nth-child(even):hover td, tbody tr.even:hover td {background:#8888ff;}
+.tabuler_data tr:nth-child(odd) td, tbody tr.odd td {background:#88ff88;}
+
+td.l1 {
+ border-left:1px solid black;
+ padding-top: .2em;
+ padding-bottom: .2em;
+ border-bottom:1px solid black
+}
+th.l1 {
+ border-left:1px solid black;
+ padding-top: .2em;
+ padding-bottom: .2em;
+ border-bottom:1px solid black
+}
+tr.l1 {
+ padding-top: .2em;
+ padding-bottom: .2em; 
+ border-bottom:1px solid black;
+}
+td.cdLayout {
+ text-align:center;
+ background-color:red;
+ padding-top: .10em;
+ padding-bottom: .10em; 
+ border-bottom:1px solid black;
+
+}
+tr.cdLayout {
+ text-align:center;
+ background-color:red;
+ padding-top: .10em;
+ padding-bottom: .10em; 
+ border-bottom:1px solid black;
+ height:50px;
+ }
+ .rightAligned {
+    text-align: right;
+	}
+table.centered {
+  margin: 0px auto;
+}
+
+.centered {
+    text-align: center;
+}
+.title {
+ font-family:Verdana;
+ font-size:20pt; 
+ font-weight: bold; 
+ color:black;
+}
+td.header {
+ text-align:center;
+ font-weight: bold; 
+}
+
+</style>
+
+<div class="title centered">
+Eric's Muziek Catalogus
+</div>
+   
+<table class="centered">
+<thead>
+	<tr>
+	<td class="header" id="albums">Albums</td>
+</thead>
+<tbody>
+	#foreach( $item in $list )
+	#set ($line = $item.to)
+	#if ($item.to != $item.from)
+		#set ($line = $item.from + "-" + $item.to)
+	#end
+	<tr>
+	<td><a href="$item.filename">[$line]</a></td>
+	</tr>
+	<tr>
+	#end
+</tbody>
+</table>
+   
+
+</body>
+</HTML>

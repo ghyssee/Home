@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<HTML lang="nl">
+<HEAD>
+<TITLE>Album</TITLE>
+<LINK title="regular" href="../css/eric.css" rel="stylesheet" type="text/css">
+
+<META http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<META http-equiv="expires" content="0">	 
+<META http-equiv="Pragma" content="no-cache">   	
+<meta http-equiv="refresh" content="5"> 
+
+<body>
+
+   <style type="text/css">
+   
+ .leftAligned {
+    text-align: left;
+}
+ .rightAligned {
+    text-align: right;
+}
+ .centered {
+    text-align: center;
+}
+
+.title {
+   font-size:20px;
+   font-weight:bold;
+   height: 80px;
+   
+}
+.footnote {
+   font-size:12px;
+   font-weight:normal;
+   position: absolute;
+   top: 0;
+   right: 0;
+   width: 200px;
+   text-align:right;
+}
+.nowPlaying {
+   font-size:20px;
+   font-weight:bold;
+   background-color:skyblue;
+   padding-top: 20px;
+   padding-bottom: 20px;
+   padding-left: 15x;
+   padding-right: 15px;
+}
+.nowPlayingHeader {
+   background-color:white;
+   padding-top: 20px;
+   padding-bottom: 20px;
+   padding-left: 15px;
+   padding-right: 15px;
+}
+
+.tabuler_data tr:nth-child(odd):hover td, tbody tr.odd:hover td {background:#8888ff;}
+.tabuler_data tr:nth-child(even):hover td, tbody tr.even:hover td {background:#8888ff;}
+.tabuler_data tr:nth-child(odd) td, tbody tr.odd td {background:#88ff88;}
+
+.myPadding {
+ padding-top: 5px;
+ padding-bottom: 5px;
+ padding-left: 5px;
+ padding-right: 5px;
+}
+
+td.l1 {
+ border-left:1px solid black;
+ border-bottom:1px solid black
+}
+th.l1 {
+ border-left:1px solid black;
+ border-bottom:1px solid black
+}
+tr.l1 {
+ border-bottom:1px solid black;
+}
+
+
+   </style>
+<script>
+    document.write('<a href="' + document.referrer + '">Go Back</a>');
+</script>
+   <div class="centered title">Last Played Songs
+		<div class="footnote">Refresh: $refresh</div>
+   </div>
+
+   <table style="border-collapse: collapse; border: 5px solid black; width:70%; margin: 0px auto; " class="displayTagTable">
+			<thead>
+			<tr class="displayTagTableHeader test" style="background-color:darkgrey; border: 1px solid black;text-align:center; border-left:1px solid black">
+			<th class="l1">Track</th>
+			<th class="l1">Artist</th>
+			<th class="l1">Title</th>
+			<th class="l1">Album</th>
+			<th class="l1">Duration</th>
+			<th class="l1">Playcount</th>
+			<th class="l1">Date Last Played</th>
+			</tr>
+			#set ($body = 0)
+
+			#foreach( $item in $list )
+			  #if ($item.currentlyPlaying)
+				<tr>
+					<th colspan=7 class="nowPlayingHeader leftAligned l1">Now Playing</th>
+				</tr>
+				<tr class="l1 nowPlaying">
+			  #else
+				  #if ($body == 0)
+					#set ($body = 1)
+					</thead>
+					<tbody  class="tabuler_data">
+				  #end
+				<tr class="l1">
+			  #end
+				<td class="l1 rightAligned myPadding" >$item.fileTO.track</td>
+				<td  class="l1 myPadding">$esc.html($item.fileArtistTO.artist)</td>
+				<td class="l1 myPadding">$esc.html($item.fileTO.title)</td>
+				<td class="l1 myPadding">$esc.html($item.fileAlbumTO.name)</td>
+				<td class="l1 myPadding">$du.convertSecToMin($item.fileTO.duration)</td>
+				<td class="l1 myPadding">$item.fileTO.playCount</td>
+				<td class="l1 myPadding">$date.format('dd/MM/yyyy H:mm:ss', $item.fileTO.dateLastPlayed)</td>
+				</tr>
+			  #if ($item.currentlyPlaying)
+				<tr class="nowPlayingHeader l1">
+					<td colspan=7 class="nowPlayingHeader leftAligned l1">&nbsp;</td>
+				</tr>
+			  #end
+			#end
+			</tbody>
+		</table>
+    </div>
+<script>
+    document.write('<a href="' + document.referrer + '">Go Back</a>');
+</script>
+
+</body>
+</HTML>

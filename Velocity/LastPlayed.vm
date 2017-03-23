@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<HTML lang="nl">
+<HEAD>
+<TITLE>Album</TITLE>
+<LINK title="regular" href="../css/eric.css" rel="stylesheet" type="text/css">
+
+<META http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<META http-equiv="expires" content="0">	 
+<META http-equiv="Pragma" content="no-cache">   	
+<meta http-equiv="refresh" content="$refresh"> 
+
+<body>
+
+   <style type="text/css">
+   
+ .leftAligned {
+    text-align: left;
+}
+ .rightAligned {
+    text-align: right;
+}
+ .centered {
+    text-align: center;
+}
+
+.title {
+   font-size:50px;
+   font-weight:bold;
+   height: 80px;
+   
+}
+.footnote {
+   font-size:12px;
+   font-weight:normal;
+   position: absolute;
+   top: 0;
+   right: 0;
+   width: 200px;
+   text-align:right;
+}
+
+.myPadding {
+ padding-top: 1px;
+ padding-bottom: 1px;
+ padding-left: 1px;
+ padding-right: 1px;
+}
+
+td.first {
+   width: 20%;
+}
+th.l1 {
+}
+tr.l1 {
+}
+
+
+   </style>
+   #if ($song.currentlyPlaying)
+		#set ($playMsg = "Now Playing")
+   #else
+		#set ($playMsg = "Last Played Song")
+   #end
+	<div class="centered title">$playMsg
+	<div class="footnote">Refresh: $refresh</div>
+  </div>
+
+   <table style="border-collapse: collapse; border: 5px solid black; width:90%; margin: 0px auto; " class="displayTagTable title">
+		<tbody>
+			<tr class="l1">
+				<td class="first myPadding">Track</td>
+				<td class="l1 myPadding">$song.fileTO.track</td>
+			</tr>
+			<tr>
+				<td class="first myPadding" >Artist</td>
+				<td class="l1 myPadding" >$esc.html($song.fileArtistTO.artist)</td>
+			</tr>
+			<tr>
+				<td class="first myPadding" >Title</td>
+				<td class="l1 myPadding" >$esc.html($song.fileTO.title)</td>
+			</tr>
+			<tr>
+				<td class="first myPadding" >Album</td>
+				<td class="l1 myPadding" >$esc.html($song.fileAlbumTO.name)</td>
+			</tr>
+		</tbody>
+	</table>
+
+</body>
+</HTML>

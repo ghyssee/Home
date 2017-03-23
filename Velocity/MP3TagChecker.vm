@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<HTML lang="nl">
+<HEAD>
+<TITLE>Album</TITLE>
+<LINK title="regular" href="../css/eric.css" rel="stylesheet" type="text/css">
+
+<META http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<META http-equiv="expires" content="0">	 
+<META http-equiv="Pragma" content="no-cache">
+#set ($finished = false)
+#if( $progress == $total && $subProgress == $subTotal)
+	#set ($finished = true)
+#else
+	<meta http-equiv="refresh" content="$refresh"> 
+#end	
+
+<body>
+
+   <style type="text/css">
+   
+ .leftAligned {
+    text-align: left;
+}
+ .rightAligned {
+    text-align: right;
+}
+ .centered {
+    text-align: center;
+}
+
+.title {
+   font-size:50px;
+   font-weight:bold;
+   height: 80px;
+   box-shadow: 10px 10px 5px #888888;
+   width: 600px;
+   margin:0 auto;
+}
+.detail {
+   font-size:30px;
+   font-weight:bold;
+   height: 40px;
+}
+.myPadding {
+ padding-top: 1px;
+ padding-bottom: 1px;
+ padding-left: 1px;
+ padding-right: 1px;
+}
+
+td.first {
+   width: 30%;
+}
+th.l1 {
+}
+tr.l1 {
+}
+
+
+   </style>
+	<div class="centered">
+	<div class="centered title">MP3TagChecker
+  </div>
+  </div>
+  <br>
+   <table style="border-collapse: collapse; width:90%; margin: 0px auto; " class="displayTagTable detail">
+		<tbody>
+		#if( $finished)
+			<tr><td>Status</td><td>Finished</td></tr>
+		#else
+			<tr class="l1">
+				<td class="first myPadding">Albums To Check</td>
+				<td class="l1 myPadding">$progress/$total</td>
+			</tr>
+			<tr>
+				<td class="first myPadding">Progress</td>
+				<td class="l1 myPadding">$subProgress/$subTotal</td>
+			</tr>
+			<tr>
+				<td class="first myPadding">Number Of Errors Found</td>
+				<td class="l1 myPadding">$numberOfErrors/$maxNumberOfErrors</td>
+			</tr>
+			<tr>
+				<td class="first myPadding">Processing Album</td>
+				<td class="l1 myPadding">$esc.html($album)</td>
+			</tr>
+		#end
+		</tbody>
+	</table>
+
+</body>
+</HTML>

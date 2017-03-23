@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<HTML lang="nl">
+<HEAD>
+<TITLE>Lijst Van Albums</TITLE>
+<link rel="stylesheet" type="text/css" href="/catalog/apps/css/navigation.css">
+
+<META http-equiv="content-type" content="text/html; charset=UTF-8">
+<META http-equiv="expires" content="0">	 
+<META http-equiv="Pragma" content="no-cache">   	
+<script type="text/javascript" src="../../js/jquery-1.2.3.min.js"></script> 
+<script type="text/javascript" src="../../js/jquery.tablesorter.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter(); 
+    }
+    ); 
+</script>
+<LINK title="regular" href="../../Themes/style.css" rel="stylesheet" type="text/css">
+
+<style>
+
+.tabuler_data tr:nth-child(odd):hover td, tbody tr.odd:hover td {background:#8888ff;}
+.tabuler_data tr:nth-child(even):hover td, tbody tr.even:hover td {background:#8888ff;}
+.tabuler_data tr:nth-child(odd) td, tbody tr.odd td {background:#88ff88;}
+
+table.centered {
+  margin: 0px auto;
+}
+
+table.displayTagTable {
+    border: 10px solid black;
+	border-collapse: collapse; 
+	width : 70%;
+	padding: 15px;
+}
+
+tr.displayTagTable {
+	color: black;
+}
+
+tr.displayTagTableHeader {
+    border-bottom: 1px solid black;
+	color: red;
+	padding: 15px;
+}
+th.leftAlign {text-align:left;}
+th, td {
+padding-left: 15px;
+padding-right: 15px;
+}
+.centered {
+    text-align: center;
+}
+.title {
+ font-family:Verdana;
+ font-size:20pt; 
+ font-weight: bold; 
+ color:black;
+}
+</style> 
+
+<body>
+
+    <div class="nav centered">
+      <ul>
+		#foreach( $item in $navigation )
+			<li><a href="$item.url">$item.description</a></li>
+		#end   
+      </ul>
+    </div>
+
+	<div class="title centered">
+		Eric's Muziek Catalogus
+	</div>
+	   
+
+    <div> 
+		<table id="myTable" class="tablesorter displayTagTable centered">
+			<thead>
+			<tr class="displayTagTableHeader"><th class="leftAlign">Cover</th><th class="leftAlign">Album</th><th class="leftAlign">Jaar</th><th class="leftAlign">Artist</th></tr>
+			</thead>
+				<tbody  class="tabuler_data">
+				#foreach( $item in $list )
+				<tr class="displayTagTable"><td>Emtpy</td><td><a href="../Songs/$item.filename">$esc.html($item.fileAlbumTO.name)</a></td><td>$item.fileTO.year</td><td>$esc.html($item.albumArtistTO.name)</td></tr>
+				#end
+				</tbody>
+		</table>
+    </div>
+
+</body>
+</HTML>

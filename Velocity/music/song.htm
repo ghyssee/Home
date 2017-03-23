@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<HTML lang="nl">
+<HEAD>
+<TITLE>Album</TITLE>
+<link rel="stylesheet" type="text/css" href="/catalog/apps/css/stylesheet.css">
+<link rel="stylesheet" type="text/css" href="/catalog/apps/themes/easyui/metro-blue/easyui.css">
+<link rel="stylesheet" type="text/css" href="/catalog/apps/themes/easyui/icon.css">
+<link rel="stylesheet" type="text/css" href="/catalog/apps/css/navigation.css">
+<script type="text/javascript" src="/catalog/apps/js/jquery-3.1.1.js"></script>
+<script type="text/javascript" src="/catalog/apps/js/jquery.easyui.min.js"></script>
+
+<META http-equiv="content-type" content="text/html; charset=UTF-8">
+<META http-equiv="expires" content="0">	 
+<META http-equiv="Pragma" content="no-cache">   	 
+
+<body>
+
+     <style type="text/css"> 
+table.albumInfo {
+  margin: 0px auto;
+}
+   </style>
+
+    <div class="nav centered">
+      <ul>
+		#foreach( $item in $navigation )
+			<li><a href="$item.url">$item.description</a></li>
+		#end   
+      </ul>
+    </div>
+   
+   <table class="albumInfo">
+	<tr>
+		<td>Album</td>
+		<td>$esc.html($album.fileAlbumTO.name)</td>
+	</tr>
+	<tr>
+		<td>Album Artist</td>
+		<td>$esc.html($album.albumArtistTO.name)</td>
+	</tr>
+	<tr>
+		<td>Year</td>
+		<td>$album.fileTO.year</td>
+	</tr>
+   </table>
+   <style type="text/css">
+   
+.tabuler_data tr:nth-child(odd):hover td, tbody tr.odd:hover td {background:#8888ff;}
+.tabuler_data tr:nth-child(even):hover td, tbody tr.even:hover td {background:#8888ff;}
+.tabuler_data tr:nth-child(odd) td, tbody tr.odd td {background:#88ff88;}
+
+td.l1 {
+ border-left:1px solid black;
+ padding-top: .2em;
+ padding-bottom: .2em;
+ border-bottom:1px solid black
+}
+th.l1 {
+ border-left:1px solid black;
+ padding-top: .2em;
+ padding-bottom: .2em;
+ border-bottom:1px solid black
+}
+tr.l1 {
+ padding-top: .2em;
+ padding-bottom: .2em; 
+ border-bottom:1px solid black;
+}
+td.cdLayout {
+ text-align:center;
+ background-color:red;
+ padding-top: .10em;
+ padding-bottom: .10em; 
+ border-bottom:1px solid black;
+
+}
+tr.cdLayout {
+ text-align:center;
+ background-color:red;
+ padding-top: .10em;
+ padding-bottom: .10em; 
+ border-bottom:1px solid black;
+ height:50px;
+ }
+ .rightAligned {
+    text-align: right;
+}
+   </style>
+	<script>
+		var some = new URLSearchParams(window.location.search);
+		var value = some.get('show');
+		if (value != null){
+			// show message window on top center
+			$.messager.show({
+				title:'Update Song',
+				msg:'Song Info saved',
+				timeout:1000,
+				showType:'show',
+				style:{
+					right:'',
+					top:document.body.scrollTop+document.documentElement.scrollTop,
+					bottom:''
+				}
+			});
+		}
+	</script>   
+
+
+   <table style="border-collapse: separate; border-spacing: 0px; border: 5px solid black; width:70%; margin: 0px auto; " class="displayTagTable">
+			<thead>
+			<tr class="displayTagTableHeader" style="background-color:darkgrey; border: 1px solid black;text-align:center; border-left:1px solid black">
+			<th class="l1">Track</td>
+			<th class="l1">Artist</td>
+			<th class="l1">Title</td>
+			<th class="l1">Duration</td>
+			<th class="l1">Rating</td>
+			<th class="l1">Playcount</td>
+			<th class="l1">Date Last Played</td>
+			</tr>
+
+			#set ($PrevDisc = 0)
+			#foreach( $item in $list )
+			#if ($item.fileTO.disc > 0 && $item.fileTO.disc != $PrevDisc)
+				#if ($PrevDisc != 0)
+					</tbody>
+					<thead>
+				#end
+				#set ($PrevDisc = $item.fileTO.disc)
+				<tr class="cdLayout">
+					<td colspan="7" class="cdLayout">CD $item.fileTO.disc</td>
+				</tr>
+				</thead>
+				<tbody  class="tabuler_data">
+			 #elseif ($velocityCount == 1)
+				</thead>
+				<tbody  class="tabuler_data">
+			#end
+				<tr class="l1" onclick="location.href='$item.url'">
+				<td class="l1 rightAligned" >$item.fileTO.track</td>
+				<td  class="l1">$esc.html($item.fileArtistTO.artist)</td>
+				<td class="l1"><a href="$item.url">$esc.html($item.fileTO.title)</a></td>
+				<td class="l1">$du.convertSecToMin($item.fileTO.duration)</td>
+				<td class="l1"><span style="font-size:200%;color:yellow;">$su.repeat("&starf;", $item.fileTO.ranking)</span></td>
+				<td class="l1">#if ($item.fileTO.playCount != 0)$item.fileTO.playCount#end</td>
+				<td class="l1">$!date.format('dd/MM/yyyy H:mm:ss', $item.fileTO.dateLastPlayed)</td>
+				</tr>
+				#end
+			</tbody>
+		</table>
+    </div>
+
+</body>
+</HTML>
