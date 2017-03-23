@@ -25,12 +25,13 @@ public class Reconciliation extends BatchJobV2 {
 
     private static final Logger log = getMainLog(Reconciliation.class);
 
-    private static String[] OBJECTS = {"FAR_RECO_DATA", "FAR_RECO_INDX", "FAR_USER", "FAR_READ"};
-    private static String OBJECT_DATA_MGR = "DATA_MGR";
-    private static String BASE = "C:\\My Programs\\OneDrive\\Config\\Java\\Velocity\\Reconciliation\\GEN2\\";
-    private static String OBJECT_DATA_MGR1 = "&1.";
-    private static String[] OBJECTS1 = {"&1", "&2", "&3", "&4"};
-    private static String BASE2 = "C:\\My Programs\\OneDrive\\Config\\Java\\Velocity\\Reconciliation\\GEN\\";
+    private static String[] OBJECTS1 = {"FAR_RECO_DATA", "FAR_RECO_INDX", "FAR_USER", "FAR_READ"};
+    private static String OBJECT_DATA_MGR1 = "DATA_MGR";
+    private static String BASE1 = "C:\\My Programs\\OneDrive\\Config\\Java\\Velocity\\Reconciliation\\GEN2\\";
+
+    private static String OBJECT_DATA_MGR = "&1.";
+    private static String[] OBJECTS = {"&1", "&2", "&3", "&4"};
+    private static String BASE = "C:\\My Programs\\OneDrive\\Config\\Java\\Velocity\\Reconciliation\\GEN\\";
 
     public static void main(String args[]) {
         Reconciliation instance = new Reconciliation();
@@ -60,9 +61,6 @@ public class Reconciliation extends BatchJobV2 {
         String role = "ILPost";
         String userId = "363";
 
-        createCommonTables(MATCH_ENGINE,
-                "01_DML_MATCHENGINE.sql"
-        );
         List<FileRuleSet> fileRuleSetList = Arrays.asList(
                 new FileRuleSet("ALLREADY_LOADED_FILE")
         );
@@ -117,6 +115,7 @@ public class Reconciliation extends BatchJobV2 {
         fileTypes.addAll(fileTypesStream1);
         fileTypes.addAll(fileTypesStream2);
 
+        createCommonTables(MATCH_ENGINE, "01_DML_MATCHENGINE.sql");
         createMatchingTables(fieldsStream1, dataSource1, dataType, "02_DML_ILPOST.sql");
         createMatchingTables(fieldsStream2,dataSource2, dataType,"03_DML_ILPOST_SUP.sql");
         createSynonyms(MATCH_ENGINE, dataSource1, dataSource2, dataType,"04_FU_SYNONYMS.sql");
@@ -124,10 +123,7 @@ public class Reconciliation extends BatchJobV2 {
 
         Datasource datasource1 = new Datasource(dataSource1, "ILPOST");
         Datasource datasource2 = new Datasource(dataSource2, "ILPOST SUPPLIER");
-        List<Datasource> datasources = Arrays.asList(
-                datasource1,
-                datasource2
-        );
+
         Datatype datatype = new Datatype(dataType, "ILPOST Invoicing");
         Stream stream1 = new Stream("ILPost", "FILE", "N", datasource1, fileTypesStream1);
         Stream stream2 = new Stream("ILPost Supplier", "FILE", "N", datasource2, fileTypesStream2);
@@ -135,13 +131,7 @@ public class Reconciliation extends BatchJobV2 {
                 stream1,
                 stream2
         );
-
-        createGlobal(userId,
-                datatype,
-                streams,
-                "06_MDM_SETUP_GLOBAL.sql");
-
-        //createFileType(userId, datasources, fileTypes, "07_MDM_SETUP_FILETYPE.sql");
+        createGlobal(userId,datatype, streams, "06_MDM_SETUP_GLOBAL.sql");
 
         List<MatchPredicate> listMatchPredicateManual =  Arrays.asList(
                 new MatchPredicate("Flight Code Equals", "CODE", null, "CODE", "=", null, null, null, "N")
@@ -156,11 +146,11 @@ public class Reconciliation extends BatchJobV2 {
         );
 
         MatchEngine me = new MatchEngine("ILPOST", "ILPost Reconciliation", stream1, stream2, listMatchAlgorithm);
-        createMatchEngine(userId, me, "08_MDM_SETUP_MATCHENGINE.sql");
+        createMatchEngine(userId, me, "07_MDM_SETUP_MATCHENGINE.sql");
 
-        createReport(userId, streamDescription1, streamDescription2, fieldsStream1, fieldsStream2, "09_MDM_SETUP_REPORT.sql"
+        createReport(userId, streamDescription1, streamDescription2, fieldsStream1, fieldsStream2, "08_MDM_SETUP_REPORT.sql"
         );
-        createSecurity(MATCH_ENGINE, role, "90_MDM_INSERT_SECURITY_LEVELS.sql");
+        createSecurity(MATCH_ENGINE, role, "09_MDM_INSERT_SECURITY_LEVELS.sql");
         createDropTables(me, dataSource1, dataSource2, datatype, streams, fileTypes, "99_DROP.sql");
     }
 
@@ -275,7 +265,7 @@ public class Reconciliation extends BatchJobV2 {
         context.put("role", role);
 
         try {
-            vu.makeFile("reconciliation/RECON_90_GEN_MDM_INSERT_SECURITY_LEVELS.sql", outputFile, context);
+            vu.makeFile("reconciliation/RECON_10_GEN_MDM_INSERT_SECURITY_LEVELS.sql", outputFile, context);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -294,7 +284,7 @@ public class Reconciliation extends BatchJobV2 {
         context.put("userId", userId);
 
         try {
-            vu.makeFile("reconciliation/RECON_07_GEN_MDM_REPORT.sql", outputFile, context);
+            vu.makeFile("reconciliation/RECON_06_GEN_MDM_REPORT.sql", outputFile, context);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -328,22 +318,6 @@ public class Reconciliation extends BatchJobV2 {
 
         try {
             vu.makeFile("reconciliation/RECON_05_GEN_MDM_MATCHENGINE.sql", outputFile, context);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void createFileType(String userId, List<Datasource> datasources, List<FileType> list, String outputFile) {
-        outputFile = getOutputFile(outputFile);
-
-        VelocityUtils vu = new VelocityUtils();
-        VelocityContext context = new VelocityContext();
-        context.put("fileTypes", list);
-        context.put("datasources", datasources);
-        context.put("userId", userId);
-
-        try {
-            vu.makeFile("reconciliation/RECON_06_GEN_FILE_TYPE.sql", outputFile, context);
         } catch (IOException e) {
             e.printStackTrace();
         }
