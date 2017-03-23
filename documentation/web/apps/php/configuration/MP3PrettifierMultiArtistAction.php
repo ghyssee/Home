@@ -11,6 +11,8 @@ try {
         case "addMulti":
             addMultiArtist();
             break;
+        case "batch":
+            batchProcess();
         default :
             addMultiArtist2();
             break;
@@ -54,4 +56,16 @@ function addMultiArtist2(){
         println("ID: " . $result->multiArtist->id);
     }
 }
+
+function batchProcess(){
+    $text = trim($_POST['multiArtistList']);
+    $values = preg_split('/[\n\r]+/', $text);
+
+    foreach ($values as $line) {
+        $tmp = trim($line);
+        $tmp2 = $line;
+    }
+    echo json_encode(array('success' => true));
+}
+
 ?>

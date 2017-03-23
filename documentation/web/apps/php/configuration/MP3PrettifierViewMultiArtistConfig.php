@@ -22,7 +22,7 @@ $multiArtist = readJSONWithCode(JSON_MULTIARTIST);
 <div id="container">
     <div id="column1">
         <div id="innercolumn">
-            <div id="dlArtistList" class="easyui-datalist" title="Remote Data" style="width:200px;height:400px"
+            <div id="dlArtistList" class="easyui-datalist" title="Artists" style="width:200px;height:400px"
                  data-options="
                             url: 'MP3PrettifierAction.php?method=listArtists',
                             method: 'get',
@@ -48,7 +48,8 @@ $multiArtist = readJSONWithCode(JSON_MULTIARTIST);
     </div>
     <div id="column3">
         <div id="innercolumn">
-            <table id="dgArtist" class="easyui-datagrid" style="width:400px;height:100px"
+            <table id="dgArtist" class="easyui-datagrid" style="width:400px;height:150px"
+                   title="Unordered Artist Group"
                    data-options="fitColumns:true,singleSelect:true">
                 <thead>
                 <tr>
@@ -68,14 +69,14 @@ $multiArtist = readJSONWithCode(JSON_MULTIARTIST);
                 });
             </script>
             <table  id="dgArtistSeq" style="width:400px;height:150px"
-                    title="Artist Sequence"
+                    title="Ordered Artist Group"
                     singleSelect="true"
             >
                 <thead>
                 <tr>
-                    <th field="artistId" width="100" hidden="true">ID</th>
-                    <th field="artistName" width="198">Artist</th>
-                    <th field="splitterId" width="100" align="right"
+                    <th field="artistId" hidden="true">ID</th>
+                    <th field="artistName" width="70%">Artist</th>
+                    <th field="splitterId" width="30%" align="right"
                         data-options="
                             formatter:function(value,row){
                                         return row.splitterName;
