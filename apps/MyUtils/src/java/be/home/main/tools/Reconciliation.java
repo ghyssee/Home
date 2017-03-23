@@ -54,7 +54,7 @@ public class Reconciliation extends BatchJobV2 {
         String dataSource1 = "ILPOST";
         String dataSource2 = "ILPOST_SUP";
         String dataType = "ILPOST";
-        String MATCH_ENGINE = "ILPOSTSUP";
+        String MATCH_ENGINE = "ILPOST";
         String streamDescription1 = "ILPost";
         String streamDescription2 = "ILPost Supplier";
         String role = "ILPost";
@@ -141,7 +141,7 @@ public class Reconciliation extends BatchJobV2 {
                 streams,
                 "06_MDM_SETUP_GLOBAL.sql");
 
-        createFileType(userId, datasources, fileTypes, "07_MDM_SETUP_FILETYPE.sql");
+        //createFileType(userId, datasources, fileTypes, "07_MDM_SETUP_FILETYPE.sql");
 
         List<MatchPredicate> listMatchPredicateManual =  Arrays.asList(
                 new MatchPredicate("Flight Code Equals", "CODE", null, "CODE", "=", null, null, null, "N")
