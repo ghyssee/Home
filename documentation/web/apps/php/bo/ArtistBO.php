@@ -46,6 +46,7 @@ class ArtistBO
 
     function saveArtist($artist)
     {
+        $this->checkArtistRecord($artist);
         $counter = 0;
         foreach ($this->artistObj->list as $key => $value) {
             if (strcmp($value->id, $artist->id) == 0) {
@@ -58,9 +59,14 @@ class ArtistBO
         return false;
     }
 
+    function checkArtistRecord($artist){
+        $artist->stageName = nullIfEmpty($artist->stageName);
+    }
+
     function addArtist($artist)
     {
         $artist->id = getUniqueId();
+        $this->checkArtistRecord($artist);
         array_push($this->artistObj->list, $artist);
         writeJSON($this->artistObj, $this->file);
     }
@@ -273,8 +279,22 @@ class MultiArtistBO {
                         return strcmp($obj_a->id, $obj_b->id) ;
                     }
                 );
-                if (count($diff) == 0){
-                    return true;
+                if (count($diff) == 0) {
+                    if (!$multiArtistLine->exactPosition ||
+                        $multiArtistLine->exactPosition != $multiArtistItem->exactPosition) {
+                        return true;
+                    }
+                    else {
+                        /* check if ordered artists are in the same order, i
+                           If yes, than it already exist, else it can be added
+                        */
+                        foreach ($multiArtistLine->artistSequence as $key=>$item) {
+                            if ($item->artistId != $multiArtistItem->artists[$key]->id) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    }
                 }
             }
         }

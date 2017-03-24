@@ -211,6 +211,7 @@ function updateArtist(){
     $artistBO = new ArtistBO();
     $artist = new Artist();
     assignField($artist->name, "name", !HTML_SPECIAL_CHAR);
+    assignField($artist->stageName, "stageName", !ESCAPE_HTML);
     $artist->id = $id;
     $save = true;
     if (objectExist($artistBO->getArtists(), "name", $artist->name, true, "id", $artist->id)) {
@@ -236,6 +237,7 @@ function addArtist()
     $artistBO = new ArtistBO();
     $artist = new Artist();
     assignField($artist->name, "name", !ESCAPE_HTML);
+    assignField($artist->stageName, "stageName", !ESCAPE_HTML);
     $save = true;
     If (objectExist($artistBO->getArtists(), "name", $artist->name, true)) {
         $errors = addErrorMsg('Artist already exist: ' . $artist->name);

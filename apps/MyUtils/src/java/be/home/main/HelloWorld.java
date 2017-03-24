@@ -44,7 +44,7 @@ public class HelloWorld extends BatchJobV2 {
 
         //System.out.println(MP3TagUtils.stripFilename("(Hot S+++)"));
 
-        processArtistFile();
+        //processArtistFile();
         testMP3Prettifier();
         //updateMP3();
 
@@ -162,8 +162,8 @@ private static void testAlbumArtist(){
         System.out.println(mp3Helper.prettifyAlbum("ELV1S: 30 #1 Hits"));
         System.out.println(mp3Helper.prettifySong("Lovin, Livin And Givin"));
         System.out.println("Flo Rida Feat. Ke$ha".replaceAll("((Flo Rida|Ke\\$ha)( Feat\\.,? | ?, &? ?| ?&([a|A]mp)? ?| Vs\\. | (Duet )?With | Presenting | Presents | En | \\+ | X | & | X |$)){2}", "blabla"));
-        System.out.println(mp3Helper.prettifyArtist("Sound Bluntz"));
-        System.out.println(mp3Helper.prettifyArtist("Flo-Rida Feat. Ke$ha"));
+        System.out.println(mp3Helper.prettifyArtist("Keri Hilson & Timbaland"));
+        System.out.println(mp3Helper.prettifyArtist("De Après-Ski Klas & Dirk-Jan"));
         //System.out.println("The Partysquad Feat. Sjaak, Dio, Sef".replaceAll("((Sef|Dio|Sjaak)( ?& ?|, ?| |\\.|$)){3,}", "Dio, Sef & Sjaak"));
         //System.out.println(mp3Helper.prettifyArtist("Ll Cool J Feat. 7 Aurelius"));
 

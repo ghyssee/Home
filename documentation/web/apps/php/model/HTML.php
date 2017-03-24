@@ -149,6 +149,7 @@ class SongCorrection{
 class Artist{
   public $id;
   public $name;
+  public $stageName;
     public function __construct()
     {
     }

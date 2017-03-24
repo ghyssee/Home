@@ -31,6 +31,7 @@ $smarty->assign('deleteUrl', $url . "?method=deleteArtist");
 
 $smarty->assign("contacts", array(
         array("field" => "name", "label"=>"Name", "size" => 50, "required" => true, "sortable" => true),
+        array("field" => "stageName", "label"=>"StageName", "size" => 50, "required" => false, "sortable" => true),
         array("field" => "id", "label"=>"Id", "size" => 50, "hidden" => "true")
     )
 );

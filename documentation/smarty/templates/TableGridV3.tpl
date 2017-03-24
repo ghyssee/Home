@@ -59,7 +59,7 @@
 				<div class="fitem">
 					<label>{{$contacts[sec1].label}}</label>
 					<input name="{{$contacts[sec1].field}}"
-                            {{if isset($contacts[sec1].required)}} required="true"{{/if}}
+                            {{if isset($contacts[sec1].required) AND $contacts[sec1].required}} required="true"{{/if}}
                             {{if isset($contacts[sec1].checkbox)}} class="easyui-checkbox" type="checkbox" checked value="true"
                             {{else}}
 							   {{if isset($contacts[sec1].type)}}

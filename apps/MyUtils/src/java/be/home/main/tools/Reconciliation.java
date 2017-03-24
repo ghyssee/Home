@@ -25,13 +25,13 @@ public class Reconciliation extends BatchJobV2 {
 
     private static final Logger log = getMainLog(Reconciliation.class);
 
-    private static String[] OBJECTS1 = {"FAR_RECO_DATA", "FAR_RECO_INDX", "FAR_USER", "FAR_READ"};
-    private static String OBJECT_DATA_MGR1 = "DATA_MGR";
-    private static String BASE1 = "C:\\My Programs\\OneDrive\\Config\\Java\\Velocity\\Reconciliation\\GEN2\\";
+    private static String[] OBJECTS = {"FAR_RECO_DATA", "FAR_RECO_INDX", "FAR_USER", "FAR_READ"};
+    private static String OBJECT_DATA_MGR = "DATA_MGR";
+    private static String BASE = "C:\\My Programs\\OneDrive\\Config\\Java\\Velocity\\Reconciliation\\GEN2\\";
 
-    private static String OBJECT_DATA_MGR = "&1.";
-    private static String[] OBJECTS = {"&1", "&2", "&3", "&4"};
-    private static String BASE = "C:\\My Programs\\OneDrive\\Config\\Java\\Velocity\\Reconciliation\\GEN\\";
+    private static String OBJECT_DATA_MGR1 = "&1.";
+    private static String[] OBJECTS1 = {"&1", "&2", "&3", "&4"};
+    private static String BASE1 = "C:\\My Programs\\OneDrive\\Config\\Java\\Velocity\\Reconciliation\\GEN\\";
 
     public static void main(String args[]) {
         Reconciliation instance = new Reconciliation();
@@ -48,7 +48,6 @@ public class Reconciliation extends BatchJobV2 {
     public void run() {
 
     }
-
 
 
     public void start() {
@@ -73,7 +72,10 @@ public class Reconciliation extends BatchJobV2 {
                 new Field("LETTER", "VARCHAR2", "50", false, "Letter"),
                 new Field("EMS", "VARCHAR2", "50", false, "EMS"),
                 new Field("SV", "VARCHAR2", "50", false, "CV"),
-                new Field("ARRIVAL_CENTER", "VARCHAR2", "100", false, "Arrival Center")
+                new Field("ARRIVAL_CENTER", "VARCHAR2", "100", false, "Arrival Center"),
+                new Field("DISP_OFFICE", "VARCHAR2", "20", true, "Disposit Office"),
+                new Field("DEST_OFFICE", "VARCHAR2", "20", true, "Destination Office"),
+                new Field("MAIL_NO", "VARCHAR2", "20", false, "Mail No")
         );
         List<Field> fieldsStream2 = Arrays.asList(
                 new Field("SUPPLIER", "VARCHAR2", "100", false, "Supplier"),
@@ -81,6 +83,8 @@ public class Reconciliation extends BatchJobV2 {
                 new Field("MAIL_NO", "VARCHAR2", "20", false, "Mail No"),
                 new Field("DISP_OFFICE", "VARCHAR2", "20", false, "Disposit Office"),
                 new Field("DEST_OFFICE", "VARCHAR2", "20", false, "Destination Office"),
+                new Field("FORWARD_FROM", "VARCHAR2", "20", false, "Forwarded From"),
+                new Field("FORWARD_TO", "VARCHAR2", "20", false, "Forwarded To"),
                 new Field("DEST_DATE", "VARCHAR2", "50", false, "Destination Date"),
                 new Field("CATEGORY", "VARCHAR2", "100", false, "Category"),
                 new Field("MAIL_LCAO", "VARCHAR2", "50", false, "Mail LCAO"),
@@ -88,27 +92,29 @@ public class Reconciliation extends BatchJobV2 {
                 new Field("MAIL_EMS", "VARCHAR2", "50", false, "Mail EMS"),
                 new Field("SORTE", "VARCHAR2", "50", false, "Sorte"),
                 new Field("TYPE_POSTE", "VARCHAR2", "50", false, "Type Post"),
-                new Field("WEIGHT", "VARCHAR2", "100", false, "Weight"),
+                new Field("WEIGHT", "NUMBER", null, false, "Weight"),
                 new Field("FORMAT", "VARCHAR2", "100", false, "Format"),
-                new Field("WEIGHT_LCAO", "VARCHAR2", "20", false, "Wieght LCAO"),
-                new Field("WEIGHT_EMS", "VARCHAR2", "20", false, "Weight EMS"),
-                new Field("SERIAL_NBR", "VARCHAR2", "20", false, "Wieght NBR"),
-                new Field("GROSS_WEIGHT", "VARCHAR2", "20", false, "Gross Weight")
+                new Field("WEIGHT_LCAO", "NUMBER", null, false, "Wieght LCAO"),
+                new Field("WEIGHT_EMS", "NUMBER", null, false, "Weight EMS"),
+                new Field("WEIGHT_CP", "NUMBER", null, false, "Weight CP"),
+                new Field("SERIAL_NBR", "NUMBER", null, false, "Wieght NBR"),
+                new Field("GROSS_WEIGHT", "NUMBER", null, false, "Gross Weight")
         );
         List<FileType> fileTypesStream1 = Arrays.asList(
-                new FileType("ILPOST_FILE","^ILPOST_.*\\.csv$","ilpost","ILPOST File", "DEFAULT", fileRuleSetList)
+                new FileType("ILPOST_FILE", "^ILPOST_.*\\.csv$", "ilpost", "ILPOST File", "DEFAULT", fileRuleSetList)
         );
         List<FileType> fileTypesStream2 = Arrays.asList(
-                new FileType("ILPOST_AIR_CANADA_FILE","^AIR_CANADA_.*\\.csv$","ilpost-supplier","AIR CANADA File","DEFAULT", fileRuleSetList),
-                new FileType("ILPOST_CROATIA_AIRWAYS_FILE","^CROATIA_AIRWAYS_.*\\.csv$","ilpost-supplier","CROATIA AIRWAYS File","DEFAULT", fileRuleSetList),
-                new FileType("ILPOST_CZECH_AIRLINES_FILE","^CZECH_AIRLINES_.*\\.csv$","ilpost-supplier","CZECH AIRLINES File","DEFAULT", fileRuleSetList),
-                new FileType("ILPOST_DHL_FILE","^DHL_.*\\.csv$","ilpost-supplier","DHL File","DEFAULT", fileRuleSetList),
-                new FileType("ILPOST_ETHIAD_FILE","^ETHIAD_.*\\.csv$","ilpost-supplier","ETHIAD File","DEFAULT", fileRuleSetList),
-                new FileType("ILPOST_GLOBAL_AIRLINE_FILE","^GLOBAL_AIRLINE_.*\\.csv$","ilpost-supplier","GLOBAL AIRLINE SERVICES File","DEFAULT", fileRuleSetList),
-                new FileType("ILPOST_KALES_FILE","^KALES_.*\\.csv$","ilpost-supplier","KALES File","DEFAULT", fileRuleSetList),
-                new FileType("ILPOST_NETWORK_AIRLINE_FILE","^NETWORK_AIRLINE_.*\\.csv$","ilpost-supplier","NETWORK AIRLINE SERVICES File","DEFAULT", fileRuleSetList),
-                new FileType("ILPOST_SWISSPORT_CARGO_FILE","^SWISSPORT_CARGO_.*\\.csv$","ilpost-supplier","SWISSPORT CARGO SERVICES File","DEFAULT", fileRuleSetList),
-                new FileType("ILPOST_TURKISH_AIRLINES_FILE","^TURKISH_AIRLINES_.*\\.csv$","ilpost-supplier","TURKISH AIRLINES File","DEFAULT", fileRuleSetList)
+                new FileType("ILPOST_AIR_CANADA_FILE", "^AIR_CANADA_.*\\.csv$", "ilpost-supplier", "AIR CANADA File", "DEFAULT", fileRuleSetList),
+                new FileType("ILPOST_AIR_CARGO_LOGISTICS_FILE", "^AIR_CARGO_LOGISTICS_.*\\.csv$", "ilpost-supplier", "AIR CARGO LOGISTICS File", "DEFAULT", fileRuleSetList),
+                new FileType("ILPOST_CROATIA_AIRWAYS_FILE", "^CROATIA_AIRWAYS_.*\\.csv$", "ilpost-supplier", "CROATIA AIRWAYS File", "DEFAULT", fileRuleSetList),
+                new FileType("ILPOST_CZECH_AIRLINES_FILE", "^CZECH_AIRLINES_.*\\.csv$", "ilpost-supplier", "CZECH AIRLINES File", "DEFAULT", fileRuleSetList),
+                new FileType("ILPOST_DHL_FILE", "^DHL_.*\\.csv$", "ilpost-supplier", "DHL File", "DEFAULT", fileRuleSetList),
+                new FileType("ILPOST_ETHIAD_FILE", "^ETHIAD_.*\\.csv$", "ilpost-supplier", "ETHIAD File", "DEFAULT", fileRuleSetList),
+                new FileType("ILPOST_GLOBAL_AIRLINE_FILE", "^GLOBAL_AIRLINE_.*\\.csv$", "ilpost-supplier", "GLOBAL AIRLINE SERVICES File", "DEFAULT", fileRuleSetList),
+                new FileType("ILPOST_KALES_FILE", "^KALES_.*\\.csv$", "ilpost-supplier", "KALES File", "DEFAULT", fileRuleSetList),
+                new FileType("ILPOST_NETWORK_AIRLINE_FILE", "^NETWORK_AIRLINE_.*\\.csv$", "ilpost-supplier", "NETWORK AIRLINE SERVICES File", "DEFAULT", fileRuleSetList),
+                new FileType("ILPOST_SWISSPORT_CARGO_FILE", "^SWISSPORT_CARGO_.*\\.csv$", "ilpost-supplier", "SWISSPORT CARGO SERVICES File", "DEFAULT", fileRuleSetList),
+                new FileType("ILPOST_TURKISH_AIRLINES_FILE", "^TURKISH_AIRLINES_.*\\.csv$", "ilpost-supplier", "TURKISH AIRLINES File", "DEFAULT", fileRuleSetList)
         );
 
         List<FileType> fileTypes = new ArrayList<>();
@@ -117,9 +123,9 @@ public class Reconciliation extends BatchJobV2 {
 
         createCommonTables(MATCH_ENGINE, "01_DML_MATCHENGINE.sql");
         createMatchingTables(fieldsStream1, dataSource1, dataType, "02_DML_ILPOST.sql");
-        createMatchingTables(fieldsStream2,dataSource2, dataType,"03_DML_ILPOST_SUP.sql");
-        createSynonyms(MATCH_ENGINE, dataSource1, dataSource2, dataType,"04_FU_SYNONYMS.sql");
-        createSynonyms(MATCH_ENGINE, dataSource1, dataSource2, dataType,"05_FR_SYNONYMS.sql");
+        createMatchingTables(fieldsStream2, dataSource2, dataType, "03_DML_ILPOST_SUP.sql");
+        createSynonyms(MATCH_ENGINE, dataSource1, dataSource2, dataType, "04_FU_SYNONYMS.sql");
+        createSynonyms(MATCH_ENGINE, dataSource1, dataSource2, dataType, "05_FR_SYNONYMS.sql");
 
         Datasource datasource1 = new Datasource(dataSource1, "ILPOST");
         Datasource datasource2 = new Datasource(dataSource2, "ILPOST SUPPLIER");
@@ -131,16 +137,16 @@ public class Reconciliation extends BatchJobV2 {
                 stream1,
                 stream2
         );
-        createGlobal(userId,datatype, streams, "06_MDM_SETUP_GLOBAL.sql");
+        createGlobal(userId, datatype, streams, "06_MDM_SETUP_GLOBAL.sql");
 
-        List<MatchPredicate> listMatchPredicateManual =  Arrays.asList(
+        List<MatchPredicate> listMatchPredicateManual = Arrays.asList(
                 new MatchPredicate("Flight Code Equals", "CODE", null, "CODE", "=", null, null, null, "N")
         );
-        List<MatchPredicate> listMatchPredicateAutomatic =  Arrays.asList(
+        List<MatchPredicate> listMatchPredicateAutomatic = Arrays.asList(
                 new MatchPredicate("Flight Code Equals", "CODE", null, "CODE", "=", null, null, null, "N")
         );
 
-        List<MatchAlgorithm> listMatchAlgorithm =  Arrays.asList(
+        List<MatchAlgorithm> listMatchAlgorithm = Arrays.asList(
                 new MatchAlgorithm("ILPOST_MAN", "Match on Flight Code", "n", "n", "1", "MANUAL", listMatchPredicateManual),
                 new MatchAlgorithm("ILPOST_RUN1", "Match on Flight Code", "n", "n", "1", "AUTOMATIC", listMatchPredicateAutomatic)
         );
@@ -154,14 +160,14 @@ public class Reconciliation extends BatchJobV2 {
         createDropTables(me, dataSource1, dataSource2, datatype, streams, fileTypes, "99_DROP.sql");
     }
 
-    public void setObjects(VelocityContext context){
+    public void setObjects(VelocityContext context) {
         context.put("object1", OBJECTS[0]);
         context.put("object2", OBJECTS[1]);
         context.put("object3", OBJECTS[2]);
         context.put("object4", OBJECTS[3]);
     }
 
-    public String getOutputFile(String outputFile){
+    public String getOutputFile(String outputFile) {
         return BASE + outputFile;
     }
 
@@ -200,6 +206,8 @@ public class Reconciliation extends BatchJobV2 {
         context.put("esc", new EscapeTool());
         context.put("du", new DateUtils());
         context.put("su", new StringUtils());
+        context.put("mu", new MyTools());
+        context.put("su", new StringUtils());
         try {
             vu.makeFile("reconciliation/RECON_02_GEN_STREAM.sql", outputFile, context);
         } catch (IOException e) {
@@ -232,7 +240,7 @@ public class Reconciliation extends BatchJobV2 {
 
     public void createDropTables(MatchEngine matchEngine, String dataSource1, String dataSource2, Datatype dataType,
                                  List<Stream> streams,
-                               List<FileType> fileTypes, String outputFile) {
+                                 List<FileType> fileTypes, String outputFile) {
         outputFile = getOutputFile(outputFile);
 
 
@@ -324,18 +332,27 @@ public class Reconciliation extends BatchJobV2 {
     }
 
     public class MyTools {
-        public String getOracleStringValue(String text){
+        public String getOracleStringValue(String text) {
             String ret = "";
-            if (text == null){
+            if (text == null) {
                 ret = "null";
-            }
-            else {
+            } else {
                 ret = "'" + text + "'";
             }
             return ret;
         }
-    }
+        public String getColumnType(Field field) {
+            String ret = "";
+            if ("VARCHAR2".equals(field.getType())){
+                ret = field.getType() + "(" + field.getLength() + " " + field.getType2() + ")";
+            }
+            else {
+                ret = field.getType();
+            }
+            return ret;
 
+        }
+    }
 
 
 }

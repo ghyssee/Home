@@ -186,5 +186,10 @@ class CustomSort{
 	}
 }
 
+function nullIfEmpty($field){
+	return (empty($field) ? null : $field);
+}
+
+
 ?>
 
