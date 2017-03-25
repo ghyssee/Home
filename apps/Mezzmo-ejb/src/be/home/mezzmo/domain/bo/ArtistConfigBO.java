@@ -11,6 +11,7 @@ package be.home.mezzmo.domain.bo;
         import org.apache.log4j.Logger;
 
         import java.util.ArrayList;
+        import java.util.Collections;
         import java.util.List;
         import java.util.Map;
         import java.util.stream.Collectors;
@@ -29,6 +30,7 @@ public class ArtistConfigBO {
         mapArtists =
                 artists.list.stream().collect(Collectors.toMap(Artists.Artist::getId, artist -> artist));
         multiArtistConfig = (MultiArtistConfig) JSONUtils.openJSONWithCode(Constants.JSON.MULTIARTISTCONFiG, MultiArtistConfig.class);
+        Collections.sort(multiArtistConfig.list, (a1, b1) -> b1.artists.size() - a1.artists.size());
         mapSplitters =
                 multiArtistConfig.splitters.stream().collect(Collectors.toMap(MultiArtistConfig.Splitter::getId, c -> c));
     }
@@ -101,7 +103,6 @@ public class ArtistConfigBO {
     }
 
     private String constructArtistSearchExact(List<MultiArtistConfig.Item.Artist> list, String splitterText){
-        //((Person A)( Feat\. | ?& ?|, ?| |$)(Person B))
         String artistSearch = "";
         for (MultiArtistConfig.Item.Artist artist : list){
             artistSearch += "(";

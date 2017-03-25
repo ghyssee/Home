@@ -547,17 +547,19 @@ public class MP3TagUtils {
             log.warn("Album Artist does not match: " + "mp3: " + mp3AlbumArtist + " / Formatted: " + albumArtist);
             ok = addAlbumArtistError(comp, update, mp3AlbumArtist, albumArtist);
         }
-        else if (!albumArtist.equals(comp.getAlbumArtistTO().getName())){
-            log.warn("Album Artist does not match: " + "DB: " + comp.getAlbumArtistTO().getName() + " / Formatted: " + albumArtist);
+        if (ok){
+           if (!this.update && !albumArtist.equals(comp.getAlbumArtistTO().getName())) {
+               log.warn("Album Artist does not match: " + "DB: " + comp.getAlbumArtistTO().getName() + " / Formatted: " + albumArtist);
             /* update mp3 + DB */
-            String oldValue = comp.getAlbumArtistTO().getName();
-            String newValue = albumArtist;
-            if (this.update){
-                // updated the value through the update screen, overruling the info from the mp3 file
-                oldValue = albumArtist;
-                newValue = comp.getAlbumArtistTO().getName();
-            }
-            ok = addAlbumArtistError(comp, update, oldValue, newValue);
+               String oldValue = comp.getAlbumArtistTO().getName();
+               String newValue = albumArtist;
+               if (this.update) {
+                   // updated the value through the update screen, overruling the info from the mp3 file
+                   oldValue = albumArtist;
+                   newValue = comp.getAlbumArtistTO().getName();
+               }
+               ok = addAlbumArtistError(comp, update, oldValue, newValue);
+           }
         }
         return ok;
     }

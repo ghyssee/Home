@@ -76,7 +76,6 @@ public class M3uMakerV2 extends BatchJobV2 {
         String baseFolder = Setup.getFullPath(Constants.Path.IPOD) + File.separator + m3uMonth.baseDir + File.separator;
         String inputFile =  baseFolder + m3uMonth.inputFile;
         List <M3uTO> songsOfUltratop = null;
-        boolean fileRenamed = false;
         try {
             songsOfUltratop = getSongsFromUltratopListFile(inputFile);
             List <M3uTO> songsOfYearList = processYearList(year);
@@ -154,14 +153,6 @@ public class M3uMakerV2 extends BatchJobV2 {
         log.info(StringUtils.repeat("*", 200));
         log.info("");
 
-    }
-
-    private String removeSpecificWords(String word){
-        word = word.replace("[BE]", "");
-        word = word.replace("[NL]", "");
-        word = word.replace("FEAT.", "&");
-        word = word.replace(" MET ", " & ");
-        return word.trim();
     }
 
     private String getUniqueSong(String song){
@@ -282,7 +273,6 @@ public class M3uMakerV2 extends BatchJobV2 {
 
         log.info("Start: Match Ultratop");
 
-        boolean success = true;
         for (M3uTO song: ultratopList) {
             if (song.getM3uSong() == null) {
                 M3uTO foundSong = findSong(song, ListOfMP3Files);
@@ -314,8 +304,5 @@ public class M3uMakerV2 extends BatchJobV2 {
         return null;
 
     }
-
-
-
 }
 
