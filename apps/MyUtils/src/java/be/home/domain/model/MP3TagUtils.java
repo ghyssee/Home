@@ -420,7 +420,7 @@ public class MP3TagUtils {
         }
         String strippedAlbum = MP3Helper.getInstance().stripFilename(album);
         if (!strippedAlbum.equals(physicalPath) && !strippedAlbum.equals(strippedPhysicalPath)){
-            log.warn("Path Album does not match: " + "Formatted: " + album + " / Disc: " + physicalPath);
+            log.warn("Path Album does not match: " + "Formatted: " + strippedAlbum + " / Disc: " + physicalPath);
             String possibleNewFile = file.getParentFile().getParentFile().getAbsolutePath() + File.separator + strippedPhysicalPath + File.separator;
             String oldFile = file.getParentFile().getAbsolutePath() + File.separator;
             addItem(comp.getFileTO().getId(),
