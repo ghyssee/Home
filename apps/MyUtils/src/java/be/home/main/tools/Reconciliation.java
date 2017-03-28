@@ -66,19 +66,24 @@ public class Reconciliation extends BatchJobV2 {
 
         List<Field> fieldsStream1 = Arrays.asList(
                 new Field("CATEGORY", "VARCHAR2", "100", false, "Category"),
+                new Field("CATEGORY_CODE", "VARCHAR2", "10", false, "Category Code"),
                 new Field("DEST_DATE", "VARCHAR2", "50", false, "Destination Date"),
                 new Field("CODE", "VARCHAR2", "100", true, "Flight Code"),
-                new Field("WEIGHT", "VARCHAR2", "50", false, "Weight"),
-                new Field("LETTER", "VARCHAR2", "50", false, "Letter"),
-                new Field("EMS", "VARCHAR2", "50", false, "EMS"),
-                new Field("SV", "VARCHAR2", "50", false, "CV"),
+                new Field("WEIGHT", "NUMBER", null, false, "Weight"),
+                new Field("LETTER", "NUMBER", null, false, "Letter"),
+                new Field("EMS", "NUMBER", null, false, "EMS"),
+                new Field("SV", "NUMBER", null, false, "SV"),
                 new Field("ARRIVAL_CENTER", "VARCHAR2", "100", false, "Arrival Center"),
                 new Field("DISP_OFFICE", "VARCHAR2", "20", true, "Disposit Office"),
                 new Field("DEST_OFFICE", "VARCHAR2", "20", true, "Destination Office"),
+                new Field("DISP_OFFICE_SHORT", "VARCHAR2", "20", true, "Disposit Office (Short)"),
+                new Field("DEST_OFFICE_SHORT", "VARCHAR2", "20", true, "Destination Office (Short)"),
                 new Field("MAIL_NO", "VARCHAR2", "20", false, "Mail No")
         );
         List<Field> fieldsStream2 = Arrays.asList(
                 new Field("SUPPLIER", "VARCHAR2", "100", false, "Supplier"),
+                new Field("CATEGORY", "VARCHAR2", "100", false, "Category"),
+                new Field("CATEGORY_CODE", "VARCHAR2", "10", false, "Category Code"),
                 new Field("CODE", "VARCHAR2", "100", false, "Flight Code"),
                 new Field("MAIL_NO", "VARCHAR2", "20", false, "Mail No"),
                 new Field("DISP_OFFICE", "VARCHAR2", "20", false, "Disposit Office"),
@@ -86,7 +91,6 @@ public class Reconciliation extends BatchJobV2 {
                 new Field("FORWARD_FROM", "VARCHAR2", "20", false, "Forwarded From"),
                 new Field("FORWARD_TO", "VARCHAR2", "20", false, "Forwarded To"),
                 new Field("DEST_DATE", "VARCHAR2", "50", false, "Destination Date"),
-                new Field("CATEGORY", "VARCHAR2", "100", false, "Category"),
                 new Field("MAIL_LCAO", "VARCHAR2", "50", false, "Mail LCAO"),
                 new Field("MAIL_CP", "VARCHAR2", "50", false, "Mail CP"),
                 new Field("MAIL_EMS", "VARCHAR2", "50", false, "Mail EMS"),
@@ -140,15 +144,39 @@ public class Reconciliation extends BatchJobV2 {
         createGlobal(userId, datatype, streams, "06_MDM_SETUP_GLOBAL.sql");
 
         List<MatchPredicate> listMatchPredicateManual = Arrays.asList(
-                new MatchPredicate("Flight Code Equals", "CODE", null, "CODE", "=", null, null, null, "N")
+                new MatchPredicate("Dispatching Office Equals", "DISP_OFFICE", null, "DISP_OFFICE", "=", null, null, null, "N"),
+                new MatchPredicate("Office Of Destination Equals", "DEST_OFFICE", null, "DEST_OFFICE", "=", null, null, null, "N"),
+                new MatchPredicate("Mail No Equals", "MAIL_NO", null, "MAIL_NO", "=", null, null, null, "N")
         );
         List<MatchPredicate> listMatchPredicateAutomatic = Arrays.asList(
-                new MatchPredicate("Flight Code Equals", "CODE", null, "CODE", "=", null, null, null, "N")
+                new MatchPredicate("Dispatching Office Equals", "DISP_OFFICE", null, "DISP_OFFICE", "=", null, null, null, "N"),
+                new MatchPredicate("Office Of Destination Equals", "DEST_OFFICE", null, "DEST_OFFICE", "=", null, null, null, "N"),
+                new MatchPredicate("Mail No Equals", "MAIL_NO", null, "MAIL_NO", "=", null, null, null, "N")
+        );
+        List<MatchPredicate> listMatchPredicateManual2 = Arrays.asList(
+                new MatchPredicate("Dispatching Office Equals", "DISP_OFFICE", null, "DISP_OFFICE_SHORT", "=", null, null, null, "N"),
+                new MatchPredicate("Office Of Destination Equals", "DEST_OFFICE", null, "DEST_OFFICE_SHORT", "=", null, null, null, "N"),
+                new MatchPredicate("Mail No Equals", "MAIL_NO", null, "MAIL_NO", "=", null, null, null, "N")
+        );
+        List<MatchPredicate> listMatchPredicateManual3 = Arrays.asList(
+                new MatchPredicate("Flight Code", "CODE", null, "CODE", "=", null, null, null, "N")
+        );
+        List<MatchPredicate> listMatchPredicateAutomatic2 = Arrays.asList(
+                new MatchPredicate("Dispatching Office Equals", "DISP_OFFICE", null, "DISP_OFFICE_SHORT", "=", null, null, null, "N"),
+                new MatchPredicate("Office Of Destination Equals", "DEST_OFFICE", null, "DEST_OFFICE_SHORT", "=", null, null, null, "N"),
+                new MatchPredicate("Mail No Equals", "MAIL_NO", null, "MAIL_NO", "=", null, null, null, "N")
+        );
+        List<MatchPredicate> listMatchPredicateAutomatic3 = Arrays.asList(
+                new MatchPredicate("Flight Code", "CODE", null, "CODE", "=", null, null, null, "N")
         );
 
         List<MatchAlgorithm> listMatchAlgorithm = Arrays.asList(
-                new MatchAlgorithm("ILPOST_MAN", "Match on Flight Code", "n", "n", "1", "MANUAL", listMatchPredicateManual),
-                new MatchAlgorithm("ILPOST_RUN1", "Match on Flight Code", "n", "n", "1", "AUTOMATIC", listMatchPredicateAutomatic)
+                new MatchAlgorithm("ILPOST_MAN", "Match on Flight Code", "1", "1", "1", "MANUAL", listMatchPredicateManual),
+                new MatchAlgorithm("ILPOST_RUN1", "Match on Flight Code", "1", "1", "1", "AUTOMATIC", listMatchPredicateAutomatic),
+                new MatchAlgorithm("ILPOST_MAN2", "Match on Short code", "1", "1", "2", "MANUAL", listMatchPredicateManual2),
+                new MatchAlgorithm("ILPOST_RUN2", "Match on Short code", "1", "1", "2", "AUTOMATIC", listMatchPredicateAutomatic2),
+                new MatchAlgorithm("ILPOST_MAN3", "Match on Flight code", "1", "1", "3", "MANUAL", listMatchPredicateManual3),
+                new MatchAlgorithm("ILPOST_RUN3", "Match on Flight code", "1", "1", "3", "AUTOMATIC", listMatchPredicateAutomatic3)
         );
 
         MatchEngine me = new MatchEngine("ILPOST", "ILPost Reconciliation", stream1, stream2, listMatchAlgorithm);
