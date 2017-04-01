@@ -158,6 +158,7 @@ public class M3uMakerV2 extends BatchJobV2 {
     private String getUniqueSong(String song){
         song = MP3Helper.getInstance().prettifySong(song);
         song = MP3Helper.getInstance().stripFilename(song);
+        song = prettifyM3uSong(song);
         song = song.toUpperCase();
         song = song.replace("CATCH & RELEASE (DEEPEND REMIX)", "CATCH & RELEASE");
         return song;
@@ -166,10 +167,22 @@ public class M3uMakerV2 extends BatchJobV2 {
     private String getUniqueAritst(String artist){
         artist = MP3Helper.getInstance().prettifyArtist(artist);
         artist = MP3Helper.getInstance().stripFilename(artist);
+        artist = prettifyM3uArtist(artist);
         artist = artist.toUpperCase();
         //artist = removeSpecificWords(artist);
         return artist;
     }
+
+    private String prettifyM3uArtist(String artist){
+        String text = artist.replaceAll(" \\[BE\\]", "");
+        return text;
+    }
+
+    private String prettifyM3uSong(String song){
+        String text = song.replaceAll(" \\(DJ Franxu Extended Edit\\)", "");
+        return text;
+    }
+
     private String convertSongNameToM3uSongName(String song){
         String tmpSong = song.replace("\"", "''");
         return tmpSong;
