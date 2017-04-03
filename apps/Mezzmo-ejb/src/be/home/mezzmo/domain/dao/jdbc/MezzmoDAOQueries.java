@@ -330,7 +330,7 @@ public class MezzmoDAOQueries extends MezzmoDB {
             .select()
             .addTable(TablesEnum.MGOFileArtist)
             .addColumns(TablesEnum.MGOFileArtist)
-            .addCondition(MGOFileArtistColumns.ARTIST, Comparator.LIKE, SQLBuilder.PARAMETER)
+            .addCondition(MGOFileArtistColumns.ARTIST, Comparator.EQUALS, SQLBuilder.PARAMETER)
             //.addOption("COLLATE BINARY")
             .render();
 
@@ -406,7 +406,7 @@ public class MezzmoDAOQueries extends MezzmoDB {
             .select()
             .addTable(TablesEnum.MGOAlbumArtist)
             .addColumns(TablesEnum.MGOAlbumArtist)
-            .addCondition(MGOAlbumArtistColumns.ALBUMARTIST, Comparator.LIKE, SQLBuilder.PARAMETER)
+            .addCondition(MGOAlbumArtistColumns.ALBUMARTIST, Comparator.EQUALS, SQLBuilder.PARAMETER)
             //.addOption("COLLATE BINARY")
             .render();
 
