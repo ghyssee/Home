@@ -84,7 +84,6 @@ public class Reconciliation extends BatchJobV2 {
                 new Field("SUPPLIER", "VARCHAR2", "100", false, "Supplier"),
                 new Field("CATEGORY", "VARCHAR2", "100", false, "Category"),
                 new Field("CATEGORY_CODE", "VARCHAR2", "10", false, "Category Code"),
-                new Field("CATEGORY_CODE2", "VARCHAR2", "10", false, "Category Code2"),
                 new Field("CODE", "VARCHAR2", "100", false, "Flight Code"),
                 new Field("MAIL_NO", "VARCHAR2", "20", false, "Mail No"),
                 new Field("DISP_OFFICE", "VARCHAR2", "20", false, "Disposit Office"),
@@ -97,9 +96,7 @@ public class Reconciliation extends BatchJobV2 {
                 new Field("WEIGHT", "NUMBER", null, false, "Weight"),
                 new Field("WEIGHT_LCAO", "NUMBER", null, false, "Wieght LCAO"),
                 new Field("WEIGHT_EMS", "NUMBER", null, false, "Weight EMS"),
-                new Field("WEIGHT_CP", "NUMBER", null, false, "Weight CP"),
-                new Field("SERIAL_NBR", "NUMBER", null, false, "Serial NBR"),
-                new Field("GROSS_WEIGHT", "NUMBER", null, false, "Gross Weight")
+                new Field("WEIGHT_CP", "NUMBER", null, false, "Weight CP")
         );
         List<FileType> fileTypesStream1 = Arrays.asList(
                 new FileType("ILPOST_FILE", "^ILPOST_.*\\.csv$", "ilpost", "ILPOST File", "DEFAULT", fileRuleSetList)
@@ -171,27 +168,34 @@ public class Reconciliation extends BatchJobV2 {
         List<MatchPredicate> listMatchPredicateAutomatic3 = Arrays.asList(
                 new MatchPredicate("Flight Code", "CODE", null, "CODE", "=", null, null, null, "N")
         );
+        Function makeNull = new Function("MakeNull", "Make Null", Function.DataType.NUMBER, Function.FunctionType.M);
+        List<Function> newFunctions =  Arrays.asList(
+                makeNull
+        );
+        Function isNull = new Function("IsNull", "Is Null");
         List<MatchPredicate> listMatchPredicateManual4 = Arrays.asList(
                 new MatchPredicate("Dispatching Office Equals", "DISP_OFFICE", null, "DISP_OFFICE_SHORT", "=", null, null, null, "N"),
                 new MatchPredicate("Office Of Destination Equals", "DEST_OFFICE", null, "DEST_OFFICE_SHORT", "=", null, null, null, "N"),
                 new MatchPredicate("Mail No Equals", "MAIL_NO", null, "MAIL_NO", "=", null, null, null, "N"),
-                new MatchPredicate("Mail Type Equals", "CATEGORY_CODE2", null, "CATEGORY_CODE", "=", null, null, null, "N")
+                new MatchPredicate("Categroy Code Is Null", "CATEGORY_CODE", null, "CATEGORY_CODE", "=", null, makeNull, isNull, "N")
         );
         List<MatchPredicate> listMatchPredicateAutomatic4 = Arrays.asList(
                 new MatchPredicate("Dispatching Office Equals", "DISP_OFFICE", null, "DISP_OFFICE_SHORT", "=", null, null, null, "N"),
                 new MatchPredicate("Office Of Destination Equals", "DEST_OFFICE", null, "DEST_OFFICE_SHORT", "=", null, null, null, "N"),
                 new MatchPredicate("Mail No Equals", "MAIL_NO", null, "MAIL_NO", "=", null, null, null, "N"),
-                new MatchPredicate("Mail Type Equals", "CATEGORY_CODE2", null, "CATEGORY_CODE", "=", null, null, null, "N")
+                new MatchPredicate("Categroy Code Is Null", "CATEGORY_CODE", null, "CATEGORY_CODE", "=", null, makeNull, isNull, "N")
         );
         List<MatchPredicate> listMatchPredicateManual5 = Arrays.asList(
                 new MatchPredicate("Office Of Destination Equals", "DEST_OFFICE", null, "DEST_OFFICE_SHORT", "=", null, null, null, "N"),
                 new MatchPredicate("Mail No Equals", "MAIL_NO", null, "MAIL_NO", "=", null, null, null, "N"),
-                new MatchPredicate("Mail Type Equals", "CATEGORY_CODE", null, "CATEGORY_CODE", "=", null, null, null, "N")
+                new MatchPredicate("Mail Type Equals", "CATEGORY_CODE", null, "CATEGORY_CODE", "=", null, null, null, "N"),
+                new MatchPredicate("Disp Office Is Null", "DISP_OFFICE", null, "DISP_OFFICE", "=", null, makeNull, isNull, "N")
         );
         List<MatchPredicate> listMatchPredicateAutomatic5 = Arrays.asList(
                 new MatchPredicate("Office Of Destination Equals", "DEST_OFFICE", null, "DEST_OFFICE_SHORT", "=", null, null, null, "N"),
                 new MatchPredicate("Mail No Equals", "MAIL_NO", null, "MAIL_NO", "=", null, null, null, "N"),
-                new MatchPredicate("Mail Type Equals", "CATEGORY_CODE", null, "CATEGORY_CODE", "=", null, null, null, "N")
+                new MatchPredicate("Mail Type Equals", "CATEGORY_CODE", null, "CATEGORY_CODE", "=", null, null, null, "N"),
+                new MatchPredicate("Disp Office Is Null", "DISP_OFFICE", null, "DISP_OFFICE", "=", null, makeNull, isNull, "N")
         );
 
         List<MatchAlgorithm> listMatchAlgorithm = Arrays.asList(
@@ -201,20 +205,21 @@ public class Reconciliation extends BatchJobV2 {
                 new MatchAlgorithm("ILPOST_RUN2", "Match on DISP / DEST / MAIL_NO", "n", "n", "2", "AUTOMATIC", listMatchPredicateAutomatic),
                 new MatchAlgorithm("ILPOST_MAN3", "Match on CATEGORY / SHORT DISP / DEST / MAIL_NO", "n", "n", "3", "MANUAL", listMatchPredicateManual2),
                 new MatchAlgorithm("ILPOST_RUN3", "Match on CATEGORY / Match on SHORT DISP / DEST / MAIL_NO", "n", "n", "3", "AUTOMATIC", listMatchPredicateAutomatic2),
-                new MatchAlgorithm("ILPOST_MAN4", "Match on CATEGORY2 / Match on SHORT DISP / DEST / MAIL_NO", "n", "n", "4", "MANUAL", listMatchPredicateManual4),
-                new MatchAlgorithm("ILPOST_RUN4", "Match on CATEGORY2 / Match on SHORT DISP / DEST / MAIL_NO", "n", "n", "4", "AUTOMATIC", listMatchPredicateAutomatic4),
-                new MatchAlgorithm("ILPOST_MAN5", "Match on CATEGORY / Match on SHORT DEST / MAIL_NO", "n", "n", "5", "MANUAL", listMatchPredicateManual5),
-                new MatchAlgorithm("ILPOST_RUN5", "Match on CATEGORY / Match on SHORT DEST / MAIL_NO", "n", "n", "5", "AUTOMATIC", listMatchPredicateAutomatic5)
+                new MatchAlgorithm("ILPOST_MAN4", "Match On SHORT DISP / DEST / MAIL_NO And On Empty Category Code", "n", "n", "4", "MANUAL", listMatchPredicateManual4),
+                new MatchAlgorithm("ILPOST_RUN4", "Match On SHORT DISP / DEST / MAIL_NO And On Empty Category Code", "n", "n", "4", "AUTOMATIC", listMatchPredicateAutomatic4),
+                new MatchAlgorithm("ILPOST_MAN5", "Match on CATEGORY / Match on SHORT DEST / MAIL_NO And On Empty Disp Office", "n", "n", "5", "MANUAL", listMatchPredicateManual5),
+                new MatchAlgorithm("ILPOST_RUN5", "Match on CATEGORY / Match on SHORT DEST / MAIL_NO And On Empty Disp Office", "n", "n", "5", "AUTOMATIC", listMatchPredicateAutomatic5)
         );
 
         MatchEngine me = new MatchEngine("ILPOST", "ILPost Reconciliation", stream1, stream2, listMatchAlgorithm);
-        createMatchEngine(userId, me, "07_MDM_SETUP_MATCHENGINE.sql");
+        createFunctions(userId, newFunctions, "07_MDM_SETUP_FUNCTIONS.sql");
+        createMatchEngine(userId, me, "08_MDM_SETUP_MATCHENGINE.sql");
 
-        createReport(userId, streamDescription1, streamDescription2, fieldsStream1, fieldsStream2, "08_MDM_SETUP_REPORT.sql"
+        createReport(userId, streamDescription1, streamDescription2, fieldsStream1, fieldsStream2, "09_MDM_SETUP_REPORT.sql"
         );
-        createSecurity(MATCH_ENGINE, role, "09_MDM_INSERT_SECURITY_LEVELS.sql");
-        createTempMatch("10_DML_TEMP_MATCH.sql");
-        createDropTables(me, dataSource1, dataSource2, datatype, streams, fileTypes, "99_DROP.sql");
+        createSecurity(MATCH_ENGINE, role, "10_MDM_INSERT_SECURITY_LEVELS.sql");
+        createTempMatch("11_DML_TEMP_MATCH.sql");
+        createDropTables(me, dataSource1, dataSource2, datatype, streams, fileTypes, newFunctions, "99_DROP.sql");
     }
 
     public void setObjects(VelocityContext context) {
@@ -297,7 +302,9 @@ public class Reconciliation extends BatchJobV2 {
 
     public void createDropTables(MatchEngine matchEngine, String dataSource1, String dataSource2, Datatype dataType,
                                  List<Stream> streams,
-                                 List<FileType> fileTypes, String outputFile) {
+                                 List<FileType> fileTypes,
+                                 List<Function> newFunctions,
+                                 String outputFile) {
         outputFile = getOutputFile(outputFile);
 
 
@@ -309,6 +316,7 @@ public class Reconciliation extends BatchJobV2 {
         context.put("dataType", dataType);
         context.put("fileTypes", fileTypes);
         context.put("streams", streams);
+        context.put("functions", newFunctions);
 
         context.put("date", new DateTool());
         context.put("esc", new EscapeTool());
@@ -388,6 +396,22 @@ public class Reconciliation extends BatchJobV2 {
         }
     }
 
+    private void createFunctions(String userId, List<Function> functions, String outputFile) {
+        outputFile = getOutputFile(outputFile);
+
+        VelocityUtils vu = new VelocityUtils();
+        VelocityContext context = new VelocityContext();
+        context.put("userId", userId);
+        context.put("functions", functions);
+        context.put("mu", new MyTools());
+
+        try {
+            vu.makeFile("reconciliation/RECON_08_GEN_FUNCTION.sql", outputFile, context);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void createTempMatch(String outputFile) {
         outputFile = getOutputFile(outputFile);
 
@@ -409,6 +433,15 @@ public class Reconciliation extends BatchJobV2 {
                 ret = "null";
             } else {
                 ret = "'" + text + "'";
+            }
+            return ret;
+        }
+        public String getFunction(Function function) {
+            String ret = "";
+            if (function == null) {
+                ret = "null";
+            } else {
+                ret = "(SELECT F_ID FROM FUNCTION WHERE CODE = '" + function.getCode() + "')";
             }
             return ret;
         }

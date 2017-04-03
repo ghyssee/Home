@@ -16,7 +16,8 @@ public class MatchPredicate {
     private String description;
 
     public MatchPredicate (String description, String leftColumnName, String fieldOperator, String rightColumnName, String relOperator,
-            String resultValue, Function rightFunction, Function leftFunction, String warning){
+            String resultValue, Function leftFunction, Function rightFunction, String warning){
+        this.description = description;
         this.leftColumnName = leftColumnName;
         this.fieldOperator = fieldOperator;
         this.rightColumnName = rightColumnName;
@@ -25,7 +26,6 @@ public class MatchPredicate {
         this.leftFunction = leftFunction;
         this.rightFunction = rightFunction;
         this.warning = warning;
-        this.description = description;
 
     }
 
