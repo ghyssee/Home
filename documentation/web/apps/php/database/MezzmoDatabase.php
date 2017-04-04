@@ -57,6 +57,18 @@ class MezzmoSQLiteDatabase extends PDO {
         return $songObj;
     }
 
+    public function convertToSongObj($result){
+        $songObj = new SongCorrection();
+        $songObj->fileId = $result['ID'];
+        $songObj->title = $result['TITLE'];
+        $songObj->artist = $result['ARTIST'];
+        $songObj->artistId = $result['ARTISTID'];
+        $songObj->albumId = $result['ALBUMID'];
+        $songObj->album = $result['ALBUM'];
+        $songObj->file = $result['FILE'];
+        return $songObj;
+    }
+
     public function joinAlbum(){
         $join = "INNER JOIN mgofilealbum AS FILEALBUM " .
                  "ON ( FILEALBUM.id = FILEALBUMREL.id ) " .

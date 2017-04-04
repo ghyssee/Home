@@ -48,4 +48,17 @@ class SongBO
     }
 
 }
+
+class SongTO {
+    public $artistId;
+    public $artist;
+    public $title;
+    public $fileId;
+    public $albumId;
+    public $album;
+    public $file;
+
+}
+    
+
 ?>

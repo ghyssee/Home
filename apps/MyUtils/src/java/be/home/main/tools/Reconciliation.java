@@ -92,7 +92,6 @@ public class Reconciliation extends BatchJobV2 {
                 new Field("FORWARD_TO", "VARCHAR2", "20", false, "Forwarded To"),
                 new Field("DEST_DATE", "VARCHAR2", "50", false, "Destination Date"),
                 new Field("SORTE", "VARCHAR2", "50", false, "Sorte"),
-                new Field("TYPE_POSTE", "VARCHAR2", "50", false, "Type Post"),
                 new Field("WEIGHT", "NUMBER", null, false, "Weight"),
                 new Field("WEIGHT_LCAO", "NUMBER", null, false, "Wieght LCAO"),
                 new Field("WEIGHT_EMS", "NUMBER", null, false, "Weight EMS"),
