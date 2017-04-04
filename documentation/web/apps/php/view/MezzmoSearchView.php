@@ -11,16 +11,24 @@
 
 <?php
 session_start();
-include("../setup.php");
-include("../config.php");
-include("../model/HTML.php");
-include("../html/config.php");
+include_once("../setup.php");
+include_once("../config.php");
+include_once("../model/HTML.php");
+include_once("../html/config.php");
+include_once documentPath (ROOT_PHP_BO, "SongBO.php");
 $albumSave = 'MezzmoSearchview.php';
 
 if (isset($_POST['submit'])) {
     $data = array();
     $data[] = getObject("15", "Test15");
     $data[] = getObject("16", "Test16");
+    $song = new SongTO();
+    assignNumber($song->artistId, "artistId");
+    assignNumber($song->fileId, "fileId");
+    assignField($song->artistName, "artistName");
+    if (empty($song->artistId && empty($song->fileId) && empty($song->artistName))){
+        echo "all empty";
+    }
 }
 else {
     $data = array();

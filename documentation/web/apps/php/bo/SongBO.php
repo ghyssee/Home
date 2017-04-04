@@ -1,6 +1,5 @@
 <?php
 require_once documentPath (ROOT_PHP, "config.php");
-require_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 include_once documentPath (ROOT_PHP_DATABASE, "MezzmoDatabase.php");
 
 $htmlFile = getFullPath(JSON_SONGCORRECTIONS);
