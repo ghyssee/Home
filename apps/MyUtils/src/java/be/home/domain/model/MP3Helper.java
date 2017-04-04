@@ -52,6 +52,7 @@ public class MP3Helper {
         text = text.replaceAll("´", "'");
         text = text.replaceAll("‘", "'");
         text = text.replaceAll("`", "'");
+        text = text.replaceAll("&amp;? ?", "& ");
         text = text.replaceAll("''", "\"");
         return text;
     }
@@ -107,7 +108,7 @@ public class MP3Helper {
             prettifiedText = prettifiedText.replaceAll(replaceBetweenBrackets("Black Box Radio Edit"), "");
 
             prettifiedText = stripSong(prettifiedText);
-            prettifiedText = prettifiedText.replace("  ", " ");
+            prettifiedText = prettifiedText.replaceAll("  ", " ");
             prettifiedText = prettifiedText.trim();
             prettifiedText = checkWords(prettifiedText, Mp3Tag.ARTIST);
             prettifiedText = checkArtistNames(mp3Prettifer.artist.names, prettifiedText, "Artist Names");

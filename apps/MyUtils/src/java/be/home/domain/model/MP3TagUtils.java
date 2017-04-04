@@ -104,6 +104,27 @@ public class MP3TagUtils {
 
     }
 
+    private boolean checkForTitleExceptions(MGOFileAlbumCompositeTO comp){
+        boolean ok = true;
+        if (comp.getFileArtistTO().getArtist().matches("Britney Spears.*")){
+            String matchKey = "\\.?\\.?\\.? ?Baby One More Time(.*)";
+            String newKey = "...Baby One More Time$1";
+            if (comp.getFileTO().getTitle().matches(matchKey)){
+                String title = comp.getFileTO().getTitle().replaceAll(matchKey, newKey);
+                if (!title.equals(comp.getFileTO().getTitle())){
+                    addItem(comp.getFileTO().getId(),
+                            comp.getFileTO().getId(),
+                            comp.getFileTO().getFile(),
+                            comp.getFileAlbumTO().getName(),
+                            MP3Tag.TITLE, comp.getFileTO().getTitle(), title);
+                    comp.getFileTO().setTitle(title);
+                    ok = false;
+                }
+            }
+        }
+        return ok;
+    }
+
     private void checkMP3Info(MGOFileAlbumCompositeTO comp, File file, int nrOfTracks, int maxDisc){
         Mp3File mp3file = null;
         try {
@@ -115,6 +136,7 @@ public class MP3TagUtils {
                     checkTrack(id3v2Tag.getTrack(), comp, nrOfTracks, maxDisc);
                     checkArtist(comp, id3v2Tag.getArtist());
                     checkTitle(comp, id3v2Tag.getTitle());
+                    checkForTitleExceptions(comp);
                     if (checkDisc(comp, id3v2Tag.getPartOfSet())) {
                         if (checkFilename(comp, nrOfTracks, maxDisc)) {
                             // if filename is ok, an extra check for filetitle
@@ -415,6 +437,7 @@ public class MP3TagUtils {
         File file = new File(comp.getFileTO().getFile());
         String physicalPath = getAlbumPath(file);
         String strippedPhysicalPath = removeYearFromAlbum(physicalPath);
+        //strippedPhysicalPath = MP3Helper.getInstance().stripFilename(strippedPhysicalPath);
         if (!"VARIOUS ARTISTS".equals(comp.getAlbumArtistTO().getName().toUpperCase())){
             album = comp.getAlbumArtistTO().getName() + " - " + album;
         }
