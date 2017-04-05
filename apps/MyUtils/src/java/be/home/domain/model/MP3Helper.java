@@ -313,7 +313,7 @@ public class MP3Helper {
         boolean ok = true;
         String oldSong = song.toString();
         for (MP3Prettifier.ArtistSong artistSong : mp3Prettifer.artistSongs) {
-            if (artist.matches(artistSong.artist)) {
+            if (artist.matches(artistSong.oldArtist)) {
                 String matchKey = artistSong.oldSong;
                 String newKey = artistSong.newSong;
                 if (oldSong.matches(matchKey)) {
@@ -332,7 +332,7 @@ public class MP3Helper {
 
     public String checkForTitleExceptions(String artist, String song){
         for (MP3Prettifier.ArtistSong artistSong : mp3Prettifer.artistSongs) {
-            if (artist.matches(artistSong.artist)) {
+            if (artist.matches(artistSong.oldArtist)) {
                 String matchKey = artistSong.oldSong;
                 String newKey = artistSong.newSong;
                 if (song.matches(matchKey)) {
@@ -347,5 +347,18 @@ public class MP3Helper {
         return song;
     }
 
-
+    public String checkForArtistExceptions(String artist, String song){
+        String newArtist = artist;
+        for (MP3Prettifier.ArtistSong artistSong : mp3Prettifer.artistSongs) {
+            if (song.matches(artistSong.oldSong)) {
+                String matchKey = artistSong.oldArtist;
+                String newKey = artistSong.newArtist;
+                if (artist.matches(matchKey)) {
+                    newArtist = artist.replaceAll(matchKey, newKey);
+                    break;
+                }
+            }
+        }
+        return newArtist;
+    }
 }

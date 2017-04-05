@@ -163,8 +163,9 @@ private static void testAlbumArtist(){
         System.out.println(mp3Helper.prettifySong("Lovin, Livin And Givin"));
         System.out.println("A Feat. B".replaceAll("Feat\\. ?", "Feat. "));
         System.out.println(mp3Helper.prettifyArtist("Daryl Hall & Oates"));
-        System.out.println(mp3Helper.prettifyArtist("Eskobar Feat. Heather\n"));
+        System.out.println(mp3Helper.prettifyArtist("*NSYNC & Nelly"));
         System.out.println(mp3Helper.checkForTitleExceptions("Divine Inspiration", "The Way"));
+        System.out.println(mp3Helper.checkForArtistExceptions("Divine Inspiration", "The Way"));
         //System.out.println("The Partysquad Feat. Sjaak, Dio, Sef".replaceAll("((Sef|Dio|Sjaak)( ?& ?|, ?| |\\.|$)){3,}", "Dio, Sef & Sjaak"));
         //System.out.println(mp3Helper.prettifyArtist("Ll Cool J Feat. 7 Aurelius"));
 
