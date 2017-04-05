@@ -35,6 +35,7 @@ import java.util.List;
 public class MP3TagUtils {
 
     private AlbumError albumErrors;
+    private List <AlbumError.Item> songErrors = new ArrayList();
     // indicates if it is an update and not a default check
     public boolean update = false;
     MP3Settings.Mezzmo.Mp3Checker.RelativePath relativePath;
@@ -101,22 +102,8 @@ public class MP3TagUtils {
                     );
 
         }
+        this.songErrors = new ArrayList();
 
-    }
-
-    private String checkForTitleExceptions(String artist, String song){
-        String newSong = null;
-        if (artist.matches("Britney Spears.*")){
-            String matchKey = "\\.?\\.?\\.? ?Baby One More Time(.*)";
-            String newKey = "...Baby One More Time$1";
-            if (song.matches(matchKey)){
-                String title = song.replaceAll(matchKey, newKey);
-                if (!title.equals(song)){
-                    newSong = title;
-                }
-            }
-        }
-        return newSong;
     }
 
     private boolean checkForTitleExceptions(MGOFileAlbumCompositeTO comp){
@@ -134,6 +121,21 @@ public class MP3TagUtils {
         return ok;
     }
 
+    private boolean checkForArtistExceptions(MGOFileAlbumCompositeTO comp){
+        String artist = MP3Helper.getInstance().checkForArtistExceptions(comp.getFileArtistTO().getArtist(), comp.getFileTO().getTitle());
+        boolean ok = true;
+        if (!artist.equals(comp.getFileArtistTO().getArtist())){
+            addItem(comp.getFileTO().getId(),
+                    comp.getFileTO().getId(),
+                    comp.getFileTO().getFile(),
+                    comp.getFileAlbumTO().getName(),
+                    MP3Tag.ARTIST, comp.getFileArtistTO().getArtist(), artist);
+            comp.getFileArtistTO().setArtist(artist);
+            ok = false;
+        }
+        return ok;
+    }
+
     private void checkMP3Info(MGOFileAlbumCompositeTO comp, File file, int nrOfTracks, int maxDisc){
         Mp3File mp3file = null;
         try {
@@ -146,6 +148,7 @@ public class MP3TagUtils {
                     checkArtist(comp, id3v2Tag.getArtist());
                     checkTitle(comp, id3v2Tag.getTitle());
                     checkForTitleExceptions(comp);
+                    checkForArtistExceptions(comp);
                     if (checkDisc(comp, id3v2Tag.getPartOfSet())) {
                         if (checkFilename(comp, nrOfTracks, maxDisc)) {
                             // if filename is ok, an extra check for filetitle
@@ -230,7 +233,25 @@ public class MP3TagUtils {
         item.setBasePath(FilenameUtils.getFullPath(file));
         item.setUniqueId(createID());
         item.update = update;
-        albumErrors.items.add(item);
+        AlbumError.Item errorITem = findSameErrorType(type);
+        if (errorITem == null){
+            albumErrors.items.add(item);
+            songErrors.add(item);
+        }
+        else {
+            errorITem.setNewValue(newValue);
+        }
+    }
+
+    private AlbumError.Item findSameErrorType(MP3Tag type){
+        AlbumError.Item item = null;
+        for (AlbumError.Item errorItem : this.songErrors){
+            if (errorItem.type.equals(type)){
+                item = errorItem;
+                break;
+            }
+        }
+        return item;
     }
 
     private int calculateLengthOfTrack(int nrOfTracks, int nrOfCds){
