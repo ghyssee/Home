@@ -1,19 +1,19 @@
 <html>
     <head>
-        <link rel="stylesheet" type="text/css" href="../../css/stylesheet.css">
-        <link rel="stylesheet" type="text/css" href="../../Themes/easyui/metro-blue/easyui.css">
-        <link rel="stylesheet" type="text/css" href="../../Themes/easyui/icon.css">
-        <link rel="stylesheet" type="text/css" href="../../css/form.css">
-        <script type="text/javascript" src="../../js/jquery-3.1.1.js"></script>
-        <script type="text/javascript" src="../../js/jquery.easyui.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../../css/stylesheet.css">
+        <link rel="stylesheet" type="text/css" href="../../../Themes/easyui/metro-blue/easyui.css">
+        <link rel="stylesheet" type="text/css" href="../../../Themes/easyui/icon.css">
+        <link rel="stylesheet" type="text/css" href="../../../css/form.css">
+        <script type="text/javascript" src="../../../js/jquery-3.1.1.js"></script>
+        <script type="text/javascript" src="../../../js/jquery.easyui.min.js"></script>
     </head>
 <body>
 
 <?php
-include("../setup.php");
-include("../config.php");
-include("../model/HTML.php");
-include("../html/config.php");
+include_once "../../setup.php";
+include_once documentPath (ROOT_PHP, "config.php");
+include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
+include_once documentPath (ROOT_PHP_HTML, "config.php");
 $mp3PreprocessorObj = readJSONWithCode(JSON_MP3PREPROCESSOR);
 session_start();
 $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);

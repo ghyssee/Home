@@ -1,8 +1,8 @@
 <?php
-include("../setup.php");
-include("../config.php");
-include("../model/HTML.php");
-include_once("../bo/MP3PreprocessorBO.php");
+include_once "../../setup.php";
+include_once documentPath (ROOT_PHP, "config.php");
+include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
+include_once documentPath (ROOT_PHP_BO, "MP3PreprocessorBO.php");
 session_start();
 if (isset($_POST['mp3Preprocessor'])) {
     $button = $_POST['mp3Preprocessor'];

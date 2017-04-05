@@ -132,6 +132,26 @@ class MezzmoSQLiteDatabase extends PDO {
         return $songRec;
     }
 
+    public function searchSong($id){
+
+        $query = "SELECT " .
+            $this->getFileColumns() . "," .
+            $this->getAlbumColumns() . "," .
+            $this->getArtistColumns() .
+            "FROM MGOFile AS FILE " .
+            $this->joinAlbum() .
+            $this->joinArtist() .
+            $this->joinAlbumArtist() .
+            $this->joinFileExtension() .
+            "WHERE  FILEEXTENSION.data = 'mp3' " .
+            "AND FILEARTIST.id = :id ";
+//        $result = $this->query($query);
+        $sth = $this->prepare($query, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+        $sth->execute(array(':id' => $id));
+        $result = $sth->fetchAll();
+        return $result;
+    }
+
 
 }
 

@@ -27,6 +27,22 @@ class SongBO
         return $songObj;
     }
 
+    function searchSong($songTO)
+    {
+        $db = openDatabase(MEZZMO);
+        $result = $db->searchSong($songTO->artistId);
+        $nr = count($result);
+        $songs = array();
+        if ($nr > 0) {
+            foreach ($result as $songRec) {
+                $songs[] = $db->convertToSongObj($songRec);
+            }
+        }
+        $db = NULL;
+
+        return $songs;
+    }
+
     function saveSong($song)
     {
         $counter = 0;

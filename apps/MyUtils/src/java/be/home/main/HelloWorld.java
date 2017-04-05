@@ -161,9 +161,10 @@ private static void testAlbumArtist(){
         System.out.println(mp3Helper.prettifyArtist("Rag 'n‘ Bone Man"));
         System.out.println(mp3Helper.prettifyAlbum("ELV1S: 30 #1 Hits"));
         System.out.println(mp3Helper.prettifySong("Lovin, Livin And Givin"));
-        System.out.println("Nelly Feat. Tim McGraw".replaceAll("((Nelly|Tim McGraw)( Feat\\.,? | ?, &? ?| ?&([a|A]mp)? ?| Vs\\. | (Duet )?With | Presenting | Presents | Meets | Met | En | \\+ | X | & | And | X |$)){2}?", "blabla"));
-        System.out.println(mp3Helper.prettifyArtist("Nelly Feat. Tim Mcgraw"));
-        System.out.println(mp3Helper.prettifyArtist("NERVO & Hook 'N Sling"));
+        System.out.println("A Feat. B".replaceAll("Feat\\. ?", "Feat. "));
+        System.out.println(mp3Helper.prettifyArtist("Daryl Hall & Oates"));
+        System.out.println(mp3Helper.prettifyArtist("Eskobar Feat. Heather\n"));
+        System.out.println(mp3Helper.checkForTitleExceptions("Divine Inspiration", "The Way"));
         //System.out.println("The Partysquad Feat. Sjaak, Dio, Sef".replaceAll("((Sef|Dio|Sjaak)( ?& ?|, ?| |\\.|$)){3,}", "Dio, Sef & Sjaak"));
         //System.out.println(mp3Helper.prettifyArtist("Ll Cool J Feat. 7 Aurelius"));
 

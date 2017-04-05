@@ -1,5 +1,5 @@
 <?php
-include_once("../setup.php");
+include_once "../../setup.php";
 
 include_once documentPath (ROOT_PHP, "config.php");
 include_once documentPath (ROOT_PHP_MODEL, "HTML.php");

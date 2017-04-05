@@ -53,11 +53,18 @@ if ($save) {
     }
     writeJSONWithCode($songsObj, JSON_SONGCORRECTIONS);
     */
-    header("Location: " . $_SESSION["save_location"] . "?show");
+    $SaveLocation = $_SESSION["save_location"];
+    if ($SaveLocation === "MezzmoSongView.php"){
+        addInfo("Song", "Data Saved");
+        header("Location: " . $_SESSION["save_location"] . "?id=" . $songObj->fileId);
+    }
+    else {
+        header("Location: " . $_SESSION["save_location"] . "?show");
+    }
 }
 else {
     $_SESSION["SONG"] = $songObj;
-    header("Location: " . $_SESSION["previous_location"]);
+    header("Location: " . $_SESSION["previous_location"] . "?id=" . $songObj->fileId);
 }
 exit();
 

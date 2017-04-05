@@ -18,16 +18,40 @@ include_once("../html/config.php");
 include_once documentPath (ROOT_PHP_BO, "SongBO.php");
 $albumSave = 'MezzmoSearchview.php';
 
+$mp3Settings = readJSONWithCode(JSON_MP3SETTINGS);
+$file = getFullPath(PATH_CONFIG) . '/ArtistIds.txt';
+$lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+$artistArray = array();
+foreach($lines as $line) {
+    $songTO = new SongTO();
+    $items = explode("\t", $line);
+    if (count($items) > 1) {
+        $songTO->artistId = $items[0];
+        $songTO->artist = $items[1];
+        $artistArray[] = $songTO;
+    }
+}
+
 if (isset($_POST['submit'])) {
     $data = array();
     $data[] = getObject("15", "Test15");
     $data[] = getObject("16", "Test16");
     $song = new SongTO();
+    assignNumber($artistId, "artistId2");
     assignNumber($song->artistId, "artistId");
+    if (empty($song->artistId)){
+        $song->artistId = $artistId;
+    }
     assignNumber($song->fileId, "fileId");
     assignField($song->artistName, "artistName");
-    if (empty($song->artistId && empty($song->fileId) && empty($song->artistName))){
+    if (empty($song->artistId) && empty($song->fileId) && empty($song->artistName)){
         echo "all empty";
+    }
+    else {
+        $songBO = new SongBO();
+        $mp3Settings->mezzmo->artistId = $song->artistId;
+        writeJSONWithCode($mp3Settings, JSON_MP3SETTINGS);
+        $data = $songBO->searchSong($song);
     }
 }
 else {
@@ -46,17 +70,21 @@ goMenu();
     $layout = new Layout(array('numCols' => 1));
     $layout->inputBox(new Input(array('name' => "artistId",
         'size' => 5,
-        'label' => 'Number',
+        'label' => 'Artist Id',
         'type' => 'number',
         'value' => '0')));
     $layout->inputBox(new Input(array('name' => "fileId",
         'size' => 5,
-        'label' => 'Number',
+        'label' => 'File Id',
         'type' => 'number',
         'value' => '0')));
     $layout->inputBox(new Input(array('name' => "artistName",
         'size' => 100,
         'label' => 'Artist Name')));
+    $layout->comboBox($artistArray, "artistId", "artist",
+        new Input(array('name' => "artistId2",
+            'label' => 'List Artists',
+            'default' => $mp3Settings->mezzmo->artistId)));
 
     $layout->button(new Input(array('name' => "submit",
         'value' => 'search',
@@ -75,8 +103,24 @@ goMenu();
             $('#myFormId').submit();
         }
     </script>
-    <button type="button" onclick="doIt();">Do It</button>
-    <table id="dgSearch" class="easyui-datagrid" style="width:400px;height:500px"
+    <script>
+        function editLink(val,row){
+            var url = "<?php echo getSongViewLink(); ?>" + '?id=' + row.fileId;
+            return '<a href="'+url+'" target="_blank">Edit</a>';
+            //return "edit";
+        }
+        function formatPrice(val,row){
+            var text = row.artist + ' ' + row.title;
+            var url = "https://www.google.be/search?q=" +encodeURIComponent(text);
+            return '<a href="'+url+'" target="_blank">'+row.artist + ' - ' + row.title+'</a>';
+        }
+        function formatArtist(val,row){
+            var url = "https://www.google.be/search?q=" + encodeURIComponent(row.artist);
+            return '<a href="'+url+'" target="_blank">'+val+'</a>';
+        }
+    </script>
+
+    <table id="dgSearch" class="easyui-datagrid" style="width:100%;height:300px"
            title="Result"
 
            data-options='fitColumns:true,
@@ -92,22 +136,17 @@ goMenu();
 
         <thead>
         <tr>
-            <th data-options="field:'id',hidden:true">Id</th>
-            <th data-options="field:'name',width:100">Artist</th>
+            <th data-options="field:'editLink',width:15, formatter: editLink">Edit</th>
+            <th data-options="field:'artistId',width:15">ArtistId</th>
+            <th data-options="field:'artist',width:100, formatter: formatArtist">Artist</th>
+            <th data-options="field:'title',width:100">Title</th>
+            <th data-options="field:'Song',width:100, formatter: formatPrice">Song</th>
+            <th data-options="field:'album',width:50">Album</th>
+            <th data-options="field:'fileId',width:15">File</th>
+            <th data-options="field:'file',width:200">File</th>
         </tr>
         </thead>
     </table>
-
-    <?php
-    $array = array();
-    $layout = new Layout(array('numCols' => 1));
-    $layout->displayTable($data, new Input(array(
-        'title' => 'Songs',
-        'id' => 'id'
-    )));
-    $layout->close();
-    ?>
-
 
 </form>
 
@@ -122,6 +161,11 @@ function getObject($id, $name){
     $object->id = $id;
     $object->name = $name;
     return $object;
+}
+
+function getSongViewLink(){
+    $document = webPath(ROOT_PHP_VIEW, 'MezzmoSongView.php');
+    return $document;
 }
 
 ?>

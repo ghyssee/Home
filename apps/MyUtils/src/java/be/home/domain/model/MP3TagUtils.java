@@ -104,14 +104,25 @@ public class MP3TagUtils {
 
     }
 
-    private boolean checkForTitleExceptions(MGOFileAlbumCompositeTO comp){
-        boolean ok = true;
-        if (comp.getFileArtistTO().getArtist().matches("Britney Spears.*")){
+    private String checkForTitleExceptions(String artist, String song){
+        String newSong = null;
+        if (artist.matches("Britney Spears.*")){
             String matchKey = "\\.?\\.?\\.? ?Baby One More Time(.*)";
             String newKey = "...Baby One More Time$1";
-            if (comp.getFileTO().getTitle().matches(matchKey)){
-                String title = comp.getFileTO().getTitle().replaceAll(matchKey, newKey);
-                if (!title.equals(comp.getFileTO().getTitle())){
+            if (song.matches(matchKey)){
+                String title = song.replaceAll(matchKey, newKey);
+                if (!title.equals(song)){
+                    newSong = title;
+                }
+            }
+        }
+        return newSong;
+    }
+
+    private boolean checkForTitleExceptions(MGOFileAlbumCompositeTO comp){
+        String title = MP3Helper.getInstance().checkForTitleExceptions(comp.getFileArtistTO().getArtist(), comp.getFileTO().getTitle());
+        boolean ok = true;
+        if (!title.equals(comp.getFileTO().getTitle())){
                     addItem(comp.getFileTO().getId(),
                             comp.getFileTO().getId(),
                             comp.getFileTO().getFile(),
@@ -119,8 +130,6 @@ public class MP3TagUtils {
                             MP3Tag.TITLE, comp.getFileTO().getTitle(), title);
                     comp.getFileTO().setTitle(title);
                     ok = false;
-                }
-            }
         }
         return ok;
     }
