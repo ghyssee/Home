@@ -34,13 +34,12 @@ foreach($lines as $line) {
 
 if (isset($_POST['submit'])) {
     $data = array();
-    $data[] = getObject("15", "Test15");
-    $data[] = getObject("16", "Test16");
     $song = new SongTO();
     assignNumber($artistId, "artistId2");
     assignNumber($song->artistId, "artistId");
     if (empty($song->artistId)){
         $song->artistId = $artistId;
+        writeJSONWithCode($mp3Settings, JSON_MP3SETTINGS);
     }
     assignNumber($song->fileId, "fileId");
     assignField($song->artistName, "artistName");
@@ -51,6 +50,7 @@ if (isset($_POST['submit'])) {
         $songBO = new SongBO();
         $mp3Settings->mezzmo->artistId = $song->artistId;
         writeJSONWithCode($mp3Settings, JSON_MP3SETTINGS);
+        $mp3Settings->mezzmo->artistId = getNextArtistId($artistArray, $mp3Settings->mezzmo->artistId);
         $data = $songBO->searchSong($song);
     }
 }
@@ -60,6 +60,21 @@ else {
 
 $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
 goMenu();
+
+function getNextArtistId($artistArray, $artistId){
+    $next = false;
+    foreach($artistArray as $song) {
+        if ($next){
+            $artistId = $song->artistId;
+            break;
+        }
+        if ($song->artistId == $artistId) {
+            $next = true;;
+        }
+    }
+    return $artistId;
+}
+
 ?>
 
 <h1>Search Song</h1>
