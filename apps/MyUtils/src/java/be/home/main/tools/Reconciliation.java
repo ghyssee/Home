@@ -25,13 +25,23 @@ public class Reconciliation extends BatchJobV2 {
 
     private static final Logger log = getMainLog(Reconciliation.class);
 
-    private static String[] OBJECTS = {"FAR_RECO_DATA", "FAR_RECO_INDX", "FAR_USER", "FAR_READ"};
-    private static String OBJECT_DATA_MGR = "DATA_MGR";
-    private static String BASE = "C:\\My Programs\\OneDrive\\Config\\Java\\Velocity\\Reconciliation\\GEN2\\";
+    private static String[] OBJECTS1 = {"FAR_RECO_DATA", "FAR_RECO_INDX", "FAR_USER", "FAR_READ"};
+    private static String OBJECT_DATA_MGR1 = "DATA_MGR";
+    private static String BASE1 = "C:\\My Programs\\OneDrive\\Config\\Java\\Velocity\\Reconciliation\\GEN2\\";
 
-    private static String OBJECT_DATA_MGR1 = "&1.";
-    private static String[] OBJECTS1 = {"&1", "&2", "&3", "&4"};
-    private static String BASE1 = "C:\\My Programs\\OneDrive\\Config\\Java\\Velocity\\Reconciliation\\GEN\\";
+    private static String OBJECT_DATA_MGR = "&1.";
+    private static String[] OBJECTS = {"&1", "&2", "&3", "&4"};
+    private static String BASE = "C:\\My Programs\\OneDrive\\Config\\Java\\Velocity\\Reconciliation\\GEN\\";
+    private static List<OracleDriver> driverFile = new ArrayList();
+
+    private static String DATA_MGR = "DATA_MGR";
+    private static String META_DATA_MGR = "META_DATA_MGR";
+    private static String FAR_USER = "FAR_USER";
+    private static String FAR_READ = "FAR_READ";
+    private static String FAR_RECO_DATA = "TBS_DATA_DATA_MGR";
+    private static String FAR_RECO_INDX = "TBS_INDX_DATA_MGR";
+
+
 
     public static void main(String args[]) {
         Reconciliation instance = new Reconciliation();
@@ -119,11 +129,11 @@ public class Reconciliation extends BatchJobV2 {
         fileTypes.addAll(fileTypesStream1);
         fileTypes.addAll(fileTypesStream2);
 
-        createCommonTables(MATCH_ENGINE, "01_DML_MATCHENGINE.sql");
-        createMatchingTables(fieldsStream1, dataSource1, dataType, "02_DML_ILPOST.sql");
-        createMatchingTables(fieldsStream2, dataSource2, dataType, "03_DML_ILPOST_SUP.sql");
-        createSynonyms(MATCH_ENGINE, dataSource1, dataSource2, dataType, "04_FU_SYNONYMS.sql");
-        createSynonyms(MATCH_ENGINE, dataSource1, dataSource2, dataType, "05_FR_SYNONYMS.sql");
+        createCommonTables(DATA_MGR, MATCH_ENGINE, "01_DML_MATCHENGINE.sql");
+        createMatchingTables(DATA_MGR, fieldsStream1, dataSource1, dataType, "02_DML_ILPOST.sql");
+        createMatchingTables(DATA_MGR, fieldsStream2, dataSource2, dataType, "03_DML_ILPOST_SUP.sql");
+        createSynonyms(FAR_USER, MATCH_ENGINE, dataSource1, dataSource2, dataType, "04_FU_SYNONYMS.sql");
+        createSynonyms(FAR_READ, MATCH_ENGINE, dataSource1, dataSource2, dataType, "05_FR_SYNONYMS.sql");
 
         Datasource datasource1 = new Datasource(dataSource1, "ILPOST");
         Datasource datasource2 = new Datasource(dataSource2, "ILPOST SUPPLIER");
@@ -135,7 +145,7 @@ public class Reconciliation extends BatchJobV2 {
                 stream1,
                 stream2
         );
-        createGlobal(userId, datatype, streams, "06_MDM_SETUP_GLOBAL.sql");
+        createGlobal(META_DATA_MGR, userId, datatype, streams, "06_MDM_SETUP_GLOBAL.sql");
 
         List<MatchPredicate> listMatchPredicateManual = Arrays.asList(
                 new MatchPredicate("Dispatching Office Equals", "DISP_OFFICE", null, "DISP_OFFICE", "=", null, null, null, "N"),
@@ -211,14 +221,15 @@ public class Reconciliation extends BatchJobV2 {
         );
 
         MatchEngine me = new MatchEngine("ILPOST", "ILPost Reconciliation", stream1, stream2, listMatchAlgorithm);
-        createFunctions(userId, newFunctions, "07_MDM_SETUP_FUNCTIONS.sql");
-        createMatchEngine(userId, me, "08_MDM_SETUP_MATCHENGINE.sql");
+        createFunctions(META_DATA_MGR, userId, newFunctions, "07_MDM_SETUP_FUNCTIONS.sql");
+        createMatchEngine(META_DATA_MGR, userId, me, "08_MDM_SETUP_MATCHENGINE.sql");
 
-        createReport(userId, streamDescription1, streamDescription2, fieldsStream1, fieldsStream2, "09_MDM_SETUP_REPORT.sql"
+        createReport(META_DATA_MGR, userId, streamDescription1, streamDescription2, fieldsStream1, fieldsStream2, "09_MDM_SETUP_REPORT.sql"
         );
-        createSecurity(MATCH_ENGINE, role, "10_MDM_INSERT_SECURITY_LEVELS.sql");
-        createTempMatch("11_DML_TEMP_MATCH.sql");
+        createSecurity(META_DATA_MGR, MATCH_ENGINE, role, "10_MDM_INSERT_SECURITY_LEVELS.sql");
+        createTempMatch(DATA_MGR, "11_DML_TEMP_MATCH.sql");
         createDropTables(me, dataSource1, dataSource2, datatype, streams, fileTypes, newFunctions, "99_DROP.sql");
+        makeDriver();
     }
 
     public void setObjects(VelocityContext context) {
@@ -232,7 +243,7 @@ public class Reconciliation extends BatchJobV2 {
         return BASE + outputFile;
     }
 
-    public void createCommonTables(String matchEngine, String outputFile) {
+    public void createCommonTables(String scheme, String matchEngine, String outputFile) {
 
         outputFile = getOutputFile(outputFile);
 
@@ -250,9 +261,18 @@ public class Reconciliation extends BatchJobV2 {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        File script = new File(outputFile);
+        OracleDriver driverLine = new OracleDriver(scheme, script.getName());
+        driverLine = driverLine
+                .addScheme(FAR_RECO_DATA)
+                .addScheme(FAR_RECO_INDX)
+                .addScheme(FAR_USER)
+                .addScheme(FAR_READ);
+        this.driverFile.add(driverLine);
+
     }
 
-    public void createMatchingTables(List<Field> fields, String dataSource, String dataType,
+    public void createMatchingTables(String scheme, List<Field> fields, String dataSource, String dataType,
                                      String outputFile) {
         outputFile = getOutputFile(outputFile);
 
@@ -274,9 +294,17 @@ public class Reconciliation extends BatchJobV2 {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        File script = new File(outputFile);
+        OracleDriver driverLine = new OracleDriver(scheme, script.getName());
+        driverLine = driverLine
+                .addScheme(FAR_RECO_DATA)
+                .addScheme(FAR_RECO_INDX)
+                .addScheme(FAR_USER)
+                .addScheme(FAR_READ);
+        this.driverFile.add(driverLine);
     }
 
-    public void createSynonyms(String matchEngine, String dataSource1, String dataSource2, String dataType,
+    public void createSynonyms(String scheme, String matchEngine, String dataSource1, String dataSource2, String dataType,
                                String outputFile) {
         outputFile = getOutputFile(outputFile);
 
@@ -297,6 +325,10 @@ public class Reconciliation extends BatchJobV2 {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        File script = new File(outputFile);
+        OracleDriver driverLine = new OracleDriver(scheme, script.getName());
+        driverLine.addScheme(DATA_MGR);
+        this.driverFile.add(driverLine);
     }
 
     public void createDropTables(MatchEngine matchEngine, String dataSource1, String dataSource2, Datatype dataType,
@@ -328,7 +360,7 @@ public class Reconciliation extends BatchJobV2 {
         }
     }
 
-    public void createSecurity(String matchEngine, String role, String outputFile) {
+    public void createSecurity(String scheme, String matchEngine, String role, String outputFile) {
         outputFile = getOutputFile(outputFile);
 
         VelocityUtils vu = new VelocityUtils();
@@ -341,9 +373,12 @@ public class Reconciliation extends BatchJobV2 {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        File script = new File(outputFile);
+        OracleDriver driverLine = new OracleDriver(scheme, script.getName());
+        this.driverFile.add(driverLine);
     }
 
-    public void createReport(String userId, String streamDescription1, String streamDescription2,
+    public void createReport(String scheme, String userId, String streamDescription1, String streamDescription2,
                              List<Field> fields1, List<Field> fields2, String outputFile) {
         outputFile = getOutputFile(outputFile);
 
@@ -360,9 +395,12 @@ public class Reconciliation extends BatchJobV2 {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        File script = new File(outputFile);
+        OracleDriver driverLine = new OracleDriver(scheme, script.getName());
+        this.driverFile.add(driverLine);
     }
 
-    private void createGlobal(String userId, Datatype datatype, List<Stream> streams, String outputFile) {
+    private void createGlobal(String scheme, String userId, Datatype datatype, List<Stream> streams, String outputFile) {
         outputFile = getOutputFile(outputFile);
 
         VelocityUtils vu = new VelocityUtils();
@@ -377,9 +415,12 @@ public class Reconciliation extends BatchJobV2 {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        File script = new File(outputFile);
+        OracleDriver driverLine = new OracleDriver(scheme, script.getName());
+        this.driverFile.add(driverLine);
     }
 
-    private void createMatchEngine(String userId, MatchEngine me, String outputFile) {
+    private void createMatchEngine(String scheme, String userId, MatchEngine me, String outputFile) {
         outputFile = getOutputFile(outputFile);
 
         VelocityUtils vu = new VelocityUtils();
@@ -393,9 +434,12 @@ public class Reconciliation extends BatchJobV2 {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        File script = new File(outputFile);
+        OracleDriver driverLine = new OracleDriver(scheme, script.getName());
+        this.driverFile.add(driverLine);
     }
 
-    private void createFunctions(String userId, List<Function> functions, String outputFile) {
+    private void createFunctions(String scheme, String userId, List<Function> functions, String outputFile) {
         outputFile = getOutputFile(outputFile);
 
         VelocityUtils vu = new VelocityUtils();
@@ -409,9 +453,12 @@ public class Reconciliation extends BatchJobV2 {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        File script = new File(outputFile);
+        OracleDriver driverLine = new OracleDriver(scheme, script.getName());
+        this.driverFile.add(driverLine);
     }
 
-    private void createTempMatch(String outputFile) {
+    private void createTempMatch(String scheme, String outputFile) {
         outputFile = getOutputFile(outputFile);
 
         VelocityUtils vu = new VelocityUtils();
@@ -420,6 +467,24 @@ public class Reconciliation extends BatchJobV2 {
 
         try {
             vu.makeFile("reconciliation/RECON_07_GEN_TEMP_MATCH.sql", outputFile, context);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        File script = new File(outputFile);
+        OracleDriver driverLine = new OracleDriver(scheme, script.getName());
+        this.driverFile.add(driverLine);
+    }
+
+    public void makeDriver(){
+        String outputFile = getOutputFile("driver");
+
+        VelocityUtils vu = new VelocityUtils();
+        VelocityContext context = new VelocityContext();
+        context.put("mu", new MyTools());
+        context.put("scripts", this.driverFile);
+
+        try {
+            vu.makeFile("reconciliation/driver", outputFile, context);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -22,6 +22,7 @@ public class MP3Prettifier {
     public class Global {
         public List <Word> words;
         public List <Word> filenames;
+        public List <Word> sentences;
     }
     public class Artist {
         public List <Word> words;

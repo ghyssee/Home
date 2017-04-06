@@ -81,6 +81,7 @@ public class MP3Helper {
         String prettifiedText = prettifyString(text);
         if (StringUtils.isNotBlank(text)) {
             prettifiedText = checkWords(prettifiedText, Mp3Tag.TITLE);
+            prettifiedText = prettifySentence(mp3Prettifer.global.sentences, prettifiedText, "Global Sentence");
             for (MP3Prettifier.Word wordObj : mp3Prettifer.song.replacements) {
 
                 String oldText = prettifiedText;
@@ -111,7 +112,8 @@ public class MP3Helper {
             prettifiedText = prettifiedText.replaceAll("  ", " ");
             prettifiedText = prettifiedText.trim();
             prettifiedText = checkWords(prettifiedText, Mp3Tag.ARTIST);
-            prettifiedText = checkArtistNames(mp3Prettifer.artist.names, prettifiedText, "Artist Names");
+            prettifiedText = prettifySentence(mp3Prettifer.global.sentences, prettifiedText, "Global Sentence");
+            prettifiedText = prettifySentence(mp3Prettifer.artist.names, prettifiedText, "Artist Names");
             prettifiedText = checkArtistNames2(multiArtistNames, prettifiedText, "Multi Artist Names");
             /*
             for (MP3Prettifier.Word wordObj : mp3Prettifer.artist.names){
@@ -143,7 +145,7 @@ public class MP3Helper {
         return text;
     }
 
-    private String checkArtistNames(List<MP3Prettifier.Word> list, String text, String logMsg){
+    private String prettifySentence(List<MP3Prettifier.Word> list, String text, String logMsg){
         for (MP3Prettifier.Word wordObj : list){
             String oldText = text;
             text = replaceString(oldText, wordObj);
