@@ -160,6 +160,12 @@ public class MP3Helper {
         log.info("Rule applied: Category: " + category + " / Old Word: " + word.oldWord + " / New Word: " + word.newWord);
     }
 
+    private void logRule(String category, MP3Prettifier.ArtistSong word){
+        log.info("Rule applied: Category: " + category);
+        log.info("Old Artist: " + word.oldArtist + " / New Artist: " + word.newArtist);
+        log.info("Old Title: " + word.oldSong + " / New Title: " + word.newSong);
+    }
+
     private enum Mp3Tag {
         ARTIST, TITLE, ALBUM
     }
@@ -341,6 +347,7 @@ public class MP3Helper {
                     String title = song.replaceAll(matchKey, newKey);
                     if (!title.equals(song)) {
                         song = title;
+                        logRule("Title Exception", artistSong);
                         break;
                     }
                 }
@@ -357,6 +364,7 @@ public class MP3Helper {
                 String newKey = artistSong.newArtist;
                 if (artist.matches(matchKey)) {
                     newArtist = artist.replaceAll(matchKey, newKey);
+                    logRule("Artist Exception", artistSong);
                     break;
                 }
             }

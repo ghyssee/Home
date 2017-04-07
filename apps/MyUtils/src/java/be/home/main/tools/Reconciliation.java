@@ -25,13 +25,13 @@ public class Reconciliation extends BatchJobV2 {
 
     private static final Logger log = getMainLog(Reconciliation.class);
 
-    private static String[] OBJECTS1 = {"FAR_RECO_DATA", "FAR_RECO_INDX", "FAR_USER", "FAR_READ"};
-    private static String OBJECT_DATA_MGR1 = "DATA_MGR";
-    private static String BASE1 = "C:\\My Programs\\OneDrive\\Config\\Java\\Velocity\\Reconciliation\\GEN2\\";
+    private static String[] OBJECTS = {"FAR_RECO_DATA", "FAR_RECO_INDX", "FAR_USER", "FAR_READ"};
+    private static String OBJECT_DATA_MGR = "DATA_MGR";
+    private static String BASE = "C:\\My Programs\\OneDrive\\Config\\Java\\Velocity\\Reconciliation\\GEN2\\";
 
-    private static String OBJECT_DATA_MGR = "&1.";
-    private static String[] OBJECTS = {"&1", "&2", "&3", "&4"};
-    private static String BASE = "C:\\My Programs\\OneDrive\\Config\\Java\\Velocity\\Reconciliation\\GEN\\";
+    private static String OBJECT_DATA_MGR1 = "&1.";
+    private static String[] OBJECTS1 = {"&1", "&2", "&3", "&4"};
+    private static String BASE1 = "C:\\My Programs\\OneDrive\\Config\\Java\\Velocity\\Reconciliation\\GEN\\";
     private static List<OracleDriver> driverFile = new ArrayList();
 
     private static String DATA_MGR = "DATA_MGR";
@@ -78,7 +78,7 @@ public class Reconciliation extends BatchJobV2 {
                 new Field("CATEGORY", "VARCHAR2", "100", false, "Category"),
                 new Field("CATEGORY_CODE", "VARCHAR2", "10", false, "Category Code"),
                 new Field("DEST_DATE", "VARCHAR2", "50", false, "Destination Date"),
-                new Field("CODE", "VARCHAR2", "100", true, "Flight Code"),
+                new Field("FLIGHTCODE", "VARCHAR2", "100", true, "Flight Code"),
                 new Field("WEIGHT", "NUMBER", null, false, "Weight"),
                 new Field("LETTER", "NUMBER", null, false, "Letter"),
                 new Field("EMS", "NUMBER", null, false, "EMS"),
@@ -94,7 +94,7 @@ public class Reconciliation extends BatchJobV2 {
                 new Field("SUPPLIER", "VARCHAR2", "100", false, "Supplier"),
                 new Field("CATEGORY", "VARCHAR2", "100", false, "Category"),
                 new Field("CATEGORY_CODE", "VARCHAR2", "10", false, "Category Code"),
-                new Field("CODE", "VARCHAR2", "100", false, "Flight Code"),
+                new Field("FLIGHTCODE", "VARCHAR2", "100", false, "Flight Code"),
                 new Field("MAIL_NO", "VARCHAR2", "20", false, "Mail No"),
                 new Field("DISP_OFFICE", "VARCHAR2", "20", false, "Disposit Office"),
                 new Field("DEST_OFFICE", "VARCHAR2", "20", false, "Destination Office"),
@@ -172,10 +172,10 @@ public class Reconciliation extends BatchJobV2 {
                 new MatchPredicate("Mail Type Equals", "CATEGORY_CODE", null, "CATEGORY_CODE", "=", null, null, null, "N")
         );
         List<MatchPredicate> listMatchPredicateManual3 = Arrays.asList(
-                new MatchPredicate("Flight Code", "CODE", null, "CODE", "=", null, null, null, "N")
+                new MatchPredicate("Flight Code", "FLIGHTCODE", null, "FLIGHTCODE", "=", null, null, null, "N")
         );
         List<MatchPredicate> listMatchPredicateAutomatic3 = Arrays.asList(
-                new MatchPredicate("Flight Code", "CODE", null, "CODE", "=", null, null, null, "N")
+                new MatchPredicate("Flight Code", "FLIGHTCODE", null, "FLIGHTCODE", "=", null, null, null, "N")
         );
         Function makeNull = new Function("MakeNull", "Make Null", Function.DataType.NUMBER, Function.FunctionType.M);
         List<Function> newFunctions =  Arrays.asList(
