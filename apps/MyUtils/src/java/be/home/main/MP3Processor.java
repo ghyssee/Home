@@ -86,6 +86,8 @@ public class MP3Processor extends BatchJobV2 {
         for (AlbumInfo.Track track: album.tracks){
             track.artist = helper.prettifyArtist(track.artist);
             track.title = helper.prettifySong(track.title);
+            track.artist = helper.checkForArtistExceptions(track.artist, track.title);
+            track.title = helper.checkForTitleExceptions(track.artist, track.title);
             helper.checkTrack(track);
         }
 

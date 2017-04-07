@@ -17,11 +17,15 @@ function convert()
     //$mp3PrettifierObj->song->replacements = convertExactMath($mp3PrettifierObj->song->replacements);
     //$mp3PrettifierObj->global->words = convertExactMath($mp3PrettifierObj->global->words, true);
     //$mp3PrettifierObj->artist->words = convertExactMath($mp3PrettifierObj->artist->words, true);
-    $multiArtistObj = readJSONWithCode(JSON_MULTIARTIST);
+    //$multiArtistObj = readJSONWithCode(JSON_MULTIARTIST);
 
-    $file = getFullPath(JSON_MULTIARTIST) . ".NEW";
-    convertArtistSequence($multiArtistObj);
-    writeJSON($multiArtistObj, $file);
+    //$file = getFullPath(JSON_MULTIARTIST) . ".NEW";
+    //convertArtistSequence($multiArtistObj);
+    //writeJSON($multiArtistObj, $file);
+    $today = date("d/m/Y H:i:s");
+    echo $today .'<br>';
+    $today = date("Ymd");
+    echo $today .'<br>';
 }
 
 function convertArtistSequence($multiArtistObj){

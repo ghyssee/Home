@@ -3,6 +3,7 @@
 include_once('Smarty.class.php');
 
 const PATH_CONFIG = "config";
+const PATH_CONFIG_BACKUP = "configBackup";
 const PATH_LOCAL_CONFIG = "localConfig";
 const JSON_LOCAL_DATABASE = "localDatabase";
 const JSON_DATABASE = "database";

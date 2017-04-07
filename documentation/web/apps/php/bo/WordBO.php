@@ -3,6 +3,7 @@ require_once documentPath (ROOT_PHP, "config.php");
 require_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 
 $file = getFullPath(JSON_MP3PRETTIFIER);
+$backupFile = getFullPath(PATH_CONFIG_BACKUP) . "/MP3Prettiffier." . date("Ymd") . ".json";
 
 class WordBO
 {
@@ -17,20 +18,14 @@ class WordBO
         return null;
     }
 
-    function saveGlobalWord2($word)
-    {
-        $file = $GLOBALS['file'];
-        $obj = readJSON($file, JSON_ASSOCIATIVE);
-        $counter = 0;
-        foreach ($obj['global']['words'] as $key => $value) {
-            if (strcmp($value->id, $word->id) == 0) {
-                $obj['global']['words'][$counter] = $word;
-                writeJSON($obj, $file);
-                return true;
-            }
-            $counter++;
-        }
-        return false;
+    function backupGlobalWord($word, $type, $category, $mode){
+        $file = $GLOBALS['backupFile'];
+        $today = date("d/m/Y H:i:s");
+        $word->type = $type;
+        $word->category = $category;
+        $word->timeStamp = $today;
+        $word->mode = $mode;
+        write($file, json_encode($word, JSON_PRETTY_PRINT + JSON_UNESCAPED_SLASHES, APPEND) . PHP_EOL);
     }
 
     function saveGlobalWord($word, $type, $category)
@@ -42,20 +37,12 @@ class WordBO
             if (strcmp($value->id, $word->id) == 0) {
                 $obj->{$type}->{$category}[$counter] = $word;
                 writeJSON($obj, $file);
+                $this->backupGlobalWord($word, $type, $category, "update");
                 return true;
             }
             $counter++;
         }
         return false;
-    }
-
-    function addGlobalWord1($word)
-    {
-        $file = $GLOBALS['file'];
-        $obj = readJSON($file, JSON_ASSOCIATIVE);
-        $word->id = getUniqueId();
-        array_push($obj['global']['words'], $word);
-        writeJSON($obj, $file);
     }
 
     function addGlobalWord($word, $type, $category)
@@ -65,25 +52,7 @@ class WordBO
         $word->id = getUniqueId();
         array_push($obj->{$type}->{$category}, $word);
         writeJSON($obj, $file);
-    }
-
-    function deleteGlobalWord3($field, $id)
-    {
-        $file = $GLOBALS['file'];
-        $obj = readJSON($file, JSON_ASSOCIATIVE);
-        $array = $obj['global']["words"];
-        $key = array_search($field, array_column($array, 'id'));
-        if ($key === false) {
-            return false;
-
-        } else {
-            unset($obj['global']["words"][$key]);
-            $array = array_values($obj['global']['words']);
-            $obj['global']["words"] = $array;
-            writeJSON( $obj, $file);
-        }
-        return true;
-
+        $this->backupGlobalWord($word, $type, $category, "add");
     }
 
     function deleteGlobalWord($field, $id, $type, $category)
@@ -95,6 +64,7 @@ class WordBO
             return false;
 
         } else {
+            $this->backupGlobalWord($obj->{$type}->{$category}[$key], $type, $category, "delete");
             unset($obj->{$type}->{$category}[$key]);
             $array = array_values($obj->{$type}->{$category});
             $obj->{$type}->{$category} = $array;
