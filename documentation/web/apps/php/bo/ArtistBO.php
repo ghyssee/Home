@@ -1,8 +1,21 @@
 <?php
 require_once documentPath (ROOT_PHP, "config.php");
 require_once documentPath (ROOT_PHP_MODEL, "HTML.php");
+require_once documentPath (ROOT_PHP_BO, "CacheBO.php");
 
-$multiArtistConfig = getFullPath(JSON_MULTIARTIST);
+class MultiArtistListTO {
+    public $id;
+    public $exactPosition;
+    public $master;
+    public $description;
+    public $description2;
+
+    function __construct($id, $exactPosition, $master) {
+        $this->id = $id;
+        $this->exactPosition = $exactPosition;
+        $this->master = $master;
+    }
+}
 
 class ArtistBO
 {
@@ -79,24 +92,67 @@ class ArtistBO
             return false;
 
         } else {
-            unset($this->artistObj->list[$key]);
-            $array = array_values($this->artistObj->list);
-            $this->artistObj->list = $array;
-            writeJSON($this->artistObj, $this->file);
+            $multiArtistBO = new MultiArtistBO();
+            if (!$multiArtistBO->isArtistUsed($id)) {
+                unset($this->artistObj->list[$key]);
+                $array = array_values($this->artistObj->list);
+                $this->artistObj->list = $array;
+                writeJSON($this->artistObj, $this->file);
+                return true;
+            }
         }
-        return true;
-
+        return false;
     }
 }
 class MultiArtistBO {
     public $multiArtistObj;
     public $file;
+    public $artistBO;
 
     function __construct() {
-        $this->file = getFullPath(JSON_MULTIARTIST);
-        $this->multiArtistObj = readJSON( $this->file);
     }
+    
+    function getArtistBO(){
+        if (isset($this->artistBO)){
+            return $this->artistBO;
+        }
+        else {
+            $this->artistBO = new ArtistBO();
+        }
+        return $this->artistBO;
+    }
+    
+    function loadData(){
+        if (!isset($this->file)){
+            $this->file = getFullPath(JSON_MULTIARTIST);
+            logInfo(getCurrentTime() . " STARTED: Loading file " . $this->file);
+            $this->multiArtistObj = readJSON($this->file);
+            logInfo(getCurrentTime() . " ENDED: Loading file " . $this->file);
+        }
+        return $this->multiArtistObj;
+    }
+
+    function isArtistUsed($artistId){
+        $this->loadData();
+        foreach($this->multiArtistObj->list as $mulitArtistItem){
+            foreach($this->multiArtistObj->list as $mulitArtistItem) {
+                foreach($mulitArtistItem->artists as $artist){
+                    if ($artist->id == $artistId){
+                        return true;
+                    }
+                    foreach($mulitArtistItem->artistSequence as $artist) {
+                        if ($artist->artistId == $artistId) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     function deleteMultiAristConfig($id){
+        $this->loadData();
         $array = $this->multiArtistObj->list;
         $key = array_search($id, array_column($array, 'id'));
         if ($key === false || $key === NULL) {
@@ -107,6 +163,8 @@ class MultiArtistBO {
             $array = array_values( $this->multiArtistObj->list);
             $this->multiArtistObj->list = $array;
             writeJSON($this->multiArtistObj, $this->file);
+            //CacheBO::clearCache(CacheBO::MULTIARTIST2);
+            CacheBO::clearCacheObject(CacheBO::MULTIARTIST2, $id);
         }
         return true;
 
@@ -114,18 +172,23 @@ class MultiArtistBO {
 
     function saveMultiAristConfig($multiArtistItem)
     {
+        $this->loadData();
         $array = $this->multiArtistObj->list;
         $key = array_search($multiArtistItem->id, array_column($array, 'id'));
         if ($key === false || $key === NULL) {
             return false;
         } else {
-            $this->multiArtistObj->list[$key]->exactPosition = $multiArtistItem->exactPosition;
+            $multiArtistItemtoUpdate = $this->multiArtistObj->list[$key];
+            $multiArtistItemtoUpdate->exactPosition = $multiArtistItem->exactPosition;
+            //CacheBO::clearCache(CacheBO::MULTIARTIST2);
+            CacheBO::saveCacheObject(CacheBO::MULTIARTIST2, $multiArtistItem->id,$this->convertToMultiArtistTO($multiArtistItemtoUpdate));
             writeJSON( $this->multiArtistObj, $this->file);
         }
         return true;
     }
 
     function getDelimterText(){
+        $this->loadData();
         $text = "/(";
         $first = true;
         foreach($this->multiArtistObj->splitters as $delimiter){
@@ -167,6 +230,7 @@ class MultiArtistBO {
 
     function buildDelimiters($multiArtistTxt, $errorObj, $artistArray, &$delimiterArray)
     {
+        $this->loadData();
         $multiArtistTxt = $multiArtistTxt;
         $searchStr = '/(';
         $first = true;
@@ -203,6 +267,7 @@ class MultiArtistBO {
 
         function lookupDelimiterByValue($delimiter)
         {
+            $this->loadData();
             //$file = $GLOBALS['fileArtist'];
             //$obj = readJSON($file);
             foreach ($this->multiArtistObj->splitters as $key => $value) {
@@ -216,6 +281,7 @@ class MultiArtistBO {
 
         function lookupDelimiter($id)
         {
+            $this->loadData();
             //$file = $GLOBALS['fileArtist'];
             //$obj = readJSON($file);
             foreach ($this->multiArtistObj->splitters as $key => $value) {
@@ -244,6 +310,7 @@ class MultiArtistBO {
     }
     
     function constructMultiArtistSequeceDescription($artistBO, $multiArtist){
+        $this->loadData();
         $description = "";
         foreach($multiArtist->artistSequence as $artistItem) {
 
@@ -271,6 +338,7 @@ class MultiArtistBO {
     }
 
     function checkMultiArtistConfigExist($multiArtistLine){
+        $this->loadData();
         $nrOfItems = count($multiArtistLine->artists);
         foreach($this->multiArtistObj->list as $multiArtistItem){
             if (count($multiArtistItem->artists) == $nrOfItems){
@@ -302,19 +370,33 @@ class MultiArtistBO {
     }
     
     function getSplitters(){
+        $this->loadData();
         return $this->multiArtistObj->splitters;
+    }
+    
+    function convertToMultiArtistTO($object){
+        $multiArtistTO = new MultiArtistListTO($object->id, $object->exactPosition, $object->master);
+        //$item->description = $multiArtistBO->constructMultiArtistDescription($artistBO, $item);
+        //$item->description2 = $multiArtistBO->constructMultiArtistSequeceDescription($artistBO, $item);
+        $multiArtistTO->description = $this->constructMultiArtistDescription($this->getArtistBO(), $object);
+        $multiArtistTO->description2 = $this->constructMultiArtistSequeceDescription($this->getArtistBO(), $object);
+        return $multiArtistTO;
     }
 
 
 
     function addMultiArtist($multiArtistItem){
+        $this->loadData();
         $multiArtistItem->id = getUniqueId();
         $this->multiArtistObj->list[] = $multiArtistItem;
         writeJSON($this->multiArtistObj, $this->file);
+        CacheBO::saveCacheObject(CacheBO::MULTIARTIST2, $multiArtistItem->id, $this->convertToMultiArtistTO($multiArtistItem));
+        //CacheBO::clearCache(CacheBO::MULTIARTIST2);
     }
 
         function addMultiAristConfig($multiArtistTxt)
         {
+            $this->loadData();
             $errorObj = new stdClass();
             $errorObj->success = false;
             $errorObj->errorFound = false;

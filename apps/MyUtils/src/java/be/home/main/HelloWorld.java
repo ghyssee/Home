@@ -166,7 +166,7 @@ private static void testAlbumArtist(){
         System.out.println(mp3Helper.prettifyArtist("*NSYNC & Nelly"));
         System.out.println(mp3Helper.checkForTitleExceptions("Divine Inspiration", "The Way"));
         System.out.println(mp3Helper.checkForArtistExceptions("Divine Inspiration", "The Way"));
-        System.out.println(mp3Helper.checkForArtistExceptions("Sigala", "Sweet Lovin'"));
+        System.out.println(mp3Helper.checkForArtistExceptions("2 Fabiola", "One Night In Dubai"));
         //System.out.println("The Partysquad Feat. Sjaak, Dio, Sef".replaceAll("((Sef|Dio|Sjaak)( ?& ?|, ?| |\\.|$)){3,}", "Dio, Sef & Sjaak"));
         //System.out.println(mp3Helper.prettifyArtist("Ll Cool J Feat. 7 Aurelius"));
 

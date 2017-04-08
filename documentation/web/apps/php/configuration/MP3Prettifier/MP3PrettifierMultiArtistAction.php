@@ -1,9 +1,9 @@
 <?php
 include_once "../../setup.php";
-
 include_once documentPath (ROOT_PHP, "config.php");
 include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 include_once documentPath (ROOT_PHP_BO, "ArtistBO.php");
+session_start();
 
 $method = htmlspecialchars($_REQUEST['method']);
 try {

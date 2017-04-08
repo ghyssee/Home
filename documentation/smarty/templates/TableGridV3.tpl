@@ -145,6 +145,10 @@
 								url:     "{{$deleteUrl}}",
 								data:    {id: row.{{$id}}},
 								success: function(data) {
+                                    var dataObj = JSON.parse(data);
+                                    if (!dataObj.success && dataObj.hasOwnProperty('errorMessage')){
+                                        alert(dataObj.errorMessage);
+                                    }
 									$('#dg{{$tablegrid}}').datagrid('reload');
 								},
 								// vvv---- This is the new bit

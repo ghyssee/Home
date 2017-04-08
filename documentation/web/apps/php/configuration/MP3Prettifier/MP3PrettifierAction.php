@@ -1,10 +1,11 @@
 <?php
 include_once "../../setup.php";
-
 include_once documentPath (ROOT_PHP, "config.php");
 include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 include_once documentPath (ROOT_PHP_BO, "WordBO.php");
 include_once documentPath (ROOT_PHP_BO, "ArtistBO.php");
+include_once documentPath (ROOT_PHP_BO, "CacheBO.php");
+session_start();
 
 $file = getFullPath(JSON_MP3PRETTIFIER);
 
@@ -52,6 +53,7 @@ try {
             break;
         case "deleteMultiArtist":
             deleteMultiArtist();
+            break;
         case "saveMulti":
             saveMulti();
             break;
@@ -259,38 +261,57 @@ function deleteArtist()
     $id = $_REQUEST['id'];
     $artistBO = new ArtistBO();
     $success = $artistBO->deleteArtist($id);
-    echo json_encode(array('success'=>$success));
+    $returnObj = array('success' => $success);
+    if (!$success) {
+        $returnObj['errorMessage'] = "Artist can not be deleted!";
+    }
+    echo json_encode($returnObj);
 }
 
 function listMultiArtists(){
     $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
     $rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
-    //$multi = readJSONWithCode(JSON_MULTIARTIST);
-    $artistBO = new ArtistBO();
-    $multiArtistBO = new MultiArtistBO();
-    $multi = $multiArtistBO->multiArtistObj;
-
-    foreach ($multi->list as $key => $item) {
-        $item->description = $multiArtistBO->constructMultiArtistDescription($artistBO, $item);
-        $item->description2 = $multiArtistBO->constructMultiArtistDescription($artistBO, $item);
-        $item->description2 = $multiArtistBO->constructMultiArtistSequeceDescription($artistBO, $item);
+    if (CacheBO::isInCache(CacheBO::MULTIARTIST2)){
+       //$multi = CacheBO::getObject(CacheBO::MULTIARTIST);
+        $list = CacheBO::getObject(CacheBO::MULTIARTIST2);
     }
+    else {
+        $multiArtistBO = new MultiArtistBO();
+        $multi = $multiArtistBO->loadData();
+        $list = Array();
+
+        foreach ($multi->list as $key => $item) {
+            //$multiArtistTO = new MultiArtistListTO($item->id, $item->exactPosition, $item->master);
+            //$item->description = $multiArtistBO->constructMultiArtistDescription($artistBO, $item);
+            //$item->description2 = $multiArtistBO->constructMultiArtistSequeceDescription($artistBO, $item);
+            //$multiArtistTO->description = $multiArtistBO->constructMultiArtistDescription($artistBO, $item);
+            //$multiArtistTO->description2 = $multiArtistBO->constructMultiArtistSequeceDescription($artistBO, $item);
+            $multiArtistTO = $multiArtistBO->convertToMultiArtistTO($item);
+            $list[$item->id] = $multiArtistTO;
+        }
+        //$cacheBO = new CacheBO();
+        //$cacheBO->saveObject(CacheBO::MULTIARTIST, $multi);
+        CacheBO::saveObject(CacheBO::MULTIARTIST2, $list);
+    }
+    $newArray = array_values($list);
 
     //if (isset($_POST['sort'])){
     $field = isset($_POST['sort']) ? strval($_POST['sort']) : 'description';
     if ($field != 'description') {
         $order = isset($_POST['order']) ? strval($_POST['order']) : 'asc';
         $sort = new CustomSort();
-        $array = $sort->sortObjectArrayByField($multi->list, $field, $order);
+        //$array = $sort->sortObjectArrayByField($multi->list, $field, $order);
+        $array = $sort->sortObjectArrayByField($newArray, $field, $order);
     }
     else {
-        $array = $multi->list;
+        //$array = $multi->list;
+        $array = $newArray;
     }
     //}
     $array = array_slice($array, ($page-1)*$rows, $rows);
 
     $result = array();
-    $result["total"] = count($multi->list);
+    $result["total"] = count($newArray);
     $result["rows"] = $array;
     echo json_encode($result);
 }
@@ -346,7 +367,12 @@ function deleteMultiArtist(){
     $id = $_REQUEST['id'];
     $multiArtistBO = new MultiArtistBO();
     $success = $multiArtistBO->deleteMultiAristConfig($id);
-    echo json_encode(array('success'=>$success));
+    $returnObj = array('success' => $success);
+    if (!$success) {
+        $returnObj['errorMessage'] = "There was a problem trying to delete the MultiArtist!";
+    }
+    echo json_encode($returnObj);
+
 }
 
 function updateMultiArtist(){

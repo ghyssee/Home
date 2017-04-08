@@ -18,6 +18,7 @@ const JSON_MENU = "menu";
 const JSON_ALBUMERRORS = "albumErrors";
 const JSON_SONGCORRECTIONS = "songCorrections";
 const FILE_ERROR_LOG = "errorLog";
+const FILE_INFO_LOG = "infoLog";
 const FILE_ALBUM = "albumInfo";
 const FILE_ALBUMCHECK = "albumsToCheck";
 const FILE_ALBUMEXCLUDE = "albumsToExclude";
@@ -159,6 +160,16 @@ function logError ($class, $line, $msg){
     $file = getFullPath(FILE_ERROR_LOG);
     $msg = "File: " . $class . PHP_EOL . "Line: " . $line . PHP_EOL . "Message: " . $msg;
     file_put_contents($file, $msg . PHP_EOL, FILE_APPEND | LOCK_EX);
+}
+
+function logInfo ($msg){
+    $file = getFullPath(FILE_INFO_LOG);
+    $msg = getCurrentTime() . ' ' . $msg;
+    file_put_contents($file, $msg . PHP_EOL, FILE_APPEND | LOCK_EX);
+}
+
+function getCurrentTime(){
+    return date("d/m/Y H:i:s");
 }
 
 function read ($file){
