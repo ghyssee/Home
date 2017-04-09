@@ -496,7 +496,7 @@ public class MP3TagUtils {
         /* check if path is a subdivision, ex. 0001 - 0100
            Main Path is than the parent of the parent of the file
          */
-        if (path.matches("[0-9]{3,4} ?- ?[0-9]{3,4}")){
+        if (path.matches("(.* - )?[0-9]{3,4} ?- ?[0-9]{3,4}")){
             File parent = file.getParentFile().getParentFile();
             if (parent != null) {
                 path = parent.getName();

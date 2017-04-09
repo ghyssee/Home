@@ -5,7 +5,8 @@ include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 include_once documentPath (ROOT_PHP_BO, "WordBO.php");
 include_once documentPath (ROOT_PHP_BO, "ArtistBO.php");
 include_once documentPath (ROOT_PHP_BO, "CacheBO.php");
-session_start();
+include_once documentPath (ROOT_PHP_BO, "SessionBO.php");
+//session_start();
 
 $file = getFullPath(JSON_MP3PRETTIFIER);
 

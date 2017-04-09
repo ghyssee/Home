@@ -18,8 +18,8 @@
 <body>
 
 <?php
-
-session_start();
+include_once documentPath (ROOT_PHP_BO, "SessionBO.php");
+//session_start();
 $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
 goMenu();
 ?>

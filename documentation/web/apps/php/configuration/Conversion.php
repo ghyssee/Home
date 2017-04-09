@@ -5,9 +5,7 @@ include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 include_once documentPath (ROOT_PHP_HTML, "config.php");
 include_once documentPath (ROOT_PHP_BO, "CacheBO.php");
 session_start();
-if (CacheBO::isInCache("test")){
-    $tmp = "bla";
-}
+CacheBO::clearCache(CacheBO::MULTIARTIST2);
 convert();
 
 function convert()
