@@ -163,13 +163,27 @@ function logError ($class, $line, $msg){
 }
 
 function logInfo ($msg){
-    $file = getFullPath(FILE_INFO_LOG);
+    $file = addTimeStampToFile(getFullPath(FILE_INFO_LOG));
     $msg = getCurrentTime() . ' ' . $msg;
     file_put_contents($file, $msg . PHP_EOL, FILE_APPEND | LOCK_EX);
 }
 
 function getCurrentTime(){
     return date("d/m/Y H:i:s");
+}
+
+function addTimeStampToFile($file){
+    $path_parts = pathinfo($file);
+    $file = $path_parts['dirname'] . '/' . $path_parts['filename'] . getYYYYMMDD() . '.' . $path_parts['extension'];
+    return $file;
+}
+
+function getTimeStamp(){
+    return date("YmdHis");
+}
+
+function getYYYYMMDD(){
+    return date("Ymd");
 }
 
 function read ($file){

@@ -33,18 +33,25 @@ public class MP3Prettifier {
         public List <Word> replacements;
     }
 
-    public class ArtistSong {
-        public String id;
-        public String oldArtist;
-        public String newArtist;
-        public String oldSong;
-        public String newSong;
+    public class ArtistSongExceptions {
+        public List <ArtistSong> items;
+
+        public class ArtistSong {
+            public String id;
+            public String oldArtist;
+            public String newArtist;
+            public String oldSong;
+            public String newSong;
+        }
     }
+
+
+
 
 
     public Global global;
     public Song song;
     public Artist artist;
-    public List<ArtistSong> artistSongs;
+    public ArtistSongExceptions artistSongExceptions;
 
 }

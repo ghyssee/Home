@@ -163,10 +163,10 @@ private static void testAlbumArtist(){
         System.out.println(mp3Helper.prettifySong("Kerst-cd"));
         System.out.println("A Feat. B".replaceAll("Feat\\. ?", "Feat. "));
         System.out.println(mp3Helper.prettifyArtist("Daryl Hall & Oates"));
-        System.out.println(mp3Helper.prettifyArtist("MC Hammer"));
+        System.out.println(mp3Helper.prettifyArtist("4 Tune 5000"));
         System.out.println(mp3Helper.checkForTitleExceptions("Divine Inspiration", "The Way"));
         System.out.println(mp3Helper.checkForArtistExceptions("20 Fingers", "Lick It"));
-        System.out.println(mp3Helper.checkForTitleExceptions("Two Men Will Move You", "The Good Thing"));
+        System.out.println(mp3Helper.checkForTitleExceptions("4 Strings", "Take Me Away (Katie J. Radio Edit)"));
         //System.out.println("The Partysquad Feat. Sjaak, Dio, Sef".replaceAll("((Sef|Dio|Sjaak)( ?& ?|, ?| |\\.|$)){3,}", "Dio, Sef & Sjaak"));
         //System.out.println(mp3Helper.prettifyArtist("Ll Cool J Feat. 7 Aurelius"));
 

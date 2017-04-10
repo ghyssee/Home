@@ -6,7 +6,7 @@ include_once documentPath (ROOT_PHP_HTML, "config.php");
 include_once documentPath (ROOT_PHP_BO, "CacheBO.php");
 session_start();
 CacheBO::clearCache(CacheBO::MULTIARTIST2);
-convert();
+//purgeSongCorrections();
 
 function convert()
 {
@@ -18,13 +18,28 @@ function convert()
     //$mp3PrettifierObj->song->replacements = convertWords($mp3PrettifierObj->song->replacements);
     //$mp3PrettifierObj->artist->names = convertExactMath($mp3PrettifierObj->artist->names);
     //$mp3PrettifierObj->song->replacements = convertExactMath($mp3PrettifierObj->song->replacements);
-    //$mp3PrettifierObj->global->words = convertExactMath($mp3PrettifierObj->global->words, true);
+    //$mp3PrettifierObj->Global->words = convertExactMath($mp3PrettifierObj->Global->words, true);
     //$mp3PrettifierObj->artist->words = convertExactMath($mp3PrettifierObj->artist->words, true);
     //$multiArtistObj = readJSONWithCode(JSON_MULTIARTIST);
 
     //$file = getFullPath(JSON_MULTIARTIST) . ".NEW";
     //convertArtistSequence($multiArtistObj);
     //writeJSON($multiArtistObj, $file);
+}
+
+function purgeSongCorrections(){
+    $obj = readJSONWithCode(JSON_SONGCORRECTIONS);
+    foreach ($obj->items as $key => $song){
+        if (isset($song->done) && $song->done){
+            echo "remove " . $song->fileId . "<br>";
+            unset( $obj->items[$key]);
+        }
+    }
+    $obj->items = array_values($obj->items);
+    writeJSON($obj, getFullPath(JSON_SONGCORRECTIONS) . ".NEW");
+}
+
+function getCurrentDate(){
     $today = date("d/m/Y H:i:s");
     echo $today .'<br>';
     $today = date("Ymd");

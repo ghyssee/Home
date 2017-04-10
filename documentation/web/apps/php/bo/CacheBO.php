@@ -33,6 +33,11 @@ class CacheBO
         unset($_SESSION["cache"][$id]);
         $tmp = "blabla";
     }
+
+    static function clear (){
+        unset($_SESSION["cache"]);
+    }
+
     static function saveCacheObject($cacheId, $id, $object){
         $_SESSION["cache"][$cacheId][$id] = $object;
     }

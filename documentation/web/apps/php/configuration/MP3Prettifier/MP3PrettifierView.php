@@ -5,6 +5,7 @@
     include_once documentPath (ROOT_PHP, "config.php");
     include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
     include_once documentPath (ROOT_PHP_HTML, "config.php");
+    include_once documentPath (ROOT_PHP_BO, "SessionBO.php");
 ?>
 <html>
 
@@ -18,8 +19,7 @@
 <body>
 
 <?php
-include_once documentPath (ROOT_PHP_BO, "SessionBO.php");
-//session_start();
+sessionStart();
 $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
 goMenu();
 ?>
@@ -27,7 +27,7 @@ goMenu();
 <div class="horizontalLine">.</div>
 <br>
 
-<div id="tt" class="easyui-tabs" data-options="selected:0" style="width:900px;height:500px;">
+<div id="tt" class="easyui-tabs" data-options="selected:0" style="width:1000px;height:500px;">
     <div title="Global Word" style="padding:20px;display:none;">
         <?php include "MP3PrettifierViewGlobalWord.php"; ?>
     </div>
@@ -42,6 +42,9 @@ goMenu();
     </div>
     <div title="Filename" style="padding:20px;display:none;">
         <?php include "MP3PrettifierViewFilename.php"; ?>
+    </div>
+    <div title="ArtistSong Exceptions" style="padding:20px;display:none;">
+        <?php include "MP3PrettifierViewArtistSong.php"; ?>
     </div>
     <div title="Artists" style="padding:20px;display:none;">
         <?php include "MP3PrettifierViewArtists.php"; ?>

@@ -50,6 +50,21 @@ class ExtWord extends Word {
   }
 }
 
+class ArtistSongException  {
+  public $id;
+  public $oldArtist;
+  public $newArtist;
+  public $oldSong;
+  public $newSong;
+  public function __construct4($oldArtist, $newArtist, $oldSong, $newSong)
+  {
+    $this->oldArtist = $oldArtist;
+    $this->newArtist = $newArtist;
+    $this->oldSong = $oldSong;
+    $this->newSong = $newSong;
+  }
+}
+
 class Color
 {
   public $id;

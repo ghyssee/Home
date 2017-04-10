@@ -43,4 +43,5 @@
                 $('#ff').form('clear');
             }
         </script>
+    </div>
 </div>

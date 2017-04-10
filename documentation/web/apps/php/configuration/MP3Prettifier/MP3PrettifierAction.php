@@ -6,7 +6,7 @@ include_once documentPath (ROOT_PHP_BO, "WordBO.php");
 include_once documentPath (ROOT_PHP_BO, "ArtistBO.php");
 include_once documentPath (ROOT_PHP_BO, "CacheBO.php");
 include_once documentPath (ROOT_PHP_BO, "SessionBO.php");
-//session_start();
+sessionStart();
 
 $file = getFullPath(JSON_MP3PRETTIFIER);
 
@@ -61,6 +61,15 @@ try {
         case "updateMultiArtist":
             updateMultiArtist();
             break;
+        case "updateArtistSong":
+            updateArtistSong($file, $type, $category);
+            break;
+        case "addArtistSong":
+            addArtistSong($file, $type, $category);
+            break;
+        case "deleteArtistSong":
+            deleteArtistSong($type, $category);
+            break;
     }
 }
 catch(Error $e) {
@@ -99,13 +108,13 @@ function getList($type, $category){
     $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
     $rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
     $mp3Prettifier = readJSONWithCode(JSON_MP3PRETTIFIER);
-    //if (isset($_POST['sort'])){
-        $field = isset($_POST['sort']) ? strval($_POST['sort']) : 'oldWord';
+    if (isset($_POST['sort'])){
+        $field = isset($_POST['sort']) ? strval($_POST['sort']) : '';
         $order = isset($_POST['order']) ? strval($_POST['order']) : 'asc';
         $sort = new CustomSort();
         $array = $sort->sortObjectArrayByField($mp3Prettifier->{$type}->{$category}, $field, $order);
         $mp3Prettifier->{$type}->{$category} = $array;
-    //}
+    }
     $array = array_slice($mp3Prettifier->{$type}->{$category}, ($page-1)*$rows, $rows);
 
     $result = array();
@@ -389,6 +398,73 @@ function updateMultiArtist(){
         echo json_encode(addErrorMsg("There was a problem updating the Multi Artist with ID " . $multiArtist->id));
     }
 }
+
+function updateArtistSong($file, $type, $category){
+    $id = $_REQUEST['id'];
+    $word = new ArtistSongException();
+    assignField($word->oldArtist, "oldArtist", !ESCAPE_HTML);
+    assignField($word->newArtist, "newArtist", !ESCAPE_HTML);
+    assignField($word->oldSong, "oldSong", !ESCAPE_HTML);
+    assignField($word->newSong, "newSong", !ESCAPE_HTML);
+    $obj = readJSON($file);
+    $word->id = $id;
+    $save = true;
+    If (objectExist($obj->{$type}->{$category}, "oldArtist", $word->oldArtist, true, "id", $word->id) &&
+        objectExist($obj->{$type}->{$category}, "oldSong", $word->oldSong, true,  "id", $word->id)
+    ) {
+        $errors = addErrorMsg($type . ' ' . $category . ' already exist: ' . $word->oldArtist . ' / ' . $word->oldSong);
+        $save = false;
+    }
+    if ($save) {
+        $wordBO = new WordBO();
+        $wordBO->saveGlobalWord($word, $type, $category);
+        $items = array();
+        array_push($items, $word);
+        echo json_encode(array('success'=>true));
+    }
+    else {
+        //write($file, json_encode(array('errorMsg'=>'Some errors occured.')));
+        echo json_encode($errors);
+    }
+}
+
+function addArtistSong($file, $type, $category)
+{
+
+    $obj = readJSON($file);
+    $word = new ArtistSongException();
+    assignField($word->oldArtist, "oldArtist", !ESCAPE_HTML);
+    assignField($word->newArtist, "newArtist", !ESCAPE_HTML);
+    assignField($word->oldSong, "oldSong", !ESCAPE_HTML);
+    assignField($word->newSong, "newSong", !ESCAPE_HTML);
+
+    $save = true;
+    If (objectExist($obj->{$type}->{$category}, "oldArtist", $word->oldArtist, true) &&
+        objectExist($obj->{$type}->{$category}, "oldSong", $word->oldSong, true)
+    ) {
+        $errors = addErrorMsg($type . ' ' . $category . ' already exist: ' . $word->oldArtist . ' / ' . $word->oldSong);
+        $save = false;
+    }
+    if ($save) {
+        $wordBO = new WordBO();
+        $wordBO->addGlobalWord($word, $type, $category);
+        $items = array();
+        array_push($items, $word);
+        echo json_encode($items);
+    } else {
+        echo json_encode($errors);
+    }
+    exit();
+}
+
+function deleteArtistSong($type, $category)
+{
+    $id = $_REQUEST['id'];
+    $wordBO = new WordBO();
+    $success = $wordBO->deleteGlobalWord($id, 'id', $type, $category);
+    echo json_encode(array('success'=>$success));
+}
+
 
 ?>
 

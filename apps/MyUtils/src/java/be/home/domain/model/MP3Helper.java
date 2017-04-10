@@ -160,7 +160,7 @@ public class MP3Helper {
         log.info("Rule applied: Category: " + category + " / Old Word: " + word.oldWord + " / New Word: " + word.newWord);
     }
 
-    private void logRule(String category, MP3Prettifier.ArtistSong word){
+    private void logRule(String category, MP3Prettifier.ArtistSongExceptions.ArtistSong word){
         log.info("Rule applied: Category: " + category);
         log.info("Old Artist: " + word.oldArtist + " / New Artist: " + word.newArtist);
         log.info("Old Title: " + word.oldSong + " / New Title: " + word.newSong);
@@ -317,29 +317,8 @@ public class MP3Helper {
         return prettifiedText;
     }
 
-    public boolean checkForTitleExceptions(String artist, StringBuilder song){
-        boolean ok = true;
-        String oldSong = song.toString();
-        for (MP3Prettifier.ArtistSong artistSong : mp3Prettifer.artistSongs) {
-            if (artist.matches(artistSong.oldArtist)) {
-                String matchKey = artistSong.oldSong;
-                String newKey = artistSong.newSong;
-                if (oldSong.matches(matchKey)) {
-                    String title = oldSong.replaceAll(matchKey, newKey);
-                    if (!title.equals(oldSong)) {
-                        ok = false;
-                        song.setLength(0);
-                        song.append(title);
-                        break;
-                    }
-                }
-            }
-        }
-        return ok;
-    }
-
     public String checkForTitleExceptions(String artist, String song){
-        for (MP3Prettifier.ArtistSong artistSong : mp3Prettifer.artistSongs) {
+        for (MP3Prettifier.ArtistSongExceptions.ArtistSong artistSong : mp3Prettifer.artistSongExceptions.items) {
             if (artist.matches(artistSong.oldArtist)) {
                 String matchKey = artistSong.oldSong;
                 String newKey = artistSong.newSong;
@@ -358,7 +337,7 @@ public class MP3Helper {
 
     public String checkForArtistExceptions(String artist, String song){
         String newArtist = artist;
-        for (MP3Prettifier.ArtistSong artistSong : mp3Prettifer.artistSongs) {
+        for (MP3Prettifier.ArtistSongExceptions.ArtistSong artistSong : mp3Prettifer.artistSongExceptions.items) {
             if (song.matches(artistSong.oldSong)) {
                 String matchKey = artistSong.oldArtist;
                 String newKey = artistSong.newArtist;
