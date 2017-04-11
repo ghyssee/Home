@@ -5,8 +5,8 @@
             $smarty = initializeSmarty();
             $smarty->assign('title','Global Words');
             $smarty->assign('item','Global Word');
-            $smarty->assign('tableWidth','800px');
-            $smarty->assign('tableHeight','400px');
+            $smarty->assign('tableWidth','100%');
+            $smarty->assign('tableHeight','100%');
             $url = "MP3PrettifierAction.php";
             $type = "global";
             $category = "words";

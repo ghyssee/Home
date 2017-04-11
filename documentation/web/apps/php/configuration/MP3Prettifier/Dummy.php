@@ -13,7 +13,6 @@ $category = "words";
 $smarty->assign('tablegrid',"Dummy");
 $smarty->assign('id',$fieldId);
 $smarty->assign('fitColumns',"true");
-$smarty->assign('viewUrl',constructUrl($url, "list", $type, $category));
 //$smarty->assign('updateUrl',"'" . $url . "?method=update&id='+row['" . $fieldId . "']");
 //$smarty->assign('newUrl',"'" . $url . "?method=add'");
 //$smarty->assign('deleteUrl', $url . "?method=delete");
