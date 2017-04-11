@@ -19,6 +19,7 @@ $smarty->assign('tableHeight','400px');
 $url = "MP3PrettifierAction.php";
 $smarty->assign('tablegrid',"ArtistCRUD");
 $smarty->assign('id',$fieldId);
+$smarty->assign('fitColumns',"true");
 $smarty->assign('customSave', 'customSaveArtistCRUD()');
 $smarty->assign('viewUrl',$url . "?method=getListArtists");
 $smarty->assign('updateUrl',"'" . $url . "?method=updateArtist&id='+row['" . $fieldId . "']");
@@ -38,5 +39,5 @@ $smarty->assign("contacts", array(
 //** un-comment the following line to show the debug console
 //$smarty->debugging = true;
 
-$smarty->display('TableGridV3.tpl');
+$smarty->display('TableGridV4.tpl');
 ?>

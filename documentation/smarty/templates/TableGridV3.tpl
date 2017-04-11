@@ -1,6 +1,6 @@
 	<table id="dg{{$tablegrid}}" title="{{$title}}" class="easyui-datagrid" style="width:{{$tableWidth}};height:{{$tableHeight}}" idField="{{$id}}"
 		   url="{{$viewUrl}}"
-		   data-options='fitColumns:false,
+		   data-options='fitColumns:{{if isset($fitColumns)}}{{$fitColumns}}{{else}}false{{/if}},
 		                 onLoadSuccess:function(data){
 		                 {{if isset($onLoadSuccess)}}{{$onLoadSuccess}}{{/if}}
 		                 {{if isset($dragAndDrop)}}$(this).datagrid("enableDnd"){{/if}}
@@ -10,7 +10,6 @@
 		   pagination="true"
 		   nowrap="false"
 		   rownumbers="true"
-		   fitColumns="true"
 		   pagePosition={{if isset($pagePosition)}}"{{$pagePosition}}"{{else}}"bottom"{{/if}}
 		   pageSize="10"
 		   singleSelect="{{if isset($singleSelect)}}{{$singleSelect}}{{else}}true{{/if}}"

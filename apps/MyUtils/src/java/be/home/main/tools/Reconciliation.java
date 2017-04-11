@@ -25,13 +25,13 @@ public class Reconciliation extends BatchJobV2 {
 
     private static final Logger log = getMainLog(Reconciliation.class);
 
-    private static String[] OBJECTS = {"FAR_RECO_DATA", "FAR_RECO_INDX", "FAR_USER", "FAR_READ"};
-    private static String OBJECT_DATA_MGR = "DATA_MGR";
-    private static String BASE = "C:\\My Programs\\OneDrive\\Config\\Java\\Velocity\\Reconciliation\\GEN2\\";
+    private static String[] OBJECTS1 = {"FAR_RECO_DATA", "FAR_RECO_INDX", "FAR_USER", "FAR_READ"};
+    private static String OBJECT_DATA_MGR1 = "DATA_MGR";
+    private static String BASE1= "C:\\My Programs\\OneDrive\\Config\\Java\\Velocity\\Reconciliation\\GEN2\\";
 
-    private static String OBJECT_DATA_MGR1 = "&1.";
-    private static String[] OBJECTS1 = {"&1", "&2", "&3", "&4"};
-    private static String BASE1 = "C:\\My Programs\\OneDrive\\Config\\Java\\Velocity\\Reconciliation\\GEN\\";
+    private static String OBJECT_DATA_MGR = "&1.";
+    private static String[] OBJECTS = {"&1", "&2", "&3", "&4"};
+    private static String BASE = "C:\\My Programs\\OneDrive\\Config\\Java\\Velocity\\Reconciliation\\GEN\\";
     private static List<OracleDriver> driverFile = new ArrayList();
 
     private static String DATA_MGR = "DATA_MGR";
@@ -148,20 +148,11 @@ public class Reconciliation extends BatchJobV2 {
         createGlobal(META_DATA_MGR, userId, datatype, streams, "06_MDM_SETUP_GLOBAL.sql");
 
         List<MatchPredicate> listMatchPredicateManual = Arrays.asList(
-                new MatchPredicate("Dispatching Office Equals", "DISP_OFFICE", null, "DISP_OFFICE", "=", null, null, null, "N"),
-                new MatchPredicate("Office Of Destination Equals", "DEST_OFFICE", null, "DEST_OFFICE", "=", null, null, null, "N"),
-                new MatchPredicate("Mail No Equals", "MAIL_NO", null, "MAIL_NO", "=", null, null, null, "N"),
-                new MatchPredicate("Mail Type Equals", "CATEGORY_CODE", null, "CATEGORY_CODE", "=", null, null, null, "N")
+                new MatchPredicate("Amount Equals", "AMOUNT", null, "AMOUNT", "=", null, null, null, "N")
         );
         List<MatchPredicate> listMatchPredicateAutomatic = Arrays.asList(
                 new MatchPredicate("Dispatching Office Equals", "DISP_OFFICE", null, "DISP_OFFICE", "=", null, null, null, "N"),
                 new MatchPredicate("Office Of Destination Equals", "DEST_OFFICE", null, "DEST_OFFICE", "=", null, null, null, "N"),
-                new MatchPredicate("Mail No Equals", "MAIL_NO", null, "MAIL_NO", "=", null, null, null, "N"),
-                new MatchPredicate("Mail Type Equals", "CATEGORY_CODE", null, "CATEGORY_CODE", "=", null, null, null, "N")
-        );
-        List<MatchPredicate> listMatchPredicateManual2 = Arrays.asList(
-                new MatchPredicate("Dispatching Office Equals", "DISP_OFFICE", null, "DISP_OFFICE_SHORT", "=", null, null, null, "N"),
-                new MatchPredicate("Office Of Destination Equals", "DEST_OFFICE", null, "DEST_OFFICE_SHORT", "=", null, null, null, "N"),
                 new MatchPredicate("Mail No Equals", "MAIL_NO", null, "MAIL_NO", "=", null, null, null, "N"),
                 new MatchPredicate("Mail Type Equals", "CATEGORY_CODE", null, "CATEGORY_CODE", "=", null, null, null, "N")
         );
@@ -171,9 +162,6 @@ public class Reconciliation extends BatchJobV2 {
                 new MatchPredicate("Mail No Equals", "MAIL_NO", null, "MAIL_NO", "=", null, null, null, "N"),
                 new MatchPredicate("Mail Type Equals", "CATEGORY_CODE", null, "CATEGORY_CODE", "=", null, null, null, "N")
         );
-        List<MatchPredicate> listMatchPredicateManual3 = Arrays.asList(
-                new MatchPredicate("Flight Code", "FLIGHTCODE", null, "FLIGHTCODE", "=", null, null, null, "N")
-        );
         List<MatchPredicate> listMatchPredicateAutomatic3 = Arrays.asList(
                 new MatchPredicate("Flight Code", "FLIGHTCODE", null, "FLIGHTCODE", "=", null, null, null, "N")
         );
@@ -182,23 +170,11 @@ public class Reconciliation extends BatchJobV2 {
                 makeNull
         );
         Function isNull = new Function("IsNull", "Is Null");
-        List<MatchPredicate> listMatchPredicateManual4 = Arrays.asList(
-                new MatchPredicate("Dispatching Office Equals", "DISP_OFFICE", null, "DISP_OFFICE_SHORT", "=", null, null, null, "N"),
-                new MatchPredicate("Office Of Destination Equals", "DEST_OFFICE", null, "DEST_OFFICE_SHORT", "=", null, null, null, "N"),
-                new MatchPredicate("Mail No Equals", "MAIL_NO", null, "MAIL_NO", "=", null, null, null, "N"),
-                new MatchPredicate("Categroy Code Is Null", "CATEGORY_CODE", null, "CATEGORY_CODE", "=", null, makeNull, isNull, "N")
-        );
         List<MatchPredicate> listMatchPredicateAutomatic4 = Arrays.asList(
                 new MatchPredicate("Dispatching Office Equals", "DISP_OFFICE", null, "DISP_OFFICE_SHORT", "=", null, null, null, "N"),
                 new MatchPredicate("Office Of Destination Equals", "DEST_OFFICE", null, "DEST_OFFICE_SHORT", "=", null, null, null, "N"),
                 new MatchPredicate("Mail No Equals", "MAIL_NO", null, "MAIL_NO", "=", null, null, null, "N"),
                 new MatchPredicate("Categroy Code Is Null", "CATEGORY_CODE", null, "CATEGORY_CODE", "=", null, makeNull, isNull, "N")
-        );
-        List<MatchPredicate> listMatchPredicateManual5 = Arrays.asList(
-                new MatchPredicate("Office Of Destination Equals", "DEST_OFFICE", null, "DEST_OFFICE_SHORT", "=", null, null, null, "N"),
-                new MatchPredicate("Mail No Equals", "MAIL_NO", null, "MAIL_NO", "=", null, null, null, "N"),
-                new MatchPredicate("Mail Type Equals", "CATEGORY_CODE", null, "CATEGORY_CODE", "=", null, null, null, "N"),
-                new MatchPredicate("Disp Office Is Null", "DISP_OFFICE", null, "DISP_OFFICE", "=", null, makeNull, isNull, "N")
         );
         List<MatchPredicate> listMatchPredicateAutomatic5 = Arrays.asList(
                 new MatchPredicate("Office Of Destination Equals", "DEST_OFFICE", null, "DEST_OFFICE_SHORT", "=", null, null, null, "N"),
@@ -208,15 +184,11 @@ public class Reconciliation extends BatchJobV2 {
         );
 
         List<MatchAlgorithm> listMatchAlgorithm = Arrays.asList(
-                new MatchAlgorithm("ILPOST_MAN", "Match on Flight code", "n", "n", "1", "MANUAL", listMatchPredicateManual3),
+                new MatchAlgorithm("ILPOST_MAN", "Match on Amount", "n", "n", "1", "MANUAL", listMatchPredicateManual),
                 new MatchAlgorithm("ILPOST_RUN1", "Match on Flight code", "n", "n", "1", "AUTOMATIC", listMatchPredicateAutomatic3),
-                new MatchAlgorithm("ILPOST_MAN2", "Match on DISP / DEST / MAIL_NO", "n", "n", "2", "MANUAL", listMatchPredicateManual),
                 new MatchAlgorithm("ILPOST_RUN2", "Match on DISP / DEST / MAIL_NO", "n", "n", "2", "AUTOMATIC", listMatchPredicateAutomatic),
-                new MatchAlgorithm("ILPOST_MAN3", "Match on CATEGORY / SHORT DISP / DEST / MAIL_NO", "n", "n", "3", "MANUAL", listMatchPredicateManual2),
                 new MatchAlgorithm("ILPOST_RUN3", "Match on CATEGORY / Match on SHORT DISP / DEST / MAIL_NO", "n", "n", "3", "AUTOMATIC", listMatchPredicateAutomatic2),
-                new MatchAlgorithm("ILPOST_MAN4", "Match On SHORT DISP / DEST / MAIL_NO And On Empty Category Code", "n", "n", "4", "MANUAL", listMatchPredicateManual4),
                 new MatchAlgorithm("ILPOST_RUN4", "Match On SHORT DISP / DEST / MAIL_NO And On Empty Category Code", "n", "n", "4", "AUTOMATIC", listMatchPredicateAutomatic4),
-                new MatchAlgorithm("ILPOST_MAN5", "Match on CATEGORY / Match on SHORT DEST / MAIL_NO And On Empty Disp Office", "n", "n", "5", "MANUAL", listMatchPredicateManual5),
                 new MatchAlgorithm("ILPOST_RUN5", "Match on CATEGORY / Match on SHORT DEST / MAIL_NO And On Empty Disp Office", "n", "n", "5", "AUTOMATIC", listMatchPredicateAutomatic5)
         );
 

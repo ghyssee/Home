@@ -12,6 +12,7 @@ $type = "artist";
 $category = "words";
 $smarty->assign('tablegrid',"ArtistWord");
 $smarty->assign('id',$fieldId);
+$smarty->assign('fitColumns',"true");
 $smarty->assign('viewUrl',constructUrl($url, "list", $type, $category));
 $smarty->assign('updateUrl',"'" . constructUrl($url, "update&id='+row['" . $fieldId . "']+'", $type, $category) . "'");
 //$smarty->assign('updateUrl',"'" . $url . "?method=update&id='+row['" . $fieldId . "']");
@@ -31,5 +32,5 @@ $smarty->assign("contacts", array(
 //** un-comment the following line to show the debug console
 //$smarty->debugging = true;
 
-$smarty->display('TableGridV3.tpl');
+$smarty->display('TableGridV4.tpl');
 ?>

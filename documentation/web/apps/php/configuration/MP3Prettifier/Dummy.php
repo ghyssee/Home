@@ -3,30 +3,25 @@ include_once('Smarty.class.php');
 
 $fieldId = "id";
 $smarty = initializeSmarty();
-$smarty->assign('title','Artist Names');
-$smarty->assign('item','Artist Name');
+$smarty->assign('title','Global Words');
+$smarty->assign('item','Global Word');
 $smarty->assign('tableWidth','800px');
 $smarty->assign('tableHeight','400px');
 $url = "MP3PrettifierAction.php";
-$type = "artist";
-$category = "names";
-$smarty->assign('tablegrid',"ArtistName");
+$type = "global";
+$category = "words";
+$smarty->assign('tablegrid',"Dummy");
 $smarty->assign('id',$fieldId);
 $smarty->assign('fitColumns',"true");
 $smarty->assign('viewUrl',constructUrl($url, "list", $type, $category));
-$smarty->assign('updateUrl',"'" . constructUrl($url, "update&id='+row['" . $fieldId . "']+'", $type, $category) . "'");
 //$smarty->assign('updateUrl',"'" . $url . "?method=update&id='+row['" . $fieldId . "']");
-$smarty->assign('newUrl',"'" . constructUrl($url, "add", $type, $category) . "'");
 //$smarty->assign('newUrl',"'" . $url . "?method=add'");
-$smarty->assign('deleteUrl', constructUrl($url, "delete", $type, $category));
 //$smarty->assign('deleteUrl', $url . "?method=delete");
 
-
 $smarty->assign("contacts", array(
-        array("field" => "oldWord", "label"=>"Old Word", "size" => 50, "required" => true, "sortable" => true),
-        array("field" => "newWord", "label"=>"New Word", "size" => 50,"sortable" => true),
+        array("field" => "oldWord", "label"=>"Old Word", "size" => 70, "required" => true, "sortable" => true),
+        array("field" => "newWord", "label"=>"New Word", "size" => 70,"sortable" => true),
         array("field" => "exactMatch", "label"=>"Exact Match", "size" => 15, "formatter" => "checkboxFormatter", "align" => "center", "checkbox" => true),
-        array("field" => "priority", "label"=>"Priority", "size" => 10, "type" => "number", "sortable" => true),
         array("field" => "id", "label"=>"Id", "size" => 50, "hidden" => "true")
     )
 );
@@ -35,4 +30,3 @@ $smarty->assign("contacts", array(
 
 $smarty->display('TableGridV4.tpl');
 ?>
-

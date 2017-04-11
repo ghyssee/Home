@@ -12,6 +12,7 @@
             $category = "words";
             $smarty->assign('tablegrid',"GlobalWord");
             $smarty->assign('id',$fieldId);
+            $smarty->assign('fitColumns',"true");
             $smarty->assign('viewUrl',constructUrl($url, "list", $type, $category));
             $smarty->assign('updateUrl',"'" . constructUrl($url, "update&id='+row['" . $fieldId . "']+'", $type, $category) . "'");
             //$smarty->assign('updateUrl',"'" . $url . "?method=update&id='+row['" . $fieldId . "']");
@@ -22,8 +23,8 @@
 
 
             $smarty->assign("contacts", array(
-                    array("field" => "oldWord", "label"=>"Old Word", "size" => 50, "required" => true, "sortable" => true),
-                    array("field" => "newWord", "label"=>"New Word", "size" => 50,"sortable" => true),
+                    array("field" => "oldWord", "label"=>"Old Word", "size" => 70, "required" => true, "sortable" => true),
+                    array("field" => "newWord", "label"=>"New Word", "size" => 70,"sortable" => true),
                     array("field" => "exactMatch", "label"=>"Exact Match", "size" => 15, "formatter" => "checkboxFormatter", "align" => "center", "checkbox" => true),
                     array("field" => "id", "label"=>"Id", "size" => 50, "hidden" => "true")
                 )
@@ -31,5 +32,5 @@
             //** un-comment the following line to show the debug console
             //$smarty->debugging = true;
 
-            $smarty->display('TableGridV3.tpl');
+            $smarty->display('TableGridV4.tpl');
 ?>

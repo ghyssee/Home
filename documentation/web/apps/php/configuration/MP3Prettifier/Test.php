@@ -1,11 +1,11 @@
 <?php
-    error_reporting(E_ALL);
-    ini_set('display_errors', 1);
-    include_once "../../setup.php";
-    include_once documentPath (ROOT_PHP, "config.php");
-    include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
-    include_once documentPath (ROOT_PHP_HTML, "config.php");
-    include_once documentPath (ROOT_PHP_BO, "SessionBO.php");
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+include_once "../../setup.php";
+include_once documentPath (ROOT_PHP, "config.php");
+include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
+include_once documentPath (ROOT_PHP_HTML, "config.php");
+include_once documentPath (ROOT_PHP_BO, "SessionBO.php");
 ?>
 <html>
 
@@ -24,12 +24,8 @@ $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
 goMenu();
 ?>
 <h1>MP3 Pretttifier</h1>
-<div class="horizontalLine">.</div>
-<br>
-
-<div id="tt" class="easyui-tabs" data-options="selected:0" style="width:1100px;height:500px;">
+<div id="tt" class="easyui-tabs" data-options="selected:0" style="width:1200px;height:500px;">
     <div title="" style="padding:20px;display:none;">
-        <?php include "Dummy.php"; ?>
     </div>
     <div title="Global Word" style="padding:20px;display:none;">
         <?php include "MP3PrettifierViewGlobalWord.php"; ?>
@@ -49,7 +45,7 @@ goMenu();
     <div title="Filename" style="padding:20px;display:none;">
         <?php include "MP3PrettifierViewFilename.php"; ?>
     </div>
-    <div title="ArtistSong Exceptions" style="padding:20px;display:none;">
+    <div title="ArtistSong" style="padding:20px;display:none;">
         <?php include "MP3PrettifierViewArtistSong.php"; ?>
     </div>
     <div title="Artists" style="padding:20px;display:none;">
@@ -58,20 +54,13 @@ goMenu();
     <div title="Artist Groups List" style="padding:20px;display:none;">
         <?php include "MP3PrettifierViewMultiArtistList.php"; ?>
     </div>
-    <div title="Artist Group" style="padding:20px;display:none;">
-        <?php include "MP3PrettifierViewMultiArtistConfig.php"; ?>
-    </div>
-    <div title="Artist Group Batch" style="padding:20px;display:none;">
-        <?php include "MP3PrettifierViewMultiArtistBatch.php"; ?>
-    </div>
 </div>
 
-
+</body>
+</html>
 
 <?php
 /*<script src="<?php echo webPath(ROOT_JS_EASYUI, 'EasyUITabsMouseHover.js')?>"></script>*/
-goMenu();
-
 function constructUrl($url, $method, $type, $category){
     $newUrl = $url . "?method=" . $method . "&type=" . $type . "&category=" . $category;
     return $newUrl;
@@ -79,7 +68,3 @@ function constructUrl($url, $method, $type, $category){
 
 ?>
 <br>
-
-</body>
-</html>
-
