@@ -31,22 +31,26 @@ class CacheBO
 
     static function clearCache ($id){
         unset($_SESSION["cache"][$id]);
-        $tmp = "blabla";
+        logInfo("Clearing Cache " . $id);
     }
 
     static function clear (){
         unset($_SESSION["cache"]);
+        logInfo("Clearing Cache...");
     }
 
     static function saveCacheObject($cacheId, $id, $object){
         $_SESSION["cache"][$cacheId][$id] = $object;
+        logInfo("Save Cache Object " . $cacheId . " / Id = " . $id);
     }
 
     static function clearCacheObject($cacheId, $id){
         unset($_SESSION["cache"][$cacheId][$id]);
+        logInfo("Clear Cache Object " . $cacheId . " / Id = " . $id);
     }
 
     static function saveObject($id, $object){
         $_SESSION["cache"][$id] = $object;
+        logInfo("Saving Cache Object " . $id);
     }
 }

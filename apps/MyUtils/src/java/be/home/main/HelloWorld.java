@@ -115,14 +115,14 @@ private static void testAlbumArtist(){
         System.out.println(mp3Helper.stripFilename("Mambo No. 5 (A Little Bit of...)"));
         System.out.println(mp3Helper.prettifyAlbum("ELV1S: 30 #1 Hits"));
         System.out.println("A Feat. B".replaceAll("Feat\\. ?", "Feat. "));
-        System.out.println(mp3Helper.prettifyArtist("A*Base"));
-        System.out.println(mp3Helper.prettifyArtist("Zeds Dead Feat. Twin Shadow, D'angelo Lacey"));
-        System.out.println(mp3Helper.prettifySong("Onderweg [2000]"));
-        System.out.println(mp3Helper.checkForTitleExceptions("A'Studio", "S.O.S."));
-        System.out.println(mp3Helper.checkForTitleExceptions("Ace The Space", "9 Is A Classic"));
-        System.out.println(mp3Helper.checkForArtistExceptions("Addy", "Ik Kom Terug"));
+        System.out.println(mp3Helper.prettifySong("E = MC²"));
+        System.out.println(mp3Helper.checkForTitleExceptions("Ailee", "I'll Show You"));
+        System.out.println(mp3Helper.checkForTitleExceptions("BMR Feat. Felicia", "Check It Out"));
+        System.out.println(mp3Helper.checkForArtistExceptions("B-Sides", "The Tape (Remix)"));
         //System.out.println("The Partysquad Feat. Sjaak, Dio, Sef".replaceAll("((Sef|Dio|Sjaak)( ?& ?|, ?| |\\.|$)){3,}", "Dio, Sef & Sjaak"));
         //System.out.println(mp3Helper.prettifyArtist("Ll Cool J Feat. 7 Aurelius"));
+        System.out.println(mp3Helper.prettifyArtist("B.O.N."));
+        System.out.println(mp3Helper.prettifyArtist("B.O.B Feat. Hayley Williams Of Paramore"));
 
     }
 

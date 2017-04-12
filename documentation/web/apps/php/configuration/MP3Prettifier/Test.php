@@ -23,48 +23,54 @@ sessionStart();
 $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
 goMenu();
 ?>
-<h1>MP3 Pretttifier</h1>
-<div id="tt" class="easyui-tabs" data-options="selected:0" style="width:1200px;height:500px;">
-    <div title="" style="padding:20px;display:none;">
-    </div>
-    <div title="Global Word" style="padding:20px;display:none;">
-        <?php include "MP3PrettifierViewGlobalWord.php"; ?>
-    </div>
-    <div title="Global Sentence" style="padding:20px;display:none;">
-        <?php include "MP3PrettifierViewGlobalSentence.php"; ?>
-    </div>
-    <div title="Artist Word" style="padding:20px;display:none;">
-        <?php include "MP3PrettifierViewArtistWord.php"; ?>
-    </div>
-    <div title="Artist Name" style="padding:20px;display:none;">
-        <?php include "MP3PrettifierViewArtistName.php"; ?>
-    </div>
-    <div title="Song Title" style="padding:20px;display:none;">
-        <?php include "MP3PrettifierViewSongTitle.php"; ?>
-    </div>
-    <div title="Filename" style="padding:20px;display:none;">
-        <?php include "MP3PrettifierViewFilename.php"; ?>
-    </div>
-    <div title="ArtistSong" style="padding:20px;display:none;">
-        <?php include "MP3PrettifierViewArtistSong.php"; ?>
-    </div>
-    <div title="Artists" style="padding:20px;display:none;">
-        <?php include "MP3PrettifierViewArtists.php"; ?>
-    </div>
-    <div title="Artist Groups List" style="padding:20px;display:none;">
-        <?php include "MP3PrettifierViewMultiArtistList.php"; ?>
-    </div>
+<h1>Test</h1>
+
+<div id="dlArtistList" class="easyui-datalist" title="Artists" style="width:200px;height:400px"
+     data-options="
+                            url: 'MP3PrettifierAction.php?method=listArtists',
+                            method: 'get',
+                            lines: 'true',
+                            panelHeight: 500,
+                            valueField: 'id',
+                            singleSelect: true,
+                            required:true,
+                            prompt:'Select Type',
+                            textField: 'name'
+                         "
+>
 </div>
+
+<input id="cbArtist" class="easyui-combobox" name="cbArtist"
+       data-options="valueField:'id',textField:'name',url:'MP3PrettifierAction.php?method=listArtists'">
+<div><button onclick="insert()">Add</button></div>
+
+<script>
+function insert() {
+    var row = $('#cbArtist').combobox('getValue');
+    if (row) {
+        alert(row);
+    }
+    else {
+        alert("Not Filled");
+    }
+    var _options = $('#cbArtist').combobox('options');
+    var _data = $(cbArtist).combobox('getData');
+    var _value = $(cbArtist).combobox('getValue');
+    var _b = false;
+    alert("1");
+    for (var i = 0; i < _data.length; i++) {
+        if (_data[i][_options.valueField] == _value) {
+            _b = true;
+            break;
+        }
+    }
+    alert("2");
+    if (!_b) {
+        $(cbArtist).combobox('setValue', '');
+    }
+}
+
+</script>
 
 </body>
 </html>
-
-<?php
-/*<script src="<?php echo webPath(ROOT_JS_EASYUI, 'EasyUITabsMouseHover.js')?>"></script>*/
-function constructUrl($url, $method, $type, $category){
-    $newUrl = $url . "?method=" . $method . "&type=" . $type . "&category=" . $category;
-    return $newUrl;
-}
-
-?>
-<br>

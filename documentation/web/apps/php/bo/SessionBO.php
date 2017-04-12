@@ -5,6 +5,7 @@
  * Date: 8/04/2017
  * Time: 22:24
  */
+include_once documentPath (ROOT_PHP_BO, "CacheBO.php");
 
 function sessionStart()
 {
@@ -15,6 +16,7 @@ function sessionStart()
         session_unset();
         session_destroy();
         session_start();
+        CacheBO::clear();
     }
     $_SESSION['LAST'] = time();
 }
