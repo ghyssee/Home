@@ -26,7 +26,7 @@
                              {{if isset($contacts[sec1].size)}},width:{{$contacts[sec1].size}}{{/if}}
                              {{if isset($contacts[sec1].align)}},align:'center'{{/if}}
                              {{if isset($contacts[sec1].formatter)}},formatter:function(value,row,index){
-                             {{$contacts[sec1].formatter}}(value,row,index);
+                             return {{$contacts[sec1].formatter}}(value,row,index);
                              } {{/if}}
                              {{if isset($contacts[sec1].sortable)}},sortable:{{if $contacts[sec1].sortable}}true{{else}}false{{/if}}{{/if}}
                              {{if isset($contacts[sec1].selectRow)}},checkbox:true{{/if}}
@@ -169,6 +169,7 @@
     }
     {{/if}}
     function checkboxFormatter(val,row,index){
+
         if (val== 1) {
             return "√";
         }
