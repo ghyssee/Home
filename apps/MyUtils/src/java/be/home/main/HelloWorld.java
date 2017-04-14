@@ -46,6 +46,8 @@ public class HelloWorld extends BatchJobV2 {
 
         //processArtistFile();
         testMP3Prettifier();
+        //System.out.println(MP3Helper.getInstance().test("A\\$2AP$2Test$2Test$3Test$4", "\\$2", "\\$3", 2));
+        //System.out.println(MP3Helper.getInstance().checkRegExpDollar("$1Text$1", 1));
         //updateMP3();
 
 
@@ -103,7 +105,7 @@ private static void testAlbumArtist(){
         System.out.println(mp3Helper.prettifyArtist("Mr Robert"));
         System.out.println(mp3Helper.prettifyArtist("SFB, Ronnie Flex, Lil' Kleine & Bokoesam"));
         System.out.println(mp3Helper.prettifyArtist("Mr Robert"));
-        System.out.println(mp3Helper.prettifyArtist("Riba & JMK!"));
+        System.out.println(mp3Helper.prettifyArtist("Bachman Turner Overdrive"));
 
         System.out.println(mp3Helper.prettifySong("Ok, That's it"));
         System.out.println(mp3Helper.prettifySong("Oops! I Did It Again"));
@@ -115,16 +117,30 @@ private static void testAlbumArtist(){
         System.out.println(mp3Helper.stripFilename("Mambo No. 5 (A Little Bit of...)"));
         System.out.println(mp3Helper.prettifyAlbum("ELV1S: 30 #1 Hits"));
         System.out.println("A Feat. B".replaceAll("Feat\\. ?", "Feat. "));
-        System.out.println(mp3Helper.prettifySong("E = MC²"));
-        System.out.println(mp3Helper.checkForTitleExceptions("Ailee", "I'll Show You"));
-        System.out.println(mp3Helper.checkForTitleExceptions("BMR Feat. Felicia", "Check It Out"));
-        System.out.println(mp3Helper.checkForArtistExceptions("B-Sides", "The Tape (Remix)"));
+        System.out.println(getTitleArttistException("Cabin Crew", "Star 2 Fall"));
+        System.out.println(getTitleArttistException("Da Brat Feat. Tyrese", "What' Chu Like"));
+        System.out.println(getArtistTitleException("D.O.N.S. & DBN Feat. Kadoc", "The Nighttrain"));
         //System.out.println("The Partysquad Feat. Sjaak, Dio, Sef".replaceAll("((Sef|Dio|Sjaak)( ?& ?|, ?| |\\.|$)){3,}", "Dio, Sef & Sjaak"));
         //System.out.println(mp3Helper.prettifyArtist("Ll Cool J Feat. 7 Aurelius"));
-        System.out.println(mp3Helper.prettifyArtist("B.O.N."));
-        System.out.println(mp3Helper.prettifyArtist("B.O.B Feat. Hayley Williams Of Paramore"));
+        System.out.println(mp3Helper.prettifyArtist("D.O.D."));
+        System.out.println(mp3Helper.prettifyArtist("Da Balls"));
+        System.out.println(mp3Helper.prettifySong("Wasup!"));
 
     }
+
+    private static String getArtistTitleException(String artist, String title){
+        String prettifiedArtist = MP3Helper.getInstance().prettifyArtist(artist);
+        String prettifiedTitle = MP3Helper.getInstance().prettifySong(title);
+        return MP3Helper.getInstance().checkForArtistExceptions(prettifiedArtist, prettifiedTitle);
+    }
+
+
+    private static String getTitleArttistException(String artist, String title){
+        String prettifiedArtist = MP3Helper.getInstance().prettifyArtist(artist);
+        String prettifiedTitle = MP3Helper.getInstance().prettifySong(title);
+        return MP3Helper.getInstance().checkForTitleExceptions(prettifiedArtist, prettifiedTitle);
+    }
+
 
     private static void updateMP3(){
         Mp3File mp3file = null;

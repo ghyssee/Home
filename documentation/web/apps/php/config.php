@@ -29,17 +29,29 @@ function getSessionField($field)
 
 function assignField(&$field, $value, $isHtml = true)
 {
-	if ($isHtml) {
-		$field = htmlspecialchars($_POST[$value]);
-	} else {
-		$field = $_POST[$value];
-	}
+    if (isset($_POST[$value])) {
+        if ($isHtml) {
+            $field = htmlspecialchars($_POST[$value]);
+        } else {
+            $field = $_POST[$value];
+        }
+    }
+    else {
+        logInfo("Field Was Not Set: " . $field);
+        $field = null;
+        }
 }
 
 function assignNumber(&$field, $value, $isHtml = true)
 {
-	assignField($field, $value, $isHtml);
-    $field = intval($field);
+	if (isset($_POST[$value])){
+        assignField($field, $value, $isHtml);
+        $field = intval($field);
+    }
+    else {
+        logInfo("Field Was Not Set: " . $field);
+        $field = 0;
+    }
 }
 
 function assignCheckbox(&$field, $value){

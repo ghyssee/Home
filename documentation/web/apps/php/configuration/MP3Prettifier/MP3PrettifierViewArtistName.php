@@ -5,7 +5,7 @@ $fieldId = "id";
 $smarty = initializeSmarty();
 $smarty->assign('title','Artist Names');
 $smarty->assign('item','Artist Name');
-$smarty->assign('tableWidth','800px');
+$smarty->assign('tableWidth','100%');
 $smarty->assign('tableHeight','400px');
 $url = "MP3PrettifierAction.php";
 $type = "artist";
@@ -23,11 +23,13 @@ $smarty->assign('deleteUrl', constructUrl($url, "delete", $type, $category));
 
 
 $smarty->assign("contacts", array(
-        array("field" => "oldWord", "label"=>"Old Word", "size" => 50, "required" => true, "sortable" => true),
-        array("field" => "newWord", "label"=>"New Word", "size" => 50,"sortable" => true),
-        array("field" => "exactMatch", "label"=>"Exact Match", "size" => 15, "formatter" => "checkboxFormatter", "align" => "center", "checkbox" => true),
-        array("field" => "priority", "label"=>"Priority", "size" => 10, "type" => "number", "sortable" => true),
-        array("field" => "id", "label"=>"Id", "size" => 50, "hidden" => "true")
+        array("field" => "oldWord", "label"=>"Old Word", "size" => 30, "required" => true, "sortable" => true),
+        array("field" => "newWord", "label"=>"New Word", "size" => 30,"sortable" => true),
+        array("field" => "exactMatch", "label"=>"Exact Match", "size" => 7, "formatter" => "checkboxFormatter", "align" => "center", "checkbox" => true),
+        array("field" => "priority", "label"=>"Priority", "size" => 7, "type" => "number", "sortable" => true),
+        array("field" => "beginOfWord", "label"=>"Begin Of Word", "size" => 8, "formatter" => "checkboxFormatter", "align" => "center", "checkbox" => true),
+        array("field" => "endOfWord", "label"=>"End Of Word", "size" => 7, "type" => "number", "sortable" => true),
+        array("field" => "id", "label"=>"Id", "hidden" => "true")
     )
 );
 //** un-comment the following line to show the debug console

@@ -70,10 +70,71 @@ public class MP3Helper {
         if (word.parenthesis) {
             oldWord = replaceBetweenBrackets(oldWord);
         }
-        if (word.exactMatch){
+        boolean exactMatch = word.exactMatch;
+        String newWord = word.newWord;
+        if (word.beginOfWord) {
+            oldWord = "(^| )" + oldWord;
+            newWord = "$1" + newWord;
+            exactMatch = false;
+        }
+        if (word.endOfWord > 0){
+            oldWord = oldWord + "( |,|$)";
+            newWord = newWord + "$" + word.endOfWord;
+            exactMatch = false;
+        }
+        if (exactMatch){
             oldWord = "^" + oldWord + "$";
         }
-        text = text.replaceAll(oldWord, word.newWord);
+        text = text.replaceAll(oldWord, newWord);
+        return text;
+    }
+
+    public String checkRegExpDollar(String text, int offset){
+       boolean found = false;
+        int counter = 1;
+        do {
+            if (text.matches("(.*)\\$" + offset + "(.*)")){
+               //text = text.replaceFirst("\\$" + counter++, "\\$" + ++offset);
+               int occurence = counter == 1 ? 1 : 2;
+               text = test(text, "\\$" + offset++, "\\$" + offset, occurence);
+                counter++;
+               found = true;
+           }
+            else {
+                found = false;
+            }
+       }
+       while (found);
+        text = test(text, "\\$" + (counter-1), "\\$" + (counter-1), 1);
+        return text;
+    }
+
+    public String test(String text, String searchText, String replaceText, int occurence){
+        StringBuffer sb = new StringBuffer();
+        Pattern p = Pattern.compile(searchText);
+        Matcher m = p.matcher(text);
+        int count = 1;
+        while(m.find()) {
+            if(count++ % occurence == 0) {
+                m.appendReplacement(sb, replaceText);
+            }
+        }
+        m.appendTail(sb);
+        return sb.toString();
+    }
+
+    public String replaceSentence(String text, MP3Prettifier.Word word){
+        String oldWord = word.oldWord;
+        String newWord = word.newWord;
+        if (word.beginOfWord) {
+            oldWord = "(^| )" + oldWord;
+            newWord = "$1" + newWord;
+        }
+        if (word.endOfWord > 0){
+            oldWord = oldWord + "( |,|$)";
+            newWord = "$" + word.endOfWord;
+        }
+        text = text.replaceAll(oldWord, newWord);
         return text;
     }
 
@@ -157,7 +218,11 @@ public class MP3Helper {
     }
 
     private void logRule(String category, MP3Prettifier.Word word){
-        log.info("Rule applied: Category: " + category + " / Old Word: " + word.oldWord + " / New Word: " + word.newWord);
+        log.info("Rule applied: Category: " + category +
+                 " / Old Word: " + word.oldWord +
+                 " / New Word: " + word.newWord +
+                " / BeginOfWord: " + (word.beginOfWord ? "Yes" : "No") +
+                " / EndOfWord Index: " + word.endOfWord);
     }
 
     private void logRule(String category, MP3Prettifier.ArtistSongExceptions.ArtistSong word){

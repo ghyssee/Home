@@ -41,6 +41,8 @@ class ExtWord extends Word {
   public $parenthesis;
   public $exactMatch;
   public $priority;
+  public $beginOfWord;
+  public $endOfWord;
   public function __construct4($oldWord, $newWord, $parenthesis, $exactMatch)
   {
     $this->oldWord = $oldWord;

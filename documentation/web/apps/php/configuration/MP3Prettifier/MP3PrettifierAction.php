@@ -146,6 +146,8 @@ function update($file, $type, $category){
         $word = new ExtWord();
         assignCheckbox($word->parenthesis, "parenthesis", !HTML_SPECIAL_CHAR);
         assignCheckbox($word->exactMatch, "exactMatch", !HTML_SPECIAL_CHAR);
+        assignCheckbox($word->beginOfWord, "beginOfWord", !HTML_SPECIAL_CHAR);
+        assignNumber($word->endOfWord, "endOfWord", !HTML_SPECIAL_CHAR);
         if (isset($_POST["priority"])){
             $word->priority = (int) $_POST["priority"];
         }
@@ -183,6 +185,8 @@ function add($file, $type, $category)
         $word = new ExtWord();
         assignCheckbox($word->parenthesis, "parenthesis", !HTML_SPECIAL_CHAR);
         assignCheckbox($word->exactMatch, "exactMatch", !HTML_SPECIAL_CHAR);
+        assignCheckbox($word->beginOfWord, "beginOfWord", !HTML_SPECIAL_CHAR);
+        assignNumber($word->endOfWord, "endOfWord", !HTML_SPECIAL_CHAR);
     }
     else {
         $word = new Word();

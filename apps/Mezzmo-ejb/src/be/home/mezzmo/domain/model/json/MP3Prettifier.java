@@ -17,6 +17,8 @@ public class MP3Prettifier {
         public boolean parenthesis;
         public boolean exactMatch;
         public int priority;
+        public boolean beginOfWord;
+        public int endOfWord;
     }
 
     public class Global {

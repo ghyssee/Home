@@ -5,7 +5,7 @@ $fieldId = "id";
 $smarty = initializeSmarty();
 $smarty->assign('title','Song Titles');
 $smarty->assign('item','Song Title');
-$smarty->assign('tableWidth','800px');
+$smarty->assign('tableWidth','100%');
 $smarty->assign('tableHeight','400px');
 $url = "MP3PrettifierAction.php";
 $type = "song";
@@ -20,11 +20,13 @@ $smarty->assign('deleteUrl', constructUrl($url, "delete", $type, $category));
 $smarty->assign('onLoadSuccess', "");
 
 $smarty->assign("contacts", array(
-        array("field" => "oldWord", "label"=>"Old Word", "size" => 50, "required" => true, "sortable" => true),
-        array("field" => "newWord", "label"=>"New Word", "size" => 50, "sortable" => true),
-        array("field" => "parenthesis", "label"=>"Parenthesis", "size" => 15, "formatter" => "checkboxFormatter", "align" => "center", "checkbox" => true),
-        array("field" => "exactMatch", "label"=>"Exact Match", "size" => 15, "formatter" => "checkboxFormatter", "align" => "center", "checkbox" => true),
-        array("field" => "id", "label"=>"Id", "size" => 50, "hidden" => "true")
+        array("field" => "oldWord", "label"=>"Old Word", "size" => 30, "required" => true, "sortable" => true),
+        array("field" => "newWord", "label"=>"New Word", "size" => 30, "sortable" => true),
+        array("field" => "parenthesis", "label"=>"Parenthesis", "size" => 10, "formatter" => "checkboxFormatter", "align" => "center", "checkbox" => true),
+        array("field" => "exactMatch", "label"=>"Exact Match", "size" => 10, "formatter" => "checkboxFormatter", "align" => "center", "checkbox" => true),
+        array("field" => "beginOfWord", "label"=>"Begin Of Word", "size" => 10, "formatter" => "checkboxFormatter", "align" => "center", "checkbox" => true),
+        array("field" => "endOfWord", "label"=>"End Of Word", "size" => 10, "type" => "number", "sortable" => true),
+        array("field" => "id", "label"=>"Id", "hidden" => "true")
     )
 );
 //** un-comment the following line to show the debug console

@@ -30,7 +30,6 @@ goMenu();
                             url: 'MP3PrettifierAction.php?method=listArtists',
                             method: 'get',
                             lines: 'true',
-                            panelHeight: 500,
                             valueField: 'id',
                             singleSelect: true,
                             required:true,
@@ -41,30 +40,26 @@ goMenu();
 </div>
 
 <input id="cbArtist" class="easyui-combobox" name="cbArtist"
-       data-options="valueField:'id',textField:'name',url:'MP3PrettifierAction.php?method=listArtists'">
+       data-options="valueField:'id',
+                     width:200,
+                     textField:'name',
+                     url:'MP3PrettifierAction.php?method=listArtists'
+                     ">
 <div><button onclick="insert()">Add</button></div>
 
 <script>
 function insert() {
     var row = $('#cbArtist').combobox('getValue');
-    if (row) {
-        alert(row);
-    }
-    else {
-        alert("Not Filled");
-    }
     var _options = $('#cbArtist').combobox('options');
     var _data = $(cbArtist).combobox('getData');
     var _value = $(cbArtist).combobox('getValue');
     var _b = false;
-    alert("1");
     for (var i = 0; i < _data.length; i++) {
         if (_data[i][_options.valueField] == _value) {
             _b = true;
             break;
         }
     }
-    alert("2");
     if (!_b) {
         $(cbArtist).combobox('setValue', '');
     }
