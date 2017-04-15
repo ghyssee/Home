@@ -1,11 +1,57 @@
 <?php
+require_once("../setup.php");
 require_once documentPath (ROOT_PHP, "config.php");
-include_once documentPath (ROOT_PHP_DATABASE, "MezzmoDatabase.php");
+require_once documentPath (ROOT_PHP_DATABASE, "MezzmoDatabase.php");
+require_once "MyClasses.php";
 
 $htmlFile = getFullPath(JSON_SONGCORRECTIONS);
 
 class SongBO
 {
+    function loadArtistIdsFile() : array {
+        $file = getFullPath(PATH_CONFIG) . '/ArtistIds.txt';
+        $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        $artistArray = array();
+        foreach($lines as $line) {
+            $songTO = new SongTO();
+            $items = explode("\t", $line);
+            if (count($items) > 1) {
+                $songTO->artistId = $items[0];
+                $songTO->artist = $items[1];
+                $artistArray[] = $songTO;
+            }
+        }
+        return $artistArray;
+    }
+
+    function saveArtistSongTest($songCorrections) {
+        $file = readJSONWithCode(JSON_ARTISTSONGTEST);
+        $save = false;
+        foreach($songCorrections as $songCorrection){
+            $artistSongTest = new AristSongTestTO();
+            $artistSongTest->fileId = $songCorrection->fileId;
+            $artistSongTest->oldArtist = $songCorrection->artist;
+            $artistSongTest->oldSong = $songCorrection->title;
+            if (!$this->checkArtistSongTestExist($artistSongTest, $file->items)){
+                $file->items[] = $artistSongTest;
+                $save = true;
+            }
+        }
+        if ($save){
+            writeJSONWithCode($file, JSON_ARTISTSONGTEST);
+        }
+
+    }
+
+    function checkArtistSongTestExist(AristSongTestTO $artistSongTest, array $artistSongArray) : bool {
+        foreach($artistSongArray as $item){
+            if ($artistSongTest->fileId == $item->fileId){
+                return true;
+            }
+        }
+        return false;
+    }
+
     function lookupSong($id)
     {
         $file = $GLOBALS['htmlFile'];
@@ -64,16 +110,5 @@ class SongBO
 
 }
 
-class SongTO {
-    public $artistId;
-    public $artist;
-    public $title;
-    public $fileId;
-    public $albumId;
-    public $album;
-    public $file;
-
-}
-    
 
 ?>

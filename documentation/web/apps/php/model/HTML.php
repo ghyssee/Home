@@ -155,14 +155,6 @@ class TableGrid
   }
 }
 
-class SongCorrection{
-  public $fileId;
-  public $title;
-  public $artist;
-  public $track;
-  public $source;
-}
-
 class Artist{
   public $id;
   public $name;

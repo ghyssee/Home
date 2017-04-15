@@ -1,6 +1,6 @@
 <?php
-include_once("../model/HTML.php");
-include_once("../setup.php");
+require_once("../setup.php");
+include_once documentPath (ROOT_PHP_BO, "MyClasses.php");
 
 const MEZZMO = "MEZZMO";
 

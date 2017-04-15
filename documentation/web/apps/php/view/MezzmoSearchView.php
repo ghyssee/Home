@@ -12,25 +12,15 @@
 <?php
 session_start();
 include_once("../setup.php");
-include_once("../config.php");
-include_once("../model/HTML.php");
-include_once("../html/config.php");
+include_once documentPath (ROOT_PHP, "config.php");
+include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
+include_once documentPath (ROOT_PHP_HTML, "config.php");
 include_once documentPath (ROOT_PHP_BO, "SongBO.php");
 $albumSave = 'MezzmoSearchview.php';
 
 $mp3Settings = readJSONWithCode(JSON_MP3SETTINGS);
-$file = getFullPath(PATH_CONFIG) . '/ArtistIds.txt';
-$lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-$artistArray = array();
-foreach($lines as $line) {
-    $songTO = new SongTO();
-    $items = explode("\t", $line);
-    if (count($items) > 1) {
-        $songTO->artistId = $items[0];
-        $songTO->artist = $items[1];
-        $artistArray[] = $songTO;
-    }
-}
+$songBO = new SongBO();
+$artistArray = $songBO->loadArtistIdsFile();
 
 if (isset($_POST['submit'])) {
     $data = array();
@@ -47,11 +37,12 @@ if (isset($_POST['submit'])) {
         echo "all empty";
     }
     else {
-        $songBO = new SongBO();
         $mp3Settings->mezzmo->artistId = $song->artistId;
         writeJSONWithCode($mp3Settings, JSON_MP3SETTINGS);
         $mp3Settings->mezzmo->artistId = getNextArtistId($artistArray, $mp3Settings->mezzmo->artistId);
         $data = $songBO->searchSong($song);
+        $songBO->saveArtistSongTest($data);
+        
     }
 }
 else {

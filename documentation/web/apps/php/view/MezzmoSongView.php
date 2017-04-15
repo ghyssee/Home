@@ -5,6 +5,7 @@ include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 include_once documentPath (ROOT_PHP_HTML, "config.php");
 include_once documentPath (ROOT_PHP_DATABASE, "MezzmoDatabase.php");
 include_once documentPath (ROOT_PHP_BO, "SongBO.php");
+require_once documentPath (ROOT_PHP_BO, "MyClasses.php");
 session_start();
 ?>
 

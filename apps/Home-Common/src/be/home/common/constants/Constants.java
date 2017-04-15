@@ -76,6 +76,7 @@ public interface Constants {
         String BACKUP = "backup";
         String ARTISTS = "artists";
         String MULTIARTISTCONFiG = "multiArtistConfig";
+        String ARTISTSONGTEST = "artistSongTest";
     }
     interface FILE {
         String ALBUM = "albumInfo";

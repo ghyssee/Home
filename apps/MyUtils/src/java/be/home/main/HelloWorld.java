@@ -6,9 +6,11 @@ import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.main.BatchJobV2;
 import be.home.common.mp3.MP3Utils;
 import be.home.common.utils.FileUtils;
+import be.home.common.utils.JSONUtils;
 import be.home.common.utils.MyFileWriter;
 import be.home.domain.model.MP3Helper;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
+import be.home.mezzmo.domain.model.json.ArtistSongTest;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.Mp3File;
@@ -45,12 +47,19 @@ public class HelloWorld extends BatchJobV2 {
         //System.out.println(MP3TagUtils.stripFilename("(Hot S+++)"));
 
         //processArtistFile();
-        testMP3Prettifier();
+        //testMP3Prettifier();
         //System.out.println(MP3Helper.getInstance().test("A\\$2AP$2Test$2Test$3Test$4", "\\$2", "\\$3", 2));
         //System.out.println(MP3Helper.getInstance().checkRegExpDollar("$1Text$1", 1));
         //updateMP3();
-
-
+        ArtistSongTest artistSongTest = (ArtistSongTest) JSONUtils.openJSONWithCode(Constants.JSON.ARTISTSONGTEST, ArtistSongTest.class);
+        for (ArtistSongTest.AristSongTestItem item : artistSongTest.items){
+            System.out.println(item.oldArtist);
+            System.out.println(item.oldSong);
+            item.newArtist = getArtistTitleException(item.oldArtist, item.oldSong);
+            item.newSong = getTitleArtistException(item.oldArtist, item.oldSong);
+        }
+        JSONUtils.writeJsonFileWithCode(artistSongTest, Constants.JSON.ARTISTSONGTEST);
+        testMP3Prettifier();
         //testAlbumArtist();
 
     }
@@ -117,9 +126,9 @@ private static void testAlbumArtist(){
         System.out.println(mp3Helper.stripFilename("Mambo No. 5 (A Little Bit of...)"));
         System.out.println(mp3Helper.prettifyAlbum("ELV1S: 30 #1 Hits"));
         System.out.println("A Feat. B".replaceAll("Feat\\. ?", "Feat. "));
-        System.out.println(getTitleArttistException("Cabin Crew", "Star 2 Fall"));
-        System.out.println(getTitleArttistException("Da Brat Feat. Tyrese", "What' Chu Like"));
-        System.out.println(getArtistTitleException("D.O.N.S. & DBN Feat. Kadoc", "The Nighttrain"));
+        System.out.println(getTitleArtistException("Cabin Crew", "Star 2 Fall"));
+        System.out.println(getArtistTitleException("Da Brat Feat. Tyrese", "What' Chu Like"));
+        System.out.println(getTitleArtistException("Dae Dae", "Wat U Mean (Aye Aye Aye)"));
         //System.out.println("The Partysquad Feat. Sjaak, Dio, Sef".replaceAll("((Sef|Dio|Sjaak)( ?& ?|, ?| |\\.|$)){3,}", "Dio, Sef & Sjaak"));
         //System.out.println(mp3Helper.prettifyArtist("Ll Cool J Feat. 7 Aurelius"));
         System.out.println(mp3Helper.prettifyArtist("D.O.D."));
@@ -135,7 +144,7 @@ private static void testAlbumArtist(){
     }
 
 
-    private static String getTitleArttistException(String artist, String title){
+    private static String getTitleArtistException(String artist, String title){
         String prettifiedArtist = MP3Helper.getInstance().prettifyArtist(artist);
         String prettifiedTitle = MP3Helper.getInstance().prettifySong(title);
         return MP3Helper.getInstance().checkForTitleExceptions(prettifiedArtist, prettifiedTitle);

@@ -17,6 +17,7 @@ const JSON_JOBS = "jobs";
 const JSON_MENU = "menu";
 const JSON_ALBUMERRORS = "albumErrors";
 const JSON_SONGCORRECTIONS = "songCorrections";
+const JSON_ARTISTSONGTEST = "artistSongTest";
 const FILE_ERROR_LOG = "errorLog";
 const FILE_INFO_LOG = "infoLog";
 const FILE_ALBUM = "albumInfo";
