@@ -51,17 +51,31 @@ public class HelloWorld extends BatchJobV2 {
         //System.out.println(MP3Helper.getInstance().test("A\\$2AP$2Test$2Test$3Test$4", "\\$2", "\\$3", 2));
         //System.out.println(MP3Helper.getInstance().checkRegExpDollar("$1Text$1", 1));
         //updateMP3();
+        batchProcess();
+        testMP3Prettifier();
+        //testAlbumArtist();
+
+    }
+
+    private static void batchProcess() throws IOException {
         ArtistSongTest artistSongTest = (ArtistSongTest) JSONUtils.openJSONWithCode(Constants.JSON.ARTISTSONGTEST, ArtistSongTest.class);
         for (ArtistSongTest.AristSongTestItem item : artistSongTest.items){
             System.out.println(item.oldArtist);
             System.out.println(item.oldSong);
-            item.newArtist = getArtistTitleException(item.oldArtist, item.oldSong);
-            item.newSong = getTitleArtistException(item.oldArtist, item.oldSong);
+            if (org.apache.commons.lang3.StringUtils.isNotBlank(item.oldArtist)) {
+                item.newArtist = getArtistTitleException(item.oldArtist, item.oldSong);
+            }
+            else {
+                item.newArtist = MP3Helper.getInstance().prettifyArtist(item.oldArtist);
+            }
+            if (org.apache.commons.lang3.StringUtils.isNotBlank(item.oldSong)) {
+                item.newSong = getTitleArtistException(item.oldArtist, item.oldSong);
+            }
+            else {
+                item.newSong = MP3Helper.getInstance().prettifySong(item.oldSong);
+            }
         }
         JSONUtils.writeJsonFileWithCode(artistSongTest, Constants.JSON.ARTISTSONGTEST);
-        testMP3Prettifier();
-        //testAlbumArtist();
-
     }
 
 private static void testAlbumArtist(){
@@ -125,7 +139,6 @@ private static void testAlbumArtist(){
         System.out.println(mp3Helper.stripFilename("ELV1S: 30 #1 Hits"));
         System.out.println(mp3Helper.stripFilename("Mambo No. 5 (A Little Bit of...)"));
         System.out.println(mp3Helper.prettifyAlbum("ELV1S: 30 #1 Hits"));
-        System.out.println("A Feat. B".replaceAll("Feat\\. ?", "Feat. "));
         System.out.println(getTitleArtistException("Cabin Crew", "Star 2 Fall"));
         System.out.println(getArtistTitleException("Da Brat Feat. Tyrese", "What' Chu Like"));
         System.out.println(getTitleArtistException("Dae Dae", "Wat U Mean (Aye Aye Aye)"));
@@ -134,6 +147,8 @@ private static void testAlbumArtist(){
         System.out.println(mp3Helper.prettifyArtist("D.O.D."));
         System.out.println(mp3Helper.prettifyArtist("Da Balls"));
         System.out.println(mp3Helper.prettifySong("Wasup!"));
+        System.out.println("Damian \"Jr Gong\" Marley".replaceAll("Damian (['|\"]?[J|j]r\\.? Gong['|\"]? ?)?Marley",
+                "Damian \"Jr. Gong\" Marley"));
 
     }
 

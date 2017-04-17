@@ -34,6 +34,9 @@ goMenu();
     <div title="Settings" style="padding:20px;display:none;">
         <?php include "MP3PrettifierTestSettings.php"; ?>
     </div>
+    <div title="Add" style="padding:20px;display:none;">
+        <?php include "MP3PrettifierTestAdd.php"; ?>
+    </div>
 </div>
 
 <?php

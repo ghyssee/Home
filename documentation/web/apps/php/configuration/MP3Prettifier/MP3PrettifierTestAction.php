@@ -30,6 +30,9 @@ else if(isset($_POST['settings'])){
         case "flush":
             flushTestFile();
             break;
+        case "add":
+            add();
+            break;
     }
 }
 exit(0);
@@ -62,6 +65,25 @@ function flushTestFile(){
     $array =  array_slice($artistSongObj->items, $number);
     $artistSongObj->items = $array;
     writeJSONWithCode($artistSongObj, JSON_ARTISTSONGTEST);
+    header("Location: " . $_SESSION["previous_location"]);
+}
+
+function add(){
+    assignField($artist, "artist", !HTML_SPECIAL_CHAR);
+    assignField($song, "song", !HTML_SPECIAL_CHAR);
+    $save = true;
+    if (empty($artist) && empty($song)) {
+        addError ('Add', 'At least one field must be filled in');
+        $save = false;
+    }
+    if ($save){
+        $artistSongTO = new AristSongTestTO();
+        $artistSongTO->oldArtist = $artist;
+        $artistSongTO->oldSong = $song;
+        $songBO = new SongBO();
+        $songBO->saveArtistSongTestItem($artistSongTO);
+        
+    }
     header("Location: " . $_SESSION["previous_location"]);
 }
 

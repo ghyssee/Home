@@ -43,9 +43,15 @@ class SongBO
 
     }
 
+    function saveArtistSongTestItem(AristSongTestTO $artistSongTestTO) {
+        $file = readJSONWithCode(JSON_ARTISTSONGTEST);
+        $file->items[] = $artistSongTestTO;
+        writeJSONWithCode($file, JSON_ARTISTSONGTEST);
+    }
+
     function checkArtistSongTestExist(AristSongTestTO $artistSongTest, array $artistSongArray) : bool {
         foreach($artistSongArray as $item){
-            if ($artistSongTest->fileId == $item->fileId){
+            if (isset($artistSongTest->fileId) && isset($item->fileId) && $artistSongTest->fileId == $item->fileId){
                 return true;
             }
         }

@@ -67,7 +67,6 @@ public class SynchronizeRating extends BatchJobV2 {
 
         MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSONWithCode(Constants.JSON.MP3SETTINGS, MP3Settings.class);
 
-        MP3Helper helper = MP3Helper.getInstance();
         log.info("Start Directory: " + mp3Settings.synchronizer.startDirectory);
         log.info("Update: " + mp3Settings.synchronizer.updateRating);
         List<Path> files = new ArrayList();
