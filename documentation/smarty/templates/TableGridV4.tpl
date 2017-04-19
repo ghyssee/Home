@@ -28,6 +28,9 @@
                              {{if isset($contacts[sec1].formatter)}},formatter:function(value,row,index){
                              return {{$contacts[sec1].formatter}}(value,row,index);
                              } {{/if}}
+                             {{if isset($contacts[sec1].styler)}},styler:function(value,row,index){
+                             return {{$contacts[sec1].styler}}(value,row,index);
+                             } {{/if}}
                              {{if isset($contacts[sec1].sortable)}},sortable:{{if $contacts[sec1].sortable}}true{{else}}false{{/if}}{{/if}}
                              {{if isset($contacts[sec1].selectRow)}},checkbox:true{{/if}}
                      "

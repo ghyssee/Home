@@ -40,6 +40,9 @@ class CacheBO
     }
 
     static function saveCacheObject($cacheId, $id, $object){
+        //if (!isset($_SESSION["cache"][$cacheId])){
+//            logInfo("Save Cache Object " . $cacheId . " / Id = " . $id);
+  //      }
         $_SESSION["cache"][$cacheId][$id] = $object;
         logInfo("Save Cache Object " . $cacheId . " / Id = " . $id);
     }

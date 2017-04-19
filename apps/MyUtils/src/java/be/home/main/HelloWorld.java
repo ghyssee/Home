@@ -146,9 +146,9 @@ private static void testAlbumArtist(){
         //System.out.println(mp3Helper.prettifyArtist("Ll Cool J Feat. 7 Aurelius"));
         System.out.println(mp3Helper.prettifyArtist("D.O.D."));
         System.out.println(mp3Helper.prettifyArtist("Da Balls"));
-        System.out.println(mp3Helper.prettifySong("Wasup!"));
-        System.out.println("Damian \"Jr Gong\" Marley".replaceAll("Damian (['|\"]?[J|j]r\\.? Gong['|\"]? ?)?Marley",
-                "Damian \"Jr. Gong\" Marley"));
+        System.out.println("Fuck It! (I Don't Want You Back)".replaceAll("F(?:uc|\\\\*\\\\*)k It!?(?:\\\\(I Don't Want You Back\\\\))?(.*)",
+                "Fuck It (I Don't Want You Back)$1"));
+        System.out.println(mp3Helper.prettifySong("Fly Away (Bastino Vs. Cyt Extended Mix)"));
 
     }
 
