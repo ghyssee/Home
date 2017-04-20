@@ -7,6 +7,12 @@ function println ($string_message) {
     echo "$string_message" . "<br>" . PHP_EOL;
 }
 
+function printAndFlush ($string_message) {
+	echo "$string_message" . "<br>" . PHP_EOL;
+	ob_flush();
+	flush();
+}
+
 function printh ($string_message) {
     echo "$string_message" . PHP_EOL;
 }

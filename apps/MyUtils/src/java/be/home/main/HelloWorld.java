@@ -52,7 +52,7 @@ public class HelloWorld extends BatchJobV2 {
         //System.out.println(MP3Helper.getInstance().checkRegExpDollar("$1Text$1", 1));
         //updateMP3();
         batchProcess();
-        testMP3Prettifier();
+        //testMP3Prettifier();
         //testAlbumArtist();
 
     }

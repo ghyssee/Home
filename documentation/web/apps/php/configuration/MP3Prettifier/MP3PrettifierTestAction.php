@@ -8,6 +8,7 @@ include_once documentPath (ROOT_PHP_BO, "SongBO.php");
 require_once documentPath (ROOT_PHP_BO, "MyClasses.php");
 
 session_start();
+CONST PRETTIFIERTEST = "MP3PrettifierTest.php";
 
 if (isset($_REQUEST['method'])) {
     $method = htmlspecialchars($_REQUEST['method']);
@@ -65,7 +66,7 @@ function flushTestFile(){
     $array =  array_slice($artistSongObj->items, $number);
     $artistSongObj->items = $array;
     writeJSONWithCode($artistSongObj, JSON_ARTISTSONGTEST);
-    header("Location: " . $_SESSION["previous_location"]);
+    header("Location: " . PRETTIFIERTEST);
 }
 
 function add(){
@@ -84,7 +85,7 @@ function add(){
         $songBO->saveArtistSongTestItem($artistSongTO);
         
     }
-    header("Location: " . $_SESSION["previous_location"]);
+    header("Location: " . PRETTIFIERTEST);
 }
 
 ?>

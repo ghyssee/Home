@@ -4,9 +4,11 @@ include_once documentPath (ROOT_PHP, "config.php");
 include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 include_once documentPath (ROOT_PHP_HTML, "config.php");
 include_once documentPath (ROOT_PHP_BO, "CacheBO.php");
+include_once documentPath (ROOT_PHP_BO, "ArtistBO.php");
 session_start();
-CacheBO::clearCache(CacheBO::MULTIARTIST2);
-//purgeSongCorrections();
+
+header( 'Content-type: text/html; charset=utf-8' );
+exportArtistGroup();
 
 function convert()
 {
@@ -25,6 +27,39 @@ function convert()
     //$file = getFullPath(JSON_MULTIARTIST) . ".NEW";
     //convertArtistSequence($multiArtistObj);
     //writeJSON($multiArtistObj, $file);
+    exportArtistGroup();
+}
+
+function exportArtistGroup(){
+    printAndFlush("Exporting to file ");
+    $file = getFullPath(PATH_CONFIG) . "/MultiArtistList.csv";
+    printAndFlush("Exporting to file " . $file);
+    $multiArtistBO = new MultiArtistBO();
+    $multiArtistObj = $multiArtistBO->loadData();
+    //$array = Array();
+    $array = array();
+    $counter = 0;
+    foreach($multiArtistObj->list as $multiArtistItem){
+        $counter++;
+        if (($counter % 100) == 0){
+            printAndFlush($counter . " record(s) exported");
+        }
+        $multiArtistTO = $multiArtistBO->convertToMultiArtistTO($multiArtistItem);
+        $array[] = $multiArtistTO;
+    }
+    printAndFlush("Sorting List");
+    ob_flush();
+    flush();
+    $sort = new CustomSort();
+    $array = $sort->sortObjectArrayByField($array, "description2", "asc");
+
+    $fp = fopen($file, 'w');
+    foreach($array as $item){
+        $list = array ($item->description2);
+        fputcsv($fp, $list, ';');
+    }
+    fclose($fp);
+    printAndFlush("Exported to " .$file);
 }
 
 function purgeSongCorrections(){
@@ -46,12 +81,6 @@ function getCurrentDate(){
     echo $today .'<br>';
 }
 
-function convertArtistSequence($multiArtistObj){
-    foreach($multiArtistObj->list as $record){
-        echo "Record Id: " . $record->id . "<br>";
-        $record->master = "artistSequence";
-    }
-}
 
 function convertExactMath($objects, $exactMatch = false){
     $array = [];
@@ -73,19 +102,4 @@ function convertExactMath($objects, $exactMatch = false){
 
 }
 
-function convertWords($objects){
-    $array = [];
-    foreach($objects as $key => $word) {
-        if (isset($word->parenthesis)) {
-            $wordObj = new ExtWord($word->oldWord, $word->newWord, $word->parenthesis);
-        }
-        else {
-            $wordObj = new Word($word->oldWord, $word->newWord);
-        }
-        $wordObj->id = getUniqueId();
-        array_push($array, $wordObj);
-    }
-    return $array;
-
-}
 ?>
