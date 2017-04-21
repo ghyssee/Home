@@ -62,6 +62,9 @@
  <logger name="net.sf.jasperreports">
     <level value="warn"/> 
   </logger>
+ <logger name="log4j.category.velocity">
+    <level value="warn"/> 
+  </logger>
  <root> 
     <priority value ="debug" /> 
         <appender-ref ref="stderr" />

@@ -5,6 +5,7 @@ import be.home.common.constants.Constants;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.RuntimeConstants;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -25,6 +26,8 @@ public class VelocityUtils {
         p.setProperty("input.encoding", "UTF-8");
         p.setProperty("output.encoding", "UTF-8");
         p.setProperty("userdirective", "be.home.common.utils.Ifnull");
+        p.setProperty(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS, "org.apache.velocity.runtime.log.Log4JLogChute" );
+        p.setProperty("runtime.log.logsystem.log4j.logger","velocity");
 
         VelocityEngine ve = new VelocityEngine();
         ve.init(p);

@@ -73,12 +73,12 @@ public class MP3Helper {
         boolean exactMatch = word.exactMatch;
         String newWord = word.newWord;
         if (word.beginOfWord) {
-            oldWord = "(^| )" + oldWord;
+            oldWord = "(^| |'|\")" + oldWord;
             newWord = "$1" + newWord;
             exactMatch = false;
         }
         if (word.endOfWord > 0){
-            oldWord = oldWord + "( |,|$)";
+            oldWord = oldWord + "( |,|$|'|\")";
             newWord = newWord + "$" + word.endOfWord;
             exactMatch = false;
         }

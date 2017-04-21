@@ -126,29 +126,17 @@ private static void testAlbumArtist(){
 
         MP3Helper mp3Helper =MP3Helper.getInstance();
         System.out.println(mp3Helper.prettifyArtist("Mr Robert"));
-        System.out.println(mp3Helper.prettifyArtist("SFB, Ronnie Flex, Lil' Kleine & Bokoesam"));
-        System.out.println(mp3Helper.prettifyArtist("Mr Robert"));
-        System.out.println(mp3Helper.prettifyArtist("Bachman Turner Overdrive"));
 
-        System.out.println(mp3Helper.prettifySong("Ok, That's it"));
-        System.out.println(mp3Helper.prettifySong("Oops! I Did It Again"));
-        System.out.println(mp3Helper.prettifySong("Oops! ... I Did It Again"));
-        System.out.println(mp3Helper.prettifySong("Oops!.. I Did It Again"));
+        System.out.println(mp3Helper.prettifySong("What Is Love Reloaded (Jens O's Hard Remix)"));
         System.out.println(mp3Helper.prettifyAlbum("Yorin Fm"));
 
         System.out.println(mp3Helper.stripFilename("ELV1S: 30 #1 Hits"));
-        System.out.println(mp3Helper.stripFilename("Mambo No. 5 (A Little Bit of...)"));
-        System.out.println(mp3Helper.prettifyAlbum("ELV1S: 30 #1 Hits"));
         System.out.println(getTitleArtistException("Cabin Crew", "Star 2 Fall"));
         System.out.println(getArtistTitleException("Da Brat Feat. Tyrese", "What' Chu Like"));
-        System.out.println(getTitleArtistException("Dae Dae", "Wat U Mean (Aye Aye Aye)"));
         //System.out.println("The Partysquad Feat. Sjaak, Dio, Sef".replaceAll("((Sef|Dio|Sjaak)( ?& ?|, ?| |\\.|$)){3,}", "Dio, Sef & Sjaak"));
         //System.out.println(mp3Helper.prettifyArtist("Ll Cool J Feat. 7 Aurelius"));
-        System.out.println(mp3Helper.prettifyArtist("D.O.D."));
-        System.out.println(mp3Helper.prettifyArtist("Da Balls"));
         System.out.println("Fuck It! (I Don't Want You Back)".replaceAll("F(?:uc|\\\\*\\\\*)k It!?(?:\\\\(I Don't Want You Back\\\\))?(.*)",
                 "Fuck It (I Don't Want You Back)$1"));
-        System.out.println(mp3Helper.prettifySong("Fly Away (Bastino Vs. Cyt Extended Mix)"));
 
     }
 
