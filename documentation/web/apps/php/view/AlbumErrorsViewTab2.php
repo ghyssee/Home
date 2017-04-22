@@ -20,11 +20,12 @@ include_once('Smarty.class.php');
 $smarty = initializeSmarty();
 $smarty->assign('title','Album Errors');
 $smarty->assign('item','Album Errors');
-$smarty->assign('tableWidth','1200px');
+$smarty->assign('tableWidth','100%');
 $smarty->assign('tableHeight','700px');
 $smarty->assign('id',"uniqueId");
 $smarty->assign('tablegrid','');
 $url = "AlbumErrorsAction.php";
+$smarty->assign('fitColumns',"true");
 $smarty->assign('singleSelect','false');
 $smarty->assign('pagePosition','both'); // 'top', 'both'
 $smarty->assign('viewUrl',$url . "?method=list");
@@ -33,7 +34,7 @@ $smarty->assign('newUrl',"'" . $url . "?method=add'");
 $smarty->assign('deleteUrl',"'" . $url . "?method=delete',{id:row['uniqueId']}");
 
 $smarty->assign("contacts", array(array("field" => "process", "selectRow" => true),
-        array("field" => "id", "label"=>"Id", "size" => 10, "hidden" => "true"),
+        array("field" => "id", "label"=>"Id", "hidden" => "true"),
         array("field" => "file", "label"=>"File", "size" => 200),
         array("field" => "type", "label"=>"Type",  "size" => 50),
         array("field" => "oldValue", "label"=>"Old Value", "formatter" => "stripCell", "size" => 200),
@@ -44,7 +45,7 @@ $smarty->assign("contacts", array(array("field" => "process", "selectRow" => tru
 //** un-comment the following line to show the debug console
 //$smarty->debugging = true;
 
-$smarty->display('TableGridV3.tpl');
+$smarty->display('TableGridV4.tpl');
 
 /*
 $smarty = initializeSmarty();

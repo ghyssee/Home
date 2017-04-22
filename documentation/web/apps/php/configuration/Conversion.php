@@ -8,7 +8,8 @@ include_once documentPath (ROOT_PHP_BO, "ArtistBO.php");
 session_start();
 
 header( 'Content-type: text/html; charset=utf-8' );
-exportArtistGroup();
+//exportArtistGroup();
+purgeSongCorrections();
 
 function convert()
 {
@@ -27,7 +28,8 @@ function convert()
     //$file = getFullPath(JSON_MULTIARTIST) . ".NEW";
     //convertArtistSequence($multiArtistObj);
     //writeJSON($multiArtistObj, $file);
-    exportArtistGroup();
+    //exportArtistGroup();
+
 }
 
 function exportArtistGroup(){
@@ -48,8 +50,6 @@ function exportArtistGroup(){
         $array[] = $multiArtistTO;
     }
     printAndFlush("Sorting List");
-    ob_flush();
-    flush();
     $sort = new CustomSort();
     $array = $sort->sortObjectArrayByField($array, "description2", "asc");
 
@@ -71,7 +71,7 @@ function purgeSongCorrections(){
         }
     }
     $obj->items = array_values($obj->items);
-    writeJSON($obj, getFullPath(JSON_SONGCORRECTIONS) . ".NEW");
+    writeJSONWithCode($obj, JSON_SONGCORRECTIONS);
 }
 
 function getCurrentDate(){

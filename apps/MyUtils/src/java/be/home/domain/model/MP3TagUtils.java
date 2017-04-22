@@ -126,7 +126,7 @@ public class MP3TagUtils {
         boolean ok = true;
         if (!artist.equals(comp.getFileArtistTO().getArtist())){
             addItem(comp.getFileTO().getId(),
-                    comp.getFileTO().getId(),
+                    comp.getFileArtistTO().getID(),
                     comp.getFileTO().getFile(),
                     comp.getFileAlbumTO().getName(),
                     MP3Tag.ARTIST, comp.getFileArtistTO().getArtist(), artist);
