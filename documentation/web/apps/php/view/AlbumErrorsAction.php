@@ -90,8 +90,16 @@ function getList(){
 			array_push($filteredArray, $value);
 		}
 	}
+
+	if (isset($_POST['sort'])){
+		$field = isset($_POST['sort']) ? strval($_POST['sort']) : '';
+		$order = isset($_POST['order']) ? strval($_POST['order']) : 'asc';
+		$sort = new CustomSort();
+		$array = $sort->sortObjectArrayByField($filteredArray, $field, $order);
+		$filteredArray = $array;
+	}
 	$array2 = array_slice($filteredArray, ($page-1)*$rows, $rows);
-    
+
     $result = array();
     $result["total"] = count($filteredArray);
     $result["rows"] = $array2;

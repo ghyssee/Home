@@ -35,8 +35,8 @@ $smarty->assign('deleteUrl',"'" . $url . "?method=delete',{id:row['uniqueId']}")
 
 $smarty->assign("contacts", array(array("field" => "process", "selectRow" => true),
         array("field" => "id", "label"=>"Id", "hidden" => "true"),
-        array("field" => "file", "label"=>"File", "size" => 200),
-        array("field" => "type", "label"=>"Type",  "size" => 50),
+        array("field" => "file", "label"=>"File", "size" => 200, "sortable" => true),
+        array("field" => "type", "label"=>"Type",  "size" => 50, "sortable" => true),
         array("field" => "oldValue", "label"=>"Old Value", "formatter" => "stripCell", "size" => 200),
         array("field" => "newValue", "label"=>"New Value", "formatter" => "stripCell", "size" => 200)
     )

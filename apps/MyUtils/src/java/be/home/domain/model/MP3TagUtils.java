@@ -28,6 +28,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * Created by Gebruiker on 17/12/2016.
@@ -102,6 +103,7 @@ public class MP3TagUtils {
                     );
 
         }
+        this.albumErrors.items.addAll(this.songErrors);
         this.songErrors = new ArrayList();
 
     }
@@ -235,18 +237,29 @@ public class MP3TagUtils {
         item.update = update;
         AlbumError.Item errorITem = findSameErrorType(type);
         if (errorITem == null){
-            albumErrors.items.add(item);
+            //albumErrors.items.add(item);
             songErrors.add(item);
         }
         else {
-            errorITem.setNewValue(newValue);
+            if (newValue.equals(errorITem.getOldValue())){
+                removeErrorType(errorITem.getType());
+
+            }
+            else {
+                errorITem.setNewValue(newValue);
+            }
         }
+    }
+
+    private void removeErrorType(String type){
+        Predicate<AlbumError.Item> predicate = p-> p.getType().equals(type);
+        songErrors.removeIf(predicate);
     }
 
     private AlbumError.Item findSameErrorType(MP3Tag type){
         AlbumError.Item item = null;
         for (AlbumError.Item errorItem : this.songErrors){
-            if (errorItem.type.equals(type)){
+            if (errorItem.type.equals(type.name())){
                 item = errorItem;
                 break;
             }
