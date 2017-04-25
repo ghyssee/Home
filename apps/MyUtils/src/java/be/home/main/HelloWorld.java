@@ -125,9 +125,9 @@ private static void testAlbumArtist(){
 
 
         MP3Helper mp3Helper =MP3Helper.getInstance();
-        System.out.println(mp3Helper.prettifyArtist("Mr Robert"));
+        System.out.println(mp3Helper.prettifyArtist("J.D. McPherson"));
 
-        System.out.println(mp3Helper.prettifySong("What Is Love Reloaded (Jens O's Hard Remix)"));
+        System.out.println(mp3Helper.prettifySong("Parlami D’amore"));
         System.out.println(mp3Helper.prettifyAlbum("Yorin Fm"));
 
         System.out.println(mp3Helper.stripFilename("ELV1S: 30 #1 Hits"));

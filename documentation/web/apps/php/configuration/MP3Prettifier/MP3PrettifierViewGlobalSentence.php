@@ -26,6 +26,9 @@ $smarty->assign("contacts", array(
         array("field" => "oldWord", "label"=>"Old Word", "size" => 50, "required" => true, "sortable" => true),
         array("field" => "newWord", "label"=>"New Word", "size" => 50,"sortable" => true),
         array("field" => "exactMatch", "label"=>"Exact Match", "size" => 15, "formatter" => "checkboxFormatter", "align" => "center", "checkbox" => true),
+        array("field" => "priority", "label"=>"Priority", "size" => 7, "type" => "number", "sortable" => true),
+        array("field" => "beginOfWord", "label"=>"Begin Of Word", "size" => 8, "formatter" => "checkboxFormatter", "align" => "center", "checkbox" => true),
+        array("field" => "endOfWord", "label"=>"End Of Word", "size" => 7, "type" => "number", "sortable" => true),
         array("field" => "id", "label"=>"Id", "size" => 50, "hidden" => "true")
     )
 );
