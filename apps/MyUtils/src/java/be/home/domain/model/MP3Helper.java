@@ -3,6 +3,7 @@ package be.home.domain.model;
 import be.home.common.constants.Constants;
 import be.home.common.utils.JSONUtils;
 import be.home.mezzmo.domain.bo.ArtistConfigBO;
+import be.home.mezzmo.domain.bo.ArtistSongRelationshipBO;
 import be.home.model.json.AlbumInfo;
 import be.home.mezzmo.domain.model.json.MP3Prettifier;
 import org.apache.commons.lang3.StringUtils;
@@ -400,6 +401,24 @@ public class MP3Helper {
         return song;
     }
 
+    public String checkForTitleExceptions2(String artist, String song){
+        for (MP3Prettifier.ArtistSongExceptions.ArtistSong artistSong : ArtistSongRelationshipBO.getInstance().artistSongs) {
+            if (artist.matches(artistSong.oldArtist)) {
+                String matchKey = artistSong.oldSong;
+                String newKey = artistSong.newSong;
+                if (song.matches(matchKey)) {
+                    String title = song.replaceAll(matchKey, newKey);
+                    if (!title.equals(song)) {
+                        song = title;
+                        logRule("Title ExceptionV2", artistSong);
+                        break;
+                    }
+                }
+            }
+        }
+        return song;
+    }
+
     public String checkForArtistExceptions(String artist, String song){
         String newArtist = artist;
         for (MP3Prettifier.ArtistSongExceptions.ArtistSong artistSong : mp3Prettifer.artistSongExceptions.items) {
@@ -409,6 +428,23 @@ public class MP3Helper {
                 if (artist.matches(matchKey)) {
                     newArtist = artist.replaceAll(matchKey, newKey);
                     logRule("Artist Exception", artistSong);
+                    break;
+                }
+            }
+        }
+        return newArtist;
+    }
+
+    public String checkForArtistExceptions2(String artist, String song){
+        String newArtist = artist;
+        ArtistSongRelationshipBO artistSongRelationshipBO = ArtistSongRelationshipBO.getInstance();
+        for (MP3Prettifier.ArtistSongExceptions.ArtistSong artistSong : artistSongRelationshipBO.artistSongs) {
+            if (song.matches(artistSong.oldSong)) {
+                String matchKey = artistSong.oldArtist;
+                String newKey = artistSong.newArtist;
+                if (artist.matches(matchKey)) {
+                    newArtist = artist.replaceAll(matchKey, newKey);
+                    logRule("Artist ExceptionV2", artistSong);
                     break;
                 }
             }

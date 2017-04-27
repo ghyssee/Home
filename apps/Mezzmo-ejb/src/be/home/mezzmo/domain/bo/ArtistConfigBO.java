@@ -24,6 +24,8 @@ public class ArtistConfigBO {
     private static final Logger log = Logger.getLogger(ArtistConfigBO.class);
     private static Map<String, Artists.Artist> mapArtists;
     private static Map<String, MultiArtistConfig.Splitter> mapSplitters;
+    private static Map<String, MultiArtistConfig.Item> mapItems;
+    private static String splitter;
 
     private ArtistConfigBO() {
         artists = (Artists) JSONUtils.openJSONWithCode(Constants.JSON.ARTISTS, Artists.class);
@@ -33,6 +35,9 @@ public class ArtistConfigBO {
         Collections.sort(multiArtistConfig.list, (a1, b1) -> b1.artists.size() - a1.artists.size());
         mapSplitters =
                 multiArtistConfig.splitters.stream().collect(Collectors.toMap(MultiArtistConfig.Splitter::getId, c -> c));
+        mapItems =
+                multiArtistConfig.list.stream().collect(Collectors.toMap(MultiArtistConfig.Item::getId, c -> c));
+        splitter = constructSplitter();
     }
 
     public static ArtistConfigBO getInstance() {
@@ -43,9 +48,26 @@ public class ArtistConfigBO {
         return mapArtists;
     }
 
-    public List<MP3Prettifier.Word> construct(){
-        List<MP3Prettifier.Word> names = new ArrayList<>();
+    public MP3Prettifier.Word constructItem(MultiArtistConfig.Item item){
+        MP3Prettifier.Word word = new MP3Prettifier().new Word();
+        word.oldWord = "";
+        word.oldWord += "(";
+        if (!item.exactPosition) {
+            // construct artist Search String
+            int size = getMultiArtistMasterSize(item);
+            word.oldWord = constructArtistSearch(item.artists, this.splitter, size);
+        }
+        else {
+            word.oldWord = constructArtistSearchExact(item.artists, this.splitter);
+        }
+        // construct new Artist Name
+        word.newWord = constructNewArtistName(item.artistSequence);
 
+        //String tst = "Bodyrox & Luciana".replaceAll(word.oldWord, word.newWord);
+        return word;
+    }
+
+    private String constructSplitter(){
         // construct the splitters
         String splitterText = "(";
         for (MultiArtistConfig.Splitter splitter : multiArtistConfig.splitters){
@@ -55,23 +77,17 @@ public class ArtistConfigBO {
             }
         }
         splitterText += "|$)";
+        return splitterText;
+    }
+
+    public List<MP3Prettifier.Word> construct(){
+        List<MP3Prettifier.Word> names = new ArrayList<>();
+
+        // construct the splitters
+        String splitterText = splitter;
 
         for (MultiArtistConfig.Item item : multiArtistConfig.list){
-            MP3Prettifier.Word word = new MP3Prettifier().new Word();
-            word.oldWord = "";
-            word.oldWord += "(";
-            if (!item.exactPosition) {
-                // construct artist Search String
-                int size = getMultiArtistMasterSize(item);
-                word.oldWord = constructArtistSearch(item.artists, splitterText, size);
-            }
-            else {
-                word.oldWord = constructArtistSearchExact(item.artists, splitterText);
-            }
-            // construct new Artist Name
-            word.newWord = constructNewArtistName(item.artistSequence);
-
-            //String tst = "Bodyrox & Luciana".replaceAll(word.oldWord, word.newWord);
+            MP3Prettifier.Word word = constructItem(item);
             log.info("Artist Name Old Word: " + word.oldWord);
             log.info("Artist Name New Word: " + word.newWord);
             names.add(word);
@@ -150,11 +166,16 @@ public class ArtistConfigBO {
         return word;
     }
 
-    public Artists.Artist getArtist(String id){
+    public MultiArtistConfig.Item getMultiArtist(String id){
+        MultiArtistConfig.Item multiArtist = mapItems.get(id);
+        return multiArtist;
+    }
+
+
+    public  Artists.Artist getArtist(String id){
         Artists.Artist artist = mapArtists.get(id);
         return artist;
     }
-
 
     public MultiArtistConfig.Splitter getSplitter(String id){
         MultiArtistConfig.Splitter splitter = mapSplitters.get(id);

@@ -143,16 +143,16 @@ private static void testAlbumArtist(){
     private static String getArtistTitleException(String artist, String title){
         String prettifiedArtist = MP3Helper.getInstance().prettifyArtist(artist);
         String prettifiedTitle = MP3Helper.getInstance().prettifySong(title);
-        return MP3Helper.getInstance().checkForArtistExceptions(prettifiedArtist, prettifiedTitle);
+        prettifiedArtist = MP3Helper.getInstance().checkForArtistExceptions(prettifiedArtist, prettifiedTitle);
+        return MP3Helper.getInstance().checkForArtistExceptions2(prettifiedArtist, prettifiedTitle);
     }
-
 
     private static String getTitleArtistException(String artist, String title){
         String prettifiedArtist = MP3Helper.getInstance().prettifyArtist(artist);
         String prettifiedTitle = MP3Helper.getInstance().prettifySong(title);
-        return MP3Helper.getInstance().checkForTitleExceptions(prettifiedArtist, prettifiedTitle);
+        prettifiedTitle = MP3Helper.getInstance().checkForTitleExceptions(prettifiedArtist, prettifiedTitle);
+        return MP3Helper.getInstance().checkForTitleExceptions2(prettifiedArtist, prettifiedTitle);
     }
-
 
     private static void updateMP3(){
         Mp3File mp3file = null;

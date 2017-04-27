@@ -120,6 +120,18 @@ public class MP3TagUtils {
                     comp.getFileTO().setTitle(title);
                     ok = false;
         }
+        else {
+            title = MP3Helper.getInstance().checkForTitleExceptions2(comp.getFileArtistTO().getArtist(), comp.getFileTO().getTitle());
+            if (!title.equals(comp.getFileTO().getTitle())){
+                addItem(comp.getFileTO().getId(),
+                        comp.getFileTO().getId(),
+                        comp.getFileTO().getFile(),
+                        comp.getFileAlbumTO().getName(),
+                        MP3Tag.TITLE, comp.getFileTO().getTitle(), title);
+                comp.getFileTO().setTitle(title);
+                ok = false;
+            }
+        }
         return ok;
     }
 
@@ -134,6 +146,18 @@ public class MP3TagUtils {
                     MP3Tag.ARTIST, comp.getFileArtistTO().getArtist(), artist);
             comp.getFileArtistTO().setArtist(artist);
             ok = false;
+        }
+        else {
+            artist = MP3Helper.getInstance().checkForArtistExceptions2(comp.getFileArtistTO().getArtist(), comp.getFileTO().getTitle());
+            if (!artist.equals(comp.getFileArtistTO().getArtist())) {
+                addItem(comp.getFileTO().getId(),
+                        comp.getFileArtistTO().getID(),
+                        comp.getFileTO().getFile(),
+                        comp.getFileAlbumTO().getName(),
+                        MP3Tag.ARTIST, comp.getFileArtistTO().getArtist(), artist);
+                comp.getFileArtistTO().setArtist(artist);
+                ok = false;
+            }
         }
         return ok;
     }

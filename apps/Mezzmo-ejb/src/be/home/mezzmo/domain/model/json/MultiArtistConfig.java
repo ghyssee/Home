@@ -24,10 +24,14 @@ public class MultiArtistConfig {
 
     public class Item{
 
+        public String id;
         public boolean exactPosition;
         public String master;
         public List<Artist> artists;
         public List<ArtistSequenceItem> artistSequence;
+        public String getId() {
+            return id;
+        }
         public class Artist {
             public String id;
         }
