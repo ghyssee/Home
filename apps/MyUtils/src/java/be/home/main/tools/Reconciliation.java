@@ -25,13 +25,13 @@ public class Reconciliation extends BatchJobV2 {
 
     private static final Logger log = getMainLog(Reconciliation.class);
 
-    private static String[] OBJECTS1 = {"FAR_RECO_DATA", "FAR_RECO_INDX", "FAR_USER", "FAR_READ"};
-    private static String OBJECT_DATA_MGR1 = "DATA_MGR";
-    private static String BASE1= "C:\\My Programs\\OneDrive\\Config\\Java\\Velocity\\Reconciliation\\GEN2\\";
+    private static String[] OBJECTS = {"FAR_RECO_DATA", "FAR_RECO_INDX", "FAR_USER", "FAR_READ"};
+    private static String OBJECT_DATA_MGR = "DATA_MGR";
+    private static String BASE= "C:\\My Programs\\OneDrive\\Config\\Java\\Velocity\\Reconciliation\\GEN2\\";
 
-    private static String OBJECT_DATA_MGR = "&1.";
-    private static String[] OBJECTS = {"&1", "&2", "&3", "&4"};
-    private static String BASE = "C:\\My Programs\\OneDrive\\Config\\Java\\Velocity\\Reconciliation\\GEN\\";
+    private static String OBJECT_DATA_MGR1 = "&1.";
+    private static String[] OBJECTS1 = {"&1", "&2", "&3", "&4"};
+    private static String BASE1 = "C:\\My Programs\\OneDrive\\Config\\Java\\Velocity\\Reconciliation\\GEN\\";
     private static List<OracleDriver> driverFile = new ArrayList();
 
     private static String DATA_MGR = "DATA_MGR";
@@ -108,7 +108,18 @@ public class Reconciliation extends BatchJobV2 {
                 new Field("WEIGHT_CP", "NUMBER", null, false, "Weight CP")
         );
         List<FileType> fileTypesStream1 = Arrays.asList(
-                new FileType("ILPOST_FILE", "^ILPOST_.*\\.csv$", "ilpost", "ILPOST File", "DEFAULT", fileRuleSetList)
+                new FileType("ILPOST_FILE", "^ILPOST_.*\\.csv$", "ilpost", "ILPOST File", "DEFAULT", fileRuleSetList),
+                new FileType("ILPOST_BPOST_AIR_CANADA_FILE", "^ILPOST_AIR_CANADA_.*\\.csv$", "ilpost", "ILPOST AIR CANADA File", "DEFAULT", fileRuleSetList),
+                new FileType("ILPOST_BPOST_AIR_CARGO_LOGISTICS_FILE", "^ILPOST_AIR_CARGO_LOGISTICS_.*\\.csv$", "ilpost", "ILPOST AIR CARGO LOGISTICS File", "DEFAULT", fileRuleSetList),
+                new FileType("ILPOST_BPOST_CROATIA_AIRWAYS_FILE", "^ILPOST_CROATIA_AIRWAYS_.*\\.csv$", "ilpost", "ILPOST CROATIA AIRWAYS File", "DEFAULT", fileRuleSetList),
+                new FileType("ILPOST_BPOST_CZECH_AIRLINES_FILE", "^ILPOST_CZECH_AIRLINES_.*\\.csv$", "ilpost", "ILPOST CZECH AIRLINES File", "DEFAULT", fileRuleSetList),
+                new FileType("ILPOST_BPOST__DHL_FILE", "^ILPOST_DHL_.*\\.csv$", "ilpost", "ILPOST DHL File", "DEFAULT", fileRuleSetList),
+                new FileType("ILPOST_BPOST_ETHIAD_FILE", "^ILPOST_ETHIAD_.*\\.csv$", "ilpost", "ILPOST ETHIAD File", "DEFAULT", fileRuleSetList),
+                new FileType("ILPOST_BPOST_GLOBAL_AIRLINE_FILE", "^ILPOST_GLOBAL_AIRLINE_.*\\.csv$", "ilpost", "ILPOST GLOBAL AIRLINE SERVICES File", "DEFAULT", fileRuleSetList),
+                new FileType("ILPOST_BPOST_KALES_FILE", "^ILPOST_KALES_.*\\.csv$", "ilpost", "ILPOST KALES File", "DEFAULT", fileRuleSetList),
+                new FileType("ILPOST_BPOST_NETWORK_AIRLINE_FILE", "^ILPOST_NETWORK_AIRLINE_.*\\.csv$", "ilpost", "ILPOST NETWORK AIRLINE SERVICES File", "DEFAULT", fileRuleSetList),
+                new FileType("ILPOST_BPOST_SWISSPORT_CARGO_FILE", "^ILPOST_SWISSPORT_CARGO_.*\\.csv$", "ilpost", "ILPOST SWISSPORT CARGO SERVICES File", "DEFAULT", fileRuleSetList),
+                new FileType("ILPOST_BPOST_TURKISH_AIRLINES_FILE", "^ILPOST_TURKISH_AIRLINES_.*\\.csv$", "ilpost", "ILPOST TURKISH AIRLINES File", "DEFAULT", fileRuleSetList)
         );
         List<FileType> fileTypesStream2 = Arrays.asList(
                 new FileType("ILPOST_SUPPLIER_FILE", "^SUPPLIER_.*\\.csv$", "ilpost-supplier", "SUPPLIER File", "DEFAULT", fileRuleSetList),

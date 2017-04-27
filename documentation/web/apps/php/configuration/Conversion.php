@@ -8,8 +8,8 @@ include_once documentPath (ROOT_PHP_BO, "ArtistBO.php");
 session_start();
 
 header( 'Content-type: text/html; charset=utf-8' );
-//exportArtistGroup();
-purgeSongCorrections();
+exportArtistGroup();
+//purgeSongCorrections();
 
 function convert()
 {
@@ -55,7 +55,7 @@ function exportArtistGroup(){
 
     $fp = fopen($file, 'w');
     foreach($array as $item){
-        $list = array ($item->description2);
+        $list = array ($item->description2, $item->id);
         fputcsv($fp, $list, ';');
     }
     fclose($fp);
