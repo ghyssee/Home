@@ -14,23 +14,21 @@ package be.home.mezzmo.domain.bo;
         import java.util.Collections;
         import java.util.List;
         import java.util.Map;
+        import java.util.function.Predicate;
         import java.util.stream.Collectors;
 
 public class ArtistConfigBO {
 
     private static ArtistConfigBO artistConfigBO = new ArtistConfigBO();
-    private static Artists artists;
     private static MultiArtistConfig multiArtistConfig;
     private static final Logger log = Logger.getLogger(ArtistConfigBO.class);
-    private static Map<String, Artists.Artist> mapArtists;
     private static Map<String, MultiArtistConfig.Splitter> mapSplitters;
     private static Map<String, MultiArtistConfig.Item> mapItems;
     private static String splitter;
+    private static ArtistBO artistBO;
 
     private ArtistConfigBO() {
-        artists = (Artists) JSONUtils.openJSONWithCode(Constants.JSON.ARTISTS, Artists.class);
-        mapArtists =
-                artists.list.stream().collect(Collectors.toMap(Artists.Artist::getId, artist -> artist));
+        artistBO = ArtistBO.getInstance();
         multiArtistConfig = (MultiArtistConfig) JSONUtils.openJSONWithCode(Constants.JSON.MULTIARTISTCONFiG, MultiArtistConfig.class);
         Collections.sort(multiArtistConfig.list, (a1, b1) -> b1.artists.size() - a1.artists.size());
         mapSplitters =
@@ -44,8 +42,8 @@ public class ArtistConfigBO {
         return artistConfigBO;
     }
 
-    public Map<String, Artists.Artist> getArtistNames(){
-        return mapArtists;
+    public String getSplitterString(){
+        return splitter;
     }
 
     public MP3Prettifier.Word constructItem(MultiArtistConfig.Item item){
@@ -123,7 +121,7 @@ public class ArtistConfigBO {
         for (MultiArtistConfig.Item.Artist artist : list){
             artistSearch += "(";
             boolean lastItem = list.indexOf(artist) == list.size()-1;
-            Artists.Artist artistObj = getArtist(artist.id);
+            Artists.Artist artistObj = artistBO.getArtist(artist.id);
             if (artistObj == null){
                 throw new ApplicationException(("Artist Id not found in config:" + artist.id));
             }
@@ -136,7 +134,7 @@ public class ArtistConfigBO {
     private String constructArtistSearch(List<MultiArtistConfig.Item.Artist> list, String splitterText, int size){
         String artistSearch = "(";
         for (MultiArtistConfig.Item.Artist artist : list){
-            Artists.Artist artistObj = getArtist(artist.id);
+            Artists.Artist artistObj = artistBO.getArtist(artist.id);
             if (artistObj == null){
                 throw new ApplicationException(("Artist Id not found in config:" + artist.id));
             }
@@ -152,7 +150,7 @@ public class ArtistConfigBO {
         String word = "";
         for (MultiArtistConfig.Item.ArtistSequenceItem artistSequenceItem : list){
 
-            Artists.Artist artistObj = getArtist(artistSequenceItem.artistId);
+            Artists.Artist artistObj = artistBO.getArtist(artistSequenceItem.artistId);
             if (artistObj == null){
                 throw new ApplicationException(("Artist Id not found in config:" + artistSequenceItem.artistId));
             }
@@ -171,12 +169,6 @@ public class ArtistConfigBO {
         return multiArtist;
     }
 
-
-    public  Artists.Artist getArtist(String id){
-        Artists.Artist artist = mapArtists.get(id);
-        return artist;
-    }
-
     public MultiArtistConfig.Splitter getSplitter(String id){
         MultiArtistConfig.Splitter splitter = mapSplitters.get(id);
         if (splitter != null){
@@ -184,5 +176,48 @@ public class ArtistConfigBO {
         }
         return splitter;
     }
+
+    public MultiArtistConfig.Item findMultiArtist(String[] artists){
+        List<Artists.Artist> listArtists = new ArrayList<>();
+        for (String artistName : artists){
+            Artists.Artist artist = artistBO.findArtistByName(artistName);
+            if (artist == null){
+                return null;
+            }
+            listArtists.add(artist);
+        }
+
+        for (MultiArtistConfig.Item item : multiArtistConfig.list) {
+            if (artists.length == item.artistSequence.size() && artists.length == item.artists.size()) {
+                if (findArtistInSequence(listArtists, item.artistSequence)){
+                    return item;
+                }
+            }
+        }
+        return null;
+    }
+
+    private boolean findArtistInSequence2(String[] artists, List<MultiArtistConfig.Item.ArtistSequenceItem> sequenceArtists){
+        List <MultiArtistConfig.Item.ArtistSequenceItem> clone = new ArrayList(sequenceArtists);
+        for (MultiArtistConfig.Item.ArtistSequenceItem seq : clone){
+            Artists.Artist artistItem = artistBO.getArtistWithException(seq.artistId);
+            for (String artistName : artists){
+                if (artistBO.getStageName(artistItem).equals(artistName)){
+                    clone.remove(seq);
+                }
+            }
+        }
+        return clone.size() == 0;
+    }
+
+    private boolean findArtistInSequence(List<Artists.Artist> listArtists, List<MultiArtistConfig.Item.ArtistSequenceItem> sequenceArtists){
+        List <MultiArtistConfig.Item.ArtistSequenceItem> clone = new ArrayList(sequenceArtists);
+        for (Artists.Artist artistItem : listArtists) {
+            Predicate<MultiArtistConfig.Item.ArtistSequenceItem> predicate = p-> p.getArtistId().equals(artistItem.getId());
+            clone.removeIf(predicate);
+        }
+        return clone.size() == 0;
+    }
+
 }
 

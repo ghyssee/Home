@@ -1,6 +1,7 @@
 package be.home.mezzmo.domain.bo;
 
 import be.home.common.constants.Constants;
+import be.home.common.exceptions.ApplicationException;
 import be.home.common.utils.JSONUtils;
 import be.home.mezzmo.domain.model.json.ArtistSongRelationship;
 import be.home.mezzmo.domain.model.json.Artists;
@@ -32,6 +33,23 @@ public class ArtistBO {
     public Artists.Artist getArtist(String id){
         Artists.Artist artist = mapArtists.get(id);
         return artist;
+    }
+
+    public Artists.Artist getArtistWithException(String id){
+        Artists.Artist artist = mapArtists.get(id);
+        if (artist == null){
+            throw new ApplicationException("ArtistId Not Found: " + id);
+        }
+        return artist;
+    }
+
+    public Artists.Artist findArtistByName(String artistName){
+        for (Artists.Artist artistItem: artists.list){
+            if (getStageName(artistItem).equals(artistName)){
+                return artistItem;
+            }
+        }
+        return null;
     }
 
     public String getStageName(Artists.Artist artist){

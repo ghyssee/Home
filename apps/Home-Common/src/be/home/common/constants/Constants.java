@@ -61,6 +61,7 @@ public interface Constants {
         String ULTRATOP = "ultratopBase";
         String IPOD = "iPod";
         String MUSIC_LISTS = "musicList";
+        String MP3PRETTIFIER = "mp3PrettifierConfigPath";
     }
 
     interface JSON {

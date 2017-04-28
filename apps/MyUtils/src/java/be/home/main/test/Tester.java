@@ -30,7 +30,7 @@ public class Tester extends BatchJobV2 {
 
     public static void main(String args[]) throws SAXException, DocumentException, IOException, IllegalAccessException, NoSuchFieldException, ParserConfigurationException {
 
-        testMP3Prettifier();
+        batchProcess();
     }
 
     private static void batchProcess() throws IOException {

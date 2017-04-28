@@ -11,7 +11,7 @@
        nowrap:false,
        rownumbers:true,
        pagePosition:{{if isset($pagePosition)}}"{{$pagePosition}}"{{else}}"bottom"{{/if}},
-       pageSize:10,
+       pageSize:{{if isset($pageSize)}}{{$pageSize}}{{else}}10{{/if}},
        singleSelect:{{if isset($singleSelect)}}{{$singleSelect}}{{else}}true{{/if}}
 '>
 <thead>
@@ -63,7 +63,9 @@
     <form id="fm{{$tablegrid}}" method="post" novalidate>
 
         {{section name=sec1 loop=$contacts}}
-        {{if !isset($contacts[sec1].selectRow) AND (!isset($contacts[sec1].hidden) OR !$contacts[sec1].hidden)}}
+        {{if !isset($contacts[sec1].selectRow) AND (!isset($contacts[sec1].hidden) OR !$contacts[sec1].hidden)
+        AND (!isset($contacts[sec1].editable) OR $contacts[sec1].editable)
+        }}
         <div class="fitem">
             <label>{{$contacts[sec1].label}}</label>
             <input name="{{$contacts[sec1].field}}"

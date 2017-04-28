@@ -40,6 +40,10 @@ public class MP3Helper {
     private static final String OPEN_BRACKET = "[\\(|\\[]";
     private static final String CLOSE_BRACKET = "[\\)|\\]]";
 
+    public MP3Prettifier getMp3Prettifier(){
+        return this.mp3Prettifer;
+    }
+
     public String removeDurationFromString(String text){
         String prettifiedText = text;
         prettifiedText = prettifiedText.replaceAll("\\[[0-9]{1,2}:[0-9][0-9]\\]$", "");

@@ -30,6 +30,10 @@ public class ArtistSongRelationshipBO {
         artistSongs = construct();
     }
 
+    public ArtistSongRelationship getArtistSongRelationship(){
+        return artistSongRelationship;
+    }
+
     public static ArtistSongRelationshipBO getInstance() {
         if (artistSongRelationshipBO == null){
             artistSongRelationshipBO = new ArtistSongRelationshipBO();
@@ -51,13 +55,19 @@ public class ArtistSongRelationshipBO {
                 continue;
             }
             artistSong.oldArtist = artist.name + (item.exact ? "": "(.*)");
-            MultiArtistConfig.Item multiArtistItem = ArtistConfigBO.getInstance().getMultiArtist(item.newMultiArtistId);
-            if (multiArtistItem == null){
-                log.warn("Id: " + item.id + "/ MultiArtistId Not Found: " + item.newMultiArtistId);
-                continue;
+            if (StringUtils.isNotBlank(item.newMultiArtistId)){
+                MultiArtistConfig.Item multiArtistItem = ArtistConfigBO.getInstance().getMultiArtist(item.newMultiArtistId);
+                if (multiArtistItem == null){
+                    log.warn("Id: " + item.id + "/ MultiArtistId Not Found: " + item.newMultiArtistId);
+                    continue;
+                }
+                MP3Prettifier.Word word = ArtistConfigBO.getInstance().constructItem(multiArtistItem);
+                artistSong.newArtist = word.newWord;
             }
-            MP3Prettifier.Word word = ArtistConfigBO.getInstance().constructItem(multiArtistItem);
-            artistSong.newArtist = word.newWord;
+            else {
+               Artists.Artist artistItem = ArtistBO.getInstance().getArtist(item.newArtistId) ;
+                artistSong.newArtist = ArtistBO.getInstance().getStageName(artistItem);
+            }
             items.add(artistSong);
             log.info("Old Artist: " + artistSong.oldArtist);
             log.info("New Artist: " + artistSong.newArtist);
@@ -69,4 +79,5 @@ public class ArtistSongRelationshipBO {
 
         return items;
     }
+
 }

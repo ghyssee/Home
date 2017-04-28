@@ -5,7 +5,7 @@ $fieldId = "id";
 $smarty = initializeSmarty();
 $smarty->assign('title','Mulit Artist List');
 $smarty->assign('item','Artist');
-$smarty->assign('tableWidth','800px');
+$smarty->assign('tableWidth','100%');
 $smarty->assign('tableHeight','400px');
 $url = "MP3PrettifierAction.php";
 $smarty->assign('tablegrid',"MultiArtistList");
@@ -18,11 +18,12 @@ $smarty->assign('deleteUrl', $url . "?method=deleteMultiArtist");
 
 
 $smarty->assign("contacts", array(
+        array("field" => "id", "label"=>"Id", "size" => 40, "editable" => false),
         array("field" => "description", "label"=>"Artists", "size" => 40, "required" => true, "sortable" => true),
         array("field" => "description2", "label"=>"ArtistSequence", "size" => 40, "required" => true, "sortable" => true),
         array("field" => "master", "label"=>"Master", "size" => 20, "required" => true, "sortable" => true),
-        array("field" => "exactPosition", "label"=>"Exact", "size" => 15, "formatter" => "checkboxFormatter", "align" => "center", "checkbox" => true),
-        array("field" => "id", "label"=>"Id", "size" => 50, "hidden" => "true")
+        array("field" => "exactPosition", "label"=>"Exact", "size" => 15, "formatter" => "checkboxFormatter",
+            "align" => "center", "checkbox" => true)
     )
 );
 //** un-comment the following line to show the debug console

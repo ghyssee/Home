@@ -43,13 +43,17 @@ class CacheBO
         //if (!isset($_SESSION["cache"][$cacheId])){
 //            logInfo("Save Cache Object " . $cacheId . " / Id = " . $id);
   //      }
-        $_SESSION["cache"][$cacheId][$id] = $object;
-        logInfo("Save Cache Object " . $cacheId . " / Id = " . $id);
+        if (isInCache($cacheId)) {
+            $_SESSION["cache"][$cacheId][$id] = $object;
+            logInfo("Save Cache Object " . $cacheId . " / Id = " . $id);
+        }
     }
 
     static function clearCacheObject($cacheId, $id){
-        unset($_SESSION["cache"][$cacheId][$id]);
-        logInfo("Clear Cache Object " . $cacheId . " / Id = " . $id);
+        if (isInCache($cacheId)) {
+            unset($_SESSION["cache"][$cacheId][$id]);
+            logInfo("Clear Cache Object " . $cacheId . " / Id = " . $id);
+        }
     }
 
     static function saveObject($id, $object){

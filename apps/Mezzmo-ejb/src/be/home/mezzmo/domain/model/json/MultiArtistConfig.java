@@ -39,6 +39,9 @@ public class MultiArtistConfig {
         public class ArtistSequenceItem {
             public String artistId;
             public String splitterId;
+            public String getArtistId(){
+                return artistId;
+            }
         }
     }
 

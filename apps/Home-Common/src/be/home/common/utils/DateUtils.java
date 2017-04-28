@@ -21,7 +21,12 @@ public class DateUtils  {
 	}
 
 	public static String formatYYYYMMDD(Date date) {
+		date = date == null ? new Date() : date;
 		return YYYYMMDD_FORMATTER.format(date);
+	}
+
+	public static String formatYYYYMMDD() {
+		return YYYYMMDD_FORMATTER.format(new Date());
 	}
 
 	public static String formatDate(Date date, String dateFormat) {
