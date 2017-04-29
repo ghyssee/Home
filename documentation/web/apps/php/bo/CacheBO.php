@@ -9,6 +9,8 @@
 class CacheBO
 {
     const MULTIARTIST2 = 'MULTIARTIST2';
+    const ARTISTS = "ARTISTS";
+    const ARTISTSONG = "ARTISTSONG";
 
     static function getObject ($id){
         $cache = $_SESSION["cache"];
@@ -40,9 +42,6 @@ class CacheBO
     }
 
     static function saveCacheObject($cacheId, $id, $object){
-        //if (!isset($_SESSION["cache"][$cacheId])){
-//            logInfo("Save Cache Object " . $cacheId . " / Id = " . $id);
-  //      }
         if (isInCache($cacheId)) {
             $_SESSION["cache"][$cacheId][$id] = $object;
             logInfo("Save Cache Object " . $cacheId . " / Id = " . $id);

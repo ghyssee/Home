@@ -59,15 +59,14 @@ public class ConvertArtistSong extends BatchJobV2 {
         for (MP3Prettifier.ArtistSongExceptions.ArtistSong artistSong : mp3Prettifier.artistSongExceptions.items){
             String artistName = artistSong.oldArtist.replaceAll("\\(\\.\\*\\)$", "");
             Artists.Artist oldArtist = artistBO.findArtistByName(artistName);
-            System.out.println("Old Artist: " + artistSong.oldArtist);
             if (oldArtist == null){
                 printInfo(badFile, artistSong);
                 newArtistSongExceptionsList.add(artistSong);
-                System.out.println("Artist Not Found: " + artistSong.oldArtist);
+                log.info("Artist Not Found: " + artistSong.oldArtist);
                 continue;
             }
             else {
-                System.out.println("Artist Found: Id= " + oldArtist.getId());
+                log.info("Artist Found: Id= " + oldArtist.getId());
             }
             String[] artists = artistSong.newArtist.split(multiArtistBO.getSplitterString());
             boolean remove = false;

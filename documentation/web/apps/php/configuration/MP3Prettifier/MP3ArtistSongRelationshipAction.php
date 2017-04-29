@@ -4,6 +4,7 @@ include_once documentPath (ROOT_PHP, "config.php");
 include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 include_once documentPath (ROOT_PHP_BO, "ArtistSongRelationshipBO.php");
 include_once documentPath (ROOT_PHP_BO, "SessionBO.php");
+include_once documentPath (ROOT_PHP_BO, "ArtistBO.php");
 sessionStart();
 
 $method = htmlspecialchars($_REQUEST['method']);
@@ -42,17 +43,11 @@ function listMultiArtists(){
   //  }
    // else {
         $artistSongRelationshipBO = new ArtistSongRelationshipBO();
-        $artistSongRel = $artistSongRelationshipBO->getArtistSongRelationshipList();
-        $list = Array();
+        //$artistSongRel = $artistSongRelationshipBO->getArtistSongRelationshipList();
+        //$list = Array();
+        $list = $artistSongRelationshipBO->loadFullData();
 
-        foreach ($artistSongRel as $key => $item) {
-            //$multiArtistTO = $multiArtistBO->convertToMultiArtistTO($item);
-            //$list[$item->id] = $multiArtistTO;
-        }
-        //CacheBO::saveObject(CacheBO::MULTIARTIST2, $list);
-    //}
-    //$newArray = array_values($list);
-    $newArray = $artistSongRel;
+        $newArray = $list;
 
     //if (isset($_POST['sort'])){
     //$field = isset($_POST['sort']) ? strval($_POST['sort']) : 'oldSong';

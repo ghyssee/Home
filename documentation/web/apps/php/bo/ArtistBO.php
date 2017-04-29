@@ -25,16 +25,40 @@ class ArtistBO
     function __construct() {
         $this->file = getFullPath(JSON_ARTISTS);
         $this->artistObj = readJSON( $this->file);
+        $this->loadFullData();
     }
     
     function getArtists(){
         return $this->artistObj->list;
     }
 
+    function loadFullData(){
+        if (CacheBO::isInCache(CacheBO::ARTISTS)){
+            $list = CacheBO::getObject(CacheBO::ARTISTS);
+        }
+        else {
+            $list = Array();
+            foreach ($this->artistObj->list as $key => $item) {
+                $list[$item->id] = $item;
+            }
+            CacheBO::saveObject(CacheBO::ARTISTS, $list);
+        }
+        return $this->artistObj->list;
+    }
+
+
     function lookupArtist($id)
     {
-        //$file = $GLOBALS['fileArtist'];
-        //$obj = readJSON($file);
+        $this->loadFullData();
+        $list = CacheBO::getObject(CacheBO::ARTISTS);
+        if (isset($list[$id])){
+            return $list[$id];
+        }
+        return null;
+    }
+
+    function lookupArtist2($id)
+    {
         foreach ($this->artistObj->list as $key => $value) {
             if (strcmp($value->id, $id) == 0) {
                 $singleArtistObj = $value;
@@ -43,11 +67,8 @@ class ArtistBO
         }
         return null;
     }
-
     function lookupArtistByName($name)
     {
-        //$file = $GLOBALS['fileArtist'];
-        //$obj = readJSON($file);
         foreach ($this->artistObj->list as $key => $value) {
             if (strcmp($value->name, $name) == 0) {
                 $singleArtistObj = $value;
@@ -130,6 +151,23 @@ class MultiArtistBO {
             logInfo(getCurrentTime() . " ENDED: Loading file " . $this->file);
         }
         return $this->multiArtistObj;
+    }
+
+    function loadFullData(){
+        if (CacheBO::isInCache(CacheBO::MULTIARTIST2)){
+            $list = CacheBO::getObject(CacheBO::MULTIARTIST2);
+        }
+        else {
+            $multi = $this->loadData();
+            $list = Array();
+            foreach ($multi->list as $key => $item) {
+                $multiArtistTO = $this->convertToMultiArtistTO($item);
+                $list[$item->id] = $multiArtistTO;
+            }
+            CacheBO::saveObject(CacheBO::MULTIARTIST2, $list);
+        }
+        $list = array_values($list);
+        return $list;
     }
 
     function isArtistUsed($artistId){

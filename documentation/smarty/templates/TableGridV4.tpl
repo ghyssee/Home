@@ -98,12 +98,6 @@
 
 
 <script type="text/javascript">
-    $('#dg{{$tablegrid}}').datagrid({
-        options:[[
-            {rowHeight:100}
-        ]],
-        autoRowHeight:true
-    });
     {{if isset($newUrl)}}
     var url;
     function newRecord{{$tablegrid}}(){

@@ -8,7 +8,35 @@ require_once documentPath (ROOT_PHP_BO, "CacheBO.php");
  * Date: 28/04/2017
  * Time: 15:02
  */
+class Castable
+{
+    public function __construct($object = null)
+    {
+        $this->cast($object);
+    }
 
+    public function cast($object)
+    {
+        if (is_array($object) || is_object($object)) {
+            foreach ($object as $key => $value) {
+                $this->$key = $value;
+            }
+        }
+    }
+}
+
+class ArtistSongRelationshipTO extends Castable {
+    public $id;
+    public $oldArtistId;
+    public $oldArtist;
+    public $newMultiArtistId;
+    public $newArtistId;
+    public $newArtist;
+    public $oldSong;
+    public $newSong;
+    public $exact;
+
+}
 
 class ArtistSongRelationshipBO
 {
@@ -23,6 +51,34 @@ class ArtistSongRelationshipBO
     function getArtistSongRelationshipList(){
         return $this->artistSongRelationshipObj->items;
     }
+
+    function loadFullData(){
+        if (CacheBO::isInCache(CacheBO::ARTISTSONG)){
+            $list = CacheBO::getObject(CacheBO::ARTISTSONG);
+        }
+        else {
+            $list = Array();
+            ArtistBO:$artistBO = new ArtistBO();
+            MultiArtistBO:$multiArtistBO = new MultiArtistBO();
+            foreach ($this->artistSongRelationshipObj->items as $key => $item) {
+                $artistSongRelationshipTO = new ArtistSongRelationshipTO($item);
+                $artistTO = $artistBO->lookupArtist($artistSongRelationshipTO->oldArtistId);
+                $artistSongRelationshipTO->oldArtist = isset($artistTO) ? $artistTO->name : "";
+                if (isset($artistSongRelationshipTO->newArtistId)){
+                    $artistTO = $artistBO->lookupArtist($artistSongRelationshipTO->newArtistId);
+                    $artistSongRelationshipTO->newArtist = isset($artistTO) ? $artistTO->name : "";
+                }
+                else if (isset($artistSongRelationshipTO->newMultiArtistId)){
+                    //$multiArtistTO = $multiArtistBO->
+                }
+                $list[] = $artistSongRelationshipTO;
+
+            }
+            CacheBO::saveObject(CacheBO::ARTISTSONG, $list);
+        }
+        return $list;
+    }
+
 
     function saveArtistSong($artistSongRelationship)
     {

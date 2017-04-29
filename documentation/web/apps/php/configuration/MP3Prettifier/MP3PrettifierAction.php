@@ -286,29 +286,8 @@ function deleteArtist()
 function listMultiArtists(){
     $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
     $rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
-    if (CacheBO::isInCache(CacheBO::MULTIARTIST2)){
-       //$multi = CacheBO::getObject(CacheBO::MULTIARTIST);
-        $list = CacheBO::getObject(CacheBO::MULTIARTIST2);
-    }
-    else {
-        $multiArtistBO = new MultiArtistBO();
-        $multi = $multiArtistBO->loadData();
-        $list = Array();
-
-        foreach ($multi->list as $key => $item) {
-            //$multiArtistTO = new MultiArtistListTO($item->id, $item->exactPosition, $item->master);
-            //$item->description = $multiArtistBO->constructMultiArtistDescription($artistBO, $item);
-            //$item->description2 = $multiArtistBO->constructMultiArtistSequeceDescription($artistBO, $item);
-            //$multiArtistTO->description = $multiArtistBO->constructMultiArtistDescription($artistBO, $item);
-            //$multiArtistTO->description2 = $multiArtistBO->constructMultiArtistSequeceDescription($artistBO, $item);
-            $multiArtistTO = $multiArtistBO->convertToMultiArtistTO($item);
-            $list[$item->id] = $multiArtistTO;
-        }
-        //$cacheBO = new CacheBO();
-        //$cacheBO->saveObject(CacheBO::MULTIARTIST, $multi);
-        CacheBO::saveObject(CacheBO::MULTIARTIST2, $list);
-    }
-    $newArray = array_values($list);
+    $multiArtistBO = new MultiArtistBO();
+    $newArray = $multiArtistBO->loadFullData();
 
     //if (isset($_POST['sort'])){
     $field = isset($_POST['sort']) ? strval($_POST['sort']) : 'description';

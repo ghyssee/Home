@@ -54,6 +54,8 @@ goMenu();
 
         $smarty->assign("contacts", array(
         array("field" => "id", "label"=>"Id", "size" => 40, "editable" => false),
+        array("field" => "oldArtist", "label"=>"Old Artist", "size" => 40, "editable" => false, "sortable" => true),
+        array("field" => "newArtist", "label"=>"New Artist", "size" => 40, "editable" => false, "sortable" => true),
         array("field" => "oldSong", "label"=>"Old Song", "size" => 40, "required" => true, "sortable" => true),
         array("field" => "newSong", "label"=>"New Song", "size" => 40, "required" => true, "sortable" => true),
         array("field" => "exact", "label"=>"Exact", "size" => 15, "formatter" => "checkboxFormatter",
