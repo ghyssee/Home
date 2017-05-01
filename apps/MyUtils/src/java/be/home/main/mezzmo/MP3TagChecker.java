@@ -179,10 +179,7 @@ public class MP3TagChecker extends MP3TagBase {
         for (Long fileId : fileIdList) {
             try {
                 MGOFileAlbumCompositeTO comp = getMezzmoService().findFileById(fileId);
-                // get list of all files to get the max Disc
-                MGOFileAlbumCompositeTO search = new MGOFileAlbumCompositeTO();
-                search.getFileAlbumTO().setId(comp.getFileAlbumTO().getId());
-                List<MGOFileAlbumCompositeTO> list = getMezzmoService().findSongsByAlbum(search);
+                List<MGOFileAlbumCompositeTO> list = getSongsByAlbumAndAlbumArtist(comp);
                 int maxDisc = getMaxDisc(list);
                 logItem(comp, maxDisc);
                 this.mp3TagUtils.processSong(comp, list.size(), maxDisc);
@@ -196,11 +193,17 @@ public class MP3TagChecker extends MP3TagBase {
 
     }
 
-    private void processAlbum(MGOFileAlbumCompositeTO comp, MyFileWriter albumsWithoutErrorsFile, MP3Settings.Mezzmo.Mp3Checker mp3checker)
-            throws IOException {
+    private List<MGOFileAlbumCompositeTO> getSongsByAlbumAndAlbumArtist(MGOFileAlbumCompositeTO comp){
         MGOFileAlbumCompositeTO search = new MGOFileAlbumCompositeTO();
         search.getFileAlbumTO().setId(comp.getFileAlbumTO().getId());
+        search.getAlbumArtistTO().setId(comp.getAlbumArtistTO().getId());
         List<MGOFileAlbumCompositeTO> list = getMezzmoService().findSongsByAlbum(search);
+        return list;
+    }
+
+    private void processAlbum(MGOFileAlbumCompositeTO comp, MyFileWriter albumsWithoutErrorsFile, MP3Settings.Mezzmo.Mp3Checker mp3checker)
+            throws IOException {
+        List<MGOFileAlbumCompositeTO> list = getSongsByAlbumAndAlbumArtist(comp);
         log.info("Album: " + comp.getFileAlbumTO().getName());
         int maxDisc = getMaxDisc(list);
         log.info("Max Disc: " + maxDisc);
@@ -308,10 +311,8 @@ public class MP3TagChecker extends MP3TagBase {
                 comp.getFileTO().setTrack(item.track);
                 comp.getFileTO().setTitle(item.title);
                 comp.getFileArtistTO().setArtist(item.artist);
-                // get list of all files to get the max Disc
-                MGOFileAlbumCompositeTO search = new MGOFileAlbumCompositeTO();
-                search.getFileAlbumTO().setId(comp.getFileAlbumTO().getId());
-                List<MGOFileAlbumCompositeTO> list = getMezzmoService().findSongsByAlbum(search);
+                List<MGOFileAlbumCompositeTO> list = getSongsByAlbumAndAlbumArtist(comp);
+
                 int maxDisc = getMaxDisc(list);
                 logItem(comp, maxDisc);
                 int nrOfErrors = this.mp3TagUtils.getErrorList().size();

@@ -78,8 +78,9 @@ public class MezzmoDAOQueries extends MezzmoDB {
             .addCondition(TablesEnum.MGOFile.alias(), MGOFileColumns.ID, Comparator.EQUALS)
             .render();
 
-    protected static final String FILE_FIND_TAGINFO_BY_ALBUMID = ((SQLBuilder) SerializationUtils.clone(FILE_FIND_BASIC))
+    protected static final String FILE_FIND_TAGINFO_BY_ALBUMID_ALBUMARTISTID = ((SQLBuilder) SerializationUtils.clone(FILE_FIND_BASIC))
             .addCondition(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUMID, Comparator.LIKE)
+            .addCondition(TablesEnum.MGOAlbumArtist.alias(), MGOAlbumArtistColumns.ALBUMARTISTID, Comparator.LIKE)
             .render();
 
     protected static final String FILE_SELECT_TITLE = ((SQLBuilder) SerializationUtils.clone(FILE_FIND_BASIC))
@@ -127,7 +128,7 @@ public class MezzmoDAOQueries extends MezzmoDB {
             .enableDistinct()
             .addTable(TablesEnum.MGOFile)
             .addColumn(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUM )
-            .addColumn(TablesEnum.MGOAlbumArtist.alias(), MGOAlbumArtistColumns.ALBUMARTIST)
+            .addColumns(TablesEnum.MGOAlbumArtist)
             .addColumn(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUMID )
             .addColumn(TablesEnum.MGOFile.alias(), SQLFunction.MAX, MGOFileColumns.YEAR )
             .addRelation(TablesEnum.MGOFileExtension, MGOFileExtensionColumns.ID, TablesEnum.MGOFile, MGOFileColumns.EXTENSION_ID)

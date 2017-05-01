@@ -21,6 +21,8 @@ public class MezzmoRowMappers extends MezzmoDAOQueries {
             fileTO.setYear(getInteger(rs, MGOFileColumns.YEAR));
             fileAlbumComposite.setFileAlbumTO(mapFileAlbumTO(rs, rowNum));
             albumArtistTO.setName(getString(rs, MGOAlbumArtistColumns.ALBUMARTIST));
+            fileAlbumComposite.setAlbumArtistTO(mapAlbumArtistTO(rs, rowNum));
+
             return fileAlbumComposite;
         }
     }

@@ -86,6 +86,7 @@ class ArtistBO
             if (strcmp($value->id, $artist->id) == 0) {
                 $this->artistObj->list[$counter] = $artist;
                 writeJSON($this->artistObj, $this->file);
+                CacheBO::saveCacheObject(CacheBO::ARTISTS, $artist->id,$artist);
                 return true;
             }
             $counter++;
@@ -103,6 +104,7 @@ class ArtistBO
         $this->checkArtistRecord($artist);
         array_push($this->artistObj->list, $artist);
         writeJSON($this->artistObj, $this->file);
+        CacheBO::saveCacheObject(CacheBO::ARTISTS, $artist->id,$artist);
     }
 
     function deleteArtist($id)
@@ -119,6 +121,7 @@ class ArtistBO
                 $array = array_values($this->artistObj->list);
                 $this->artistObj->list = $array;
                 writeJSON($this->artistObj, $this->file);
+                CacheBO::deleteCacheObject(CacheBO::ARTISTS, $id);
                 return true;
             }
         }

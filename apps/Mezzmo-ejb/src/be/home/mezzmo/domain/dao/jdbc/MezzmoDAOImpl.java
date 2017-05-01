@@ -19,9 +19,7 @@ import org.springframework.jdbc.support.KeyHolder;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by ghyssee on 9/02/2016.
@@ -136,9 +134,10 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
 
     public List<MGOFileAlbumCompositeTO> findSongsByAlbum(MGOFileAlbumCompositeTO comp){
         Object[] params = {
-                comp.getFileAlbumTO().getId() == 0 ? "%": comp.getFileAlbumTO().getId()
+                comp.getFileAlbumTO().getId() == 0 ? "%": comp.getFileAlbumTO().getId(),
+                comp.getAlbumArtistTO().getId() == 0 ? "%": comp.getAlbumArtistTO().getId()
         };
-        List<MGOFileAlbumCompositeTO> list = getInstance().getJDBCTemplate().query(FILE_FIND_TAGINFO_BY_ALBUMID, new SongsAlbumRowMapper(), params);
+        List<MGOFileAlbumCompositeTO> list = getInstance().getJDBCTemplate().query(FILE_FIND_TAGINFO_BY_ALBUMID_ALBUMARTISTID, new SongsAlbumRowMapper(), params);
         return list;
     }
 

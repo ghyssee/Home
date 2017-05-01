@@ -379,6 +379,7 @@ public class MP3Helper {
         for (MP3Prettifier.Word wordObj : mp3Prettifer.global.filenames) {
             String oldText = prettifiedText;
             prettifiedText = prettifiedText.replaceAll(wordObj.oldWord, wordObj.newWord);
+            prettifiedText = prettifiedText.trim();
             if (!oldText.equals(prettifiedText)) {
                 logRule("Global Filenames", wordObj);
             }

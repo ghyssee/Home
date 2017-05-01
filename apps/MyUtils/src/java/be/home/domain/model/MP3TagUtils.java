@@ -482,7 +482,7 @@ public class MP3TagUtils {
                     MP3Tag.ALBUM, mp3Album, album);
             ok = false;
         }
-        else if (!album.equals(comp.getFileAlbumTO().getName())){
+        else if (!this.update && !album.equals(comp.getFileAlbumTO().getName())){
             log.warn("Album does not match: " + "formatted: " + mp3Album + " / DB: " + comp.getFileAlbumTO().getName());
             /* update mp3 + DB */
             String oldValue = comp.getFileAlbumTO().getName();

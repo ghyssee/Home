@@ -27,8 +27,11 @@ class CacheBO
         if (session_status() == PHP_SESSION_NONE) {
             return false;
         }
-        $cache = $_SESSION["cache"];
-        return isset($cache[$id]);
+        if (isset($_SESSION["cache"])){
+            $cache = $_SESSION["cache"];
+            return isset($cache[$id]);
+        }
+        return false;
     }
 
     static function clearCache ($id){
@@ -42,14 +45,14 @@ class CacheBO
     }
 
     static function saveCacheObject($cacheId, $id, $object){
-        if (isInCache($cacheId)) {
+        if (self::isInCache($cacheId)) {
             $_SESSION["cache"][$cacheId][$id] = $object;
             logInfo("Save Cache Object " . $cacheId . " / Id = " . $id);
         }
     }
 
     static function clearCacheObject($cacheId, $id){
-        if (isInCache($cacheId)) {
+        if (self::isInCache($cacheId)) {
             unset($_SESSION["cache"][$cacheId][$id]);
             logInfo("Clear Cache Object " . $cacheId . " / Id = " . $id);
         }

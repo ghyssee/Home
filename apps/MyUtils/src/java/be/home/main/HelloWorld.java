@@ -125,7 +125,7 @@ private static void testAlbumArtist(){
 
 
         MP3Helper mp3Helper =MP3Helper.getInstance();
-        System.out.println(mp3Helper.prettifyArtist("J.D. McPherson"));
+        System.out.println(mp3Helper.prettifyArtist("Mike Oldfield"));
 
         System.out.println(mp3Helper.prettifySong("Parlami D’amore"));
         System.out.println(mp3Helper.prettifyAlbum("Yorin Fm"));
