@@ -8,8 +8,8 @@ include_once documentPath (ROOT_PHP_BO, "ArtistBO.php");
 session_start();
 
 header( 'Content-type: text/html; charset=utf-8' );
-//exportArtistGroup();
-purgeSongCorrections();
+exportArtistGroup();
+//purgeSongCorrections();
 
 function convert()
 {

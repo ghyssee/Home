@@ -189,25 +189,34 @@ public class ArtistConfigBO {
 
         for (MultiArtistConfig.Item item : multiArtistConfig.list) {
             if (artists.length == item.artistSequence.size() && artists.length == item.artists.size()) {
-                if (findArtistInSequence(listArtists, item.artistSequence)){
-                    return item;
+                if (item.exactPosition){
+                    if (findArtistInSequenceExact(listArtists, item.artistSequence)) {
+                        return item;
+                    }
+                }
+                else {
+                    if (findArtistInSequence(listArtists, item.artistSequence)) {
+                        return item;
+                    }
                 }
             }
         }
         return null;
     }
 
-    private boolean findArtistInSequence2(String[] artists, List<MultiArtistConfig.Item.ArtistSequenceItem> sequenceArtists){
-        List <MultiArtistConfig.Item.ArtistSequenceItem> clone = new ArrayList(sequenceArtists);
-        for (MultiArtistConfig.Item.ArtistSequenceItem seq : clone){
-            Artists.Artist artistItem = artistBO.getArtistWithException(seq.artistId);
-            for (String artistName : artists){
-                if (artistBO.getStageName(artistItem).equals(artistName)){
-                    clone.remove(seq);
-                }
+    private boolean findArtistInSequenceExact(List<Artists.Artist> listArtists, List<MultiArtistConfig.Item.ArtistSequenceItem> sequenceArtists){
+        int counter = 0;
+        boolean found = false;
+        for (Artists.Artist artistItem : listArtists) {
+            String artistId = sequenceArtists.get(counter++).getArtistId();
+            if (!artistItem.getId().equals(artistId)){
+                return false;
+            }
+            else {
+                found = true;
             }
         }
-        return clone.size() == 0;
+        return found;
     }
 
     private boolean findArtistInSequence(List<Artists.Artist> listArtists, List<MultiArtistConfig.Item.ArtistSequenceItem> sequenceArtists){
