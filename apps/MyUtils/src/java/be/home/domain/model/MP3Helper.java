@@ -391,33 +391,35 @@ public class MP3Helper {
     public String checkForTitleExceptions(String artist, String song){
         for (MP3Prettifier.ArtistSongExceptions.ArtistSong artistSong : mp3Prettifer.artistSongExceptions.items) {
             if (artist.matches(artistSong.oldArtist)) {
-                String matchKey = artistSong.oldSong;
-                String newKey = artistSong.newSong;
-                if (song.matches(matchKey)) {
-                    String title = song.replaceAll(matchKey, newKey);
-                    if (!title.equals(song)) {
-                        song = title;
-                        logRule("Title Exception", artistSong);
-                        break;
-                    }
+                String title = checkTitle(song, artistSong.oldSong, artistSong.newSong, artistSong.exactMatchTitle);
+                if (!title.equals(song)) {
+                    song = title;
+                    logRule("Title Exception", artistSong);
+                    break;
                 }
             }
         }
         return song;
     }
 
+    private String checkTitle(String song, String oldSong, String newSong, boolean exactMatchTitle){
+        String matchKey = oldSong + (exactMatchTitle ? "" : "(.*)");
+        String newKey = newSong + (exactMatchTitle ? "": "$1");;
+        String newFormattedSong = song;
+        if (song.matches(matchKey)) {
+            newFormattedSong = song.replaceAll(matchKey, newKey);
+        }
+        return newFormattedSong;
+    }
+
     public String checkForTitleExceptions2(String artist, String song){
         for (MP3Prettifier.ArtistSongExceptions.ArtistSong artistSong : ArtistSongRelationshipBO.getInstance().artistSongs) {
             if (artist.matches(artistSong.oldArtist)) {
-                String matchKey = artistSong.oldSong;
-                String newKey = artistSong.newSong;
-                if (song.matches(matchKey)) {
-                    String title = song.replaceAll(matchKey, newKey);
-                    if (!title.equals(song)) {
-                        song = title;
-                        logRule("Title ExceptionV2", artistSong);
-                        break;
-                    }
+                String title = checkTitle(song, artistSong.oldSong, artistSong.newSong, artistSong.exactMatchTitle);
+                if (!title.equals(song)) {
+                    song = title;
+                    logRule("Title ExceptionV2", artistSong);
+                    break;
                 }
             }
         }

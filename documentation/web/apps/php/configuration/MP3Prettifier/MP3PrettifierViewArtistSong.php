@@ -5,8 +5,8 @@ $fieldId = "id";
 $smarty = initializeSmarty();
 $smarty->assign('title','ArtistSong Exceptions');
 $smarty->assign('item','ArtistSong Exception');
-$smarty->assign('tableWidth','800px');
-$smarty->assign('tableHeight','400px');
+$smarty->assign('tableWidth','100%');
+$smarty->assign('tableHeight','100%');
 $url = "MP3PrettifierAction.php";
 $type = "artistSongExceptions";
 $category = "items";
@@ -23,10 +23,11 @@ $smarty->assign('deleteUrl', constructUrl($url, "deleteArtistSong", $type, $cate
 
 
 $smarty->assign("contacts", array(
-        array("field" => "oldArtist", "label"=>"Old Artist", "size" => 50, "required" => true, "sortable" => true),
-        array("field" => "newArtist", "label"=>"New Artist", "size" => 50, "required" => true, "sortable" => true),
-        array("field" => "oldSong", "label"=>"Old Song", "size" => 50, "required" => true, "sortable" => true),
-        array("field" => "newSong", "label"=>"New Song", "size" => 50, "required" => true, "sortable" => true),
+        array("field" => "oldArtist", "label"=>"Old Artist", "size" => 40, "required" => true, "sortable" => true),
+        array("field" => "newArtist", "label"=>"New Artist", "size" => 40, "required" => true, "sortable" => true),
+        array("field" => "oldSong", "label"=>"Old Song", "size" => 40, "required" => true, "sortable" => true),
+        array("field" => "newSong", "label"=>"New Song", "size" => 40, "required" => true, "sortable" => true),
+        array("field" => "exactMatchTitle", "label"=>"Exact Title", "size" => 10, "formatter" => "checkboxFormatter", "align" => "center", "checkbox" => true),
         array("field" => "id", "label"=>"Id", "size" => 50, "hidden" => "true")
     )
 );
