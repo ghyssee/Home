@@ -33,9 +33,9 @@ public class Tester extends BatchJobV2 {
 
     public static void main(String args[]) throws SAXException, DocumentException, IOException, IllegalAccessException, NoSuchFieldException, ParserConfigurationException {
 
-        //batchProcess();
-        convertArtistSong();
-        convertArtistSongRelationship();
+        batchProcess();
+        //convertArtistSong();
+        //convertArtistSongRelationship();
     }
 
     private static void convertArtistSong() throws IOException {
