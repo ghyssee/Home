@@ -83,7 +83,7 @@ public class MP3Helper {
             exactMatch = false;
         }
         if (word.endOfWord > 0){
-            oldWord = oldWord + "( |,|$|'|\"|:)";
+            oldWord = oldWord + "(\\)| |,|$|'|\"|:)";
             newWord = newWord + "$" + word.endOfWord;
             exactMatch = false;
         }
