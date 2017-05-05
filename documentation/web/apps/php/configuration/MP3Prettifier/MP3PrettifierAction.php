@@ -383,13 +383,18 @@ function updateMultiArtist(){
     }
 }
 
+function fillArtistSong($artistSongException){
+    assignField($artistSongException->oldArtist, "oldArtist", !ESCAPE_HTML);
+    assignField($artistSongException->newArtist, "newArtist", !ESCAPE_HTML);
+    assignField($artistSongException->oldSong, "oldSong", !ESCAPE_HTML);
+    assignField($artistSongException->newSong, "newSong", !ESCAPE_HTML);
+    assignCheckbox($artistSongException->exactMatchTitle, "exactMatchTitle");
+}
+
 function updateArtistSong($file, $type, $category){
     $id = $_REQUEST['id'];
     $word = new ArtistSongException();
-    assignField($word->oldArtist, "oldArtist", !ESCAPE_HTML);
-    assignField($word->newArtist, "newArtist", !ESCAPE_HTML);
-    assignField($word->oldSong, "oldSong", !ESCAPE_HTML);
-    assignField($word->newSong, "newSong", !ESCAPE_HTML);
+    fillArtistSong($word);
     $obj = readJSON($file);
     $word->id = $id;
     $save = true;
@@ -417,10 +422,7 @@ function addArtistSong($file, $type, $category)
 
     $obj = readJSON($file);
     $word = new ArtistSongException();
-    assignField($word->oldArtist, "oldArtist", !ESCAPE_HTML);
-    assignField($word->newArtist, "newArtist", !ESCAPE_HTML);
-    assignField($word->oldSong, "oldSong", !ESCAPE_HTML);
-    assignField($word->newSong, "newSong", !ESCAPE_HTML);
+    fillArtistSong($word);
 
     $save = true;
     If (objectExist($obj->{$type}->{$category}, "oldArtist", $word->oldArtist, true) &&

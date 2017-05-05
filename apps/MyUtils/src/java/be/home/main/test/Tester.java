@@ -8,8 +8,11 @@ import be.home.common.utils.FileUtils;
 import be.home.common.utils.JSONUtils;
 import be.home.common.utils.MyFileWriter;
 import be.home.domain.model.MP3Helper;
+import be.home.mezzmo.domain.bo.ArtistSongRelationshipBO;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
+import be.home.mezzmo.domain.model.json.ArtistSongRelationship;
 import be.home.mezzmo.domain.model.json.ArtistSongTest;
+import be.home.mezzmo.domain.model.json.MP3Prettifier;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -31,8 +34,45 @@ public class Tester extends BatchJobV2 {
     public static void main(String args[]) throws SAXException, DocumentException, IOException, IllegalAccessException, NoSuchFieldException, ParserConfigurationException {
 
         batchProcess();
+        //convertArtistSong();
+        //convertArtistSongRelationship();
     }
 
+    private static void convertArtistSong() throws IOException {
+        MP3Prettifier mp3Prettifer = (MP3Prettifier) JSONUtils.openJSONWithCode(Constants.JSON.MP3PRETTIFIER, MP3Prettifier.class);
+        for (MP3Prettifier.ArtistSongExceptions.ArtistSong artistSong : mp3Prettifer.artistSongExceptions.items){
+            if (artistSong.oldSong.endsWith("(.*)")){
+                artistSong.exactMatchTitle = false;
+                artistSong.oldSong = artistSong.oldSong.replaceFirst("\\(\\.\\*\\)$", "");
+                artistSong.newSong = artistSong.newSong.replaceFirst("\\$1$", "");
+                System.out.println("old: " + artistSong.oldSong);
+                System.out.println("new: " + artistSong.newSong);
+            }
+            else {
+                artistSong.exactMatchTitle = true;
+            }
+        }
+        String file = Setup.getFullPath(Constants.JSON.MP3PRETTIFIER) + ".NEW";
+        JSONUtils.writeJsonFile(mp3Prettifer, file);
+    }
+
+    private static void convertArtistSongRelationship() throws IOException {
+        ArtistSongRelationship artistSongRelationship = ArtistSongRelationshipBO.getInstance().getArtistSongRelationship();
+        for (ArtistSongRelationship.ArtistSongRelation artistSong : artistSongRelationship.items){
+            if (artistSong.oldSong.endsWith("(.*)")){
+                artistSong.exactMatchTitle = false;
+                artistSong.oldSong = artistSong.oldSong.replaceFirst("\\(\\.\\*\\)$", "");
+                artistSong.newSong = artistSong.newSong.replaceFirst("\\$1$", "");
+                System.out.println("old: " + artistSong.oldSong);
+                System.out.println("new: " + artistSong.newSong);
+            }
+            else {
+                artistSong.exactMatchTitle = true;
+            }
+        }
+        String file = Setup.getFullPath(Constants.JSON.ARTISTSONGRELATIONSHIP) + ".NEW";
+        JSONUtils.writeJsonFile(artistSongRelationship, file);
+    }
     private static void batchProcess() throws IOException {
         ArtistSongTest artistSongTest = (ArtistSongTest) JSONUtils.openJSONWithCode(Constants.JSON.ARTISTSONGTEST, ArtistSongTest.class);
         for (ArtistSongTest.AristSongTestItem item : artistSongTest.items){
