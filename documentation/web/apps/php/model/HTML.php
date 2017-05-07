@@ -59,13 +59,15 @@ class ArtistSongException  {
   public $oldSong;
   public $newSong;
   public $exactMatchTitle;
-  public function __construct5($oldArtist, $newArtist, $oldSong, $newSong, $exactMatchTitle)
+  public $exactMatchArtist;
+  public function __construct6($oldArtist, $newArtist, $oldSong, $newSong, $exactMatchArtist,$exactMatchTitle)
   {
     $this->oldArtist = $oldArtist;
     $this->newArtist = $newArtist;
     $this->oldSong = $oldSong;
     $this->newSong = $newSong;
     $this->exactMatchTitle = $exactMatchTitle;
+    $this->exactMatchArtist = $exactMatchArtist;
   }
 }
 

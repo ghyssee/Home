@@ -34,7 +34,7 @@ public class Tester extends BatchJobV2 {
     public static void main(String args[]) throws SAXException, DocumentException, IOException, IllegalAccessException, NoSuchFieldException, ParserConfigurationException {
 
         batchProcess();
-        //convertArtistSong();
+        //convertArtistSongArtist();
         //convertArtistSongRelationship();
     }
 
@@ -56,6 +56,23 @@ public class Tester extends BatchJobV2 {
         JSONUtils.writeJsonFile(mp3Prettifer, file);
     }
 
+    private static void convertArtistSongArtist() throws IOException {
+        MP3Prettifier mp3Prettifer = (MP3Prettifier) JSONUtils.openJSONWithCode(Constants.JSON.MP3PRETTIFIER, MP3Prettifier.class);
+        for (MP3Prettifier.ArtistSongExceptions.ArtistSong artistSong : mp3Prettifer.artistSongExceptions.items){
+            if (artistSong.oldArtist.endsWith("(.*)")){
+                artistSong.exactMatchArtist = false;
+                artistSong.oldArtist = artistSong.oldArtist.replaceFirst("\\(\\.\\*\\)$", "");
+                //artistSong.newSong = artistSong.newSong.replaceFirst("\\$1$", "");
+                System.out.println("old: " + artistSong.oldArtist);
+                System.out.println("new: " + artistSong.newArtist);
+            }
+            else {
+                artistSong.exactMatchArtist = true;
+            }
+        }
+        String file = Setup.getFullPath(Constants.JSON.MP3PRETTIFIER) + ".NEW";
+        JSONUtils.writeJsonFile(mp3Prettifer, file);
+    }
     private static void convertArtistSongRelationship() throws IOException {
         ArtistSongRelationship artistSongRelationship = ArtistSongRelationshipBO.getInstance().getArtistSongRelationship();
         for (ArtistSongRelationship.ArtistSongRelation artistSong : artistSongRelationship.items){
@@ -73,6 +90,7 @@ public class Tester extends BatchJobV2 {
         String file = Setup.getFullPath(Constants.JSON.ARTISTSONGRELATIONSHIP) + ".NEW";
         JSONUtils.writeJsonFile(artistSongRelationship, file);
     }
+
     private static void batchProcess() throws IOException {
         ArtistSongTest artistSongTest = (ArtistSongTest) JSONUtils.openJSONWithCode(Constants.JSON.ARTISTSONGTEST, ArtistSongTest.class);
         for (ArtistSongTest.AristSongTestItem item : artistSongTest.items){

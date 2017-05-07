@@ -383,12 +383,13 @@ function updateMultiArtist(){
     }
 }
 
-function fillArtistSong($artistSongException){
+function fillArtistSong(ArtistSongException $artistSongException){
     assignField($artistSongException->oldArtist, "oldArtist", !ESCAPE_HTML);
     assignField($artistSongException->newArtist, "newArtist", !ESCAPE_HTML);
     assignField($artistSongException->oldSong, "oldSong", !ESCAPE_HTML);
     assignField($artistSongException->newSong, "newSong", !ESCAPE_HTML);
     assignCheckbox($artistSongException->exactMatchTitle, "exactMatchTitle");
+    assignCheckbox($artistSongException->exactMatchArtist, "exactMatchArtist");
 }
 
 function updateArtistSong($file, $type, $category){

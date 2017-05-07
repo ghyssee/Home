@@ -131,8 +131,8 @@ private static void testAlbumArtist(){
         System.out.println(mp3Helper.prettifyAlbum("Yorin Fm"));
 
         System.out.println(mp3Helper.stripFilename("ELV1S: 30 #1 Hits"));
-        System.out.println(getTitleArtistException("Malvin Big", "Here Comes The Devil"));
-        System.out.println(getArtistTitleException("Da Brat Feat. Tyrese", "What' Chu Like"));
+        System.out.println(getArtistTitleException("Malvin Big", "Here Comes The Devil"));
+        System.out.println(getTitleArtistException("Baby K Feat. Giusy Ferreri", "Roma-Bangkok"));
         //System.out.println("The Partysquad Feat. Sjaak, Dio, Sef".replaceAll("((Sef|Dio|Sjaak)( ?& ?|, ?| |\\.|$)){3,}", "Dio, Sef & Sjaak"));
         //System.out.println(mp3Helper.prettifyArtist("Ll Cool J Feat. 7 Aurelius"));
         System.out.println("Fuck It! (I Don't Want You Back)".replaceAll("F(?:uc|\\\\*\\\\*)k It!?(?:\\\\(I Don't Want You Back\\\\))?(.*)",

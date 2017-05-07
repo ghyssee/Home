@@ -54,7 +54,9 @@ public class ArtistSongRelationshipBO {
                 log.warn("Id: " + item.id + "/ ArtistId Not Found: " + item.oldArtistId);
                 continue;
             }
-            artistSong.oldArtist = artist.name + (item.exact ? "": "(.*)");
+            artistSong.oldArtist = artist.name;
+            artistSong.exactMatchArtist = item.exact;
+            artistSong.exactMatchTitle = item.exactMatchTitle;
             if (StringUtils.isNotBlank(item.newMultiArtistId)){
                 MultiArtistConfig.Item multiArtistItem = ArtistConfigBO.getInstance().getMultiArtist(item.newMultiArtistId);
                 if (multiArtistItem == null){

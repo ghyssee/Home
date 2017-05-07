@@ -45,6 +45,7 @@ public class MP3Prettifier {
             public String oldSong;
             public String newSong;
             public boolean exactMatchTitle;
+            public boolean exactMatchArtist;
         }
     }
 

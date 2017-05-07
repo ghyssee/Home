@@ -44,7 +44,7 @@ public class ConvertArtistSong extends BatchJobV2 {
     }
 
     private void convert() throws IOException {
-        String[] tmp = "A Feat. B & C".split("( Feat. | & | With )");
+        //String[] tmp = "Santa Rosa (m.m.v.) Hanny".split(" \\(?[M|m]\\.[M|m]\\.[V|v]\\.\\)? | & ");
 
         MP3Prettifier mp3Prettifier = MP3Helper.getInstance().getMp3Prettifier();
         ArtistBO artistBO = ArtistBO.getInstance();
@@ -58,11 +58,12 @@ public class ConvertArtistSong extends BatchJobV2 {
         List<MP3Prettifier.ArtistSongExceptions.ArtistSong> newArtistSongExceptionsList = new ArrayList<>();
         for (MP3Prettifier.ArtistSongExceptions.ArtistSong artistSong : mp3Prettifier.artistSongExceptions.items){
             String artistName = artistSong.oldArtist;
+/*
             boolean exactMatch = true;
             if (artistSong.oldArtist.endsWith("(.*)")){
                 artistName = artistSong.oldArtist.replaceAll("\\(\\.\\*\\)$", "");
                 exactMatch = false;
-            }
+            }*/
             Artists.Artist oldArtist = artistBO.findArtistByName(artistName);
             if (oldArtist == null){
                 printInfo(badFile, artistSong);
@@ -76,10 +77,10 @@ public class ConvertArtistSong extends BatchJobV2 {
             String[] artists = artistSong.newArtist.split(multiArtistBO.getSplitterString());
             boolean remove = false;
             if (artists.length > 1){
-                remove = convertToMultiArtist(artistSongRelationship.items, artists, oldArtist, artistSong, exactMatch);
+                remove = convertToMultiArtist(artistSongRelationship.items, artists, oldArtist, artistSong);
             }
             else if (artists.length == 1){
-                remove = convertToArtist(artistSongRelationship.items, artists[0], oldArtist, artistSong, exactMatch);
+                remove = convertToArtist(artistSongRelationship.items, artists[0], oldArtist, artistSong);
             }
             if (!remove){
                 printInfo(badFile, artistSong);
@@ -111,15 +112,15 @@ public class ConvertArtistSong extends BatchJobV2 {
     private boolean convertToMultiArtist(List<ArtistSongRelationship.ArtistSongRelation> list,
                                       String[] artists,
                                       Artists.Artist oldArtist,
-                                      MP3Prettifier.ArtistSongExceptions.ArtistSong artistSong,
-                                      boolean exactMatch){
+                                      MP3Prettifier.ArtistSongExceptions.ArtistSong artistSong)
+    {
         MultiArtistConfig.Item multiArtistItem = ArtistConfigBO.getInstance().findMultiArtist(artists);
         if (multiArtistItem != null){
             ArtistSongRelationship.ArtistSongRelation artistSongRelation = new ArtistSongRelationship().new ArtistSongRelation();
             artistSongRelation.oldSong = artistSong.oldSong;
             artistSongRelation.newSong = artistSong.newSong;
             artistSongRelation.oldArtistId = oldArtist.getId();
-            artistSongRelation.exact = exactMatch;
+            artistSongRelation.exact = artistSong.exactMatchArtist;
             artistSongRelation.newMultiArtistId = multiArtistItem.getId();
             artistSongRelation.exactMatchTitle = artistSong.exactMatchTitle;
             artistSongRelation.id = artistSong.id;
@@ -135,15 +136,15 @@ public class ConvertArtistSong extends BatchJobV2 {
     private boolean convertToArtist(List<ArtistSongRelationship.ArtistSongRelation> list,
                                          String artist,
                                          Artists.Artist oldArtist,
-                                         MP3Prettifier.ArtistSongExceptions.ArtistSong artistSong,
-                                         boolean exactMatch){
+                                         MP3Prettifier.ArtistSongExceptions.ArtistSong artistSong)
+    {
         Artists.Artist newArtist = ArtistBO.getInstance().findArtistByName(artist);
         if (newArtist != null){
             ArtistSongRelationship.ArtistSongRelation artistSongRelation = new ArtistSongRelationship().new ArtistSongRelation();
             artistSongRelation.oldSong = artistSong.oldSong;
             artistSongRelation.newSong = artistSong.newSong;
             artistSongRelation.oldArtistId = oldArtist.getId();
-            artistSongRelation.exact = exactMatch;
+            artistSongRelation.exact = artistSong.exactMatchArtist;
             artistSongRelation.newArtistId = newArtist.getId();
             artistSongRelation.exactMatchTitle = artistSong.exactMatchTitle;
             artistSongRelation.id = artistSong.id;
