@@ -156,8 +156,8 @@ public class M3uMakerV2 extends BatchJobV2 {
     }
 
     private String getUniqueSong(String song){
-        song = MP3Helper.getInstance().prettifySong(song);
-        song = MP3Helper.getInstance().stripFilename(song);
+        //song = MP3Helper.getInstance().prettifySong(song);
+        //song = MP3Helper.getInstance().stripFilename(song);
         song = prettifyM3uSong(song);
         song = song.toUpperCase();
         song = song.replace("CATCH & RELEASE (DEEPEND REMIX)", "CATCH & RELEASE");
@@ -165,8 +165,8 @@ public class M3uMakerV2 extends BatchJobV2 {
     }
 
     private String getUniqueAritst(String artist){
-        artist = MP3Helper.getInstance().prettifyArtist(artist);
-        artist = MP3Helper.getInstance().stripFilename(artist);
+        //artist = MP3Helper.getInstance().prettifyArtist(artist);
+        //artist = MP3Helper.getInstance().stripFilename(artist);
         artist = prettifyM3uArtist(artist);
         artist = artist.toUpperCase();
         //artist = removeSpecificWords(artist);
@@ -175,11 +175,14 @@ public class M3uMakerV2 extends BatchJobV2 {
 
     private String prettifyM3uArtist(String artist){
         String text = artist.replaceAll(" \\[BE\\]", "");
+        text = text.replaceAll("Jebroer & DJ Paul Elstak", "Dr Phunk & Paul Elstak Feat. Jebroer");
         return text;
     }
 
     private String prettifyM3uSong(String song){
         String text = song.replaceAll(" \\(DJ Franxu Extended Edit\\)", "");
+        text = text.replaceAll(" \\(Remix Feat. Justin Bieber\\)", "");
+        text = text.replaceAll("You've Got A Friend(?: \\(Live\\))?", "You've Got A Friend (Live)");
         return text;
     }
 
@@ -221,6 +224,11 @@ public class M3uMakerV2 extends BatchJobV2 {
                 }
                 break;
         }
+        MP3Helper mp3Helper = MP3Helper.getInstance();
+        song.setArtist(mp3Helper.prettifyArtist(song.getArtist()));
+        song.setSong(mp3Helper.prettifySong(song.getSong()));
+        song.setArtist(mp3Helper.stripFilename(song.getArtist()));
+        song.setSong(mp3Helper.stripFilename(song.getSong()));
         return song;
     }
 
