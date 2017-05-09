@@ -74,7 +74,7 @@ function processJob($jobsObj, $oneDrivePath, $group, $id)
             $cmd = $oneDrivePath . "/scripts/desktopi5/lnk/" . $cmd . ".lnk";
         }
         println("Cmd: " . $cmd);
-        execInBackground2($cmd);
+        execInBackground3($cmd);
         println("Job started in background");
     } else {
         printErrorMessage("Job Not Found: " . $id, "errorMessage");
