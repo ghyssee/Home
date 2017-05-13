@@ -214,6 +214,9 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
                 tracks.add(track);
                 counter.incrementAndGet();
             }
+            else {
+                throw new ApplicationException("Invalid Line: " + line);
+            }
         }
     }
 
