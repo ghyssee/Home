@@ -5,7 +5,12 @@
 		                 {{if isset($onLoadSuccess)}}{{$onLoadSuccess}}{{/if}}
 		                 {{if isset($dragAndDrop)}}$(this).datagrid("enableDnd"){{/if}}
 		                 },
+        rowStyler: function(index,row){
+            if ((index % 2) == 3){
+                return "background-color:grey;font-weight:bold;";
 
+            }
+       },
        toolbar:"#toolbar{{$tablegrid}}",
        pagination:true,
        nowrap:false,

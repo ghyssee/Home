@@ -258,7 +258,7 @@ public class MP3TagChecker extends MP3TagBase {
                     case DISC:
                         updateDisc(item);
                     default:
-                        log.error("Id: " + item.getId() + " / Unknwon Type");
+                        log.error("Id: " + item.getId() + " / Unknwon Type: " + MP3Tag.valueOf(item.getType()));
                 }
             }
         }

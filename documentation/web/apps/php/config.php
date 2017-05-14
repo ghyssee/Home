@@ -97,7 +97,13 @@ function execInBackground2($cmd) {
 function execInBackground3($cmd) {
 	if (substr(php_uname(), 0, 7) == "Windows"){
 		$WshShell = new COM("WScript.Shell");
-		$oExec = $WshShell->Run($cmd, 0, false);
+		try {
+			//$oExec = $WshShell->Run($cmd, 0, false);
+            $oExec = $WshShell->Run('"' . $cmd . '""', 0, false);
+		}
+		catch (Exception $ex){
+            pclose(popen("start /B " . '"' . $cmd . '"', "r"));
+		}
 	}
 	else {
 		exec($cmd . " > /dev/null &");

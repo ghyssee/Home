@@ -138,7 +138,7 @@ public class Tester extends BatchJobV2 {
         System.out.println(mp3Helper.prettifyArtist("J.D. McPherson"));
 
         System.out.println(mp3Helper.prettifySong("Parlami D’amore"));
-        System.out.println(mp3Helper.prettifyAlbum("Yorin Fm"));
+        System.out.println(mp3Helper.prettifyAlbum("Yorin Fm", "Various Artists"));
 
         System.out.println(mp3Helper.stripFilename("ELV1S: 30 #1 Hits"));
         System.out.println(getTitleArtistException("Bodyrox", "Test"));

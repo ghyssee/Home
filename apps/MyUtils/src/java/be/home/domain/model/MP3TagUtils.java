@@ -184,12 +184,12 @@ public class MP3TagUtils {
                     checkAlbumArtist(comp, id3v2Tag.isCompilation(), id3v2Tag.getAlbumArtist());
                     checkAlbum(comp, id3v2Tag.getAlbum());
 
-                    System.out.println(StringUtils.repeat('=', 100));
+                    /*System.out.println(StringUtils.repeat('=', 100));
                     System.out.println("MP3 Tag Info");
                     System.out.println("Track: " + id3v2Tag.getTrack());
                     System.out.println("Artist: " + id3v2Tag.getArtist());
                     System.out.println("Title: " + id3v2Tag.getTitle());
-                    System.out.println(StringUtils.repeat('=', 100));
+                    System.out.println(StringUtils.repeat('=', 100));*/
                 }
                 else {
                     addItem(comp.getFileTO().getId(),
@@ -469,7 +469,7 @@ public class MP3TagUtils {
     }
 
     private boolean checkAlbum(MGOFileAlbumCompositeTO comp, String mp3Album){
-        String album = MP3Helper.getInstance().prettifyAlbum(mp3Album);
+        String album = MP3Helper.getInstance().prettifyAlbum(mp3Album, comp.getFileAlbumTO().getName());
         boolean ok = true;
         if (!update && !album.equals(mp3Album)){
             log.warn("Album does not match: " + "mp3: " + mp3Album + " / Formatted: " + album);
@@ -511,13 +511,13 @@ public class MP3TagUtils {
         String strippedAlbum = MP3Helper.getInstance().stripFilename(album);
         if (!strippedAlbum.equals(physicalPath) && !strippedAlbum.equals(strippedPhysicalPath)){
             log.warn("Path Album does not match: " + "Formatted: " + strippedAlbum + " / Disc: " + physicalPath);
-            String possibleNewFile = file.getParentFile().getParentFile().getAbsolutePath() + File.separator + strippedPhysicalPath + File.separator;
+            String possibleNewFile = file.getParentFile().getParentFile().getAbsolutePath() + File.separator + strippedAlbum + File.separator;
             String oldFile = file.getParentFile().getAbsolutePath() + File.separator;
             addItem(comp.getFileTO().getId(),
                     comp.getFileAlbumTO().getId(),
                     comp.getFileTO().getFile(),
                     comp.getFileAlbumTO().getName(),
-                    MP3Tag.ALBUMCHECK, getAlbumCheckInfoOld("Disc:", physicalPath, "MP3:", album),
+                    MP3Tag.ALBUMCHECK, getAlbumCheckInfoOld("Disc:", strippedAlbum, "MP3:", album),
                                               getAlbumCheckInfoNew(
                                                       //file.getParentFile().getAbsolutePath(),
                                                       comp.getFileTO().getId(),

@@ -85,7 +85,7 @@ public class MP3Helper {
             exactMatch = false;
         }
         if (word.endOfWord > 0){
-            oldWord = oldWord + "(\\)| |,|$|'|\"|:)";
+            oldWord = oldWord + "(\\)| |,|$|'|\"|:|\\.)";
             newWord = newWord + "$" + word.endOfWord;
             exactMatch = false;
         }
@@ -354,8 +354,12 @@ public class MP3Helper {
         }
     }
 
-    public String prettifyAlbum(String title){
-        String prettifiedText = prettifySong(title);
+    public String prettifyAlbum(String album, String albumArtist){
+        String prettifiedText = prettifySong(album);
+        if (albumArtist != null) {
+            prettifiedText = checkForTitleExceptions(albumArtist, album);
+            prettifiedText = checkForTitleExceptions2(albumArtist, album);
+        }
         /*
         if (StringUtils.isNotBlank(prettifiedText)) {
             prettifiedText = prettifyString(prettifiedText) ;

@@ -82,7 +82,7 @@ public class MP3Processor extends BatchJobV2 {
         String mp3Dir = Setup.getInstance().getFullPath(Constants.Path.ALBUM) + File.separator + mp3Settings.album;
         log.info("Album Directory: " + mp3Dir);
 
-        album.album = helper.prettifyAlbum(album.album);
+        album.album = helper.prettifyAlbum(album.album, null);
         for (AlbumInfo.Track track: album.tracks){
             track.artist = helper.prettifyArtist(track.artist);
             track.title = helper.prettifySong(track.title);
