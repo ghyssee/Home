@@ -296,7 +296,7 @@ public class MP3TagUtils {
             nrOfTracks = Math.max(nrOfTracks / nrOfCds, 10);
         }
         int lengthTrack = String.valueOf(nrOfTracks).length();
-        return lengthTrack;
+        return Math.max(lengthTrack, 2);
 
     }
 

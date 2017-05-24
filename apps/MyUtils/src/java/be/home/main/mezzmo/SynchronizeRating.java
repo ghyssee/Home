@@ -24,6 +24,7 @@ import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagException;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.io.*;
 import java.nio.file.*;
@@ -95,12 +96,8 @@ public class SynchronizeRating extends BatchJobV2 {
             comp.getFileTO().setTitle(tag.getFirst(FieldKey.TITLE));
             comp.getFileAlbumTO().setName(tag.getFirst(FieldKey.ALBUM));
             int rating = convertRating(settings, tag.getFirst(FieldKey.RATING));
-            MGOFileTO fileTO = getMezzmoService().findByTitleAndAlbum(comp);
-            if (fileTO == null) {
-                log.error("File: " + file.toString());
-                log.error("File Not Found");
-            }
-            else {
+            try {
+                MGOFileTO fileTO = getMezzmoService().findByTitleAndAlbum(comp);
                 int dbRating = fileTO.getRanking() == 0 ? 0 : (fileTO.getRanking());
                 if (rating != dbRating){
                     log.info("File: " + file.toString());
@@ -115,16 +112,22 @@ public class SynchronizeRating extends BatchJobV2 {
                     }
                 }
             }
+            catch (EmptyResultDataAccessException ex){
+                log.error("File: " + file.toString());
+                log.error("Track: " + comp.getFileTO().getTrack());
+                log.error("Artist: " + comp.getFileArtistTO().getArtist());
+                log.error("Title: " + comp.getFileTO().getTitle());
+            }
         } catch (CannotReadException e) {
-            e.printStackTrace();
+            log.error(e);
         } catch (TagException e) {
-            e.printStackTrace();
+            log.error(e);
         } catch (ReadOnlyFileException e) {
-            e.printStackTrace();
+            log.error(e);
         } catch (InvalidAudioFrameException e) {
-            e.printStackTrace();
+            log.error(e);
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.error(e);
         }
 
     }

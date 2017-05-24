@@ -71,11 +71,14 @@ public class ArtistSongRelationshipBO {
                 artistSong.newArtist = ArtistBO.getInstance().getStageName(artistItem);
             }
             items.add(artistSong);
+            /*
             log.info("Old Artist: " + artistSong.oldArtist);
             log.info("New Artist: " + artistSong.newArtist);
             log.info("Old Song: " + artistSong.oldSong);
             log.info("New Song: " + artistSong.newSong);
             log.info(StringUtils.repeat("=", 150));
+            */
+
         }
         log.info("Ended: Constructing ArtistSongRelationship");
 
