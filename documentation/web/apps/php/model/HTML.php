@@ -52,25 +52,6 @@ class ExtWord extends Word {
   }
 }
 
-class ArtistSongException  {
-  public $id;
-  public $oldArtist;
-  public $newArtist;
-  public $oldSong;
-  public $newSong;
-  public $exactMatchTitle;
-  public $exactMatchArtist;
-  public function __construct6($oldArtist, $newArtist, $oldSong, $newSong, $exactMatchArtist,$exactMatchTitle)
-  {
-    $this->oldArtist = $oldArtist;
-    $this->newArtist = $newArtist;
-    $this->oldSong = $oldSong;
-    $this->newSong = $newSong;
-    $this->exactMatchTitle = $exactMatchTitle;
-    $this->exactMatchArtist = $exactMatchArtist;
-  }
-}
-
 class Color
 {
   public $id;
@@ -156,21 +137,6 @@ class TableGrid
 
   public function __construct()
   {
-  }
-}
-
-class Artist{
-  public $id;
-  public $name;
-  public $stageName;
-    public function __construct()
-    {
-    }
-
-    public function __construct_2($id, $name)
-  {
-    $this->id = $id;
-    $this->name = $name;
   }
 }
 

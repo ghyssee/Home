@@ -90,7 +90,6 @@ public class ConvertArtistSong extends BatchJobV2 {
                 printInfo(goodFile, artistSong);
             }
         }
-        System.out.println("test");
         goodFile.close();
         badFile.close();
         mp3Prettifier.artistSongExceptions.items = newArtistSongExceptionsList;
@@ -124,6 +123,7 @@ public class ConvertArtistSong extends BatchJobV2 {
             artistSongRelation.newMultiArtistId = multiArtistItem.getId();
             artistSongRelation.exactMatchTitle = artistSong.exactMatchTitle;
             artistSongRelation.id = artistSong.id;
+            artistSongRelation.priority = artistSong.priority;
             list.add(artistSongRelation);
             // everything ok, convert it to ArtistSongRelationship;
             return true;
@@ -148,6 +148,7 @@ public class ConvertArtistSong extends BatchJobV2 {
             artistSongRelation.newArtistId = newArtist.getId();
             artistSongRelation.exactMatchTitle = artistSong.exactMatchTitle;
             artistSongRelation.id = artistSong.id;
+            artistSongRelation.priority = artistSong.priority;
             list.add(artistSongRelation);
             // everything ok, convert it to ArtistSongRelationship;
             return true;

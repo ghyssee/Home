@@ -5,6 +5,7 @@ include_once documentPath (ROOT_PHP, "config.php");
 include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 include_once documentPath (ROOT_PHP_BO, "WordBO.php");
 include_once documentPath (ROOT_PHP_BO, "ArtistBO.php");
+include_once documentPath (ROOT_PHP_BO, "ArtistSongExceptionBO.php");
 include_once documentPath (ROOT_PHP_BO, "CacheBO.php");
 include_once documentPath (ROOT_PHP_BO, "SessionBO.php");
 sessionStart();
@@ -226,7 +227,7 @@ function delete($type, $category)
 function updateArtist(){
     $id = $_REQUEST['id'];
     $artistBO = new ArtistBO();
-    $artist = new Artist();
+    $artist = new ArtistTO();
     assignField($artist->name, "name", !HTML_SPECIAL_CHAR);
     assignField($artist->stageName, "stageName", !ESCAPE_HTML);
     $artist->id = $id;
@@ -252,7 +253,7 @@ function addArtist()
 {
 
     $artistBO = new ArtistBO();
-    $artist = new Artist();
+    $artist = new ArtistTO();
     assignField($artist->name, "name", !ESCAPE_HTML);
     assignField($artist->stageName, "stageName", !ESCAPE_HTML);
     $save = true;
@@ -383,25 +384,24 @@ function updateMultiArtist(){
     }
 }
 
-function fillArtistSong(ArtistSongException $artistSongException){
+function fillArtistSong(ArtistSongExceptionTO $artistSongException){
     assignField($artistSongException->oldArtist, "oldArtist", !ESCAPE_HTML);
     assignField($artistSongException->newArtist, "newArtist", !ESCAPE_HTML);
     assignField($artistSongException->oldSong, "oldSong", !ESCAPE_HTML);
     assignField($artistSongException->newSong, "newSong", !ESCAPE_HTML);
     assignCheckbox($artistSongException->exactMatchTitle, "exactMatchTitle");
     assignCheckbox($artistSongException->exactMatchArtist, "exactMatchArtist");
+    assignNumber($artistSongException->priority, "priority", !HTML_SPECIAL_CHAR);
 }
 
 function updateArtistSong($file, $type, $category){
     $id = $_REQUEST['id'];
-    $word = new ArtistSongException();
+    $word = new ArtistSongExceptionTO();
     fillArtistSong($word);
-    $obj = readJSON($file);
     $word->id = $id;
     $save = true;
-    If (objectExist($obj->{$type}->{$category}, "oldArtist", $word->oldArtist, true, "id", $word->id) &&
-        objectExist($obj->{$type}->{$category}, "oldSong", $word->oldSong, true,  "id", $word->id)
-    ) {
+    $bo = new ArtistSongExceptionBO();
+    if ($bo->existArtistSongException($word->oldArtist, $word->oldSong, $word->id)){
         $errors = addErrorMsg($type . ' ' . $category . ' already exist: ' . $word->oldArtist . ' / ' . $word->oldSong);
         $save = false;
     }
@@ -421,14 +421,12 @@ function updateArtistSong($file, $type, $category){
 function addArtistSong($file, $type, $category)
 {
 
-    $obj = readJSON($file);
-    $word = new ArtistSongException();
+    $word = new ArtistSongExceptionTO();
     fillArtistSong($word);
 
     $save = true;
-    If (objectExist($obj->{$type}->{$category}, "oldArtist", $word->oldArtist, true) &&
-        objectExist($obj->{$type}->{$category}, "oldSong", $word->oldSong, true)
-    ) {
+    $bo = new ArtistSongExceptionBO();
+    if ($bo->existArtistSongException($word->oldArtist, $word->oldSong)){
         $errors = addErrorMsg($type . ' ' . $category . ' already exist: ' . $word->oldArtist . ' / ' . $word->oldSong);
         $save = false;
     }

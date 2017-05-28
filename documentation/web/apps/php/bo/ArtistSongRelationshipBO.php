@@ -35,7 +35,7 @@ class ArtistSongRelationshipTO extends Castable {
     public $oldSong;
     public $newSong;
     public $exact;
-
+    public $priority;
 }
 
 class ArtistSongRelationshipBO

@@ -3,6 +3,21 @@ require_once documentPath (ROOT_PHP, "config.php");
 require_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 require_once documentPath (ROOT_PHP_BO, "CacheBO.php");
 
+class ArtistTO{
+    public $id;
+    public $name;
+    public $stageName;
+    public function __construct()
+    {
+    }
+
+    public function __construct_2($id, $name)
+    {
+        $this->id = $id;
+        $this->name = $name;
+    }
+}
+
 class MultiArtistListTO {
     public $id;
     public $exactPosition;
@@ -258,7 +273,7 @@ class MultiArtistBO {
                 $value = trim($value);
                 $singleArtistObj = $artistBO->lookupArtistByName($value);
                 if ($singleArtistObj === null){
-                    $artist = new Artist();
+                    $artist = new ArtistTO();
                     $artist->name = $value;
                     $artistArray[] = $artist;
                 }

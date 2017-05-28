@@ -18,5 +18,6 @@ public class ArtistSongRelationship {
         public String newSong;
         public boolean exact;
         public boolean exactMatchTitle;
+        public int priority;
     }
 }

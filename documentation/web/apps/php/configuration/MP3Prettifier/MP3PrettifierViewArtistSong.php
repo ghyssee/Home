@@ -29,6 +29,7 @@ $smarty->assign("contacts", array(
         array("field" => "newSong", "label"=>"New Song", "size" => 40, "required" => true, "sortable" => true),
         array("field" => "exactMatchTitle", "label"=>"Exact Title", "size" => 10, "formatter" => "checkboxFormatter", "align" => "center", "checkbox" => true),
         array("field" => "exactMatchArtist", "label"=>"Exact Artist", "size" => 10, "formatter" => "checkboxFormatter", "align" => "center", "checkbox" => true),
+        array("field" => "priority", "label"=>"Priority", "size" => 7, "type" => "number", "sortable" => true),
         array("field" => "id", "label"=>"Id", "size" => 50, "hidden" => "true")
     )
 );
