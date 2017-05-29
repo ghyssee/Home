@@ -1,29 +1,19 @@
 package be.home.main.tools;
 
-import be.home.common.configuration.Setup;
-import be.home.common.constants.Constants;
-import be.home.common.logging.Log4GE;
-import be.home.common.main.BatchJobV2;
 import be.home.common.utils.*;
 import be.home.domain.model.reconciliation.*;
-import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
-import be.home.model.ConfigTO;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.tools.generic.DateTool;
 import org.apache.velocity.tools.generic.EscapeTool;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
  * Created by ghyssee on 20/02/2015.
  */
-public class Reconciliation extends BatchJobV2 {
-
-    private static final Logger log = getMainLog(Reconciliation.class);
+public class Reconciliation  {
 
     private static String[] OBJECTS = {"FAR_RECO_DATA", "FAR_RECO_INDX", "FAR_USER", "FAR_READ"};
     private static String OBJECT_DATA_MGR = "DATA_MGR";
@@ -53,12 +43,6 @@ public class Reconciliation extends BatchJobV2 {
         }
 
     }
-
-    @Override
-    public void run() {
-
-    }
-
 
     public void start() {
         String dataSource1 = "ILPOST";
@@ -236,7 +220,6 @@ public class Reconciliation extends BatchJobV2 {
 
         context.put("date", new DateTool());
         context.put("esc", new EscapeTool());
-        context.put("du", new DateUtils());
         context.put("su", new StringUtils());
         setObjects(context);
         try {
@@ -268,7 +251,6 @@ public class Reconciliation extends BatchJobV2 {
 
         context.put("date", new DateTool());
         context.put("esc", new EscapeTool());
-        context.put("du", new DateUtils());
         context.put("su", new StringUtils());
         context.put("mu", new MyTools());
         context.put("su", new StringUtils());
@@ -301,7 +283,6 @@ public class Reconciliation extends BatchJobV2 {
 
         context.put("date", new DateTool());
         context.put("esc", new EscapeTool());
-        context.put("du", new DateUtils());
         context.put("su", new StringUtils());
         try {
             vu.makeFile("reconciliation/RECON_03_GEN_FU__FR_SYNONYMS.sql", outputFile, context);
@@ -334,7 +315,6 @@ public class Reconciliation extends BatchJobV2 {
 
         context.put("date", new DateTool());
         context.put("esc", new EscapeTool());
-        context.put("du", new DateUtils());
         context.put("su", new StringUtils());
         try {
             vu.makeFile("reconciliation/RECON_99_DROP.sql", outputFile, context);
