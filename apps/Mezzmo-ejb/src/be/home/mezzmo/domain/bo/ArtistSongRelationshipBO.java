@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -28,6 +29,8 @@ public class ArtistSongRelationshipBO {
     private ArtistSongRelationshipBO() {
         artistSongRelationship = (ArtistSongRelationship) JSONUtils.openJSONWithCode(Constants.JSON.ARTISTSONGRELATIONSHIP, ArtistSongRelationship.class);
         artistSongs = construct();
+        Collections.sort(artistSongs, (a1, b1) -> b1.priority - a1.priority);
+        String a="";
     }
 
     public ArtistSongRelationship getArtistSongRelationship(){
