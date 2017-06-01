@@ -47,8 +47,6 @@ public class ConvertArtistSong extends BatchJobV2 {
         //String[] tmp = "Santa Rosa (m.m.v.) Hanny".split(" \\(?[M|m]\\.[M|m]\\.[V|v]\\.\\)? | & ");
 
         MP3Prettifier mp3Prettifier = MP3Helper.getInstance().getMp3Prettifier();
-        ArtistBO artistBO = ArtistBO.getInstance();
-        ArtistConfigBO multiArtistBO = ArtistConfigBO.getInstance();
         ArtistSongRelationship artistSongRelationship = ArtistSongRelationshipBO.getInstance().getArtistSongRelationship();
         String path = Setup.getFullPath(Constants.Path.MP3PRETTIFIER) + "/";
         MyFileWriter goodFile = new MyFileWriter(path + "ConvertedToArtistSongRelationship." +
@@ -57,37 +55,31 @@ public class ConvertArtistSong extends BatchJobV2 {
                 DateUtils.formatYYYYMMDD() + ".txt", MyFileWriter.NO_APPEND);
         List<MP3Prettifier.ArtistSongExceptions.ArtistSong> newArtistSongExceptionsList = new ArrayList<>();
         for (MP3Prettifier.ArtistSongExceptions.ArtistSong artistSong : mp3Prettifier.artistSongExceptions.items){
-            String artistName = artistSong.oldArtist;
-/*
-            boolean exactMatch = true;
-            if (artistSong.oldArtist.endsWith("(.*)")){
-                artistName = artistSong.oldArtist.replaceAll("\\(\\.\\*\\)$", "");
-                exactMatch = false;
-            }*/
-            Artists.Artist oldArtist = artistBO.findArtistByName(artistName);
-            if (oldArtist == null){
+            ArtistSongRelationship.ArtistSongRelation artistSongRelation = new ArtistSongRelationship().new ArtistSongRelation();
+            boolean converted = convertArtist(artistSong.oldArtist, ArtistType.Old, artistSongRelation);
+            if (!converted){
                 printInfo(badFile, artistSong);
                 newArtistSongExceptionsList.add(artistSong);
-                log.info("Artist Not Found: " + artistSong.oldArtist);
+                log.info("Artist/MultiArtist Not Found: " + artistSong.oldArtist);
                 continue;
             }
             else {
-                log.info("Artist Found: Id= " + oldArtist.getId());
-            }
-            String[] artists = artistSong.newArtist.split(multiArtistBO.getSplitterString());
-            boolean remove = false;
-            if (artists.length > 1){
-                remove = convertToMultiArtist(artistSongRelationship.items, artists, oldArtist, artistSong);
-            }
-            else if (artists.length == 1){
-                remove = convertToArtist(artistSongRelationship.items, artists[0], oldArtist, artistSong);
-            }
-            if (!remove){
-                printInfo(badFile, artistSong);
-                newArtistSongExceptionsList.add(artistSong);
-            }
-            else {
-                printInfo(goodFile, artistSong);
+                converted = convertArtist(artistSong.newArtist, ArtistType.New, artistSongRelation);
+                if (!converted){
+                    printInfo(badFile, artistSong);
+                    newArtistSongExceptionsList.add(artistSong);
+                    log.info("Artist/MultiArtist Not Found: " + artistSong.newArtist);
+                    continue;
+                }
+                else {
+                    // artist song can be converted
+                    artistSongRelation.oldSong = artistSong.oldSong;
+                    artistSongRelation.newSong = artistSong.newSong;
+                    artistSongRelation.exactMatchTitle = artistSong.exactMatchTitle;
+                    artistSongRelation.id = artistSong.id;
+                    artistSongRelation.priority = artistSong.priority;
+                    artistSongRelationship.items.add(artistSongRelation);                }
+                    printInfo(goodFile, artistSong);
             }
         }
         goodFile.close();
@@ -100,17 +92,67 @@ public class ConvertArtistSong extends BatchJobV2 {
 
     }
 
+    private  MultiArtistConfig.Item findMultiArtist(String multiArtistName){
+        ArtistConfigBO multiArtistBO = ArtistConfigBO.getInstance();
+        MultiArtistConfig.Item multiArtistItem = null;
+        String[] artists = multiArtistName.split(multiArtistBO.getSplitterString());
+        if (artists.length > 1) {
+            multiArtistItem = ArtistConfigBO.getInstance().findMultiArtist(artists);
+        }
+        return multiArtistItem;
+    }
+
     private void printInfo(MyFileWriter fileWriter, MP3Prettifier.ArtistSongExceptions.ArtistSong artistSong) throws IOException {
         fileWriter.append("oldArtist: " + artistSong.oldArtist);
         fileWriter.append("newArtist: " + artistSong.newArtist);
         fileWriter.append("oldSong: " + artistSong.oldSong);
         fileWriter.append("newSong: " + artistSong.newSong);
+        fileWriter.append("exactMatchArtist: " + artistSong.exactMatchArtist);
+        fileWriter.append("exactMatchtitle: " + artistSong.exactMatchTitle);
+        fileWriter.append("priority: " + artistSong.priority);
         fileWriter.append(StringUtils.repeat("=", 100));
+    }
+
+    public enum ArtistType {
+        Old, New
+    }
+
+    private boolean convertArtist(String artistName, ArtistType artistType, ArtistSongRelationship.ArtistSongRelation artistSongRelation){
+        log.info("Converting " + artistType.name() + " Artist");
+        ArtistBO artistBO = ArtistBO.getInstance();
+        Artists.Artist artist = artistBO.findArtistByName(artistName);
+        MultiArtistConfig.Item multiArtist = null;
+        boolean converted = false;
+        if (artist == null){
+            multiArtist = findMultiArtist(artistName);
+            if (multiArtist != null) {
+                if (artistType == ArtistType.Old) {
+                    artistSongRelation.oldMultiArtistId = multiArtist.getId();
+                }
+                else {
+                    artistSongRelation.newMultiArtistId = multiArtist.getId();
+                }
+                converted = true;
+                log.info("MultiArtist Found: Id= " + multiArtist.getId());
+            }
+        }
+        else {
+            converted = true;
+            if (artistType == ArtistType.Old) {
+                artistSongRelation.oldArtistId = artist.getId();
+            }
+            else {
+                artistSongRelation.newArtistId = artist.getId();
+            }
+            log.info("Artist Found: Id= " + artist.getId());
+        }
+        return converted;
     }
 
     private boolean convertToMultiArtist(List<ArtistSongRelationship.ArtistSongRelation> list,
                                       String[] artists,
                                       Artists.Artist oldArtist,
+                                         MultiArtistConfig.Item oldMultiArtist,
                                       MP3Prettifier.ArtistSongExceptions.ArtistSong artistSong)
     {
         MultiArtistConfig.Item multiArtistItem = ArtistConfigBO.getInstance().findMultiArtist(artists);
@@ -118,7 +160,12 @@ public class ConvertArtistSong extends BatchJobV2 {
             ArtistSongRelationship.ArtistSongRelation artistSongRelation = new ArtistSongRelationship().new ArtistSongRelation();
             artistSongRelation.oldSong = artistSong.oldSong;
             artistSongRelation.newSong = artistSong.newSong;
-            artistSongRelation.oldArtistId = oldArtist.getId();
+            if (oldArtist != null) {
+                artistSongRelation.oldArtistId = oldArtist.getId();
+            }
+            else {
+                artistSongRelation.oldMultiArtistId = oldMultiArtist.getId();
+            }
             artistSongRelation.exact = artistSong.exactMatchArtist;
             artistSongRelation.newMultiArtistId = multiArtistItem.getId();
             artistSongRelation.exactMatchTitle = artistSong.exactMatchTitle;

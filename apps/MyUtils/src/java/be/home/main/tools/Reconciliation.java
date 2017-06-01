@@ -1,13 +1,19 @@
 package be.home.main.tools;
 
-import be.home.common.utils.*;
 import be.home.domain.model.reconciliation.*;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.tools.generic.DateTool;
 import org.apache.velocity.tools.generic.EscapeTool;
 
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -30,8 +36,6 @@ public class Reconciliation  {
     private static String FAR_READ = "FAR_READ";
     private static String FAR_RECO_DATA = "TBS_DATA_DATA_MGR";
     private static String FAR_RECO_INDX = "TBS_INDX_DATA_MGR";
-
-
 
     public static void main(String args[]) {
         Reconciliation instance = new Reconciliation();
@@ -485,6 +489,34 @@ public class Reconciliation  {
         }
     }
 
+    public class VelocityUtils {
 
+        public void makeFile(String template, String outputFile, VelocityContext context) throws IOException {
+            Properties p = new Properties();
+            p.setProperty("file.resource.loader.path", "C:\\Projects\\far\\DBUtil\\Reconciliation");
+            p.setProperty("input.encoding", "UTF-8");
+            p.setProperty("output.encoding", "UTF-8");
+            p.setProperty(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS, "org.apache.velocity.runtime.log.Log4JLogChute");
+            p.setProperty("runtime.log.logsystem.log4j.logger","velocity");
+
+            VelocityEngine ve = new VelocityEngine();
+            ve.init(p);
+        /*  next, get the Template  */
+            Template t = ve.getTemplate( template );
+        /*  create a context and add data */
+            Path file = Paths.get(outputFile);
+            BufferedWriter writer = null;
+            try {
+                writer = Files.newBufferedWriter(file, Charset.forName("UTF-8"));
+                t.merge(context, writer);
+            } finally {
+                if (writer != null){
+                    writer.flush();
+                    writer.close();
+                }
+            }
+
+        }
+    }
 }
 

@@ -12,6 +12,7 @@ public class ArtistSongRelationship {
     public class ArtistSongRelation {
         public String id;
         public String oldArtistId;
+        public String oldMultiArtistId;
         public String newMultiArtistId;
         public String newArtistId;
         public String oldSong;
