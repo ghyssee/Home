@@ -15,7 +15,11 @@ function sessionStart()
         $_SESSION['LAST'] = time();
         logInfo("Session Timed out");
         session_unset();
-        session_destroy();
+        session_write_close();
+        if (!isset($_SESSION))
+        {
+            session_destroy();
+        }
         session_start();
         CacheBO::clear();
     }
