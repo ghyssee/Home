@@ -479,6 +479,19 @@ public class MP3Helper {
         return artist;
     }
 
+    public String prettifySongArtist(String artist, String song){
+        String prettifiedSong = checkForTitleExceptions(artist, song);
+        prettifiedSong = checkForTitleExceptions2(artist, prettifiedSong);
+        return prettifiedSong;
+    }
+
+
+    public String prettifyArtistSong(String artist, String song){
+        String prettifiedArtist = checkForArtistExceptions(artist, song);
+        prettifiedArtist = checkForArtistExceptions2(prettifiedArtist, song);
+        return prettifiedArtist;
+    }
+
 
     public String checkForTitleExceptions(String artist, String song){
         return checkTitleArtistRelation(artist, song, "Title Exception", mp3Prettifer.artistSongExceptions.items);
