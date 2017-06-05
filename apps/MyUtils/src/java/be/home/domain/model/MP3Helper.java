@@ -417,9 +417,9 @@ public class MP3Helper {
 
     }
 
-    private ArtistSongItem checkTitle(String song, String oldSong, String newSong, boolean exactMatchTitle){
+    private ArtistSongItem checkTitle(String song, String oldSong, String newSong, boolean exactMatchTitle, int index){
         String matchKey = oldSong + (exactMatchTitle ? "" : "(.*)");
-        String newKey = newSong + (exactMatchTitle ? "": "$1");;
+        String newKey = newSong + (exactMatchTitle ? "": "$" + (index + 1));;
         String newFormattedSong = song;
         ArtistSongItem item = new ArtistSongItem();
         if (song.matches(matchKey)) {
@@ -453,7 +453,7 @@ public class MP3Helper {
     public String checkTitleArtistRelation(String artist, String song, String logRule, List<MP3Prettifier.ArtistSongExceptions.ArtistSong> listOfSongs){
         for (MP3Prettifier.ArtistSongExceptions.ArtistSong artistSong : listOfSongs) {
             if (artist.matches(getMatchKey(artistSong.oldArtist, artistSong.exactMatchArtist))) {
-                ArtistSongItem item = checkTitle(song, artistSong.oldSong, artistSong.newSong, artistSong.exactMatchTitle);
+                ArtistSongItem item = checkTitle(song, artistSong.oldSong, artistSong.newSong, artistSong.exactMatchTitle, artistSong.indexTitle);
                 if (item.isMatched()) {
                     song = item.getItem();
                     logRule(logRule, artistSong);

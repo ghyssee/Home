@@ -20,5 +20,6 @@ public class ArtistSongRelationship {
         public boolean exact;
         public boolean exactMatchTitle;
         public int priority;
+        public int indexTitle;
     }
 }

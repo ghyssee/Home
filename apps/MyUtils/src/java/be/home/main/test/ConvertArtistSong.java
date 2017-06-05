@@ -78,6 +78,7 @@ public class ConvertArtistSong extends BatchJobV2 {
                     artistSongRelation.exactMatchTitle = artistSong.exactMatchTitle;
                     artistSongRelation.id = artistSong.id;
                     artistSongRelation.priority = artistSong.priority;
+                    artistSongRelation.indexTitle = artistSong.indexTitle;
                     artistSongRelationship.items.add(artistSongRelation);                }
                     printInfo(goodFile, artistSong);
             }

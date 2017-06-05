@@ -47,6 +47,7 @@ public class MP3Prettifier {
             public boolean exactMatchTitle;
             public boolean exactMatchArtist;
             public int priority;
+            public int indexTitle;
         }
     }
 

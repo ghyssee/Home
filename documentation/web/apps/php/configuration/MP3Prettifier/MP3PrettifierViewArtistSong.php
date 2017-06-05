@@ -23,14 +23,15 @@ $smarty->assign('deleteUrl', constructUrl($url, "deleteArtistSong", $type, $cate
 
 
 $smarty->assign("contacts", array(
-        array("field" => "oldArtist", "label"=>"Old Artist", "size" => 40, "required" => true, "sortable" => true),
-        array("field" => "newArtist", "label"=>"New Artist", "size" => 40, "required" => true, "sortable" => true),
-        array("field" => "oldSong", "label"=>"Old Song", "size" => 40, "required" => true, "sortable" => true),
-        array("field" => "newSong", "label"=>"New Song", "size" => 40, "required" => true, "sortable" => true),
+        array("field" => "oldArtist", "label"=>"Old Artist", "size" => 25, "required" => true, "sortable" => true),
+        array("field" => "newArtist", "label"=>"New Artist", "size" => 35, "required" => true, "sortable" => true),
+        array("field" => "oldSong", "label"=>"Old Song", "size" => 35, "required" => true, "sortable" => true),
+        array("field" => "newSong", "label"=>"New Song", "size" => 35, "required" => true, "sortable" => true),
         array("field" => "exactMatchTitle", "label"=>"Exact Title", "size" => 10, "formatter" => "checkboxFormatter", "align" => "center", "checkbox" => true),
         array("field" => "exactMatchArtist", "label"=>"Exact Artist", "size" => 10, "formatter" => "checkboxFormatter", "align" => "center", "checkbox" => true),
-        array("field" => "priority", "label"=>"Priority", "size" => 7, "type" => "number", "sortable" => true),
-        array("field" => "id", "label"=>"Id", "size" => 50, "hidden" => "true")
+        array("field" => "priority", "label"=>"Priority", "size" => 5, "type" => "number", "sortable" => true),
+        array("field" => "indexTitle", "label"=>"IndexTitle", "size" => 5, "type" => "number", "sortable" => true),
+        array("field" => "id", "label"=>"Id", "hidden" => "true")
     )
 );
 //** un-comment the following line to show the debug console
