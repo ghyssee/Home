@@ -358,8 +358,8 @@ public class MP3Helper {
     public String prettifyAlbum(String album, String albumArtist){
         String prettifiedText = prettifySong(album);
         if (albumArtist != null) {
-            prettifiedText = checkForTitleExceptions(albumArtist, album);
-            prettifiedText = checkForTitleExceptions2(albumArtist, album);
+            prettifiedText = checkForTitleExceptions(albumArtist, prettifiedText);
+            prettifiedText = checkForTitleExceptions2(albumArtist, prettifiedText);
         }
         /*
         if (StringUtils.isNotBlank(prettifiedText)) {
