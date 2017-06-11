@@ -134,9 +134,9 @@ private static void testAlbumArtist(){
         System.out.println("Fuck It! (I Don't Want You Back)".replaceAll("F(?:uc|\\\\*\\\\*)k It!?(?:\\\\(I Don't Want You Back\\\\))?(.*)",
                 "Fuck It (I Don't Want You Back)$1"));
         System.out.println(mp3Helper.prettifySong("Voulez Vous Coucher Avec Moi Ce Soir? (Lady Marmalade)"));
-        System.out.println(mp3Helper.prettifyArtist("Weiss UK"));
         System.out.println(mp3Helper.prettifyAlbum("The Flying Dutch 2017 Edition NL", null));
-        System.out.println(getTitleArtistException("LaBelle", "Voulez Vous Coucher Avec Moi Ce Soir? (Lady Marmalade)"));
+        System.out.println(getTitleArtistException("Sigala Feat. Bryn Christopher", "Sweet Lovin’"));
+        System.out.println(mp3Helper.prettifyArtist("Snakeships Feat. Oliver Dickinson, Chance The Rapper & Tinashe"));
 
     }
 

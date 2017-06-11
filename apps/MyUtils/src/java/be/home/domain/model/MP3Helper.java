@@ -60,6 +60,7 @@ public class MP3Helper {
         text = text.replaceAll("`", "'");
         text = text.replaceAll("“", "\"");
         text = text.replaceAll("”", "\"");
+        text = text.replaceAll("\\ufeff","");
         text = text.replaceAll("&amp;? ?", "& ");
         text = text.replaceAll("''", "\"");
         return text;

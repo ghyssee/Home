@@ -225,8 +225,10 @@ public class M3uMakerV2 extends BatchJobV2 {
                 break;
         }
         MP3Helper mp3Helper = MP3Helper.getInstance();
-        song.setArtist(mp3Helper.prettifyArtist(song.getArtist()));
-        song.setSong(mp3Helper.prettifySong(song.getSong()));
+        String artist = mp3Helper.prettifyArtist(song.getArtist());
+        String title = mp3Helper.prettifySong(song.getSong());
+        song.setArtist(mp3Helper.prettifyArtistSong(artist, title));
+        song.setSong(mp3Helper.prettifySongArtist(artist, title));
         song.setArtist(mp3Helper.stripFilename(song.getArtist()));
         song.setSong(mp3Helper.stripFilename(song.getSong()));
         return song;
