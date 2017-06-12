@@ -75,6 +75,7 @@ public class ArtistSongRelationshipBO {
             artistSong.exactMatchArtist = item.exact;
             artistSong.exactMatchTitle = item.exactMatchTitle;
             artistSong.indexTitle = item.indexTitle;
+            artistSong.priority = item.priority;
 
             // new artist
 
