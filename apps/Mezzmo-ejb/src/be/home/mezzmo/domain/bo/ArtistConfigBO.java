@@ -26,6 +26,7 @@ public class ArtistConfigBO {
     private static Map<String, MultiArtistConfig.Item> mapItems;
     private static String splitter;
     private static ArtistBO artistBO;
+    private static boolean LOG_ARTIST_CONFIG = false;
 
     private ArtistConfigBO() {
         artistBO = ArtistBO.getInstance();
@@ -86,8 +87,10 @@ public class ArtistConfigBO {
 
         for (MultiArtistConfig.Item item : multiArtistConfig.list){
             MP3Prettifier.Word word = constructItem(item);
-            log.info("Artist Name Old Word: " + word.oldWord);
-            log.info("Artist Name New Word: " + word.newWord);
+            if (this.LOG_ARTIST_CONFIG) {
+                log.info("Artist Name Old Word: " + word.oldWord);
+                log.info("Artist Name New Word: " + word.newWord);
+            }
             names.add(word);
         }
         return names;
