@@ -265,7 +265,7 @@ public class MezzmoServiceImpl {
                 nr = updateSong(comp, MP3Tag.ALBUM);
             }
             try {
-                album = bo.findAlbumByName(newAlbum, comp.getAlbumArtistTO().getName());
+                album = bo.findDistinctAlbumByName(newAlbum);
                 nr = bo.updateLinkFileAlbum(comp, album.getId());
                 checkAlbummLinked(comp.getFileAlbumTO());
                 // link the file to this album

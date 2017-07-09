@@ -60,6 +60,17 @@ public class MezzmoDAOQueries extends MezzmoDB {
             .addCondition(TablesEnum.MGOAlbumArtist.alias(), MGOAlbumArtistColumns.ALBUMARTIST, Comparator.LIKE)
             .render();
 
+    protected static final String FIND_DISTINCT_ALBUM = SQLBuilder.getInstance()
+            .select()
+            .addTable(TablesEnum.MGOFile)
+            .enableDistinct()
+            .addColumns(TablesEnum.MGOFileAlbum)
+            .addRelation(addRelationFileWithAlbum())
+            .addRelation(TablesEnum.MGOFileExtension, MGOFileExtensionColumns.ID, TablesEnum.MGOFile, MGOFileColumns.EXTENSION_ID)
+            .addCondition(TablesEnum.MGOFileExtension.alias(), MGOFileExtensionColumns.DATA, Comparator.EQUALS, MP3_EXT)
+            .addCondition(TablesEnum.MGOFileAlbum.alias(), MGOFileAlbumColumns.ALBUM, Comparator.LIKE)
+            .render();
+
     protected static final String FIND_ALBUM_BY_ID = SQLBuilder.getInstance()
             .select()
             .addTable(TablesEnum.MGOFileAlbum)

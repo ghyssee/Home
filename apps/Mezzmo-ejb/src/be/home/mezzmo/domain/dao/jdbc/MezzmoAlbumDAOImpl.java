@@ -39,6 +39,11 @@ public class MezzmoAlbumDAOImpl extends MezzmoRowMappers {
         return (MGOFileAlbumTO) getInstance().getJDBCTemplate().queryForObject(FIND_ALBUM, new SingleAlbumRowMapper(), params);
     }
 
+    public MGOFileAlbumTO findDistinctAlbumByName(String album){
+        Object[] params = {album};
+        return (MGOFileAlbumTO) getInstance().getJDBCTemplate().queryForObject(FIND_DISTINCT_ALBUM, new SingleAlbumRowMapper(), params);
+    }
+
 
     public MGOFileAlbumTO findAlbumById(long id){
         Object[] params = {id};

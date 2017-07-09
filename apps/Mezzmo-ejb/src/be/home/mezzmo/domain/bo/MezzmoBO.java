@@ -90,6 +90,10 @@ public class MezzmoBO extends BusinessObject {
         return getMezzmoAlbumDAO().findAlbumByName(album, albumArtist);
     }
 
+    public MGOFileAlbumTO findDistinctAlbumByName (String album) {
+        return getMezzmoAlbumDAO().findDistinctAlbumByName(album);
+    }
+
     public MGOFileAlbumTO findAlbumById (long id) {
         return getMezzmoAlbumDAO().findAlbumById(id);
     }
