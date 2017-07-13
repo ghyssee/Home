@@ -65,6 +65,8 @@ public class MP3Helper {
         text = text.replaceAll("\\u0301", "");
         text = text.replaceAll("&amp;? ?", "& ");
         text = text.replaceAll("''", "\"");
+        text = text.replaceAll("…", "...");
+
         return text;
     }
 
