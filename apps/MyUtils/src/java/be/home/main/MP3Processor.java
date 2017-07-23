@@ -73,6 +73,29 @@ public class MP3Processor extends BatchJobV2 {
 
     }
 
+    public boolean isFeaturing(String type){
+        boolean feat = false;
+        if (type != null) {
+            type = type.toUpperCase();
+            if (type.startsWith("FEAT")){
+                feat = true;
+            }
+        }
+        return feat;
+    }
+
+    public String constructArtist(AlbumInfo.Track track){
+        String artist = track.artist;
+        if (track.extraArtists != null){
+            for (AlbumInfo.ExtraArtist extraArtist : track.extraArtists){
+                if (isFeaturing(extraArtist.type)){
+                    artist = artist + " Feat. " + extraArtist.extraArtist;
+                }
+            }
+        }
+        return artist;
+    }
+
     public void start() throws IOException {
 
         AlbumInfo.Config album = (AlbumInfo.Config) JSONUtils.openJSON(INPUT_FILE, AlbumInfo.Config.class, "UTF-8");
@@ -84,7 +107,7 @@ public class MP3Processor extends BatchJobV2 {
 
         album.album = helper.prettifyAlbum(album.album, null);
         for (AlbumInfo.Track track: album.tracks){
-            track.artist = helper.prettifyArtist(track.artist);
+            track.artist = helper.prettifyArtist(constructArtist(track));
             track.title = helper.prettifySong(track.title);
             track.artist = helper.prettifyArtistSong(track.artist, track.title);
             track.title = helper.prettifySongArtist(track.artist, track.title);

@@ -173,8 +173,8 @@ public class MP3TagUtils {
                     checkTrack(id3v2Tag.getTrack(), comp, nrOfTracks, maxDisc);
                     checkArtist(comp, id3v2Tag.getArtist());
                     checkTitle(comp, id3v2Tag.getTitle());
-                    checkForTitleExceptions(comp);
                     checkForArtistExceptions(comp);
+                    checkForTitleExceptions(comp);
                     if (checkDisc(comp, id3v2Tag.getPartOfSet())) {
                         if (checkFilename(comp, nrOfTracks, maxDisc)) {
                             // if filename is ok, an extra check for filetitle

@@ -92,6 +92,9 @@ public class MP3Utils {
             if (set.getId().equals("PRIV")) {
                 // remove Private TAG from the MP3
             }
+            else if (set.getId().equals("NCON")) {
+                // remove NCON TAG from the MP3
+            }
             else if (set.getId().equals("TALB")) {
                 // remove Private TAG from the MP3
                 id3v2Tag.setAlbum(id3v2.getAlbum());
