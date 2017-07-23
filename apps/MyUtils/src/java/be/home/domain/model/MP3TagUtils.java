@@ -108,8 +108,8 @@ public class MP3TagUtils {
 
     }
 
-    private boolean checkForTitleExceptions(MGOFileAlbumCompositeTO comp){
-        String title = MP3Helper.getInstance().checkForTitleExceptions(comp.getFileArtistTO().getArtist(), comp.getFileTO().getTitle());
+    private boolean checkForTitleExceptions(MGOFileAlbumCompositeTO comp, String originalArtist){
+        String title = MP3Helper.getInstance().checkForTitleExceptions(originalArtist, comp.getFileTO().getTitle());
         boolean ok = true;
         if (!title.equals(comp.getFileTO().getTitle())){
                     addItem(comp.getFileTO().getId(),
@@ -121,7 +121,7 @@ public class MP3TagUtils {
                     ok = false;
         }
         else {
-            title = MP3Helper.getInstance().checkForTitleExceptions2(comp.getFileArtistTO().getArtist(), comp.getFileTO().getTitle());
+            title = MP3Helper.getInstance().checkForTitleExceptions2(originalArtist, comp.getFileTO().getTitle());
             if (!title.equals(comp.getFileTO().getTitle())){
                 addItem(comp.getFileTO().getId(),
                         comp.getFileTO().getId(),
@@ -173,8 +173,10 @@ public class MP3TagUtils {
                     checkTrack(id3v2Tag.getTrack(), comp, nrOfTracks, maxDisc);
                     checkArtist(comp, id3v2Tag.getArtist());
                     checkTitle(comp, id3v2Tag.getTitle());
+                    String originalArtist = comp.getFileArtistTO().getArtist();
+                    String originalTitle = comp.getFileTO().getTitle();
                     checkForArtistExceptions(comp);
-                    checkForTitleExceptions(comp);
+                    checkForTitleExceptions(comp, originalArtist);
                     if (checkDisc(comp, id3v2Tag.getPartOfSet())) {
                         if (checkFilename(comp, nrOfTracks, maxDisc)) {
                             // if filename is ok, an extra check for filetitle
