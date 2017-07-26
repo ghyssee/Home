@@ -43,6 +43,11 @@ public class ArtistConfigBO {
         return artistConfigBO;
     }
 
+    public boolean isArtist(String artistName){
+        Artists.Artist artist = artistBO.findArtistByName(artistName);
+        return (artist != null);
+    }
+
     public String getSplitterString(){
         return splitter;
     }

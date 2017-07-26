@@ -204,6 +204,9 @@ public class MP3Helper {
 
     }
     private String checkArtistNames2(List<MP3Prettifier.Word> list, String text, String logMsg){
+        if (ArtistConfigBO.getInstance().isArtist(text)){
+            return text;
+        }
         for (MP3Prettifier.Word wordObj : list){
             //Pattern pattern = Pattern.compile(wordObj.oldWord);
             if (text.matches(wordObj.oldWord)){

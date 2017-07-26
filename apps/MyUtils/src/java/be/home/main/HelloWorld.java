@@ -127,16 +127,19 @@ private static void testAlbumArtist(){
         MP3Helper mp3Helper =MP3Helper.getInstance();
 
 
-        System.out.println(mp3Helper.stripFilename("ELV1S: 30 #1 Hits"));
+        //System.out.println(getArtistTitleException("Kellis Feat. Too Short", "bossy"));
+        //System.out.println(mp3Helper.stripFilename("untitled 08 |"));
         //System.out.println(getArtistTitleException("Malvin Big", "Here Comes The Devil"));
         //System.out.println("The Partysquad Feat. Sjaak, Dio, Sef".replaceAll("((Sef|Dio|Sjaak)( ?& ?|, ?| |\\.|$)){3,}", "Dio, Sef & Sjaak"));
         //System.out.println(mp3Helper.prettifyArtist("Ll Cool J Feat. 7 Aurelius"));
-        System.out.println("Fuck It! (I Don't Want You Back)".replaceAll("F(?:uc|\\\\*\\\\*)k It!?(?:\\\\(I Don't Want You Back\\\\))?(.*)",
-                "Fuck It (I Don't Want You Back)$1"));
+        //System.out.println("Fuck It! (I Don't Want You Back)".replaceAll("F(?:uc|\\\\*\\\\*)k It!?(?:\\\\(I Don't Want You Back\\\\))?(.*)",
+          //      "Fuck It (I Don't Want You Back)$1"));
         System.out.println(mp3Helper.prettifySong("Voulez Vous Coucher Avec Moi Ce Soir? (Lady Marmalade)"));
         System.out.println(mp3Helper.prettifyAlbum("The Flying Dutch 2017 Edition NL", null));
-        System.out.println(getTitleArtistException("Sigala Feat. Bryn Christopher", "Sweet Lovin’"));
-        System.out.println(mp3Helper.prettifyArtist("Snakeships Feat. Oliver Dickinson, Chance The Rapper & Tinashe"));
+        System.out.println(getTitleArtistException("Brunner Und Brunner", "Im Namen Der Liebe"));
+        System.out.println(getArtistTitleException("Brunner Und Brunner", "Im Namen Der Liebe"));
+        System.out.println(mp3Helper.prettifySong("Halcyon (7'' Version)"));
+        System.out.println(mp3Helper.prettifyArtist("Brunner Und Brunner"));
 
     }
 
