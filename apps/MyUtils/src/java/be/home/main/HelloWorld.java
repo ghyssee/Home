@@ -128,7 +128,7 @@ private static void testAlbumArtist(){
 
 
         //System.out.println(getArtistTitleException("Kellis Feat. Too Short", "bossy"));
-        //System.out.println(mp3Helper.stripFilename("untitled 08 |"));
+        System.out.println(mp3Helper.stripFilename("B.A.D. (Big Audio Dynamite) - E = MC2"));
         //System.out.println(getArtistTitleException("Malvin Big", "Here Comes The Devil"));
         //System.out.println("The Partysquad Feat. Sjaak, Dio, Sef".replaceAll("((Sef|Dio|Sjaak)( ?& ?|, ?| |\\.|$)){3,}", "Dio, Sef & Sjaak"));
         //System.out.println(mp3Helper.prettifyArtist("Ll Cool J Feat. 7 Aurelius"));
@@ -136,10 +136,12 @@ private static void testAlbumArtist(){
           //      "Fuck It (I Don't Want You Back)$1"));
         System.out.println(mp3Helper.prettifySong("Voulez Vous Coucher Avec Moi Ce Soir? (Lady Marmalade)"));
         System.out.println(mp3Helper.prettifyAlbum("The Flying Dutch 2017 Edition NL", null));
-        System.out.println(getTitleArtistException("Brunner Und Brunner", "Im Namen Der Liebe"));
-        System.out.println(getArtistTitleException("Brunner Und Brunner", "Im Namen Der Liebe"));
+        System.out.println(getTitleArtistException("Lost Frequencies", "Reality"));
+        System.out.println(getArtistTitleException("Lost Frequencies", "Reality"));
         System.out.println(mp3Helper.prettifySong("Halcyon (7'' Version)"));
-        System.out.println(mp3Helper.prettifyArtist("Brunner Und Brunner"));
+        System.out.println(mp3Helper.prettifyArtist("Person Z"));
+        System.out.println(mp3Helper.prettifyArtist("Person Z, (a"));
+        System.out.println(mp3Helper.prettifyArtist("Person Y"));
 
     }
 
@@ -159,7 +161,7 @@ private static void testAlbumArtist(){
 
     private static void updateMP3(){
         Mp3File mp3file = null;
-        String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\01 Belle Perez - Light Of My Life.mp3";
+        String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\New\\10 Sylver - Hungry Heart.mp3";
         //String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\test.mp3";
         //String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\108 Di-Rect - Hungry For Love.mp3";
         try {

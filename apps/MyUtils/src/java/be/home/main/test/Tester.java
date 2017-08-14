@@ -131,28 +131,6 @@ public class Tester extends BatchJobV2 {
         }
     }
 
-    private static void testMP3Prettifier(){
-
-
-        MP3Helper mp3Helper =MP3Helper.getInstance();
-        System.out.println(mp3Helper.prettifyArtist("J.D. McPherson"));
-
-        System.out.println(mp3Helper.prettifySong("Parlami D’amore"));
-        System.out.println(mp3Helper.prettifyAlbum("Yorin Fm", "Various Artists"));
-
-        System.out.println(mp3Helper.stripFilename("ELV1S: 30 #1 Hits"));
-        System.out.println(getTitleArtistException("Bodyrox", "Test"));
-        System.out.println(getArtistTitleException("Bodyrox", "Test"));
-        System.out.println(getArtistTitleException("Da Brat Feat. Tyrese", "What' Chu Like"));
-        //System.out.println("The Partysquad Feat. Sjaak, Dio, Sef".replaceAll("((Sef|Dio|Sjaak)( ?& ?|, ?| |\\.|$)){3,}", "Dio, Sef & Sjaak"));
-        //System.out.println(mp3Helper.prettifyArtist("Ll Cool J Feat. 7 Aurelius"));
-        System.out.println("Fuck It! (I Don't Want You Back)".replaceAll("F(?:uc|\\\\*\\\\*)k It!?(?:\\\\(I Don't Want You Back\\\\))?(.*)",
-                "Fuck It (I Don't Want You Back)$1"));
-        System.out.println(getTitleArtistException("Major Lazer", "Cold Water"));
-        System.out.println(getArtistTitleException("Major Lazer", "Cold Water"));
-
-    }
-
     private static String getArtistTitleException(String artist, String title){
         String prettifiedArtist = MP3Helper.getInstance().prettifyArtist(artist);
         String prettifiedTitle = MP3Helper.getInstance().prettifySong(title);

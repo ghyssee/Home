@@ -2,6 +2,7 @@ package be.home.domain.model;
 
 import be.home.common.constants.Constants;
 import be.home.common.utils.JSONUtils;
+import be.home.mezzmo.domain.bo.ArtistBO;
 import be.home.mezzmo.domain.bo.ArtistConfigBO;
 import be.home.mezzmo.domain.bo.ArtistSongRelationshipBO;
 import be.home.model.json.AlbumInfo;
@@ -24,6 +25,7 @@ public class MP3Helper {
     private static MP3Prettifier mp3Prettifer;
     private static final Logger log = Logger.getLogger(MP3Helper.class);
     private static List<MP3Prettifier.Word> multiArtistNames;
+    private static List<MP3Prettifier.Word> artistNames;
 
     private MP3Helper() {
         mp3Prettifer = (MP3Prettifier) JSONUtils.openJSONWithCode(Constants.JSON.MP3PRETTIFIER, MP3Prettifier.class);
@@ -31,6 +33,10 @@ public class MP3Helper {
         Collections.sort(mp3Prettifer.global.filenames, (a1, b1) -> a1.priority - b1.priority);
         Collections.sort(mp3Prettifer.artist.names, (a1, b1) -> a1.priority - b1.priority);
         Collections.sort(mp3Prettifer.artistSongExceptions.items, (a1, b1) -> b1.priority - a1.priority);
+        artistNames = ArtistBO.getInstance().constructArtistPatterns();
+        Collections.sort(artistNames, (a1, b1) -> b1.priority - a1.priority);
+        System.out.println("Test");
+
     }
 
     public static MP3Helper getInstance() {
@@ -63,6 +69,7 @@ public class MP3Helper {
         text = text.replaceAll("\\ufeff","");
         text = text.replaceAll("\\u0092", "");
         text = text.replaceAll("\\u0301", "");
+        text = text.replaceAll("\u00A0", " ");
         text = text.replaceAll("&amp;? ?", "& ");
         text = text.replaceAll("''", "\"");
         text = text.replaceAll("…", "...");
@@ -188,6 +195,7 @@ public class MP3Helper {
             prettifiedText = checkWords(prettifiedText, Mp3Tag.ARTIST);
             prettifiedText = prettifySentence(mp3Prettifer.global.sentences, prettifiedText, "Global Sentence");
             prettifiedText = prettifySentence(mp3Prettifer.artist.names, prettifiedText, "Artist Names");
+            prettifiedText = prettifySentence(artistNames, prettifiedText, "Artist Names Patterns");
             prettifiedText = checkArtistNames2(multiArtistNames, prettifiedText, "Multi Artist Names");
             /*
             for (MP3Prettifier.Word wordObj : mp3Prettifer.artist.names){
