@@ -137,8 +137,8 @@ private static void testAlbumArtist(){
         System.out.println(mp3Helper.prettifySong("Voulez Vous Coucher Avec Moi Ce Soir? (Lady Marmalade)"));
         System.out.println(mp3Helper.prettifyAlbum("The Flying Dutch 2017 Edition NL", null));
         System.out.println(getTitleArtistException("Lost Frequencies", "Reality"));
-        System.out.println(getArtistTitleException("Lost Frequencies", "Reality"));
-        System.out.println(mp3Helper.prettifySong("Halcyon (7'' Version)"));
+        System.out.println(getArtistTitleException("Brunner Und Brunner", "Im Namen Der Liebe"));
+        System.out.println(mp3Helper.prettifySong("LOL (Radio Mix FT Fast Edit)"));
         System.out.println(mp3Helper.prettifyArtist("Person Z"));
         System.out.println(mp3Helper.prettifyArtist("Person Z, (a"));
         System.out.println(mp3Helper.prettifyArtist("Person Y"));
