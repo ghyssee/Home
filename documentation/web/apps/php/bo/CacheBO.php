@@ -11,6 +11,7 @@ class CacheBO
     const MULTIARTIST2 = 'MULTIARTIST2';
     const ARTISTS = "ARTISTS";
     const ARTISTSONG = "ARTISTSONG";
+    const MP3PRETTIFIER = "MP3PRETTIFIER";
 
     static function getObject ($id){
         $cache = $_SESSION["cache"];

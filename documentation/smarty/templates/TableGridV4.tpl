@@ -14,6 +14,7 @@
        toolbar:"#toolbar{{$tablegrid}}",
        pagination:true,
        nowrap:false,
+       remoteFilter:true,
        rownumbers:true,
        pagePosition:{{if isset($pagePosition)}}"{{$pagePosition}}"{{else}}"bottom"{{/if}},
        pageSize:{{if isset($pageSize)}}{{$pageSize}}{{else}}10{{/if}},

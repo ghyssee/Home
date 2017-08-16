@@ -37,3 +37,9 @@ $smarty->assign("contacts", array(
 
 $smarty->display('TableGridV4.tpl');
 ?>
+<script type="text/javascript">
+    $(function(){
+        var dg = $('#dgGlobalSentence').datagrid();
+        dg.datagrid('enableFilter',);
+    });
+</script>

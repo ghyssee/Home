@@ -7,6 +7,47 @@ $backupFile = getFullPath(PATH_CONFIG_BACKUP) . "/MP3Prettiffier." . date("Ymd")
 
 class WordBO
 {
+    public $mp3PrettifierObj;
+    public $file;
+
+    function __construct() {
+        $this->file = getFullPath(JSON_MP3PRETTIFIER);
+        //$this->artistObj = readJSON( $this->file);
+        //$this->loadFullData();
+    }
+
+    function getArtistNames($list, $filterRules = null){
+        $array = [];
+        if ($filterRules != null){
+            foreach($list as $key => $value){
+                foreach($filterRules as $item){
+                    $test = $item;
+                    if ($test->field == "newWord"){
+                        if (strpos(strtoupper($value->newWord), strtoupper($item->value)) !== false) {
+                            $array[] = $value;
+                        }
+                    }
+                }
+
+            }
+        }
+        return $array;
+    }
+
+    function loadFullData(){
+        if (CacheBO::isInCache(CacheBO::MP3PRETTIFIER)){
+            $list = CacheBO::getObject(CacheBO::MP3PRETTIFIER);
+        }
+        else {
+            $list = Array();
+            foreach ($this->artistObj->list as $key => $item) {
+                $list[$item->id] = $item;
+            }
+            CacheBO::saveObject(CacheBO::MP3PRETTIFIER, $list);
+        }
+        return $this->mp3PrettifierObj;
+    }
+
     function lookupWord($words, $id)
     {
         foreach ($words as $key => $value) {

@@ -104,24 +104,45 @@ function getListArtists(){
     echo json_encode($result);
 }
 
+function isSetFilterRule(){
+    $isSet = false;
+    if (isset($_POST["filterRules"])) {
+        $filterRules = json_decode($_POST["filterRules"]);
+        if(count($filterRules) > 0){
+            $isSet = true;
+        }
+    }
+    return $isSet;
 
-function getList($type, $category){
+}
+
+function getList($type, $category)
+{
 
     $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
     $rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
     $mp3Prettifier = readJSONWithCode(JSON_MP3PRETTIFIER);
+    if (isSetFilterRule()){
+        $filterRules = json_decode($_POST["filterRules"]);
+        $wordBO = new WordBO();
+        $array = $wordBO->getArtistNames($mp3Prettifier->{$type}->{$category}, $filterRules);
+    }
+    else {
+        $array = $mp3Prettifier->{$type}->{$category};
+    }
     if (isset($_POST['sort'])){
         $field = isset($_POST['sort']) ? strval($_POST['sort']) : '';
         $order = isset($_POST['order']) ? strval($_POST['order']) : 'asc';
         $sort = new CustomSort();
-        $array = $sort->sortObjectArrayByField($mp3Prettifier->{$type}->{$category}, $field, $order);
-        $mp3Prettifier->{$type}->{$category} = $array;
+        $array = $sort->sortObjectArrayByField($array, $field, $order);
+        //$mp3Prettifier->{$type}->{$category} = $array;
     }
-    $array = array_slice($mp3Prettifier->{$type}->{$category}, ($page-1)*$rows, $rows);
+    //$array = array_slice($mp3Prettifier->{$type}->{$category}, ($page-1)*$rows, $rows);
+    $arraySlice = array_slice($array, ($page-1)*$rows, $rows);
 
     $result = array();
-    $result["total"] = count($mp3Prettifier->{$type}->{$category});
-    $result["rows"] = $array;
+    $result["total"] = count($array);
+    $result["rows"] = $arraySlice;
     echo json_encode($result);
 }
 

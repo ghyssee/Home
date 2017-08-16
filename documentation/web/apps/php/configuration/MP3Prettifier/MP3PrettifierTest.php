@@ -28,6 +28,9 @@ goMenu();
 <br>
 
 <div id="tt" class="easyui-tabs" data-options="selected:0" style="width:1100px;height:500px;">
+    <div title="AN" style="padding:20px;display:none;">
+        <?php include "MP3PrettifierViewArtistName.php"; ?>
+    </div>
     <div title="Test" style="padding:20px;display:none;">
         <?php include "MP3PrettifierTestList.php"; ?>
     </div>

@@ -28,6 +28,16 @@ $smarty->display('TableGridV4.tpl');
 ?>
 <div><button onclick="refreshTst()">Refresh</button></div>
 
+
+<script type="text/javascript">
+    $(function(){
+        var dg = $('#dgArtistSongTest').datagrid();
+        dg.datagrid('enableFilter');
+    });
+</script>
+
+
+
 <script>
     function refreshTst(){
         $('#dgArtistSongTest').datagrid('reload');
