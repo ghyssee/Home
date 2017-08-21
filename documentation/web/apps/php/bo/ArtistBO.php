@@ -171,6 +171,24 @@ class MultiArtistBO {
         return $this->multiArtistObj;
     }
 
+    function filterData($filterRules, $list){
+        $array = [];
+        if ($filterRules != null){
+            foreach($list as $key => $value){
+                foreach($filterRules as $item){
+                    $test = $item;
+                    if ($test->field == "description2"){
+                        if (strpos(strtoupper($value->description2), strtoupper($item->value)) !== false) {
+                            $array[] = $value;
+                        }
+                    }
+                }
+
+            }
+        }
+        return $array;
+    }
+
     function loadFullData(){
         if (CacheBO::isInCache(CacheBO::MULTIARTIST2)){
             $list = CacheBO::getObject(CacheBO::MULTIARTIST2);

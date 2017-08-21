@@ -311,12 +311,16 @@ function listMultiArtists(){
     $multiArtistBO = new MultiArtistBO();
     $newArray = $multiArtistBO->loadFullData();
 
-    //if (isset($_POST['sort'])){
+    if (isSetFilterRule()){
+        $filterRules = json_decode($_POST["filterRules"]);
+        $newArray = $multiArtistBO->filterData($filterRules, $newArray);
+    }
+    
+    
     $field = isset($_POST['sort']) ? strval($_POST['sort']) : 'description';
     if ($field != 'description') {
         $order = isset($_POST['order']) ? strval($_POST['order']) : 'asc';
         $sort = new CustomSort();
-        //$array = $sort->sortObjectArrayByField($multi->list, $field, $order);
         $array = $sort->sortObjectArrayByField($newArray, $field, $order);
     }
     else {

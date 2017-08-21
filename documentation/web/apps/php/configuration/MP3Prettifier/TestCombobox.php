@@ -25,19 +25,7 @@ goMenu();
 ?>
 <h1>Test</h1>
 
-<div id="dlArtistList" class="easyui-datalist" title="Artists" style="width:200px;height:400px"
-     data-options="
-                            url: 'MP3PrettifierAction.php?method=listArtists',
-                            method: 'get',
-                            lines: 'true',
-                            valueField: 'id',
-                            singleSelect: true,
-                            required:true,
-                            prompt:'Select Type',
-                            textField: 'name'
-                         "
->
-</div>
+
 
 <input id="cbArtist" class="easyui-combobox" name="cbArtist"
        data-options="valueField:'id',
@@ -45,24 +33,31 @@ goMenu();
                      textField:'name',
                      url:'MP3PrettifierAction.php?method=listArtists'
                      ">
-<div><button onclick="insert()">Add</button></div>
+<div><button onclick="getCmbArtist()">Add</button></div>
 
 <script>
-function insert() {
-    var row = $('#cbArtist').combobox('getValue');
-    var _options = $('#cbArtist').combobox('options');
-    var _data = $(cbArtist).combobox('getData');
-    var _value = $(cbArtist).combobox('getValue');
+function getCmbArtist(cmbId) {
+    cmbId = '#cbArtist';
+    var _options = $(cmbId).combobox('options');
+    var _data = $(cmbId).combobox('getData');
+    var _value = $(cmbId).combobox('getValue');
+    var _text = $(cmbId).combobox('getText');
     var _b = false;
+    var row = {id:null, value:null};
     for (var i = 0; i < _data.length; i++) {
         if (_data[i][_options.valueField] == _value) {
             _b = true;
+            row.id = _value;
+            row.value = _text;
+            $(cmbId).combobox('clear');
             break;
         }
     }
     if (!_b) {
-        $(cbArtist).combobox('setValue', '');
+        $(cmbId).combobox('setValue', '');
+        row = null;
     }
+    return row;
 }
 
 </script>

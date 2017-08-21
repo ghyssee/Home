@@ -22,17 +22,12 @@ $multiArtist = readJSONWithCode(JSON_MULTIARTIST);
 <div id="container">
     <div id="column1">
         <div id="innercolumn">
-            <div id="dlArtistList" class="easyui-datalist" title="Artists" style="width:200px;height:400px"
-                 data-options="
-                            url: 'MP3PrettifierAction.php?method=listArtists',
-                            method: 'get',
-                            lines: 'true',
-                            valueField: 'id',
-                            singleSelect: true,
-                            textField: 'name'
-                         "
-            >
-            </div>
+            <input id="cbArtist" class="easyui-combobox" name="cbArtist"
+                   data-options="valueField:'id',
+                     width:200,
+                     textField:'name',
+                     url:'MP3PrettifierAction.php?method=listArtists'
+                     ">
         </div>
     </div>
     <div id="column2">
@@ -174,10 +169,34 @@ $multiArtist = readJSONWithCode(JSON_MULTIARTIST);
         }
     }
 
+    function getCmbArtist(cmbId) {
+        cmbId = '#cbArtist';
+        var _options = $(cmbId).combobox('options');
+        var _data = $(cmbId).combobox('getData');
+        var _value = $(cmbId).combobox('getValue');
+        var _text = $(cmbId).combobox('getText');
+        var _b = false;
+        var row = {id:null, value:null};
+        for (var i = 0; i < _data.length; i++) {
+            if (_data[i][_options.valueField] == _value) {
+                _b = true;
+                row.id = _value;
+                row.value = _text;
+                break;
+            }
+        }
+        if (!_b) {
+            $(cmbId).combobox('setValue', '');
+            row = null;
+        }
+        return row;
+    }
 
     function insert(){
-        var row = $('#dlArtistList').datagrid('getSelected');
-        if (row){
+        //var row = $('#dlArtistList').datagrid('getSelected');
+        var cbArtist = '#cbArtist';
+        var row = getCmbArtist(cbArtist);
+        if (row != null){
             var rows = $('#dgArtistSeq').edatagrid('getRows');
             var alreadyAdded = false;
             for(var i=0; i<rows.length; i++){
@@ -188,7 +207,7 @@ $multiArtist = readJSONWithCode(JSON_MULTIARTIST);
             }
             if (!alreadyAdded) {
                 $('#dgArtist').datagrid('appendRow',{
-                    name: row.name,
+                    name: row.value,
                     id: row.id
                 });
                 var index = $('#dgArtistSeq').edatagrid('getRows').length;
@@ -196,13 +215,14 @@ $multiArtist = readJSONWithCode(JSON_MULTIARTIST);
                     index: index,
                     row:{
                         artistId: row.id,
-                        artistName: row.name,
+                        artistName: row.value,
                         splitterId: DEFAULT_SPLITTER.id,
                         splitterName: DEFAULT_SPLITTER.value2
                     }
                 });
 
-                $('#dlArtistList').datagrid('clearSelections');
+                //$('#dlArtistList').datagrid('clearSelections');
+                $(cbArtist).combobox('clear');
                 $('#dgArtistSeq').datagrid('enableDnd');
                 $('#dgArtistSeq').edatagrid('selectRow', index);
                 saveCombo();
