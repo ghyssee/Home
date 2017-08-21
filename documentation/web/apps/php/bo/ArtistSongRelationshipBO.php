@@ -101,6 +101,30 @@ class ArtistSongRelationshipBO
         writeJSON($this->artistSongRelationship, $this->file);
     }
 
+    function isArtistUsed($id){
+        foreach ($this->artistSongRelationshipObj->items as $key => $value) {
+            if (isset($value->oldArtistId) && $value->oldArtistId == $id){
+                return true;
+            }
+            if (isset($value->newArtistId) && $value->newArtistId == $id){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function isMultiArtistUsed($id){
+        foreach ($this->artistSongRelationshipObj->items as $key => $value) {
+            if (isset($value->oldMultiArtistId) && $value->oldMultiArtistId == $id){
+                return true;
+            }
+            if (isset($value->newMultiArtistId) && $value->newMultiArtistId == $id){
+                return true;
+            }
+        }
+        return false;
+    }
+
     function deleteArtistSong($id)
     {
         $array = $this->artistSongRelationshipObj->items;

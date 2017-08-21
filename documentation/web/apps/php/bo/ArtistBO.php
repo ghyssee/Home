@@ -2,6 +2,7 @@
 require_once documentPath (ROOT_PHP, "config.php");
 require_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 require_once documentPath (ROOT_PHP_BO, "CacheBO.php");
+require_once documentPath (ROOT_PHP_BO, "ArtistSongRelationshipBO.php");
 
 class ArtistTO{
     public $id;
@@ -43,10 +44,26 @@ class ArtistBO
         $this->loadFullData();
     }
     
-    function getArtists(){
-        return $this->artistObj->list;
-    }
+    function getArtists($filterRules = null){
+        $array = [];
+        if ($filterRules != null){
+            foreach($this->artistObj->list as $key => $value){
+                foreach($filterRules as $item){
+                    $test = $item;
+                    if ($test->field == "name"){
+                        if (strpos(strtoupper($value->name), strtoupper($item->value)) !== false) {
+                            $array[] = $value;
+                        }
+                    }
+                }
 
+            }
+        }
+        else {
+            $array = $this->artistObj->list;
+        }
+        return $array;
+    }
     function loadFullData(){
         if (CacheBO::isInCache(CacheBO::ARTISTS)){
             $list = CacheBO::getObject(CacheBO::ARTISTS);
@@ -131,12 +148,13 @@ class ArtistBO
 
         } else {
             $multiArtistBO = new MultiArtistBO();
-            if (!$multiArtistBO->isArtistUsed($id)) {
+            $artistSongRelationshipBO = new ArtistSongRelationshipBO();
+            if (!$multiArtistBO->isArtistUsed($id) && !$artistSongRelationshipBO->isArtistUsed($id)) {
                 unset($this->artistObj->list[$key]);
                 $array = array_values($this->artistObj->list);
                 $this->artistObj->list = $array;
                 writeJSON($this->artistObj, $this->file);
-                CacheBO::deleteCacheObject(CacheBO::ARTISTS, $id);
+                CacheBO::clearCacheObject(CacheBO::ARTISTS, $id);
                 return true;
             }
         }
@@ -209,15 +227,13 @@ class MultiArtistBO {
     function isArtistUsed($artistId){
         $this->loadData();
         foreach($this->multiArtistObj->list as $mulitArtistItem){
-            foreach($this->multiArtistObj->list as $mulitArtistItem) {
-                foreach($mulitArtistItem->artists as $artist){
-                    if ($artist->id == $artistId){
+            foreach($mulitArtistItem->artists as $artist){
+                if ($artist->id == $artistId){
+                    return true;
+                }
+                foreach($mulitArtistItem->artistSequence as $artist) {
+                    if ($artist->artistId == $artistId) {
                         return true;
-                    }
-                    foreach($mulitArtistItem->artistSequence as $artist) {
-                        if ($artist->artistId == $artistId) {
-                            return true;
-                        }
                     }
                 }
             }

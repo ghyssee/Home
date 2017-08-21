@@ -37,7 +37,7 @@ $multiArtist = readJSONWithCode(JSON_MULTIARTIST);
             <div><button onclick="validateAndSave()">Save</button></div>
             <div><button onclick="removeArtist('dgArtist')">Remove A1</button></div>
             <div><button onclick="removeArtist('dgArtistSeq')">Remove A2</button></div>
-            <div><button onclick="refreshList('dlArtistList')">Refresh Art.</button></div>
+            <div><button onclick="refreshCombo('cbArtist')">Refresh Art.</button></div>
             <div><button onclick="testChk()">Test Check</button></div>
         </div>
     </div>
@@ -125,6 +125,12 @@ $multiArtist = readJSONWithCode(JSON_MULTIARTIST);
         datagridName = "#" + datagridName;
         $(datagridName).datagrid('reload');
     }
+    function refreshCombo(datagridName){
+        datagridName = "#" + datagridName;
+        alert("RF CMB");
+        $(datagridName).combobox('reload');
+    }
+
     function saveCombo(){
         var selectedrow = $("#dgArtistSeq").edatagrid("getSelected");
         if (selectedrow != null){

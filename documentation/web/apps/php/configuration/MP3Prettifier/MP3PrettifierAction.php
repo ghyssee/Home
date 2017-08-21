@@ -88,18 +88,24 @@ exit(0);
 function getListArtists(){
     $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
     $rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
-    $artists = readJSONWithCode(JSON_ARTISTS);
-    //if (isset($_POST['sort'])){
+    $artistBO = new ArtistBO();
+    if (isSetFilterRule()){
+        $filterRules = json_decode($_POST["filterRules"]);
+        $artists = $artistBO->getArtists($filterRules);
+    }
+    else {
+        $artists = $artistBO->getArtists();
+    }
     $field = isset($_POST['sort']) ? strval($_POST['sort']) : 'name';
     $order = isset($_POST['order']) ? strval($_POST['order']) : 'asc';
     $sort = new CustomSort();
-    $array = $sort->sortObjectArrayByField($artists->list, "name", $order);
-    $artists->list = $array;
+    $array = $sort->sortObjectArrayByField($artists, "name", $order);
+    $artists = $array;
     //}
-    $array = array_slice($artists->list, ($page-1)*$rows, $rows);
+    $array = array_slice($artists, ($page-1)*$rows, $rows);
 
     $result = array();
-    $result["total"] = count($artists->list);
+    $result["total"] = count($artists);
     $result["rows"] = $array;
     echo json_encode($result);
 }
@@ -338,8 +344,15 @@ function listMultiArtists(){
 
 function listArtists(){
     $artistBO = new ArtistBO();
+    if (isSetFilterRule()){
+        $filterRules = json_decode($_POST["filterRules"]);
+        $newArray = $artistBO->getArtists($filterRules);
+    }
+    else {
+        $newArray = $artistBO->getArtists();
+    }
     $sort = new CustomSort();
-    $array = $sort->sortObjectArrayByField($artistBO->getArtists(), "name");
+    $array = $sort->sortObjectArrayByField($newArray, "name");
     echo json_encode($array);
 }
 
