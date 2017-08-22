@@ -186,6 +186,7 @@ public class ArtistConfigBO {
     }
 
     public MultiArtistConfig.Item findMultiArtist(String[] artists){
+        // lookup if all artist exist
         List<Artists.Artist> listArtists = new ArrayList<>();
         for (String artistName : artists){
             Artists.Artist artist = artistBO.findArtistByName(artistName);

@@ -47,7 +47,7 @@ public class ArtistBO {
 
     public Artists.Artist findArtistByName(String artistName){
         for (Artists.Artist artistItem: artists.list){
-            if (getStageName(artistItem).equals(artistName)){
+            if (getStageName(artistItem).equals(artistName) || artistItem.getName().equals(artistName)){
                 return artistItem;
             }
         }
