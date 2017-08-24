@@ -142,21 +142,21 @@ private static void testAlbumArtist(){
         System.out.println(mp3Helper.prettifyArtist("Person Z"));
         System.out.println(mp3Helper.prettifyArtist("Person Z, (a"));
         System.out.println(mp3Helper.prettifyArtist("Person Y"));
+        System.out.println(getTitleArtistException("Tina Turner", "Teach Me Again"));
+        System.out.println(getArtistTitleException("Tina Turner", "Teach Me Again"));
 
     }
 
     private static String getArtistTitleException(String artist, String title){
         String prettifiedArtist = MP3Helper.getInstance().prettifyArtist(artist);
         String prettifiedTitle = MP3Helper.getInstance().prettifySong(title);
-        prettifiedArtist = MP3Helper.getInstance().checkForArtistExceptions(prettifiedArtist, prettifiedTitle);
-        return MP3Helper.getInstance().checkForArtistExceptions2(prettifiedArtist, prettifiedTitle);
+        prettifiedArtist = MP3Helper.getInstance().prettifyArtistSong(prettifiedArtist, prettifiedTitle);
+        return prettifiedArtist;
     }
 
     private static String getTitleArtistException(String artist, String title){
-        String prettifiedArtist = MP3Helper.getInstance().prettifyArtist(artist);
-        String prettifiedTitle = MP3Helper.getInstance().prettifySong(title);
-        prettifiedTitle = MP3Helper.getInstance().checkForTitleExceptions(prettifiedArtist, prettifiedTitle);
-        return MP3Helper.getInstance().checkForTitleExceptions2(prettifiedArtist, prettifiedTitle);
+        String prettifiedTitle = MP3Helper.getInstance().prettifySongArtist(artist, title);
+        return prettifiedTitle;
     }
 
     private static void updateMP3(){

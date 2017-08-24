@@ -2,19 +2,14 @@ package be.home.main.test;
 
 import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
-import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.DateUtils;
-import be.home.common.utils.FileUtils;
-import be.home.common.utils.JSONUtils;
 import be.home.common.utils.MyFileWriter;
 import be.home.domain.model.MP3Helper;
 import be.home.mezzmo.domain.bo.ArtistBO;
 import be.home.mezzmo.domain.bo.ArtistConfigBO;
 import be.home.mezzmo.domain.bo.ArtistSongRelationshipBO;
-import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.json.*;
-import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.DocumentException;
@@ -22,13 +17,10 @@ import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 
 import static be.home.common.utils.JSONUtils.writeJsonFile;
-import static be.home.common.utils.JSONUtils.writeJsonFileWithCode;
 
 /**
  * Created by ghyssee on 20/02/2015.
@@ -86,10 +78,10 @@ public class ConvertArtistSong extends BatchJobV2 {
         goodFile.close();
         badFile.close();
         mp3Prettifier.artistSongExceptions.items = newArtistSongExceptionsList;
-        //writeJsonFile(mp3Prettifier, Setup.getFullPath(Constants.JSON.MP3PRETTIFIER) + ".NEW");
-        //writeJsonFile(artistSongRelationship, Setup.getFullPath(Constants.JSON.ARTISTSONGRELATIONSHIP) + ".NEW");
-        writeJsonFileWithCode(mp3Prettifier, Constants.JSON.MP3PRETTIFIER);
-        writeJsonFileWithCode(artistSongRelationship, Constants.JSON.ARTISTSONGRELATIONSHIP);
+        writeJsonFile(mp3Prettifier, Setup.getFullPath(Constants.JSON.MP3PRETTIFIER) + ".NEW");
+        writeJsonFile(artistSongRelationship, Setup.getFullPath(Constants.JSON.ARTISTSONGRELATIONSHIP) + ".NEW");
+        //writeJsonFileWithCode(mp3Prettifier, Constants.JSON.MP3PRETTIFIER);
+        //writeJsonFileWithCode(artistSongRelationship, Constants.JSON.ARTISTSONGRELATIONSHIP);
 
     }
 
@@ -136,6 +128,15 @@ public class ConvertArtistSong extends BatchJobV2 {
                 converted = true;
                 log.info("MultiArtist Found: Id= " + multiArtist.getId());
             }
+            else {
+                if (artistType.equals(ArtistType.Old)){
+                    // artist can be (?:Artist A|Artist B)
+                    converted = checkForMultiArtistList(artistName, artistSongRelation);
+                    if (converted) {
+                        log.info("Artist List Found For " + artistName);
+                    }
+                }
+            }
         }
         else {
             converted = true;
@@ -150,60 +151,31 @@ public class ConvertArtistSong extends BatchJobV2 {
         return converted;
     }
 
-    private boolean convertToMultiArtist(List<ArtistSongRelationship.ArtistSongRelation> list,
-                                      String[] artists,
-                                      Artists.Artist oldArtist,
-                                         MultiArtistConfig.Item oldMultiArtist,
-                                      MP3Prettifier.ArtistSongExceptions.ArtistSong artistSong)
-    {
-        MultiArtistConfig.Item multiArtistItem = ArtistConfigBO.getInstance().findMultiArtist(artists);
-        if (multiArtistItem != null){
-            ArtistSongRelationship.ArtistSongRelation artistSongRelation = new ArtistSongRelationship().new ArtistSongRelation();
-            artistSongRelation.oldSong = artistSong.oldSong;
-            artistSongRelation.newSong = artistSong.newSong;
-            if (oldArtist != null) {
-                artistSongRelation.oldArtistId = oldArtist.getId();
+    private boolean checkForMultiArtistList(String artistName, ArtistSongRelationship.ArtistSongRelation artistSongRelation){
+        String tmp = artistName.replaceAll("^\\(\\?:", "");
+        ArtistBO artistBO = ArtistBO.getInstance();
+        tmp = tmp.replaceAll("\\)$", "");
+        String[] artists = tmp.split("\\|");
+        List<ArtistSongRelationship.ArtistItem> artistList = new ArrayList<>();
+        boolean found = false;
+        for ( String artist : artists){
+            Artists.Artist artistObj = artistBO.findArtistByName(artist);
+            if (artistObj != null){
+                ArtistSongRelationship.ArtistItem artistItem = new ArtistSongRelationship(). new ArtistItem();
+                artistItem.setId(artistObj.getId());
+                artistList.add(artistItem);
+                found = true;
             }
             else {
-                artistSongRelation.oldMultiArtistId = oldMultiArtist.getId();
+                log.warn("Could Not Find Artist From List: " + artist);
+                found = false;
+                break;
             }
-            artistSongRelation.exact = artistSong.exactMatchArtist;
-            artistSongRelation.newMultiArtistId = multiArtistItem.getId();
-            artistSongRelation.exactMatchTitle = artistSong.exactMatchTitle;
-            artistSongRelation.id = artistSong.id;
-            artistSongRelation.priority = artistSong.priority;
-            list.add(artistSongRelation);
-            // everything ok, convert it to ArtistSongRelationship;
-            return true;
-
         }
-        return false;
-
-    }
-
-    private boolean convertToArtist(List<ArtistSongRelationship.ArtistSongRelation> list,
-                                         String artist,
-                                         Artists.Artist oldArtist,
-                                         MP3Prettifier.ArtistSongExceptions.ArtistSong artistSong)
-    {
-        Artists.Artist newArtist = ArtistBO.getInstance().findArtistByName(artist);
-        if (newArtist != null){
-            ArtistSongRelationship.ArtistSongRelation artistSongRelation = new ArtistSongRelationship().new ArtistSongRelation();
-            artistSongRelation.oldSong = artistSong.oldSong;
-            artistSongRelation.newSong = artistSong.newSong;
-            artistSongRelation.oldArtistId = oldArtist.getId();
-            artistSongRelation.exact = artistSong.exactMatchArtist;
-            artistSongRelation.newArtistId = newArtist.getId();
-            artistSongRelation.exactMatchTitle = artistSong.exactMatchTitle;
-            artistSongRelation.id = artistSong.id;
-            artistSongRelation.priority = artistSong.priority;
-            list.add(artistSongRelation);
-            // everything ok, convert it to ArtistSongRelationship;
-            return true;
-
+        if (found){
+            artistSongRelation.oldArtistList = artistList;
         }
-        return false;
-
+        return found;
     }
 
     @Override

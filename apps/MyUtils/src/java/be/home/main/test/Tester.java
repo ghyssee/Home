@@ -134,15 +134,15 @@ public class Tester extends BatchJobV2 {
     private static String getArtistTitleException(String artist, String title){
         String prettifiedArtist = MP3Helper.getInstance().prettifyArtist(artist);
         String prettifiedTitle = MP3Helper.getInstance().prettifySong(title);
-        prettifiedArtist = MP3Helper.getInstance().checkForArtistExceptions(prettifiedArtist, prettifiedTitle);
-        return MP3Helper.getInstance().checkForArtistExceptions2(prettifiedArtist, prettifiedTitle);
+        prettifiedArtist = MP3Helper.getInstance().prettifyArtistSong(prettifiedArtist, prettifiedTitle);
+        return prettifiedArtist;
     }
 
     private static String getTitleArtistException(String artist, String title){
         String prettifiedArtist = MP3Helper.getInstance().prettifyArtist(artist);
         String prettifiedTitle = MP3Helper.getInstance().prettifySong(title);
-        prettifiedTitle = MP3Helper.getInstance().checkForTitleExceptions(prettifiedArtist, prettifiedTitle);
-        return MP3Helper.getInstance().checkForTitleExceptions2(prettifiedArtist, prettifiedTitle);
+        prettifiedTitle = MP3Helper.getInstance().prettifySongArtist(prettifiedArtist, prettifiedTitle);
+        return prettifiedTitle;
     }
 
     @Override

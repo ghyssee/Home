@@ -13,6 +13,7 @@ public class ArtistSongRelationship {
         public String id;
         public String oldArtistId;
         public String oldMultiArtistId;
+        public List<ArtistItem> oldArtistList;
         public String newMultiArtistId;
         public String newArtistId;
         public String oldSong;
@@ -21,5 +22,17 @@ public class ArtistSongRelationship {
         public boolean exactMatchTitle;
         public int priority;
         public int indexTitle;
+    }
+
+    public class ArtistItem {
+        public String id;
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
     }
 }

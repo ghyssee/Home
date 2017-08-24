@@ -24,6 +24,7 @@ public class ArtistSongRelationshipBO {
     private static ArtistSongRelationship artistSongRelationship;
     private static final Logger log = Logger.getLogger(ArtistSongRelationshipBO.class);
     public static List<MP3Prettifier.ArtistSongExceptions.ArtistSong> artistSongs;
+    public static List<ArtistSongRelationship.ArtistSongRelation> artistSongRelationshipList;
 
 
     private ArtistSongRelationshipBO() {
@@ -43,6 +44,10 @@ public class ArtistSongRelationshipBO {
         return artistSongRelationshipBO;
     }
 
+    public List<ArtistSongRelationship.ArtistSongRelation> getArtistSongRelationshipList(){
+        return artistSongRelationshipList;
+    }
+
     private static void constructArtistSong(){
 
     }
@@ -51,6 +56,7 @@ public class ArtistSongRelationshipBO {
 
         log.info("Started: Constructing ArtistSongRelationship");
         List <MP3Prettifier.ArtistSongExceptions.ArtistSong> items = new ArrayList<>();
+        artistSongRelationshipList = new ArrayList<>();
         for (ArtistSongRelationship.ArtistSongRelation item : artistSongRelationship.items){
             MP3Prettifier.ArtistSongExceptions.ArtistSong artistSong = new MP3Prettifier().new ArtistSongExceptions().new ArtistSong();
             artistSong.oldSong = item.oldSong;
@@ -67,9 +73,12 @@ public class ArtistSongRelationshipBO {
                 MP3Prettifier.Word word = ArtistConfigBO.getInstance().constructItem(multiArtistItem);
                 artistSong.oldArtist = word.newWord;
             }
-            else {
+            else if (StringUtils.isNotBlank(item.oldArtistId)) {
                 Artists.Artist artistItem = ArtistBO.getInstance().getArtistWithException(item.oldArtistId) ;
-                artistSong.oldArtist = ArtistBO.getInstance().getStageName(artistItem);
+                artistSong.oldArtist = artistItem.getName();
+            }
+            else if (item.oldArtistList != null) {
+                artistSongRelationshipList.add(item);
             }
 
             artistSong.exactMatchArtist = item.exact;

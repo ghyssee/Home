@@ -5,6 +5,9 @@ import be.home.common.utils.JSONUtils;
 import be.home.mezzmo.domain.bo.ArtistBO;
 import be.home.mezzmo.domain.bo.ArtistConfigBO;
 import be.home.mezzmo.domain.bo.ArtistSongRelationshipBO;
+import be.home.mezzmo.domain.model.json.ArtistSongRelationship;
+import be.home.mezzmo.domain.model.json.Artists;
+import be.home.mezzmo.domain.model.json.MultiArtistConfig;
 import be.home.model.json.AlbumInfo;
 import be.home.mezzmo.domain.model.json.MP3Prettifier;
 import org.apache.commons.lang3.StringUtils;
@@ -254,6 +257,13 @@ public class MP3Helper {
         log.info("Old Title: " + word.oldSong + " / New Title: " + word.newSong);
     }
 
+    private void logRule(String category, ArtistSongRelationship.ArtistSongRelation word){
+        log.info("Rule applied: Category: " + category);
+        String newArtist = StringUtils.isNotBlank(word.newArtistId) ? "(ARTIST) " + word.newArtistId : "(MULTI) " + word.newMultiArtistId;
+        log.info("Old Artist: " + "<LIST>" + " / New Artist: " + newArtist);
+        log.info("Old Title: " + word.oldSong + " / New Title: " + word.newSong);
+    }
+
     private enum Mp3Tag {
         ARTIST, TITLE, ALBUM
     }
@@ -373,8 +383,7 @@ public class MP3Helper {
     public String prettifyAlbum(String album, String albumArtist){
         String prettifiedText = prettifySong(album);
         if (albumArtist != null) {
-            prettifiedText = checkForTitleExceptions(albumArtist, prettifiedText);
-            prettifiedText = checkForTitleExceptions2(albumArtist, prettifiedText);
+            prettifiedText = prettifySongArtist(albumArtist, prettifiedText);
         }
         /*
         if (StringUtils.isNotBlank(prettifiedText)) {
@@ -494,33 +503,108 @@ public class MP3Helper {
         return artist;
     }
 
+    public boolean isModified(String oldVal, String newVal, String logMessage){
+        boolean changed = !oldVal.equals(newVal);
+        if (changed){
+            log.info(logMessage);
+        }
+        return changed;
+    }
+
     public String prettifySongArtist(String artist, String song){
-        String prettifiedSong = checkForTitleExceptions(artist, song);
-        prettifiedSong = checkForTitleExceptions2(artist, prettifiedSong);
+        String prettifiedSong = checkTitleArtistRelation(artist, song, "Title Exception", mp3Prettifer.artistSongExceptions.items);
+        if (isModified(song, prettifiedSong, "ArtistSong / Song / Level 1 => Updated")){
+            return prettifiedSong;
+        }
+        prettifiedSong = checkTitleArtistRelation(artist, song, "Title ExceptionV2", ArtistSongRelationshipBO.getInstance().artistSongs);
+        if (isModified(song, prettifiedSong, "ArtistSong / Song / Level 2 => Updated")){
+            return prettifiedSong;
+        }
+        prettifiedSong = checkArtistTitleExceptions3(artist, song, ARTIST_SONG_TYPE.SONG);
+        if (isModified(song, prettifiedSong, "ArtistSong / Song / Level 3 => Updated")){
+            return prettifiedSong;
+        }
         return prettifiedSong;
     }
 
 
     public String prettifyArtistSong(String artist, String song){
-        String prettifiedArtist = checkForArtistExceptions(artist, song);
-        prettifiedArtist = checkForArtistExceptions2(prettifiedArtist, song);
+        String prettifiedArtist = checkArtistTitleRelation(artist, song, "Artist Exception",  mp3Prettifer.artistSongExceptions.items);
+        if (isModified(artist, prettifiedArtist, "ArtistSong / Artist / Level 1 => Updated")){
+            return prettifiedArtist;
+        }
+        prettifiedArtist = checkArtistTitleRelation(artist, song, "Artist ExceptionV2",  ArtistSongRelationshipBO.getInstance().artistSongs);
+        if (isModified(artist, prettifiedArtist, "ArtistSong / Artist / Level 2 => Updated")){
+            return prettifiedArtist;
+        }
+        prettifiedArtist = checkArtistTitleExceptions3(artist, song, ARTIST_SONG_TYPE.ARTIST);
+        if (isModified(artist, prettifiedArtist, "ArtistSong / Artist / Level 3 => Updated")){
+            return prettifiedArtist;
+        }
         return prettifiedArtist;
     }
 
-
-    public String checkForTitleExceptions(String artist, String song){
-        return checkTitleArtistRelation(artist, song, "Title Exception", mp3Prettifer.artistSongExceptions.items);
+    public enum ARTIST_SONG_TYPE {
+        ARTIST, SONG
     }
 
-    public String checkForTitleExceptions2(String artist, String song){
-        return checkTitleArtistRelation(artist, song, "Title ExceptionV2", ArtistSongRelationshipBO.getInstance().artistSongs);
+    /*
+     This Will lookup Artist Song Relations which starts with one of the artists from the list
+     This is never an exact match. For exact match use oldArtistId or oldMultiArtistId
+     */
+
+    public String checkArtistTitleExceptions3(String artist, String song, ARTIST_SONG_TYPE type){
+        String value = null;
+        switch (type) {
+            case ARTIST:
+                value = artist;
+                break;
+            case SONG:
+                value = song;
+                break;
+        }
+        List <ArtistSongRelationship.ArtistSongRelation>  list = ArtistSongRelationshipBO.getInstance().getArtistSongRelationshipList();
+        for (ArtistSongRelationship.ArtistSongRelation item : list) {
+            for (ArtistSongRelationship.ArtistItem artistItem : item.oldArtistList) {
+                Artists.Artist artistObj = ArtistBO.getInstance().getArtist(artistItem.id);
+                if (artistObj == null) {
+                    log.error("Artist Id Not Found: " + artistItem.id);
+                    break;
+                }
+                String artistName = ArtistBO.getInstance().getStageName(artistObj);
+                ArtistSongItem artistSongItem = null;
+                artistSongItem = checkTitle(song, item.oldSong, item.newSong, item.exactMatchTitle, item.indexTitle);
+                if (artist.startsWith(artistName)) {
+                    switch (type){
+                        case ARTIST:
+                            if (StringUtils.isNotBlank(item.newMultiArtistId)){
+                                MultiArtistConfig.Item tmp = ArtistConfigBO.getInstance().getMultiArtist(item.newMultiArtistId);
+                                MP3Prettifier.Word word = ArtistConfigBO.getInstance().constructItem(tmp);
+                                artistSongItem.setItem(word.newWord);
+                            }
+                            else if (StringUtils.isNotBlank(item.newArtistId)){
+                                Artists.Artist newArtistObj = ArtistBO.getInstance().getArtist(item.newArtistId);
+                                artistSongItem.setItem(ArtistBO.getInstance().getStageName(newArtistObj));
+                            }
+                            break;
+                        case SONG:
+                            break;
+                    }
+                    if (artistSongItem != null && artistSongItem.isMatched()) {
+                        value = artistSongItem.getItem();
+                        logRule("Title ExceptionV3", item);
+                        break;
+                    }
+                }
+            }
+        }
+        return value;
     }
 
-    public String checkForArtistExceptions(String artist, String song){
-        return checkArtistTitleRelation(artist, song, "Artist Exception",  mp3Prettifer.artistSongExceptions.items);
+    public String[] splitArtist(String artist){
+        String tmp = ArtistConfigBO.getInstance().constructSplitter();
+        String[] artists = artist.split(tmp);
+        return artists;
     }
 
-    public String checkForArtistExceptions2(String artist, String song){
-        return checkArtistTitleRelation(artist, song, "Artist ExceptionV2",  ArtistSongRelationshipBO.getInstance().artistSongs);
-    }
 }

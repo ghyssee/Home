@@ -71,7 +71,7 @@ public class ArtistConfigBO {
         return word;
     }
 
-    private String constructSplitter(){
+    public String constructSplitter(){
         // construct the splitters
         String splitterText = "(";
         for (MultiArtistConfig.Splitter splitter : multiArtistConfig.splitters){

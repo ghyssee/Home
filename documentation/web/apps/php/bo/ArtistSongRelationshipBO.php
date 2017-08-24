@@ -29,6 +29,7 @@ class ArtistSongRelationshipTO extends Castable {
     public $id;
     public $oldArtistId;
     public $oldArtist;
+    public $oldArtistList;
     public $newMultiArtistId;
     public $newArtistId;
     public $newArtist;
@@ -36,6 +37,10 @@ class ArtistSongRelationshipTO extends Castable {
     public $newSong;
     public $exact;
     public $priority;
+}
+
+class ArtistItemTO extends Castable {
+    public $id;
 }
 
 class ArtistSongRelationshipBO
