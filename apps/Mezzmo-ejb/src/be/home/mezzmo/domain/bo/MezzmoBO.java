@@ -21,7 +21,13 @@ import java.util.Map;
  */
 public class MezzmoBO extends BusinessObject {
 
+    private String db = null;
+
     public MezzmoBO (){
+    }
+
+    public MezzmoBO (String db){
+        this.db = db;
     }
 
 
@@ -218,7 +224,7 @@ public class MezzmoBO extends BusinessObject {
     }
 
     public MezzmoDAOImpl getMezzmoDAO(){
-        return new MezzmoDAOImpl();
+        return new MezzmoDAOImpl(db);
     }
 
     public MezzmoAlbumDAOImpl getMezzmoAlbumDAO(){

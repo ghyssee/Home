@@ -10,6 +10,10 @@ public class MultiArtistConfig {
     public List<Splitter> splitters;
     public String splitterEndId;
 
+    public static final String AMP = "AMP";
+    public static final String AND = "AND";
+    public static final String KOMMA = "KOMMA";
+
     public class Splitter {
 
         public String id;

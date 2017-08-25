@@ -2,13 +2,17 @@ package be.home.main;
 
 import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
+import be.home.common.dao.jdbc.Databases;
+import be.home.common.dao.jdbc.MezzmoDB;
 import be.home.common.dao.jdbc.SQLiteJDBC;
+import be.home.common.dao.jdbc.SQLiteUtils;
 import be.home.common.main.BatchJobV2;
 import be.home.common.mp3.MP3Utils;
 import be.home.common.utils.FileUtils;
 import be.home.common.utils.JSONUtils;
 import be.home.common.utils.MyFileWriter;
 import be.home.domain.model.MP3Helper;
+import be.home.mezzmo.domain.dao.jdbc.MezzmoDAOImpl;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.json.ArtistSongTest;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
@@ -52,9 +56,17 @@ public class HelloWorld extends BatchJobV2 {
         //System.out.println(MP3Helper.getInstance().checkRegExpDollar("$1Text$1", 1));
         //updateMP3();
         //batchProcess();
+        myInit();
         testMP3Prettifier();
         //testAlbumArtist();
 
+    }
+
+    private static void myInit(){
+        SQLiteJDBC.initialize();
+        MezzmoServiceImpl impl = MezzmoServiceImpl.getInstance(Databases.MEZZMO2.name());
+        MGOFileAlbumCompositeTO comp = impl.findFileById(175435);
+        System.out.println(comp.getFileTO().getFile());
     }
 
     private static void batchProcess() throws IOException {

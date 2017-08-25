@@ -29,4 +29,17 @@ public class MezzmoDB extends SQLiteJDBC {
         return instance;
     }
 
+    public synchronized static SQLiteJDBC getInstance(String newDatabase) {
+        if (newDatabase == null){
+            newDatabase = database;
+        }
+        SQLiteJDBC instance = (SQLiteJDBC) instances.get(newDatabase);
+        if(instance == null) {
+            instance = new SQLiteJDBC();
+            instance.openDatabase(newDatabase);
+            instances.put(newDatabase, instance);
+        }
+        return instance;
+    }
+
 }

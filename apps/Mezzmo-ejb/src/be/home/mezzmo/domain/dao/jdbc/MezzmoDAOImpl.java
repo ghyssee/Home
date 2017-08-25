@@ -27,6 +27,11 @@ import java.util.List;
 public class MezzmoDAOImpl extends MezzmoRowMappers {
 
     private static final Logger log = Logger.getLogger(MezzmoDAOImpl.class);
+    private String db = null;
+
+    public MezzmoDAOImpl (String db){
+        this.db = db;
+    }    
 
     public List<MGOFileTO> getFiles(MGOFileAlbumCompositeTO compSearchTO)
     {
@@ -34,7 +39,7 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
         if (compSearchTO.getFileAlbumTO() != null && compSearchTO.getFileAlbumTO().getName() != null){
             params[1] = compSearchTO.getFileAlbumTO().getName();
         }
-        List<MGOFileTO> list  = getInstance().getJDBCTemplate().query(FILE_SELECT_TITLE, new MezzmoRowMappers.FileRowMapper(), params);
+        List<MGOFileTO> list  = getInstance(db).getJDBCTemplate().query(FILE_SELECT_TITLE, new MezzmoRowMappers.FileRowMapper(), params);
         return list;
     }
 
@@ -43,20 +48,20 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
         Object[] params = {playCount, SQLiteUtils.convertDateToString(dateLastPlayed), fileTitle, playCount,
                            album == null ? "%" : album, fileTitle
                           };
-        return getInstance().getJDBCTemplate().update(FILE_UPDATE_PLAYCOUNT, params);
+        return getInstance(db).getJDBCTemplate().update(FILE_UPDATE_PLAYCOUNT, params);
 
 
     }
 
     public int synchronizePlayCount(Long fileID, int playCount, java.util.Date lastPlayed) throws SQLException {
         Object[] params = {playCount, SQLiteUtils.convertDateToString(lastPlayed), fileID};
-        return getInstance().getJDBCTemplate().update(FILE_SYNC_PLAYCOUNT, params);
+        return getInstance(db).getJDBCTemplate().update(FILE_SYNC_PLAYCOUNT, params);
     }
 
     public List<MGOFileAlbumCompositeTO> getMP3FilesWithPlayCount(TransferObject to)
     {
         Object[] params = {to.getIndex(), to.getLimit()};
-        List<MGOFileAlbumCompositeTO> list  = getInstance().getJDBCTemplate().query(FILE_PLAYCOUNT, new MezzmoRowMappers.FileAlbumPlayCountMapper(), params);
+        List<MGOFileAlbumCompositeTO> list  = getInstance(db).getJDBCTemplate().query(FILE_PLAYCOUNT, new MezzmoRowMappers.FileAlbumPlayCountMapper(), params);
         if (list.size() == 0 || list.size() < to.getLimit()){
             to.setEndOfList(true);
         }
@@ -74,7 +79,7 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
         else {
             params = new Object[] {albumTO.getName()};
         }
-        list = getInstance().getJDBCTemplate().query(LIST_ALBUMS_DEFAULT, new AlbumRowMapper(), params);
+        list = getInstance(db).getJDBCTemplate().query(LIST_ALBUMS_DEFAULT, new AlbumRowMapper(), params);
         return list;
     }
 
@@ -96,7 +101,7 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
         }
         List<MGOFileAlbumCompositeTO> list = null;
         String sql = query.render();
-        list = getInstance().getJDBCTemplate().query(sql, new AlbumRowMapper(), params.toArray());
+        list = getInstance(db).getJDBCTemplate().query(sql, new AlbumRowMapper(), params.toArray());
         return list;
     }
 
@@ -104,20 +109,20 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
 
     public List<MGOFileAlbumCompositeTO> getAlbumTracks(TransferObject to)
     {
-        List<MGOFileAlbumCompositeTO> list  = getInstance().getJDBCTemplate().query(LIST_ALBUMS_TRACKS, new AlbumTrackRowMapper());
+        List<MGOFileAlbumCompositeTO> list  = getInstance(db).getJDBCTemplate().query(LIST_ALBUMS_TRACKS, new AlbumTrackRowMapper());
         return list;
     }
 
     public List<MGOFileAlbumCompositeTO> getTop20()
     {
-        List<MGOFileAlbumCompositeTO> list  = getInstance().getJDBCTemplate().query(LIST_TOP20, new MezzmoRowMappers.FileAlbumRowMapper());
+        List<MGOFileAlbumCompositeTO> list  = getInstance(db).getJDBCTemplate().query(LIST_TOP20, new MezzmoRowMappers.FileAlbumRowMapper());
         return list;
 
     }
 
     public MGOFileTO findByFile(String file) {
         Object[] params = {file};
-        MGOFileTO fileTO = (MGOFileTO) getInstance().getJDBCTemplate().queryForObject(FIND_BY_FILE, new FileRowMapper(), params);
+        MGOFileTO fileTO = (MGOFileTO) getInstance(db).getJDBCTemplate().queryForObject(FIND_BY_FILE, new FileRowMapper(), params);
         return fileTO;
     }
 
@@ -128,7 +133,7 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
                 SQLiteUtils.getSearchField(comp.getFileTO().getTitle()),
                 SQLiteUtils.getSearchField(comp.getFileAlbumTO().getName())
         };
-        MGOFileTO fileTO = (MGOFileTO) getInstance().getJDBCTemplate().queryForObject(FILE_FIND_TAGINFO_CRITERIA, new FileRowMapper(), params);
+        MGOFileTO fileTO = (MGOFileTO) getInstance(db).getJDBCTemplate().queryForObject(FILE_FIND_TAGINFO_CRITERIA, new FileRowMapper(), params);
         return fileTO;
     }
 
@@ -137,13 +142,13 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
                 comp.getFileAlbumTO().getId() == 0 ? "%": comp.getFileAlbumTO().getId(),
                 comp.getAlbumArtistTO().getId() == 0 ? "%": comp.getAlbumArtistTO().getId()
         };
-        List<MGOFileAlbumCompositeTO> list = getInstance().getJDBCTemplate().query(FILE_FIND_TAGINFO_BY_ALBUMID_ALBUMARTISTID, new SongsAlbumRowMapper(), params);
+        List<MGOFileAlbumCompositeTO> list = getInstance(db).getJDBCTemplate().query(FILE_FIND_TAGINFO_BY_ALBUMID_ALBUMARTISTID, new SongsAlbumRowMapper(), params);
         return list;
     }
 
     public MGOFileTO findCoverArt(Long albumId){
         Object[] params = {albumId };
-        MGOFileTO fileTO = (MGOFileTO) getInstance().getJDBCTemplate().queryForObject(FIND_COVER_ART, new FileRowMapper(), params);
+        MGOFileTO fileTO = (MGOFileTO) getInstance(db).getJDBCTemplate().queryForObject(FIND_COVER_ART, new FileRowMapper(), params);
         return fileTO;
     }
 
@@ -168,7 +173,7 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
         }
         params.add(limit);
 
-        List<MGOFileAlbumCompositeTO>  list = getInstance().getJDBCTemplate().query(query.render(), new FileAlbumPlayCountMapper(), params.toArray());
+        List<MGOFileAlbumCompositeTO>  list = getInstance(db).getJDBCTemplate().query(query.render(), new FileAlbumPlayCountMapper(), params.toArray());
         return list;
 
     }
@@ -178,7 +183,7 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
         String query = FIND_SONGS_ALBUM;
         Object[] params = {albumId, albumArtistId};
 
-        List<MGOFileAlbumCompositeTO>  list = getInstance().getJDBCTemplate().query(query, new FileAlbumPlayCountMapper(), params);
+        List<MGOFileAlbumCompositeTO>  list = getInstance(db).getJDBCTemplate().query(query, new FileAlbumPlayCountMapper(), params);
         return list;
 
     }
@@ -187,26 +192,26 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
     {
         String query = FIND_LAST_PLAYED;
         Object[] params = {number};
-        List<MGOFileAlbumCompositeTO>  list = getInstance().getJDBCTemplate().query(query, new FileAlbumPlayCountMapper(), params);
+        List<MGOFileAlbumCompositeTO>  list = getInstance(db).getJDBCTemplate().query(query, new FileAlbumPlayCountMapper(), params);
         return list;
 
     }
 
     public int updateRanking(Long fileID, int ranking) throws SQLException {
         Object[] params = {ranking, fileID};
-        return getInstance().getJDBCTemplate().update(FILE_UPDATE_RATING, params);
+        return getInstance(db).getJDBCTemplate().update(FILE_UPDATE_RATING, params);
     }
 
     public List<MGOFileAlbumCompositeTO> getMaxDisc()
     {
         String query = MAX_DISC;
-        List<MGOFileAlbumCompositeTO>  list = getInstance().getJDBCTemplate().query(query, new MaxDiscRowMapper());
+        List<MGOFileAlbumCompositeTO>  list = getInstance(db).getJDBCTemplate().query(query, new MaxDiscRowMapper());
         return list;
 
     }
     public int updateArtist(MGOFileArtistTO artist) {
         Object params[] = {artist.getArtist(), artist.getID()};
-        int nr = getInstance().getJDBCTemplate().update(FILE_UPDATE_ARTIST, params);
+        int nr = getInstance(db).getJDBCTemplate().update(FILE_UPDATE_ARTIST, params);
         return nr;
     }
 
@@ -218,7 +223,7 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
                 params = new Object[] {comp.getFileTO().getTitle(),
                         comp.getFileTO().getSortTitle(),
                         comp.getFileTO().getId()};
-                nr = getInstance().getJDBCTemplate().update(FILE_UPDATE_TITLE, params);
+                nr = getInstance(db).getJDBCTemplate().update(FILE_UPDATE_TITLE, params);
                 break;
             case ARTIST:
                 nr = updateArtist(comp.getFileArtistTO());
@@ -226,26 +231,26 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
             case ALBUM:
                 params = new Object[] {comp.getFileAlbumTO().getName(),
                         comp.getFileAlbumTO().getId()};
-                nr = getInstance().getJDBCTemplate().update(FILE_UPDATE_ALBUM, params);
+                nr = getInstance(db).getJDBCTemplate().update(FILE_UPDATE_ALBUM, params);
                 break;
             case FILE:
                 params = new Object[] {comp.getFileTO().getFile(),
                         comp.getFileTO().getFileTitle(),
                         comp.getFileTO().getId()};
-                nr = getInstance().getJDBCTemplate().update(FILE_UPDATE_FILE, params);
+                nr = getInstance(db).getJDBCTemplate().update(FILE_UPDATE_FILE, params);
                 break;
             case FILETITLE:
                 params = new Object[] {comp.getFileTO().getFileTitle(),
                         comp.getFileTO().getId()};
-                nr = getInstance().getJDBCTemplate().update(FILE_UPDATE_FILETITLE, params);
+                nr = getInstance(db).getJDBCTemplate().update(FILE_UPDATE_FILETITLE, params);
                 break;
             case TRACK:
                 params = new Object[] {comp.getFileTO().getTrack(), comp.getFileTO().getId()};
-                nr = getInstance().getJDBCTemplate().update(FILE_UPDATE_TRACK, params);
+                nr = getInstance(db).getJDBCTemplate().update(FILE_UPDATE_TRACK, params);
                 break;
             case DISC:
                 params = new Object[] {comp.getFileTO().getDisc(), comp.getFileTO().getId()};
-                nr = getInstance().getJDBCTemplate().update(FILE_UPDATE_DISC, params);
+                nr = getInstance(db).getJDBCTemplate().update(FILE_UPDATE_DISC, params);
                 break;
             default:
                 log.error("Unknown Type: " + mp3Tag.name());
@@ -258,7 +263,7 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
         Object[] params = {
                 artist.getArtist()
                 };
-        MGOFileArtistTO fileArtistTO = (MGOFileArtistTO) getInstance().getJDBCTemplate().queryForObject(FIND_ARTIST, new ArtistRowMapper(), params);
+        MGOFileArtistTO fileArtistTO = (MGOFileArtistTO) getInstance(db).getJDBCTemplate().queryForObject(FIND_ARTIST, new ArtistRowMapper(), params);
         return fileArtistTO;
     }
 
@@ -266,7 +271,7 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
         Object[] params = {
                 artist.getID()
         };
-        MGOFileArtistTO fileArtistTO = (MGOFileArtistTO) getInstance().getJDBCTemplate().queryForObject(FIND_ARTIST_BY_ID, new ArtistRowMapper(), params);
+        MGOFileArtistTO fileArtistTO = (MGOFileArtistTO) getInstance(db).getJDBCTemplate().queryForObject(FIND_ARTIST_BY_ID, new ArtistRowMapper(), params);
         return fileArtistTO;
     }
 
@@ -274,7 +279,7 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
         Object[] params = {
                 artist.getID()
         };
-        List <MGOFileAlbumCompositeTO> list = getInstance().getJDBCTemplate().query(FIND_LINKED_ARTIST, new FileArtistRowMapper(), params);
+        List <MGOFileAlbumCompositeTO> list = getInstance(db).getJDBCTemplate().query(FIND_LINKED_ARTIST, new FileArtistRowMapper(), params);
         return list;
     }
 
@@ -282,34 +287,34 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
         Object[] params;
         Result result = new Result();
         params = new Object[] {newId, artist.getID()};
-        result.setNr1(getInstance().getJDBCTemplate().update(UPDATE_LINK_FILE_ARTIST, params));
+        result.setNr1(getInstance(db).getJDBCTemplate().update(UPDATE_LINK_FILE_ARTIST, params));
         return result;
     }
 
     public int updateLinkFileArtist2(MGOFileAlbumCompositeTO comp){
         Object[] params;
         params = new Object[] {comp.getFileArtistTO().getID(), comp.getFileTO().getId()};
-        int nr = getInstance().getJDBCTemplate().update(UPDATE_LINK_FILE_ARTIST2, params);
+        int nr = getInstance(db).getJDBCTemplate().update(UPDATE_LINK_FILE_ARTIST2, params);
         return nr;
     }
 
     public int deleteArtist(MGOFileArtistTO artist){
         Object[] params;
         params = new Object[] {artist.getID()};
-        int nr = getInstance().getJDBCTemplate().update(DELETE_ARTIST, params);
+        int nr = getInstance(db).getJDBCTemplate().update(DELETE_ARTIST, params);
         return nr;
     }
 
     public int deleteAlbum(MGOFileAlbumTO album){
         Object[] params;
         params = new Object[] {album.getId()};
-        int nr = getInstance().getJDBCTemplate().update(DELETE_ALBUM, params);
+        int nr = getInstance(db).getJDBCTemplate().update(DELETE_ALBUM, params);
         return nr;
     }
 
     public Long insertAlbum(final MGOFileAlbumTO album){
         Object[] params = {album.getName()};
-        Long key = insertJDBC(getInstance().getJDBCTemplate(), params, INSERT_ALBUM, "id");
+        Long key = insertJDBC(getInstance(db).getJDBCTemplate(), params, INSERT_ALBUM, "id");
         return key;
     }
 
@@ -317,14 +322,14 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
         Object[] params = {
                 album.getId()
         };
-        List <MGOFileAlbumCompositeTO> list = getInstance().getJDBCTemplate().query(FIND_LINKED_ALBUM, new SingleFileAlbumRowMapper(), params);
+        List <MGOFileAlbumCompositeTO> list = getInstance(db).getJDBCTemplate().query(FIND_LINKED_ALBUM, new SingleFileAlbumRowMapper(), params);
         return list;
     }
 
     public Integer insertArtist2(final MGOFileArtistTO artist){
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        getInstance().getJDBCTemplate().update(
+        getInstance(db).getJDBCTemplate().update(
                 new PreparedStatementCreator() {
                     public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
                         PreparedStatement pst =
@@ -339,19 +344,19 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
 
     public Long insertArtist(final MGOFileArtistTO artist){
         Object[] params = {artist.getArtist()};
-        Long key = insertJDBC(getInstance().getJDBCTemplate(), params, INSERT_ARTIST, "id");
+        Long key = insertJDBC(getInstance(db).getJDBCTemplate(), params, INSERT_ARTIST, "id");
         return key;
     }
 
     public int updateLinkFileAlbum(MGOFileAlbumCompositeTO comp, long newAlbumId){
         Object[] params = {newAlbumId, comp.getFileAlbumTO().getId(), comp.getFileTO().getId()};
-        int nr = getInstance().getJDBCTemplate().update(UPDATE_LINK_FILE_ALBUM, params);
+        int nr = getInstance(db).getJDBCTemplate().update(UPDATE_LINK_FILE_ALBUM, params);
         return nr;
     }
 
     public MGOFileAlbumCompositeTO findFileById(long id){
         Object[] params = { id };
-        MGOFileAlbumCompositeTO comp = (MGOFileAlbumCompositeTO) getInstance().getJDBCTemplate().queryForObject(FILE_FIND_BY_ID, new SongsAlbumRowMapper(), params);
+        MGOFileAlbumCompositeTO comp = (MGOFileAlbumCompositeTO) getInstance(db).getJDBCTemplate().queryForObject(FILE_FIND_BY_ID, new SongsAlbumRowMapper(), params);
         return comp;
     }
 

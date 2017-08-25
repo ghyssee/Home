@@ -76,8 +76,8 @@ public class ConvertArtistPattern extends BatchJobV2 {
             }
         }
         if (save){
-            //ArtistBO.getInstance().save();
-            //MP3PrettifierBO.getInstance().save();
+            ArtistBO.getInstance().save();
+            MP3PrettifierBO.getInstance().save();
         }
     }
 

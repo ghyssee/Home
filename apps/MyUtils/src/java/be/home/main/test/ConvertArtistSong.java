@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static be.home.common.utils.JSONUtils.writeJsonFile;
+import static be.home.common.utils.JSONUtils.writeJsonFileWithCode;
 
 /**
  * Created by ghyssee on 20/02/2015.
@@ -78,21 +79,37 @@ public class ConvertArtistSong extends BatchJobV2 {
         goodFile.close();
         badFile.close();
         mp3Prettifier.artistSongExceptions.items = newArtistSongExceptionsList;
-        writeJsonFile(mp3Prettifier, Setup.getFullPath(Constants.JSON.MP3PRETTIFIER) + ".NEW");
-        writeJsonFile(artistSongRelationship, Setup.getFullPath(Constants.JSON.ARTISTSONGRELATIONSHIP) + ".NEW");
-        //writeJsonFileWithCode(mp3Prettifier, Constants.JSON.MP3PRETTIFIER);
-        //writeJsonFileWithCode(artistSongRelationship, Constants.JSON.ARTISTSONGRELATIONSHIP);
+        //writeJsonFile(mp3Prettifier, Setup.getFullPath(Constants.JSON.MP3PRETTIFIER) + ".NEW");
+        //writeJsonFile(artistSongRelationship, Setup.getFullPath(Constants.JSON.ARTISTSONGRELATIONSHIP) + ".NEW");
+        writeJsonFileWithCode(mp3Prettifier, Constants.JSON.MP3PRETTIFIER);
+        writeJsonFileWithCode(artistSongRelationship, Constants.JSON.ARTISTSONGRELATIONSHIP);
 
     }
 
     private  MultiArtistConfig.Item findMultiArtist(String multiArtistName){
         ArtistConfigBO multiArtistBO = ArtistConfigBO.getInstance();
         MultiArtistConfig.Item multiArtistItem = null;
-        String[] artists = multiArtistName.split(multiArtistBO.getSplitterString());
-        if (artists.length > 1) {
-            multiArtistItem = ArtistConfigBO.getInstance().findMultiArtist(artists);
+        List<String> splitters = constructSplitters();
+        for (String splitter : splitters) {
+            String[] artists = multiArtistName.split(splitter);
+            if (artists.length > 1) {
+                multiArtistItem = ArtistConfigBO.getInstance().findMultiArtist(artists);
+            }
+            if (multiArtistItem != null){
+                break;
+            }
         }
         return multiArtistItem;
+    }
+
+    private List<String> constructSplitters(){
+        List<String> splitters = new ArrayList<>();
+        ArtistConfigBO multiArtistBO = ArtistConfigBO.getInstance();
+        splitters.add(multiArtistBO.getSplitterString());
+        splitters.add(ArtistConfigBO.getInstance().constructSplitter(new String[]{MultiArtistConfig.AMP}));
+        splitters.add(ArtistConfigBO.getInstance().constructSplitter(new String[] {MultiArtistConfig.AND}));
+        splitters.add(ArtistConfigBO.getInstance().constructSplitter(new String[] {MultiArtistConfig.AMP, MultiArtistConfig.KOMMA}));
+        return splitters;
     }
 
     private void printInfo(MyFileWriter fileWriter, MP3Prettifier.ArtistSongExceptions.ArtistSong artistSong) throws IOException {

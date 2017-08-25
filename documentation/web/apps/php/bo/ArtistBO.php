@@ -8,6 +8,7 @@ class ArtistTO{
     public $id;
     public $name;
     public $stageName;
+    public $pattern;
     public function __construct()
     {
     }

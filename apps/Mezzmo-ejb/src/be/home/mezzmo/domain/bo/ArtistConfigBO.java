@@ -72,12 +72,45 @@ public class ArtistConfigBO {
     }
 
     public String constructSplitter(){
+        return constructSplitter(null);
+    }
+
+    public String constructSplitter22(String splitterToExclude){
         // construct the splitters
         String splitterText = "(";
         for (MultiArtistConfig.Splitter splitter : multiArtistConfig.splitters){
             if (StringUtils.isNotBlank(splitter.value1)) {
-                String separator = splitter.equals(multiArtistConfig.splitters.get(0)) ? "" : "|";
-                splitterText += separator + splitter.value1;
+                if (StringUtils.isBlank(splitterToExclude) || !splitterToExclude.equals(splitter.id)) {
+                    String separator = splitter.equals(multiArtistConfig.splitters.get(0)) ? "" : "|";
+                    splitterText += separator + splitter.value1;
+                }
+            }
+        }
+        splitterText += "|$)";
+        return splitterText;
+    }
+
+    public String constructSplitter(String[] splittersToExclude){
+        // construct the splitters
+        String splitterText = "(";
+        for (MultiArtistConfig.Splitter splitter : multiArtistConfig.splitters){
+            if (StringUtils.isNotBlank(splitter.value1)) {
+                boolean add = splittersToExclude == null;
+                if (splittersToExclude != null) {
+                    for (String excl : splittersToExclude) {
+                        if (excl.equals(splitter.id)){
+                            add = false;
+                            break;
+                        }
+                        else {
+                            add = true;
+                        }
+                    }
+                }
+                if (add){
+                    String separator = splitter.equals(multiArtistConfig.splitters.get(0)) ? "" : "|";
+                    splitterText += separator + splitter.value1;
+                }
             }
         }
         splitterText += "|$)";
