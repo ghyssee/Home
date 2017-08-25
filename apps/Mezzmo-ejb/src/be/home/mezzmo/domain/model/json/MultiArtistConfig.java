@@ -13,6 +13,8 @@ public class MultiArtistConfig {
     public static final String AMP = "AMP";
     public static final String AND = "AND";
     public static final String KOMMA = "KOMMA";
+    public static final String MIT = "MIT";
+    public static final String WITH = "WITH";
 
     public class Splitter {
 

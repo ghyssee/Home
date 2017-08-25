@@ -109,6 +109,8 @@ public class ConvertArtistSong extends BatchJobV2 {
         splitters.add(ArtistConfigBO.getInstance().constructSplitter(new String[]{MultiArtistConfig.AMP}));
         splitters.add(ArtistConfigBO.getInstance().constructSplitter(new String[] {MultiArtistConfig.AND}));
         splitters.add(ArtistConfigBO.getInstance().constructSplitter(new String[] {MultiArtistConfig.AMP, MultiArtistConfig.KOMMA}));
+        splitters.add(ArtistConfigBO.getInstance().constructSplitter(new String[] {MultiArtistConfig.MIT}));
+        splitters.add(ArtistConfigBO.getInstance().constructSplitter(new String[] {MultiArtistConfig.WITH}));
         return splitters;
     }
 
