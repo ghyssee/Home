@@ -54,6 +54,9 @@ public class ConvertArtistPattern extends BatchJobV2 {
           //      DateUtils.formatYYYYMMDD() + ".txt", MyFileWriter.APPEND);
         boolean save = false;
         for (MP3Prettifier.Word word :  mp3Prettifier.artist.names){
+            if (word.exactMatch){
+                continue;
+            }
             Artists.Artist artist = ArtistBO.getInstance().findArtistByName(word.newWord);
             if (artist != null){
                 if (artist.getPattern() != null){

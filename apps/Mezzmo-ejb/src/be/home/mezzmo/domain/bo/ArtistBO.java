@@ -62,7 +62,7 @@ public class ArtistBO {
     public List<MP3Prettifier.Word> constructArtistPatterns(){
         List<MP3Prettifier.Word> list = new ArrayList<MP3Prettifier.Word>();
         for (Artists.Artist artistItem: artists.list){
-            if (artistItem.getPattern() != null ) {
+            if (StringUtils.isNotBlank(artistItem.getPattern()) ) {
                 MP3Prettifier.Word word = new MP3Prettifier().new Word();
                 word.oldWord = artistItem.getPattern();
                 word.newWord = artistItem.getName();
