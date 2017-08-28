@@ -60,11 +60,13 @@ public class ConvertArtistPattern extends BatchJobV2 {
         log.info("Converting Artist Words");
         convertArtistNames(mp3Prettifier.artist.words, ArtistType.WORD, IGNORE_EXACTMATCH, !GLOBAL);
         log.info("Converting global Sentences");
-        convertArtistNames(mp3Prettifier.global.sentences, ArtistType.GLOBAL_NAME, IGNORE_EXACTMATCH, GLOBAL);
+        convertArtistNames(mp3Prettifier.global.sentences, ArtistType.GLOBAL_NAME, !IGNORE_EXACTMATCH, GLOBAL);
+        log.info("Converting global Word");
+        convertArtistNames(mp3Prettifier.global.words, ArtistType.GLOBAL_WORD, IGNORE_EXACTMATCH, GLOBAL);
     }
 
     public enum ArtistType {
-        NAME, WORD, GLOBAL_NAME;
+        NAME, WORD, GLOBAL_NAME, GLOBAL_WORD;
     }
 
     private void convertArtistNames(List<MP3Prettifier.Word> words, ArtistType artistType, boolean ignoreExactMatch, boolean global) throws IOException {
@@ -93,6 +95,9 @@ public class ConvertArtistPattern extends BatchJobV2 {
                         case WORD:
                             found = MP3PrettifierBO.getInstance().removeArtistWord(word.id);
                             break;
+                        case GLOBAL_WORD:
+                            found = MP3PrettifierBO.getInstance().removeGlobalWord(word.id);
+                            break;
                     }
                     if (!found){
                         throw new ApplicationException("Artist Name Not Found With Id; " + word.id);
@@ -105,8 +110,8 @@ public class ConvertArtistPattern extends BatchJobV2 {
             }
         }
         if (save){
-            //ArtistBO.getInstance().save();
-            //MP3PrettifierBO.getInstance().save();
+            ArtistBO.getInstance().save();
+            MP3PrettifierBO.getInstance().save();
         }
     }
 

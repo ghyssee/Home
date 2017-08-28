@@ -38,8 +38,9 @@ public class MP3Helper {
         Collections.sort(mp3Prettifer.artist.names, (a1, b1) -> a1.priority - b1.priority);
         Collections.sort(mp3Prettifer.artistSongExceptions.items, (a1, b1) -> b1.priority - a1.priority);
         artistNames = ArtistBO.getInstance().constructArtistPatterns(false);
-        globalArtistNames = ArtistBO.getInstance().constructArtistPatterns(true);
         Collections.sort(artistNames, (a1, b1) -> a1.priority - b1.priority);
+        globalArtistNames = ArtistBO.getInstance().constructArtistPatterns(true);
+        Collections.sort(globalArtistNames, (a1, b1) -> a1.priority - b1.priority);
 
     }
 

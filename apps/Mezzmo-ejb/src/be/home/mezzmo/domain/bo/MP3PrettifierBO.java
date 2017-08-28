@@ -52,6 +52,21 @@ public class MP3PrettifierBO {
         return found;
     }
 
+    public boolean removeGlobalWord(String id){
+        Iterator<MP3Prettifier.Word> iter = mp3Prettifier.global.words.iterator();
+        boolean found = false;
+        while (iter.hasNext())
+        {
+            MP3Prettifier.Word word = iter.next();
+            if (word.id.equals(id)){
+                iter.remove();
+                found = true;
+                break;
+            }
+        }
+        return found;
+    }
+
     public boolean removeArtistWord(String id){
         Iterator<MP3Prettifier.Word> iter = mp3Prettifier.artist.words.iterator();
         boolean found = false;
