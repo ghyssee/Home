@@ -53,20 +53,47 @@ public class ConvertArtistPattern extends BatchJobV2 {
         //MyFileWriter goodFile = new MyFileWriter(path + "ConvertedToArtistSongRelationship." +
           //      DateUtils.formatYYYYMMDD() + ".txt", MyFileWriter.APPEND);
         boolean save = false;
-        for (MP3Prettifier.Word word :  mp3Prettifier.artist.names){
-            if (word.exactMatch){
+        log.info("Converting Artist Names");
+        boolean GLOBAL = true;
+        boolean IGNORE_EXACTMATCH = true;
+        convertArtistNames(mp3Prettifier.artist.names, ArtistType.NAME, !IGNORE_EXACTMATCH, !GLOBAL);
+        log.info("Converting Artist Words");
+        convertArtistNames(mp3Prettifier.artist.words, ArtistType.WORD, IGNORE_EXACTMATCH, !GLOBAL);
+        log.info("Converting global Sentences");
+        convertArtistNames(mp3Prettifier.global.sentences, ArtistType.GLOBAL_NAME, IGNORE_EXACTMATCH, GLOBAL);
+    }
+
+    public enum ArtistType {
+        NAME, WORD, GLOBAL_NAME;
+    }
+
+    private void convertArtistNames(List<MP3Prettifier.Word> words, ArtistType artistType, boolean ignoreExactMatch, boolean global) throws IOException {
+        boolean save = false;
+        for (MP3Prettifier.Word word : words){
+            if (!ignoreExactMatch && word.exactMatch){
                 continue;
             }
             Artists.Artist artist = ArtistBO.getInstance().findArtistByName(word.newWord);
             if (artist != null){
-                if (artist.getPattern() != null){
+                if (StringUtils.isNotBlank(artist.getPattern())){
                     log.warn("Pattern already exist: " + artist.getPattern());
                 }
                 else {
                     //int count = org.apache.commons.lang3.StringUtils.countMatches( word.newWord, " " );
-                    ArtistBO.getInstance().updateArtistPattern(artist, word);
+                    ArtistBO.getInstance().updateArtistPattern(artist, word, global);
                     //log.info("Artist Found: " + word.newWord);
-                    boolean found = MP3PrettifierBO.getInstance().removeArtistName(word.id);
+                    boolean found = false;
+                    switch (artistType){
+                        case NAME:
+                            found = MP3PrettifierBO.getInstance().removeArtistName(word.id);
+                            break;
+                        case GLOBAL_NAME:
+                            found = MP3PrettifierBO.getInstance().removeGlobalSentence(word.id);
+                            break;
+                        case WORD:
+                            found = MP3PrettifierBO.getInstance().removeArtistWord(word.id);
+                            break;
+                    }
                     if (!found){
                         throw new ApplicationException("Artist Name Not Found With Id; " + word.id);
                     }
@@ -74,18 +101,13 @@ public class ConvertArtistPattern extends BatchJobV2 {
                         save = true;
                         //break;
                     }
-                    //ArtistBO.getInstance().save();
                 }
             }
         }
         if (save){
-            ArtistBO.getInstance().save();
-            MP3PrettifierBO.getInstance().save();
+            //ArtistBO.getInstance().save();
+            //MP3PrettifierBO.getInstance().save();
         }
-    }
-
-    private void convertToArtistPattern(MP3Prettifier.Word word){
-
     }
 
     @Override

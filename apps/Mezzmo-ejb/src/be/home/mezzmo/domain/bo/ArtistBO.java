@@ -54,15 +54,16 @@ public class ArtistBO {
         return null;
     }
 
-    public void updateArtistPattern(Artists.Artist artist, MP3Prettifier.Word word){
+    public void updateArtistPattern(Artists.Artist artist, MP3Prettifier.Word word, boolean global){
         artist.setPattern(word.oldWord);
         artist.setPriority(word.priority);
+        artist.setGlobal(global);
     }
 
-    public List<MP3Prettifier.Word> constructArtistPatterns(){
+    public List<MP3Prettifier.Word> constructArtistPatterns(boolean global){
         List<MP3Prettifier.Word> list = new ArrayList<MP3Prettifier.Word>();
         for (Artists.Artist artistItem: artists.list){
-            if (StringUtils.isNotBlank(artistItem.getPattern()) ) {
+            if (StringUtils.isNotBlank(artistItem.getPattern()) && artistItem.isGlobal() == global) {
                 MP3Prettifier.Word word = new MP3Prettifier().new Word();
                 word.oldWord = artistItem.getPattern();
                 word.newWord = artistItem.getName();

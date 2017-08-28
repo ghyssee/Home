@@ -15,6 +15,7 @@ public class Artists {
         public String stageName;
         public String pattern;
         public int priority;
+        public boolean global;
 
         public String getId() {
             return id;
@@ -54,6 +55,14 @@ public class Artists {
 
         public void setPriority(int priority) {
             this.priority = priority;
+        }
+
+        public boolean isGlobal() {
+            return global;
+        }
+
+        public void setGlobal(boolean global) {
+            this.global = global;
         }
     }
 }

@@ -14,7 +14,7 @@ $fieldId = "id";
 $smarty = initializeSmarty();
 $smarty->assign('title','Artists');
 $smarty->assign('item','Artist');
-$smarty->assign('tableWidth','800px');
+$smarty->assign('tableWidth','1000px');
 $smarty->assign('tableHeight','400px');
 $url = "MP3PrettifierAction.php";
 $smarty->assign('tablegrid',"ArtistCRUD");
@@ -31,10 +31,11 @@ $smarty->assign('deleteUrl', $url . "?method=deleteArtist");
 
 
 $smarty->assign("contacts", array(
-        array("field" => "name", "label"=>"Name", "size" => 50, "required" => true, "sortable" => true),
-        array("field" => "stageName", "label"=>"StageName", "size" => 50, "required" => false, "sortable" => true),
-        array("field" => "pattern", "label"=>"Pattern", "size" => 80, "required" => false, "sortable" => true),
-        array("field" => "id", "label"=>"Id", "size" => 50, "hidden" => "true")
+        array("field" => "id", "label"=>"Id", "size" => 30, "editable" => false),
+        array("field" => "name", "label"=>"Name", "size" => 40, "required" => true, "sortable" => true),
+        array("field" => "stageName", "label"=>"StageName", "size" => 30, "required" => false, "sortable" => true),
+        array("field" => "pattern", "label"=>"Pattern", "size" => 50, "required" => false, "sortable" => true),
+        array("field" => "global", "label"=>"Global", "size" => 8, "formatter" => "checkboxFormatter", "align" => "center", "checkbox" => true)
     )
 );
 //** un-comment the following line to show the debug console

@@ -29,6 +29,7 @@ public class MP3Helper {
     private static final Logger log = Logger.getLogger(MP3Helper.class);
     private static List<MP3Prettifier.Word> multiArtistNames;
     private static List<MP3Prettifier.Word> artistNames;
+    private static List<MP3Prettifier.Word> globalArtistNames;
 
     private MP3Helper() {
         mp3Prettifer = (MP3Prettifier) JSONUtils.openJSONWithCode(Constants.JSON.MP3PRETTIFIER, MP3Prettifier.class);
@@ -36,7 +37,8 @@ public class MP3Helper {
         Collections.sort(mp3Prettifer.global.filenames, (a1, b1) -> a1.priority - b1.priority);
         Collections.sort(mp3Prettifer.artist.names, (a1, b1) -> a1.priority - b1.priority);
         Collections.sort(mp3Prettifer.artistSongExceptions.items, (a1, b1) -> b1.priority - a1.priority);
-        artistNames = ArtistBO.getInstance().constructArtistPatterns();
+        artistNames = ArtistBO.getInstance().constructArtistPatterns(false);
+        globalArtistNames = ArtistBO.getInstance().constructArtistPatterns(true);
         Collections.sort(artistNames, (a1, b1) -> a1.priority - b1.priority);
 
     }
@@ -165,6 +167,7 @@ public class MP3Helper {
         if (StringUtils.isNotBlank(text)) {
             prettifiedText = checkWords(prettifiedText, Mp3Tag.TITLE);
             prettifiedText = prettifySentence(mp3Prettifer.global.sentences, prettifiedText, "Global Sentence");
+            prettifiedText = prettifySentence(globalArtistNames, prettifiedText, "Global Artist Names");
             for (MP3Prettifier.Word wordObj : mp3Prettifer.song.replacements) {
 
                 String oldText = prettifiedText;
@@ -198,6 +201,7 @@ public class MP3Helper {
             prettifiedText = prettifySentence(mp3Prettifer.global.sentences, prettifiedText, "Global Sentence");
             prettifiedText = prettifySentence(mp3Prettifer.artist.names, prettifiedText, "Artist Names");
             prettifiedText = prettifySentence(artistNames, prettifiedText, "Artist Names Patterns");
+            prettifiedText = prettifySentence(globalArtistNames, prettifiedText, "Global Artist Names Patterns");
             prettifiedText = checkArtistNames2(multiArtistNames, prettifiedText, "Multi Artist Names");
             /*
             for (MP3Prettifier.Word wordObj : mp3Prettifer.artist.names){
