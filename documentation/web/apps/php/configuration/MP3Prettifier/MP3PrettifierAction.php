@@ -45,6 +45,9 @@ try {
         case "delete":
             delete($type, $category);
             break;
+        case "getMultiArtistList":
+            getMultiArtistList();
+            break;
         case "listMultiArtists":
             listMultiArtists();
             break;
@@ -313,6 +316,14 @@ function deleteArtist()
         $returnObj['errorMessage'] = "Artist can not be deleted!";
     }
     echo json_encode($returnObj);
+}
+
+function getMultiArtistList(){
+    $multiArtistBO = new MultiArtistBO();
+    $newArray = $multiArtistBO->loadFullData();
+    $sort = new CustomSort();
+    $array = $sort->sortObjectArrayByField($newArray, "description2", "asc");
+    echo json_encode($array);    
 }
 
 function listMultiArtists(){
