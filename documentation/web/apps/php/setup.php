@@ -152,7 +152,9 @@ function writeJSONWithCode($json, $code){
 }
 
 function writeJSON($json, $file){
-    file_put_contents($file, json_encode($json, JSON_PRETTY_PRINT + JSON_UNESCAPED_SLASHES));
+    if (isset($json)) {
+        file_put_contents($file, json_encode($json, JSON_PRETTY_PRINT + JSON_UNESCAPED_SLASHES));
+    }
 }
 
 function write ($file, $text, $append = APPEND){

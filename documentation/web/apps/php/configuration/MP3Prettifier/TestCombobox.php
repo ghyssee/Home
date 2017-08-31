@@ -34,8 +34,15 @@ goMenu();
                      url:'MP3PrettifierAction.php?method=listArtists'
                      ">
 <div><button onclick="getCmbArtist()">Add</button></div>
+<div style="margin-bottom:20px">
+    <input id="oldSong" class="easyui-textbox" label="Old Song" labelPosition="top" style="width:80%;height:52px">
+</div>
+<div><button onclick="setValue()">Set</button></div>
 
 <script>
+    function setValue(){
+        $("#oldSong").textbox('setValue', 'TTTTTTTTTTEEEEEEEEEESSSSSSTTTTTT');
+    }
 function getCmbArtist(cmbId) {
     cmbId = '#cbArtist';
     var _options = $(cmbId).combobox('options');
@@ -49,7 +56,7 @@ function getCmbArtist(cmbId) {
             _b = true;
             row.id = _value;
             row.value = _text;
-            $(cmbId).combobox('clear');
+            //$(cmbId).combobox('clear');
             break;
         }
     }

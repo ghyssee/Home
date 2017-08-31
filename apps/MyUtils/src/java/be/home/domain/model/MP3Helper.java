@@ -571,12 +571,18 @@ public class MP3Helper {
         List <ArtistSongRelationship.ArtistSongRelation>  list = ArtistSongRelationshipBO.getInstance().getArtistSongRelationshipList();
         for (ArtistSongRelationship.ArtistSongRelation item : list) {
             for (ArtistSongRelationship.ArtistItem artistItem : item.oldArtistList) {
-                Artists.Artist artistObj = ArtistBO.getInstance().getArtist(artistItem.id);
-                if (artistObj == null) {
-                    log.error("Artist Id Not Found: " + artistItem.id);
-                    break;
+                String artistName = null;
+                if (StringUtils.isBlank(artistItem.getId())){
+                    artistName = artistItem.text;
                 }
-                String artistName = ArtistBO.getInstance().getStageName(artistObj);
+                else{
+                    Artists.Artist artistObj = ArtistBO.getInstance().getArtist(artistItem.id);
+                    if (artistObj == null) {
+                        log.error("Artist Id Not Found: " + artistItem.id);
+                        break;
+                    }
+                    artistName = ArtistBO.getInstance().getStageName(artistObj);
+                }
                 ArtistSongItem artistSongItem = null;
                 artistSongItem = checkTitle(song, item.oldSong, item.newSong, item.exactMatchTitle, item.indexTitle);
                 if (artist.startsWith(artistName)) {

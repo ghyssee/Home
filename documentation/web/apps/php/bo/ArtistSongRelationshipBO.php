@@ -30,17 +30,24 @@ class ArtistSongRelationshipTO extends Castable {
     public $oldArtistId;
     public $oldArtist;
     public $oldArtistList;
+    public $oldMultiArtistId;
+    public $oldSong;
+    public $exact;
     public $newMultiArtistId;
     public $newArtistId;
     public $newArtist;
-    public $oldSong;
     public $newSong;
-    public $exact;
+    public $exactMatchTitle;
+    public $indexTitle;
     public $priority;
+
 }
 
 class ArtistItemTO extends Castable {
     public $id;
+    function __construct($id) {
+        $this->id = $id;
+    }
 }
 
 class ArtistSongRelationshipBO
@@ -85,7 +92,7 @@ class ArtistSongRelationshipBO
     }
 
 
-    function saveArtistSong($artistSongRelationship)
+    function saveArtistSong(ArtistSongRelationshipTO $artistSongRelationship)
     {
         $counter = 0;
         foreach ($this->artistSongRelationshipObj->items as $key => $value) {
@@ -99,11 +106,11 @@ class ArtistSongRelationshipBO
         return false;
     }
 
-    function addArtistSong($artistSongRelationship)
+    function addArtistSong(ArtistSongRelationshipTO $artistSongRelationship)
     {
         $artistSongRelationship->id = getUniqueId();
         array_push($this->artistSongRelationshipObj->items, $artistSongRelationship);
-        writeJSON($this->artistSongRelationship, $this->file);
+        writeJSON($this->artistSongRelationshipObj, $this->file);
     }
 
     function isArtistUsed($id){
