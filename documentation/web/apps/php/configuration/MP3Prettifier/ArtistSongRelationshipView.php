@@ -134,7 +134,7 @@ goMenu();
 
 <script>
     function insert(){
-        var cbArtist = '#cbArtist';
+        var cbArtist = 'cbArtist';
         var row = getCmbArtist(cbArtist);
         if (row != null){
             var rows = $('#dgOldArtist').edatagrid('getRows');
@@ -173,7 +173,7 @@ goMenu();
     }
 
     function getCmbArtist(cmbId) {
-        cmbId = '#cbArtist';
+        cmbId = '#' + cmbId;
         var _options = $(cmbId).combobox('options');
         var _data = $(cmbId).combobox('getData');
         var _value = $(cmbId).combobox('getValue');
