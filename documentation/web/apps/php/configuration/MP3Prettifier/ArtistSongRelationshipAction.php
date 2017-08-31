@@ -118,7 +118,7 @@ function validateArtistSong($config){
     }
     $errorObj->success = true;
     $artistSongRelationShipBO = new ArtistSongRelationShipBO();
-    //$artistSongRelationShipBO->addArtistSong($artistSongRelationShipTO);
+    $artistSongRelationShipBO->addArtistSong($artistSongRelationShipTO);
     return $errorObj;
 }
 
