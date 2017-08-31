@@ -319,7 +319,6 @@ $multiArtist = readJSONWithCode(JSON_MULTIARTIST);
                     $('#dgMultiArtistList').datagrid('reload');
                 }
                 else {
-                    alert(JSON.stringify(data2, null, 4));
                     if (data2.errorMsg) {
                         alert(data2.errorMsg);
                     }

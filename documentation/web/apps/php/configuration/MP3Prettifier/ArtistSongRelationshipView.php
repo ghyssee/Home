@@ -213,11 +213,8 @@ goMenu();
 
     function validateAndSave(){
         var oldArtistType = ($('input[name=oldArtistType]:checked').val());
-        if (oldArtistType == null){
-            alert("No Old ArtistType Selected");
-        }
-        var object = {multiArtistConfig:($("#multiArtistConfig").val())
-        };
+        var oldFreeArtist =($("#oldFreeArtist").val());
+        var oldSong =($("#oldSong").val());
 
         var oldArtists = $('#dgOldArtist').datagrid('getRows');
         var oldMultiArtist = getCmbArtist("cbOldMultiArtist");
@@ -227,21 +224,20 @@ goMenu();
                       oldFreeArtist:($("#oldFreeArtist").val()),
                       oldSong:($("#oldSong").val())
         };
-        alert(JSON.stringify(object));
 
         var tmp = $.post('ArtistSongRelationshipAction.php?method=add', { config : JSON.stringify(object)}, function(data2){
                 if (data2.success){
                     //clearArtists();
-                    alert("Multi Artist Config Item successfully saved");
+                    alert("Artist Song Relationship successfully saved");
                     //alert(JSON.stringify(data2, null, 4));
                     //$('#dgMultiArtistList').datagrid('reload');
                 }
                 else {
-                    alert(JSON.stringify(data2, null, 4));
                     if (data2.errorMsg) {
                         alert(data2.errorMsg);
                     }
                     else {
+                        //alert(JSON.stringify(data2, null, 4));
                         alert("Data Not Saved!");
                     }
                 }
@@ -292,28 +288,6 @@ goMenu();
             row = null;
         }
         return row;
-    }
-
-    function prefOld(){
-        var oldArtistType = ($('input[name=oldArtistType]:checked').val());
-        switch (oldArtistType){
-            case "01":
-                alert("test 01");
-                var val = getCmbArtist("cbOldArtist");
-                if (val == null){
-                    alert("Old Artist Not Selected");
-                }
-                break;
-            case "02":
-                alert("test 02");
-                var val = getCmbArtist("cbOldMultiArtist");
-                if (val == null){
-                    alert("Old Multi Artist Not Selected");
-                }
-                break;
-            case "03":
-                break;
-        }
     }
 
 </script>

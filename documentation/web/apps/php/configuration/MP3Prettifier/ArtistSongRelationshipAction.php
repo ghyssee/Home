@@ -35,11 +35,16 @@ function validateArtistSong($config){
     $errorObj = new stdClass();
     if (empty($config->oldArtistType)){
         $errorObj->success = false;
-        $errorObj->errorMessage = "Old Artist Type Not Selected";
+        $errorObj->errorMsg = "Old Artist Type Not Selected";
         return $errorObj;
     }
     switch ($config->oldArtistType){
         case "01":
+            if (empty($config->oldArtists)){
+                $errorObj->success = false;
+                $errorObj->errorMsg = "No Old Artists Added";
+                return $errorObj;
+            }
             break;
         case "02":
             break;
@@ -47,17 +52,17 @@ function validateArtistSong($config){
             break;
         default:
             $errorObj->success = false;
-            $errorObj->errorMessage = "Undefined Old Artist Type: " & $config->oldArtistType;
+            $errorObj->errorMsg = "Undefined Old Artist Type: " & $config->oldArtistType;
             return $errorObj;
     }
     $errorObj->success = true;
+    return $errorObj;
 }
 
 function addArtistSong(){
     if (isset($_POST['config'])) {
         $config = json_decode($_POST['config']);
-        $errorObj = new stdClass();
-        $errorObj->success = true;
+        $errorObj = validateArtistSong($config);
         echo json_encode($errorObj);
     }
     else {
