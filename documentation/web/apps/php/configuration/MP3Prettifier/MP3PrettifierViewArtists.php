@@ -35,6 +35,7 @@ $smarty->assign("contacts", array(
         array("field" => "name", "label"=>"Name", "size" => 40, "required" => true, "sortable" => true),
         array("field" => "stageName", "label"=>"StageName", "size" => 30, "required" => false, "sortable" => true),
         array("field" => "pattern", "label"=>"Pattern", "size" => 50, "required" => false, "sortable" => true),
+        array("field" => "priority", "label"=>"Priority", "size" => 7, "type" => "number", "sortable" => true),
         array("field" => "global", "label"=>"Global", "size" => 8, "formatter" => "checkboxFormatter", "align" => "center", "checkbox" => true)
     )
 );

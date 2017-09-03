@@ -224,14 +224,19 @@ public class MP3Helper {
         }
         for (MP3Prettifier.Word wordObj : list){
             //Pattern pattern = Pattern.compile(wordObj.oldWord);
-            if (text.matches(wordObj.oldWord)){
-                String oldText = text;
-                text = replaceString(oldText, wordObj);
-                if (!oldText.equals(text)){
-                    logRule(logMsg, wordObj);
+            try {
+                if (text.matches(wordObj.oldWord)) {
+                    String oldText = text;
+                    text = replaceString(oldText, wordObj);
+                    if (!oldText.equals(text)) {
+                        logRule(logMsg, wordObj);
+                    }
+                    // exit the loop if a match is found
+                    break;
                 }
-                // exit the loop if a match is found
-                break;
+            }
+            catch (Exception ex){
+                System.out.println(ex.getStackTrace());
             }
         }
         return text;

@@ -9,6 +9,7 @@ class ArtistTO{
     public $name;
     public $stageName;
     public $pattern;
+    public $priority;
     public $global;
     public function __construct()
     {

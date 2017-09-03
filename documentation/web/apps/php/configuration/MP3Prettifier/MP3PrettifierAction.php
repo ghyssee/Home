@@ -260,6 +260,7 @@ function updateArtist(){
     $artist = new ArtistTO();
     assignField($artist->name, "name", !HTML_SPECIAL_CHAR);
     assignField($artist->stageName, "stageName", !ESCAPE_HTML);
+    assignNumber($artist->priority, "priority", !ESCAPE_HTML);
     assignField($artist->pattern, "pattern", !ESCAPE_HTML);
     assignCheckbox($artist->global, "global");
     $artist->id = $id;
@@ -289,6 +290,7 @@ function addArtist()
     assignField($artist->name, "name", !ESCAPE_HTML);
     assignField($artist->stageName, "stageName", !ESCAPE_HTML);
     assignField($artist->pattern, "pattern", !ESCAPE_HTML);
+    assignNumber($artist->priority, "priority", !ESCAPE_HTML);
     assignCheckbox($artist->global, "global");
     $save = true;
     If (objectExist($artistBO->getArtists(), "name", $artist->name, true)) {
