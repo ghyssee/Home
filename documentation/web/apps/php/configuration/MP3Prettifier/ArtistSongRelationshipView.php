@@ -30,6 +30,7 @@ if (isset($_REQUEST["id"])) {
     $artistSongRelationshipObj = new ArtistSongRelationshipCompositeTO($artistSongRelationshipTO);
 }
 else {
+    $artistSongId = null;
     $artistSongRelationshipObj = new ArtistSongRelationshipCompositeTO(null);
 }
 ?>
@@ -286,7 +287,9 @@ else {
         var newSong =$("#newSong").textbox('getValue');
         var priority = $("#priority").numberspinner('getValue');
 
-        var object = {oldArtistType:oldArtistType,
+        var object = {
+                      id:'<?= $artistSongId?>',
+                      oldArtistType:oldArtistType,
                       oldArtists:oldArtists,
                       oldMultiArtist:oldMultiArtist == null ? "" : oldMultiArtist.id,
                       oldFreeArtist:($("#oldFreeArtist").val()),

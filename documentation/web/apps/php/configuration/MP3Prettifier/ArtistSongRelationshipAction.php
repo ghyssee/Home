@@ -35,6 +35,7 @@ function addErrorMsg($msg){
 function validateArtistSong($config){
     $errorObj = new stdClass();
     $artistSongRelationShipTO = new ArtistSongRelationshipTO();
+    $artistSongRelationShipTO->id = $config->id;
     if (empty($config->oldArtistType)){
         $errorObj->success = false;
         $errorObj->errorMsg = "Old Artist Type Not Selected";
@@ -126,7 +127,12 @@ function validateArtistSong($config){
     }
     $errorObj->success = true;
     $artistSongRelationShipBO = new ArtistSongRelationShipBO();
-    $artistSongRelationShipBO->addArtistSong($artistSongRelationShipTO);
+    if (isset($artistSongRelationShipTO->id)){
+        $artistSongRelationShipBO->saveArtistSong($artistSongRelationShipTO);
+    }
+    else {
+        $artistSongRelationShipBO->addArtistSong($artistSongRelationShipTO);
+    }
     return $errorObj;
 }
 

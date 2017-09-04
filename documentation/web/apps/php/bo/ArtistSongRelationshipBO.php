@@ -179,7 +179,7 @@ class ArtistSongRelationshipBO
         foreach ($this->artistSongRelationshipObj->items as $key => $value) {
             if (strcmp($value->id, $artistSongRelationship->id) == 0) {
                 $this->artistSongRelationshipObj->items[$counter] = $artistSongRelationship;
-                writeJSON($this->artistObj, $this->file);
+                writeJSON($this->artistSongRelationshipObj, $this->file);
                 return true;
             }
             $counter++;
