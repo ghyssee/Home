@@ -541,5 +541,12 @@ function checkForErrors($save, $key, $obj){
     }
 }
 
+function radioButton($value,$default){
+    if ($value == $default){
+        return "checked";
+    }
+    return "";
+
+}
 
 ?>

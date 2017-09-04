@@ -49,7 +49,14 @@ function validateArtistSong($config){
             }
             $list = [];
             foreach ($config->oldArtists as $item){
-                $list[] =  new ArtistItemTO($item->id);
+                $artistItemTO = new ArtistItemTO();
+                if (isset($item->id)){
+                    $artistItemTO->id = $item->id;
+                }
+                else {
+                    $artistItemTO->text = $item->name;
+                }
+                $list[] =  $artistItemTO;
             }
             $artistSongRelationShipTO->oldArtistList = $list;
             break;

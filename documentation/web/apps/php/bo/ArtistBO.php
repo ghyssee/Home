@@ -192,6 +192,16 @@ class MultiArtistBO {
         return $this->multiArtistObj;
     }
 
+    function findMultiArtist($id){
+        $multiArtistObj = $this->loadData();
+        foreach ($multiArtistObj->list as $key => $item) {
+            if ($item->id == $id){
+                return $item;
+            }
+        }
+        return null;
+    }
+
     function filterData($filterRules, $list){
         $array = [];
         if ($filterRules != null){

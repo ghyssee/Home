@@ -2,6 +2,7 @@
 require_once documentPath (ROOT_PHP, "config.php");
 require_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 require_once documentPath (ROOT_PHP_BO, "CacheBO.php");
+require_once documentPath (ROOT_PHP_BO, "ArtistBO.php");
 /**
  * Created by PhpStorm.
  * User: ghyssee
@@ -25,6 +26,14 @@ class Castable
     }
 }
 
+abstract class ArtistType
+{
+    const ARTIST = "01";
+    const MULTIARTIST = "02";
+    const FREE = "03";
+}
+
+
 class ArtistSongRelationshipTO extends Castable {
     public $id;
     public $oldArtistId;
@@ -43,11 +52,73 @@ class ArtistSongRelationshipTO extends Castable {
 
 }
 
+class ArtistSongRelationshipCompositeTO extends ArtistSongRelationshipTO {
+    public $multiArtistBO;
+    public $oldArtistListObj;
+    public $oldArtistType;
+    public $newArtistType;
+    function __construct($object)
+    {
+        parent::__construct($object);
+        $this->oldArtistObj = new ArtistTO();
+        //$this->oldMultiArtistObj = new MultiArtistListTO();
+        $this->oldArtistListObj = array();
+        if (isset($object)) {
+            $this->multiArtistBO = new MultiArtistBO();
+            if (isset($this->oldArtistId)) {
+                $artistBO = $this->multiArtistBO->getArtistBO();
+                $this->oldArtistListObj[] = $artistBO->lookupArtist($this->oldArtistId);
+                $this->oldArtistType = ArtistType::ARTIST;
+            } else if (isset($this->oldArtistList)) {
+                $this->oldArtistType = ArtistType::ARTIST;
+                $artistBO = $this->multiArtistBO->getArtistBO();
+                foreach($this->oldArtistList as $item){
+                    $tmp = new ArtistItemTO($item);
+                    $this->oldArtistListObj[] =  $this->getArtist($artistBO, $tmp);
+            }
+            } else if (isset($this->oldMultiArtistId)) {
+                $this->oldArtistType = ArtistType::MULTIARTIST;
+                $multiArtistObj = $this->multiArtistBO->findMultiArtist($this->oldMultiArtistId);
+                if (isset($multiArtistObj)){
+                    $this->oldMultiArtistId = $multiArtistObj->id;
+                }
+            }
+            if (isset($this->newArtistId)) {
+                $this->newArtistType = ArtistType::ARTIST;
+                $artistBO = $this->multiArtistBO->getArtistBO();
+                $artistTO = $artistBO->lookupArtist($this->newArtistId);
+                $this->newArtistId = $artistTO->id;
+            } else if (isset($this->newMultiArtistId)) {
+                $this->newArtistType = ArtistType::MULTIARTIST;
+                $multiArtistObj = $this->multiArtistBO->findMultiArtist($this->newMultiArtistId);
+                if (isset($multiArtistObj)){
+                    $this->newMultiArtistId = $multiArtistObj->id;
+                }
+            }
+        }
+        else {
+            $this->oldArtistObj = new ArtistTO();
+        }
+    }
+
+    function getArtist(ArtistBO $artistBO, ArtistItemTO $artistItemTO){
+        if (isset($artistItemTO->id)){
+            return $artistBO->lookupArtist($artistItemTO->id);
+        }
+        else {
+            $artist = new ArtistTO();
+            $artist->name = $artistItemTO->text;
+            return $artist;
+        }
+
+    }
+  
+
+}
+
 class ArtistItemTO extends Castable {
     public $id;
-    function __construct($id) {
-        $this->id = $id;
-    }
+    public $text;
 }
 
 class ArtistSongRelationshipBO
@@ -62,6 +133,16 @@ class ArtistSongRelationshipBO
 
     function getArtistSongRelationshipList(){
         return $this->artistSongRelationshipObj->items;
+    }
+
+    function findArtistSongRelationship($id){
+        foreach ($this->artistSongRelationshipObj->items as $key => $item) {
+            $artistSongRelationshipTO = new ArtistSongRelationshipTO($item);
+            if ($artistSongRelationshipTO->id == $id){
+                return $artistSongRelationshipTO;
+            }
+        }
+        return null;
     }
 
     function loadFullData(){

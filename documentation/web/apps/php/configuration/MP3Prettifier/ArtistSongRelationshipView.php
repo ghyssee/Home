@@ -1,11 +1,13 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-include_once "../../setup.php";
+chdir("..");
+include_once "../setup.php";
 include_once documentPath (ROOT_PHP, "config.php");
 include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 include_once documentPath (ROOT_PHP_HTML, "config.php");
 include_once documentPath (ROOT_PHP_BO, "SessionBO.php");
+include_once documentPath (ROOT_PHP_BO, "ArtistSongRelationshipBO.php");
 ?>
 <html>
 
@@ -21,12 +23,24 @@ include_once documentPath (ROOT_PHP_BO, "SessionBO.php");
 <?php
 sessionStart();
 goMenu();
+if (isset($_REQUEST["id"])) {
+    $artistSongId = htmlspecialchars($_REQUEST['id']);
+    $artistSongRelationShipBO = new ArtistSongRelationShipBO();
+    $artistSongRelationshipTO = $artistSongRelationShipBO->findArtistSongRelationship($artistSongId);
+    $artistSongRelationshipObj = new ArtistSongRelationshipCompositeTO($artistSongRelationshipTO);
+}
+else {
+    $artistSongRelationshipObj = new ArtistSongRelationshipCompositeTO(null);
+}
 ?>
+<script>
+    //var oldData = [{"id":"1", "name":"test"}];
+    var oldData = <?= json_encode($artistSongRelationshipObj->oldArtistListObj) ?>;
+</script>
 <h1>Artist / Song Relationship</h1>
 <div class="horizontalLine">.</div>
 <br>
 
-    <input type="hidden" name="elems[]" />
     <div id="cc" class="easyui-layout" style="width:100%;height:85%;">
 
     <div data-options="region:'west',
@@ -43,9 +57,9 @@ goMenu();
             <div data-options="region:'north',collapsible:false, border:false" style="padding:5px;width:100%;height:20%">
                     <div style="line-height:22px;background:#fafafa;padding:5px;">Select The Artist Type</div>
                     <div style="padding:10px">
-                        <input type="radio" name="oldArtistType" value="01"><span>Artist</span><br/>
-                        <input type="radio" name="oldArtistType" value="02"><span>MultiArtist</span><br/>
-                        <input type="radio" name="oldArtistType" value="03"><span>Free Text</span><br/>
+                        <input type="radio" name="oldArtistType" value="<?= ArtistType::ARTIST?>" <?= radioButton(ArtistType::ARTIST, $artistSongRelationshipObj->oldArtistType); ?>><span>Artist</span><br/>
+                        <input type="radio" name="oldArtistType" value="<?= ArtistType::MULTIARTIST?>" <?= radioButton(ArtistType::MULTIARTIST, $artistSongRelationshipObj->oldArtistType); ?>><span>MultiArtist</span><br/>
+                        <input type="radio" name="oldArtistType" value="<?= ArtistType::FREE?>" <?= radioButton(ArtistType::FREE, $artistSongRelationshipObj->oldArtistType); ?>><span>Free Text</span><br/>
                     </div>
             </div>
             <div data-options="region:'center',collapsible:false, border:false" style="padding:5px;width:100%;height:50%">
@@ -68,7 +82,9 @@ goMenu();
                     <div data-options="region:'east',collapsible:false, border:false" style="width:40%;height:100%">
                         <table id="dgOldArtist" class="easyui-datagrid" style="width:95%;height:95%"
                                title="Unordered Artist Group"
-                               data-options="fitColumns:true,singleSelect:true">
+                               data-options="fitColumns:true,
+                                             data:oldData,
+                                             singleSelect:true">
                             <thead>
                             <tr>
                                 <th data-options="field:'id',hidden:true">Id</th>
@@ -84,6 +100,7 @@ goMenu();
                 MultiArtist<br>
                 <input id="cbOldMultiArtist" class="easyui-combobox" style="height:30px;"
                        name="cbOldMultiArtist"
+                       value="<?= $artistSongRelationshipObj->oldMultiArtistId ?>"
                        data-options="valueField:'id',
                              width:500,
                              textField:'description2',
@@ -91,10 +108,12 @@ goMenu();
                              ">
                 <br>
                 <div style="margin-bottom:20px">
-                    <input id="oldFreeArtist" class="easyui-textbox" label="Old Artist (Free)" labelPosition="top" style="width:80%;height:52px">
+                    <input id="oldFreeArtist" class="easyui-textbox" label="Old Artist (Free)" value="<?= $artistSongRelationshipObj->oldArtist ?>" labelPosition="top" style="width:80%;height:52px">
+                    <button onclick="addFreeArtist();">Add</button>
                 </div>
                 <div style="margin-bottom:20px">
-                    <input id="oldSong" class="easyui-textbox" label="Old Song" labelPosition="top" style="width:80%;height:52px">
+                    <input id="oldSong" class="easyui-textbox" value="<?= $artistSongRelationshipObj->oldSong ?>"
+                           label="Old Song" labelPosition="top" style="width:80%;height:52px">
                 </div>
             </div>
         </div>
@@ -105,14 +124,15 @@ goMenu();
             <div data-options="region:'north',collapsible:false, border:false" style="padding:5px;width:100%;height:20%">
                 <div style="line-height:22px;background:#fafafa;padding:5px;">Select The New Artist Type</div>
                 <div style="padding:10px">
-                    <input type="radio" name="newArtistType" value="01"><span>Artist</span><br/>
-                    <input type="radio" name="newArtistType" value="02"><span>MultiArtist</span><br/>
+                    <input type="radio" name="newArtistType" value="<?= ArtistType::ARTIST?>" <?= radioButton(ArtistType::ARTIST, $artistSongRelationshipObj->newArtistType); ?>><span>Artist</span><br/>
+                    <input type="radio" name="newArtistType" value="<?= ArtistType::MULTIARTIST?>" <?= radioButton(ArtistType::MULTIARTIST, $artistSongRelationshipObj->newArtistType); ?>><span>MultiArtist</span><br/>
                 </div>
 
             </div>
             <div data-options="region:'center',collapsible:false, border:false" style="padding:5px;width:100%;height:10%">
                 New Artist<br>
                 <input id="cbNewArtist" class="easyui-combobox" name="cbNewArtist"
+                       value="<?= $artistSongRelationshipObj->newArtistId ?>"
                        data-options="valueField:'id',
                              width:200,
                              textField:'name',
@@ -123,19 +143,24 @@ goMenu();
                 New MultiArtist<br>
                 <input id="cbNewMultiArtist" class="easyui-combobox" style="height:30px;"
                        name="cbNewMultiArtist"
+                       value="<?= $artistSongRelationshipObj->newMultiArtistId ?>"
                        data-options="valueField:'id',
                              width:500,
                              textField:'description2',
                              url:'MP3PrettifierAction.php?method=getMultiArtistList'
                              ">
-                <br>
                 <div style="margin-bottom:20px">
-                    <input id="newSong" class="easyui-textbox" label="New Song" labelPosition="top" style="width:80%;height:52px">
+                    <input id="newSong" class="easyui-textbox"
+                           value="<?= $artistSongRelationshipObj->newSong ?>"
+                           label="New Song" labelPosition="top" style="width:80%;height:52px">
                 </div>
                 <div style="margin-bottom:20px">
-                    <input id="priority" class="easyui-numberspinner" style="width:80px;"
-                        required="required" data-options="min:0,editable:true,value:0">
+                    <input id="priority"
+                           value="<?= $artistSongRelationshipObj->priority ?>"
+                           class="easyui-numberspinner" style="width:80px;"
+                           data-options="required:false,min:0,editable:true">
                 </div>
+            </div>
         </div>
     </div>
     <div data-options="region:'south',collapsible:false" title="Buttons" style="width:100%;height:10%">
@@ -157,6 +182,8 @@ goMenu();
         });
     });
 
+    //$('#cbOldArtist').combobox('setValue', 'Luciana');
+
     function copyArtist(){
         var rows = $('#dgOldArtist').edatagrid('getRows');
         if (rows.length > 0){
@@ -169,6 +196,20 @@ goMenu();
         var oldSong =$("#oldSong").textbox('getValue');
         if (oldSong){
             newSong =$("#newSong").textbox('setValue', oldSong);
+        }
+    }
+
+    function addFreeArtist(){
+        var oldFreeArtist =($("#oldFreeArtist").val());
+        if (oldFreeArtist != '') {
+            $('#dgOldArtist').datagrid('appendRow', {
+                name: oldFreeArtist,
+                id: null
+            });
+            $("#oldFreeArtist").textbox('setValue', '');
+        }
+        else {
+            alert("No Free Artist Filled In");
         }
     }
 
@@ -185,10 +226,12 @@ goMenu();
                 }
             }
             if (!alreadyAdded) {
+
                 $('#dgOldArtist').datagrid('appendRow',{
                     name: row.value,
                     id: row.id
                 });
+                /*
                 var index = $('#dgOldArtist').edatagrid('getRows').length;
                 $('#dgOldArtist').edatagrid('addRow',{
                     index: index,
@@ -196,7 +239,7 @@ goMenu();
                         artistId: row.id,
                         artistName: row.value
                     }
-                });
+                });*/
 
                 //$('#dlArtistList').datagrid('clearSelections');
                 $(cbOldArtist).combobox('clear');
