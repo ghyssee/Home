@@ -132,7 +132,10 @@ goMenu();
                 <div style="margin-bottom:20px">
                     <input id="newSong" class="easyui-textbox" label="New Song" labelPosition="top" style="width:80%;height:52px">
                 </div>
-            </div>
+                <div style="margin-bottom:20px">
+                    <input id="priority" class="easyui-numberspinner" style="width:80px;"
+                        required="required" data-options="min:0,editable:true,value:0">
+                </div>
         </div>
     </div>
     <div data-options="region:'south',collapsible:false" title="Buttons" style="width:100%;height:10%">
@@ -238,6 +241,7 @@ goMenu();
         var newArtist = getCmbArtist("cbNewArtist");
         var newMultiArtist = getCmbArtist("cbNewMultiArtist");
         var newSong =$("#newSong").textbox('getValue');
+        var priority = $("#priority").numberspinner('getValue');
 
         var object = {oldArtistType:oldArtistType,
                       oldArtists:oldArtists,
@@ -247,7 +251,8 @@ goMenu();
                       newArtistType:newArtistType,
                       newArtist:newArtist,
                       newMultiArtist:newMultiArtist.id,
-                      newSong:newSong
+                      newSong:newSong,
+                      priority:priority
         };
 
         var tmp = $.post('ArtistSongRelationshipAction.php?method=add', { config : JSON.stringify(object)}, function(data2){
