@@ -250,7 +250,7 @@ goMenu();
                       oldSong:($("#oldSong").val()),
                       newArtistType:newArtistType,
                       newArtist:newArtist,
-                      newMultiArtist:newMultiArtist.id,
+                      newMultiArtist:newMultiArtist == null ? "" : newMultiArtist.id,
                       newSong:newSong,
                       priority:priority
         };

@@ -200,7 +200,8 @@ public class ArtistConfigBO {
             if (splitterObj == null){
                 throw new ApplicationException(("Splitter Id not found in config:" + artistSequenceItem.splitterId));
             }
-            word += (StringUtils.isBlank(artistObj.stageName) ? artistObj.name : artistObj.stageName) + splitterObj.value2;
+            //word += (StringUtils.isBlank(artistObj.stageName) ? artistObj.name : artistObj.stageName) + splitterObj.value2;
+            word += artistObj.name + splitterObj.value2;
         }
         return word;
     }

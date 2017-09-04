@@ -1,5 +1,6 @@
 <?php
-include_once "../../setup.php";
+chdir("..");
+include_once "../setup.php";
 include_once documentPath (ROOT_PHP, "config.php");
 include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 include_once documentPath (ROOT_PHP_BO, "ArtistSongRelationshipBO.php");
@@ -118,7 +119,7 @@ function validateArtistSong($config){
     }
     $errorObj->success = true;
     $artistSongRelationShipBO = new ArtistSongRelationShipBO();
-    //$artistSongRelationShipBO->addArtistSong($artistSongRelationShipTO);
+    $artistSongRelationShipBO->addArtistSong($artistSongRelationShipTO);
     return $errorObj;
 }
 
