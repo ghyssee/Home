@@ -127,7 +127,7 @@ function validateArtistSong($config){
     }
     $errorObj->success = true;
     $artistSongRelationShipBO = new ArtistSongRelationShipBO();
-    if (isset($artistSongRelationShipTO->id)){
+    if (isset($artistSongRelationShipTO->id) && !empty($artistSongRelationShipTO->id)){
         $artistSongRelationShipBO->saveArtistSong($artistSongRelationShipTO);
     }
     else {
