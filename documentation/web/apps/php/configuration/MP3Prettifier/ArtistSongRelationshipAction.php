@@ -11,6 +11,9 @@ sessionStart();
 $method = htmlspecialchars($_REQUEST['method']);
 try {
     switch ($method) {
+        case "listArtistSong":
+            listArtistSong();
+            break;
         case "add":
             addArtistSong();
             break;
@@ -30,6 +33,42 @@ catch(Error $e) {
 
 function addErrorMsg($msg){
     return array('errorMsg'=>$msg);
+}
+
+function listMultiArtists(){
+    $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
+    $rows = isset($_POST['rows']) ? intval($_POST['rows']) : 40;
+//    if (CacheBO::isInCache(CacheBO::MULTIARTIST2)){
+    //       $list = CacheBO::getObject(CacheBO::MULTIARTIST2);
+    //  }
+    // else {
+    $artistSongRelationshipBO = new ArtistSongRelationshipBO();
+    //$artistSongRel = $artistSongRelationshipBO->getArtistSongRelationshipList();
+    //$list = Array();
+    $list = $artistSongRelationshipBO->loadFullData();
+
+    $newArray = $list;
+
+    //if (isset($_POST['sort'])){
+    //$field = isset($_POST['sort']) ? strval($_POST['sort']) : 'oldSong';
+    if (isset($_POST['sort'])) {
+        $field = $_POST['sort'];
+        $order = isset($_POST['order']) ? $_POST['order'] : 'asc';
+        $sort = new CustomSort();
+        //$array = $sort->sortObjectArrayByField($multi->list, $field, $order);
+        $array = $sort->sortObjectArrayByField($newArray, $field, $order);
+    }
+    else {
+        //$array = $multi->list;
+        $array = $newArray;
+    }
+    //}
+    $array = array_slice($array, ($page-1)*$rows, $rows);
+
+    $result = array();
+    $result["total"] = count($newArray);
+    $result["rows"] = $array;
+    echo json_encode($result);
 }
 
 function validateArtistSong($config){
