@@ -29,6 +29,7 @@ public class MP3Prettifier {
     public class Artist {
         public List <Word> words;
         public List <Word> names;
+        public List <Word> postprocess;
     }
 
     public class Song {

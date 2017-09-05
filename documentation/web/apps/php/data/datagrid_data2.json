@@ -1,0 +1,23 @@
+{"total":2,"rows":[
+      {
+        "id": "rCkWz1mjUadzWglzwUacMGThorFx0pb3",
+        "oldWord": "^Ft\\.?\\,?$",
+        "newWord": "Feat.",
+        "parenthesis": false,
+        "exactMatch": true,
+        "priority": 0,
+        "beginOfWord": false,
+        "endOfWord": 0
+      },
+      {
+        "id": "RtvsWrYT4VF2eassqFF4GadyVyhWzVIb",
+        "oldWord": "^Feat(?:uring)?$",
+        "newWord": "Feat.",
+        "parenthesis": false,
+        "exactMatch": false,
+        "priority": 0,
+        "beginOfWord": false,
+        "endOfWord": 0
+	}
+]
+}

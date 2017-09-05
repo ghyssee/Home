@@ -76,11 +76,11 @@
             <label>{{$contacts[sec1].label}}</label>
             <input name="{{$contacts[sec1].field}}"
                     {{if isset($contacts[sec1].required) AND $contacts[sec1].required}} required="true"{{/if}}
-                    {{if isset($contacts[sec1].checkbox)}} class="easyui-checkbox" type="checkbox" checked value="true"
+                    {{if isset($contacts[sec1].checkbox)}} class="easyui-checkbox" type="checkbox" value="true"
                     {{else}}
                     {{if isset($contacts[sec1].type)}}
                     {{if $contacts[sec1].type == "number"}}
-                   class="easyui-numberbox" value="100" data-options="min:0,precision:0"
+                   class="easyui-numberbox" {{if isset($contacts[sec1].default)}}value="{{$contacts[sec1].default}}"{{/if}} data-options="min:0,precision:0"
                     {{else}}
                    class="easyui-textbox"
                     {{/if}}
@@ -108,7 +108,7 @@
     var url;
     function newRecord{{$tablegrid}}(){
         $('#dlg{{$tablegrid}}').dialog('open').dialog('setTitle','New {{$item}}');
-        $('#fm{{$tablegrid}}').form('clear');
+        $('#fm{{$tablegrid}}').form('reset');
         url = {{$newUrl}};
     }
     {{/if}}

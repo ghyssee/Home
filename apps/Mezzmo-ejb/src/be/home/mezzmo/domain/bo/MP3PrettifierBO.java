@@ -83,9 +83,9 @@ public class MP3PrettifierBO {
     }
 
     public void save() throws IOException {
-        String file = Setup.getFullPath(Constants.JSON.MP3PRETTIFIER) + ".NEW";
-        //JSONUtils.writeJsonFileWithCode(artists, Constants.JSON.ARTISTS);
-        JSONUtils.writeJsonFile(mp3Prettifier, file);
+        //String file = Setup.getFullPath(Constants.JSON.MP3PRETTIFIER) + ".NEW";
+        //JSONUtils.writeJsonFile(mp3Prettifier, file);
+        JSONUtils.writeJsonFileWithCode(mp3Prettifier, Constants.JSON.MP3PRETTIFIER);
     }
     public static MP3PrettifierBO getInstance() {
         return mp3PrettifierBO;

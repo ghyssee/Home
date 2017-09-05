@@ -203,6 +203,7 @@ public class MP3Helper {
             prettifiedText = prettifySentence(mp3Prettifer.artist.names, prettifiedText, "Artist Names");
             prettifiedText = prettifySentence(artistNames, prettifiedText, "Artist Names Patterns");
             prettifiedText = prettifySentence(globalArtistNames, prettifiedText, "Global Artist Names Patterns");
+            prettifiedText = prettifySentence(mp3Prettifer.artist.postprocess, prettifiedText, "Artist Post Processing");
             prettifiedText = checkArtistNames2(multiArtistNames, prettifiedText, "Multi Artist Names");
             /*
             for (MP3Prettifier.Word wordObj : mp3Prettifer.artist.names){

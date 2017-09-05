@@ -83,7 +83,7 @@ public class ConvertArtistPattern extends BatchJobV2 {
                 else {
                     //int count = org.apache.commons.lang3.StringUtils.countMatches( word.newWord, " " );
                     ArtistBO.getInstance().updateArtistPattern(artist, word, global);
-                    //log.info("Artist Found: " + word.newWord);
+                    log.info("Artist Found: " + word.newWord);
                     boolean found = false;
                     switch (artistType){
                         case NAME:

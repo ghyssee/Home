@@ -84,9 +84,9 @@ public class ArtistBO {
     }
 
     public void save() throws IOException {
-        String file = Setup.getFullPath(Constants.JSON.ARTISTS) + ".NEW";
-        //JSONUtils.writeJsonFileWithCode(artists, Constants.JSON.ARTISTS);
-        JSONUtils.writeJsonFile(artists, file);
+        //String file = Setup.getFullPath(Constants.JSON.ARTISTS) + ".NEW";
+        //JSONUtils.writeJsonFile(artists, file);
+        JSONUtils.writeJsonFileWithCode(artists, Constants.JSON.ARTISTS);
     }
 
     public static ArtistBO getInstance() {

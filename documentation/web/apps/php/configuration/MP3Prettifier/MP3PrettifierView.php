@@ -27,7 +27,7 @@ goMenu();
 <div class="horizontalLine">.</div>
 <br>
 
-<div id="tt" class="easyui-tabs" data-options="selected:0" style="width:1100px;height:500px;">
+<div id="tt" class="easyui-tabs" data-options="selected:0" style="width:1150px;height:500px;">
     <div title="" style="padding:20px;display:none;">
         <?php include "Dummy.php"; ?>
     </div>
@@ -42,6 +42,9 @@ goMenu();
     </div>
     <div title="Artist Name" style="padding:20px;display:none;">
         <?php include "MP3PrettifierViewArtistName.php"; ?>
+    </div>
+    <div title="Artist Post" style="padding:20px;display:none;">
+        <?php include "MP3PrettifierViewArtistPostprocess.php"; ?>
     </div>
     <div title="Song Title" style="padding:20px;display:none;">
         <?php include "MP3PrettifierViewSongTitle.php"; ?>
