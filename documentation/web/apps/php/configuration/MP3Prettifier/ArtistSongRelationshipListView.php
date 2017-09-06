@@ -1,7 +1,8 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-include_once "../../setup.php";
+chdir("..");
+include_once "../setup.php";
 include_once documentPath (ROOT_PHP, "config.php");
 include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 include_once documentPath (ROOT_PHP_HTML, "config.php");
@@ -26,9 +27,9 @@ goMenu();
 <div class="horizontalLine">.</div>
 <br>
 
-<div class="easyui-layout" style="width:100%;height:100%;">
+<div class="easyui-layout" style="width:100%;height:720px;">
 
-    <div data-options="region:'west',collapsible:false" title="Lines" style="width:50%;height:100%">
+    <div data-options="region:'north',collapsible:false" title="Lines" style="width:100%;height:80%">
 
 
         <?php
@@ -40,24 +41,26 @@ goMenu();
         $smarty->assign('item','Artist');
         $smarty->assign('tableWidth','100%');
         $smarty->assign('tableHeight','100%');
-        //$url = "MP3ArtistSongRelationshipAction.php";
-        $url = "MP3ArtistSongRelationshipAction.php";
-        $smarty->assign('tablegrid',"MultiArtistList");
+        $url = "ArtistSongRelationshipAction.php";
+        $url2 = "ArtistSongRelationshipView.php";
+        $smarty->assign('tablegrid',"ListArtistSong");
         $smarty->assign('id',$fieldId);
         $smarty->assign('fitColumns',"true");
-        $smarty->assign('pageSize',"40");
-        $smarty->assign('viewUrl',$url . "?method=listMultiArtists");
-        $smarty->assign('updateUrl', "'" . $url . "?method=updateMultiArtist&id='+row['" . $fieldId . "']");
+        $smarty->assign('pageSize',"20");
+        $smarty->assign('customEdit',"editLink2()");
+        $smarty->assign('viewUrl',$url . "?method=listArtistSong");
+        $smarty->assign('updateUrl', "'" . $url2 . "?id='+row['" . $fieldId . "']");
         $smarty->assign('deleteUrl', $url . "?method=deleteMultiArtist");
         //$smarty->assign('deleteUrl', $url . "?method=delete");
 
 
         $smarty->assign("contacts", array(
         array("field" => "id", "label"=>"Id", "size" => 40, "editable" => false),
-        array("field" => "oldArtist", "label"=>"Old Artist", "size" => 40, "editable" => false, "sortable" => true),
-        array("field" => "newArtist", "label"=>"New Artist", "size" => 40, "editable" => false, "sortable" => true),
-        array("field" => "oldSong", "label"=>"Old Song", "size" => 40, "required" => true, "sortable" => true),
-        array("field" => "newSong", "label"=>"New Song", "size" => 40, "required" => true, "sortable" => true),
+        array("field" => "editLink", "label"=>"Edit", "size" => 20, "editable" => false, "sortable" => false, "formatter" =>"editLink"),
+        array("field" => "oldArtist", "label"=>"Old Artist", "size" => 60, "editable" => false, "sortable" => true),
+        array("field" => "newArtist", "label"=>"New Artist", "size" => 60, "editable" => false, "sortable" => true),
+        array("field" => "oldSong", "label"=>"Old Song", "size" => 60, "required" => true, "sortable" => true),
+        array("field" => "newSong", "label"=>"New Song", "size" => 60, "required" => true, "sortable" => true),
         array("field" => "exact", "label"=>"Exact", "size" => 15, "formatter" => "checkboxFormatter",
         "align" => "center", "checkbox" => true)
         )
@@ -69,15 +72,15 @@ goMenu();
         ?>
 
     </div>
-    <div data-options="region:'east',collapsible:false" title="Result" style="width:50%;height:100%">
+    <div data-options="region:'south',collapsible:false" title="Result" style="width:100%;height:15%">
 
-        <button onclick="refreshMultiArtist()">Refresh</button>
+        <button type="button" onclick="refreshMultiArtist()">Refresh</button>
 
     </div>
 
         <script>
             function refreshMultiArtist(){
-                $('#dgMultiArtistList').datagrid('reload');
+                $('#dgListArtistSong').datagrid('reload');
             }
             $(".datagrid-header-rownumber").click(function(){
                 alert("clicked");
@@ -87,6 +90,19 @@ goMenu();
             div.addEventListener('click', function (event) {
                 alert('Hi!');
             });
+
+            function editLink(val,row){
+                var url = "<?php echo webPath(ROOT_PHP_CONFIGURATION_MP3PRETTIFIER, 'ArtistSongRelationshipView.php') ?>" + '?id=' + row.id;
+                return '<a href="'+url+'" target="_blank">Edit</a>';
+                //return "edit";
+            }
+            function editLink2(){
+                var selectedRow = $('#dgListArtistSong').edatagrid("getSelected");
+                var url = "<?php echo webPath(ROOT_PHP_CONFIGURATION_MP3PRETTIFIER, 'ArtistSongRelationshipView.php') ?>" + '?id='+selectedRow.id;
+                var win = window.open(url, '_blank');
+                win.focus();
+            }
+
 
         </script>
 

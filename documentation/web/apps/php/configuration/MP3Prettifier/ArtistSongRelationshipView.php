@@ -42,6 +42,8 @@ else {
 <div class="horizontalLine">.</div>
 <br>
 
+    <form id="artistSongForm">
+
     <div id="cc" class="easyui-layout" style="width:100%;height:85%;">
 
     <div data-options="region:'west',
@@ -60,28 +62,52 @@ else {
                     <div style="padding:10px">
                         <input type="radio" name="oldArtistType" value="<?= ArtistType::ARTIST?>" <?= radioButton(ArtistType::ARTIST, $artistSongRelationshipObj->oldArtistType); ?>><span>Artist</span><br/>
                         <input type="radio" name="oldArtistType" value="<?= ArtistType::MULTIARTIST?>" <?= radioButton(ArtistType::MULTIARTIST, $artistSongRelationshipObj->oldArtistType); ?>><span>MultiArtist</span><br/>
-                        <input type="radio" name="oldArtistType" value="<?= ArtistType::FREE?>" <?= radioButton(ArtistType::FREE, $artistSongRelationshipObj->oldArtistType); ?>><span>Free Text</span><br/>
                     </div>
             </div>
             <div data-options="region:'center',collapsible:false, border:false" style="padding:5px;width:100%;height:50%">
-                <div id="oldArtistType" class="easyui-layout" style="width:100%;height:100%;">
+                <div class="easyui-layout" style="width:95%;height:95%;">
                     <div data-options="region:'west',collapsible:false, border:false" style="width:40%;height:100%">
-                        <input id="cbOldArtist" class="easyui-combobox" name="cbOldArtist"
-                               data-options="valueField:'id',
-                             width:200,
-                             textField:'name',
-                             url:'MP3PrettifierAction.php?method=listArtists'
-                             ">
+                        <?php
+                        include_once('Smarty.class.php');
+
+                        $url = webPath(ROOT_PHP_CONFIGURATION_MP3PRETTIFIER, 'MP3PrettifierAction.php');
+                        $fieldId = "id";
+                        $smarty = initializeSmarty();
+                        $smarty->assign('title','Artists');
+                        $smarty->assign('item','Artist');
+                        $smarty->assign('tableWidth','100%');
+                        $smarty->assign('tableHeight','100%');
+                        $smarty->assign('tablegrid',"OldArtist");
+                        $smarty->assign('id',$fieldId);
+                        $smarty->assign('fitColumns',"true");
+                        $smarty->assign('pageSize',"5");
+                        $smarty->assign('customSave', 'customSaveArtistCRUD()');
+                        $smarty->assign('viewUrl',$url . "?method=getListArtists");
+                        $smarty->assign('updateUrl',"'" . $url . "?method=updateArtist&id='+row['" . $fieldId . "']");
+                        $smarty->assign('newUrl',"'" . $url . "?method=addArtist'");
+                        $smarty->assign('deleteUrl', $url . "?method=deleteArtist");
+
+
+                        $smarty->assign("contacts", array(
+                                array("field" => "id", "label"=>"Id", "size" => 30, "hidden" => true),
+                                array("field" => "name", "label"=>"Name", "size" => 40, "required" => true, "sortable" => true)
+                            )
+                        );
+                        //** un-comment the following line to show the debug console
+                        //$smarty->debugging = true;
+
+                        $smarty->display('TableGridV4.tpl');
+                        ?>
                     </div>
-                    <div data-options="region:'center',collapsible:false, border:false" style="width:10%;height:100%">
-                        <div><button type="button" style="width:80%" onclick="insert()">Add Artist</button></div>
-                        <div><button style="width:80%" onclick="clearArtists()">Clear Artist List</button></div>
-                        <div><button style="width:80%" onclick="removeArtist('dgOldArtist')">Remove Artist</button></div>
-                        <div><button style="width:80%" onclick="refreshCombo('cbOldArtist')">Refresh Artist List</button></div>
-                        <div><button style="width:80%" onclick="copyArtist()">Copy Artist</button></div>
+                    <div data-options="region:'center',collapsible:false, border:false" style="padding:5px;width:15%;height:100%">
+                        <div><button  type="button" type="button" style="width:100%" onclick="addArtist()">Add Artist</button></div>
+                        <div><button  type="button" style="width:100%" onclick="clear Song Info()">Clear Song</button></div>
+                        <div><button  type="button" style="width:100%" onclick="removeArtist('dgListOldArtist')">Remove Artist</button></div>
+                        <div><button  type="button" style="width:100%" onclick="refreshCombo('cbOldArtist')">Refresh Artist List</button></div>
+                        <div><button  type="button" style="width:100%" onclick="copyArtist()">Copy Artist</button></div>
                     </div>
                     <div data-options="region:'east',collapsible:false, border:false" style="width:40%;height:100%">
-                        <table id="dgOldArtist" class="easyui-datagrid" style="width:95%;height:95%"
+                        <table id="dgListOldArtist" class="easyui-datagrid" style="width:95%;height:95%"
                                title="Unordered Artist Group"
                                data-options="fitColumns:true,
                                              data:oldData,
@@ -110,7 +136,7 @@ else {
                 <br>
                 <div style="margin-bottom:20px">
                     <input id="oldFreeArtist" class="easyui-textbox" label="Old Artist (Free)" value="<?= $artistSongRelationshipObj->oldArtist ?>" labelPosition="top" style="width:80%;height:52px">
-                    <button onclick="addFreeArtist();">Add</button>
+                    <button type="button" onclick="addFreeArtist();">Add</button>
                 </div>
                 <div style="margin-bottom:20px">
                     <input id="oldSong" class="easyui-textbox" value="<?= $artistSongRelationshipObj->oldSong ?>"
@@ -165,10 +191,11 @@ else {
         </div>
     </div>
     <div data-options="region:'south',collapsible:false" title="Buttons" style="width:100%;height:10%">
-        <div><button onclick="validateAndSave()">Save</button></div>
+        <div><button type="button" onclick="validateAndSave()">Save</button>
+            <button type="button" onclick="clearForm()">Clear</button></div>
     </div>
 
-</div>
+</div></form>
 </body>
 </html>
 
@@ -182,11 +209,20 @@ else {
             }
         });
     });
+    $(function(){
+        var dg = $('#dgOldArtist').datagrid();
+        dg.datagrid('enableFilter');
+    });
 
     //$('#cbOldArtist').combobox('setValue', 'Luciana');
 
+    function clearForm(){
+        $('#artistSongForm')[0].reset();
+        $('#dgListOldArtist').datagrid('loadData',[]);
+    }
+
     function copyArtist(){
-        var rows = $('#dgOldArtist').edatagrid('getRows');
+        var rows = $('#dgListOldArtist').edatagrid('getRows');
         if (rows.length > 0){
             $('#cbNewArtist').combobox('setValue', rows[0].id);
         }
@@ -203,7 +239,7 @@ else {
     function addFreeArtist(){
         var oldFreeArtist =($("#oldFreeArtist").val());
         if (oldFreeArtist != '') {
-            $('#dgOldArtist').datagrid('appendRow', {
+            $('#dgListOldArtist').datagrid('appendRow', {
                 name: oldFreeArtist,
                 id: null
             });
@@ -218,7 +254,7 @@ else {
         var cbOldArtist = 'cbOldArtist';
         var row = getCmbArtist(cbOldArtist);
         if (row != null){
-            var rows = $('#dgOldArtist').edatagrid('getRows');
+            var rows = $('#dgListOldArtist').edatagrid('getRows');
             var alreadyAdded = false;
             for(var i=0; i<rows.length; i++){
                 if (rows[i].id == row.id) {
@@ -228,7 +264,7 @@ else {
             }
             if (!alreadyAdded) {
 
-                $('#dgOldArtist').datagrid('appendRow',{
+                $('#dgListOldArtist').datagrid('appendRow',{
                     name: row.value,
                     id: row.id
                 });
@@ -244,8 +280,8 @@ else {
 
                 //$('#dlArtistList').datagrid('clearSelections');
                 $(cbOldArtist).combobox('clear');
-                $('#dgOldArtist').datagrid('enableDnd');
-                $('#dgOldArtist').edatagrid('selectRow', index);
+                $('#dgListOldArtist').datagrid('enableDnd');
+                $('#dgListOldArtist').edatagrid('selectRow', index);
             }
             else {
                 alert("already added");
@@ -256,8 +292,7 @@ else {
         return false;
     }
 
-    function clearArtists(){
-        //$('#dgOldArtist').datagrid('loadData',[]);
+    function clearSongInfo(){
         $("#oldSong").textbox('setValue', '');
         $("#newSong").textbox('setValue', '');
     }
@@ -278,7 +313,7 @@ else {
         var oldArtistType = ($('input[name=oldArtistType]:checked').val());
         var oldFreeArtist =($("#oldFreeArtist").val());
         var oldSong =$("#oldSong").textbox('getValue');
-        var oldArtists = $('#dgOldArtist').datagrid('getRows');
+        var oldArtists = $('#dgListOldArtist').datagrid('getRows');
         var oldMultiArtist = getCmbArtist("cbOldMultiArtist");
 
         var newArtistType = ($('input[name=newArtistType]:checked').val());
@@ -303,7 +338,7 @@ else {
 
         var tmp = $.post('ArtistSongRelationshipAction.php?method=add', { config : JSON.stringify(object)}, function(data2){
                 if (data2.success){
-                    clearArtists();
+                    clearSongInfo();
                     alert("Artist Song Relationship successfully saved");
                     //alert(JSON.stringify(data2, null, 4));
                     //$('#dgMultiArtistList').datagrid('reload');
@@ -364,6 +399,42 @@ else {
             row = null;
         }
         return row;
+    }
+
+    function clearArtist(){
+        $('#dgOldArtist').datagrid('removeFilterRule');
+        $('#dgOldArtist').datagrid('doFilter');
+    }
+
+    function addArtist(){
+        var row = $('#dgOldArtist').datagrid('getSelected');
+        if (row) {
+
+            var rows = $('#dgListOldArtist').edatagrid('getRows');
+            var alreadyAdded = false;
+            for(var i=0; i<rows.length; i++){
+                if (rows[i].id == row.id) {
+                    alreadyAdded = true;
+                    break;
+                }
+            }
+            if (!alreadyAdded) {
+
+                $('#dgListOldArtist').datagrid('appendRow',{
+                    name: row.name,
+                    id: row.id
+                });
+                $('#dgListOldArtist').datagrid('enableDnd');
+                $('#dgOldArtist').datagrid('unselectRow', rowIndex);
+                clearArtist();
+            }
+            else {
+                $.messager.alert('Warning','Artist already added');
+            }
+        }
+        else {
+            $.messager.alert('Warning','No Artist Selected');
+        }
     }
 
 </script>

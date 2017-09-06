@@ -35,9 +35,9 @@ function addErrorMsg($msg){
     return array('errorMsg'=>$msg);
 }
 
-function listMultiArtists(){
+function listArtistSong(){
     $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
-    $rows = isset($_POST['rows']) ? intval($_POST['rows']) : 40;
+    $rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
 //    if (CacheBO::isInCache(CacheBO::MULTIARTIST2)){
     //       $list = CacheBO::getObject(CacheBO::MULTIARTIST2);
     //  }

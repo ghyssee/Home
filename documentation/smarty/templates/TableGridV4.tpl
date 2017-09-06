@@ -18,6 +18,7 @@
        rownumbers:true,
        pagePosition:{{if isset($pagePosition)}}"{{$pagePosition}}"{{else}}"bottom"{{/if}},
        pageSize:{{if isset($pageSize)}}{{$pageSize}}{{else}}10{{/if}},
+       pageList:[5,10,20,25,30,40,50],
        singleSelect:{{if isset($singleSelect)}}{{$singleSelect}}{{else}}true{{/if}}
 '>
 <thead>
@@ -55,7 +56,7 @@
         <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newRecord{{$tablegrid}}()">New {{$item}}</a>
         {{/if}}
         {{if isset($updateUrl)}}
-        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editRecord{{$tablegrid}}()">Edit {{$item}}</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="{{if isset($customEdit)}}{{$customEdit}}{{else}}editRecord{{$tablegrid}}(){{/if}}">Edit {{$item}}</a>
         {{/if}}
         {{if isset($deleteUrl)}}
         <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteRecord{{$tablegrid}}()">Remove {{$item}}</a>

@@ -152,17 +152,48 @@ class ArtistSongRelationshipBO
         else {
             $list = Array();
             ArtistBO:$artistBO = new ArtistBO();
-            MultiArtistBO:$multiArtistBO = new MultiArtistBO();
+            $multiArtistBO = new MultiArtistBO();
+            $multiArtistBO->loadData();
             foreach ($this->artistSongRelationshipObj->items as $key => $item) {
                 $artistSongRelationshipTO = new ArtistSongRelationshipTO($item);
-                $artistTO = $artistBO->lookupArtist($artistSongRelationshipTO->oldArtistId);
-                $artistSongRelationshipTO->oldArtist = isset($artistTO) ? $artistTO->name : "";
+                if (isset($artistSongRelationshipTO->oldArtistId)){
+                    $artistTO = $artistBO->lookupArtist($artistSongRelationshipTO->oldArtistId);
+                    $artistSongRelationshipTO->oldArtist = isset($artistTO) ? $artistTO->name : "";
+                }
+                else if (isset($artistSongRelationshipTO->oldArtistList) && count($artistSongRelationshipTO->oldArtistList) > 0){
+                    $artistSongRelationshipTO->oldArtist = "";
+                    $first = true;
+                    /* @var $artist AristItemTO */
+                    foreach($artistSongRelationshipTO->oldArtistList as $artist){
+                        $artistSongRelationshipTO->oldArtist .= $first ? "" : "|";
+                        $first = false;
+                        if (isset($artist->id)){
+                            $artistTO = $artistBO->lookupArtist($artist->id);
+                            $artistSongRelationshipTO->oldArtist .= isset($artistTO) ? $artistTO->name : "";
+                        }
+                        else {
+                            $artistSongRelationshipTO->oldArtist .= $artist->text;
+                        }
+                    }
+                }
+                else if (isset($artistSongRelationshipTO->oldMultiArtistId)){
+                    $multiArtist = $multiArtistBO->findMultiArtist($artistSongRelationshipTO->oldMultiArtistId);
+                    if (isset($multiArtist)){
+                        $multiArtistTO = $multiArtistBO->convertToMultiArtistTO($multiArtist);
+                        $artistSongRelationshipTO->oldArtist = $multiArtistTO->description2;
+                    }
+                }
+
                 if (isset($artistSongRelationshipTO->newArtistId)){
                     $artistTO = $artistBO->lookupArtist($artistSongRelationshipTO->newArtistId);
                     $artistSongRelationshipTO->newArtist = isset($artistTO) ? $artistTO->name : "";
                 }
                 else if (isset($artistSongRelationshipTO->newMultiArtistId)){
-                    //$multiArtistTO = $multiArtistBO->
+                    $multiArtist = $multiArtistBO->findMultiArtist($artistSongRelationshipTO->newMultiArtistId);
+                    if (isset($multiArtist)){
+                        $multiArtistTO = $multiArtistBO->convertToMultiArtistTO($multiArtist);
+                        $artistSongRelationshipTO->newArtist = $multiArtistTO->description2;
+                    }
                 }
                 $list[] = $artistSongRelationshipTO;
 
