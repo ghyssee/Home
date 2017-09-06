@@ -56,7 +56,6 @@ goMenu();
 
         $smarty->assign("contacts", array(
         array("field" => "id", "label"=>"Id", "size" => 40, "editable" => false),
-        array("field" => "editLink", "label"=>"Edit", "size" => 20, "editable" => false, "sortable" => false, "formatter" =>"editLink"),
         array("field" => "oldArtist", "label"=>"Old Artist", "size" => 60, "editable" => false, "sortable" => true),
         array("field" => "newArtist", "label"=>"New Artist", "size" => 60, "editable" => false, "sortable" => true),
         array("field" => "oldSong", "label"=>"Old Song", "size" => 60, "required" => true, "sortable" => true),
@@ -79,6 +78,11 @@ goMenu();
     </div>
 
         <script>
+            $(function(){
+                var dg = $('#dgListArtistSong').datagrid();
+                dg.datagrid('enableFilter');
+            });
+
             function refreshMultiArtist(){
                 $('#dgListArtistSong').datagrid('reload');
             }
@@ -91,11 +95,6 @@ goMenu();
                 alert('Hi!');
             });
 
-            function editLink(val,row){
-                var url = "<?php echo webPath(ROOT_PHP_CONFIGURATION_MP3PRETTIFIER, 'ArtistSongRelationshipView.php') ?>" + '?id=' + row.id;
-                return '<a href="'+url+'" target="_blank">Edit</a>';
-                //return "edit";
-            }
             function editLink2(){
                 var selectedRow = $('#dgListArtistSong').edatagrid("getSelected");
                 var url = "<?php echo webPath(ROOT_PHP_CONFIGURATION_MP3PRETTIFIER, 'ArtistSongRelationshipView.php') ?>" + '?id='+selectedRow.id;
@@ -103,8 +102,8 @@ goMenu();
                 win.focus();
             }
 
-
         </script>
+
 
 </div>
 

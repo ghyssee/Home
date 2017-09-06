@@ -145,7 +145,7 @@ class ArtistSongRelationshipBO
         return null;
     }
 
-    function loadFullData(){
+    function loadFullData($filterRules = null){
         if (CacheBO::isInCache(CacheBO::ARTISTSONG)){
             $list = CacheBO::getObject(CacheBO::ARTISTSONG);
         }
@@ -195,7 +195,20 @@ class ArtistSongRelationshipBO
                         $artistSongRelationshipTO->newArtist = $multiArtistTO->description2;
                     }
                 }
-                $list[] = $artistSongRelationshipTO;
+                if ($filterRules != null) {
+                    foreach ($filterRules as $item) {
+                        $test = $item;
+                        if ($test->field == "oldArtist") {
+                            if (strpos(strtoupper($artistSongRelationshipTO->oldArtist), strtoupper($item->value)) !== false) {
+                                $list[] = $artistSongRelationshipTO;
+                                break;
+                            }
+                        }
+                    }
+                }
+                else {
+                    $list[] = $artistSongRelationshipTO;
+                }
 
             }
             CacheBO::saveObject(CacheBO::ARTISTSONG, $list);

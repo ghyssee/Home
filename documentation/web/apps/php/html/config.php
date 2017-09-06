@@ -549,4 +549,15 @@ function radioButton($value,$default){
 
 }
 
+function isSetFilterRule(){
+    $isSet = false;
+    if (isset($_POST["filterRules"])) {
+        $filterRules = json_decode($_POST["filterRules"]);
+        if(count($filterRules) > 0){
+            $isSet = true;
+        }
+    }
+    return $isSet;
+}
+
 ?>

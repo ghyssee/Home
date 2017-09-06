@@ -3,6 +3,7 @@ chdir("..");
 include_once "../setup.php";
 include_once documentPath (ROOT_PHP, "config.php");
 include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
+include_once documentPath (ROOT_PHP_HTML, "config.php");
 include_once documentPath (ROOT_PHP_BO, "WordBO.php");
 include_once documentPath (ROOT_PHP_BO, "ArtistBO.php");
 include_once documentPath (ROOT_PHP_BO, "ArtistSongExceptionBO.php");
@@ -111,18 +112,6 @@ function getListArtists(){
     $result["total"] = count($artists);
     $result["rows"] = $array;
     echo json_encode($result);
-}
-
-function isSetFilterRule(){
-    $isSet = false;
-    if (isset($_POST["filterRules"])) {
-        $filterRules = json_decode($_POST["filterRules"]);
-        if(count($filterRules) > 0){
-            $isSet = true;
-        }
-    }
-    return $isSet;
-
 }
 
 function getList($type, $category)
