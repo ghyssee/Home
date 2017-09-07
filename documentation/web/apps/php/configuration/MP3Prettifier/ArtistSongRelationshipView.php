@@ -46,156 +46,158 @@ else {
 
     <div id="cc" class="easyui-layout" style="width:100%;height:85%;">
 
-    <div data-options="region:'west',
-                       collapsible:false,
-                       tools: [
-                       {iconCls:'icon-add',  handler:function(){alert('add')}
-                       },
-                       {iconCls:'icon-remove', handler:function(){alert('remove')}
-                       }]"
-         title="Old Artist"
-         style="width:50%;height:80%">
+        <div id="oldArtistLayOut" data-options="region:'west',
+                           collapsible:false,
+                           tools: [
+                           {iconCls:'icon-add',  handler:function(){alert('add')}
+                           },
+                           {iconCls:'icon-remove', handler:function(){alert('remove')}
+                           }]"
+             title="Old Artist"
+             style="width:50%;height:80%">
 
-        <div id="old" class="easyui-layout" style="width:100%;height:100%;">
-            <div data-options="region:'north',collapsible:false, border:false" style="padding:5px;width:100%;height:20%">
-                    <div style="line-height:22px;background:#fafafa;padding:5px;">Select The Artist Type</div>
+            <div class="easyui-layout" style="width:100%;height:100%;">
+
+                <div id="oldArtistTypeLayOut" data-options="region:'north',collapsible:false, border:false" style="padding:0px;width:100%;height:22%">
+                    <div style="line-height:22px;background:#fafafa;padding:3px;">Select The Artist Type</div>
                     <div style="padding:10px">
                         <input type="radio" name="oldArtistType" value="<?= ArtistType::ARTIST?>" <?= radioButton(ArtistType::ARTIST, $artistSongRelationshipObj->oldArtistType); ?>><span>Artist</span><br/>
                         <input type="radio" name="oldArtistType" value="<?= ArtistType::MULTIARTIST?>" <?= radioButton(ArtistType::MULTIARTIST, $artistSongRelationshipObj->oldArtistType); ?>><span>MultiArtist</span><br/>
                     </div>
-            </div>
-            <div data-options="region:'center',collapsible:false, border:false" style="padding:5px;width:100%;height:50%">
-                <div class="easyui-layout" style="width:95%;height:95%;">
-                    <div data-options="region:'west',collapsible:false, border:false" style="width:40%;height:100%">
-                        <?php
-                        include_once('Smarty.class.php');
+                </div>
 
-                        $url = webPath(ROOT_PHP_CONFIGURATION_MP3PRETTIFIER, 'MP3PrettifierAction.php');
-                        $fieldId = "id";
-                        $smarty = initializeSmarty();
-                        $smarty->assign('title','Artists');
-                        $smarty->assign('item','Artist');
-                        $smarty->assign('tableWidth','100%');
-                        $smarty->assign('tableHeight','100%');
-                        $smarty->assign('tablegrid',"OldArtist");
-                        $smarty->assign('id',$fieldId);
-                        $smarty->assign('fitColumns',"true");
-                        $smarty->assign('pageSize',"5");
-                        $smarty->assign('customSave', 'customSaveArtistCRUD()');
-                        $smarty->assign('viewUrl',$url . "?method=getListArtists");
-                        $smarty->assign('updateUrl',"'" . $url . "?method=updateArtist&id='+row['" . $fieldId . "']");
-                        $smarty->assign('newUrl',"'" . $url . "?method=addArtist'");
-                        $smarty->assign('deleteUrl', $url . "?method=deleteArtist");
+                <div id="oldArtistListDataGridLayout" data-options="region:'west',collapsible:false, border:false" style="padding:0px;width:40%;height:100%">
+                    <?php
+                    include_once('Smarty.class.php');
+                    $url = webPath(ROOT_PHP_CONFIGURATION_MP3PRETTIFIER, 'MP3PrettifierAction.php');
+                    $fieldId = "id";
+                    $smarty = initializeSmarty();
+                    $smarty->assign('title','Artists');
+                    $smarty->assign('item','Artist');
+                    $smarty->assign('tableWidth','100%');
+                    $smarty->assign('tableHeight','100%');
+                    $smarty->assign('tablegrid',"OldArtist");
+                    $smarty->assign('id',$fieldId);
+                    $smarty->assign('fitColumns',"true");
+                    $smarty->assign('pageSize',"5");
+                    $smarty->assign('customSave', 'customSaveArtistCRUD()');
+                    $smarty->assign('viewUrl',$url . "?method=getListArtists");
+                    $smarty->assign('updateUrl',"'" . $url . "?method=updateArtist&id='+row['" . $fieldId . "']");
+                    $smarty->assign('newUrl',"'" . $url . "?method=addArtist'");
+                    $smarty->assign('deleteUrl', $url . "?method=deleteArtist");
 
 
-                        $smarty->assign("contacts", array(
-                                array("field" => "id", "label"=>"Id", "size" => 30, "hidden" => true),
-                                array("field" => "name", "label"=>"Name", "size" => 40, "required" => true, "sortable" => true)
-                            )
-                        );
-                        //** un-comment the following line to show the debug console
-                        //$smarty->debugging = true;
+                    $smarty->assign("contacts", array(
+                            array("field" => "id", "label"=>"Id", "size" => 30, "hidden" => true),
+                            array("field" => "name", "label"=>"Name", "size" => 40, "required" => true, "sortable" => true)
+                        )
+                    );
+                    //** un-comment the following line to show the debug console
+                    //$smarty->debugging = true;
 
-                        $smarty->display('TableGridV4.tpl');
-                        ?>
-                    </div>
-                    <div data-options="region:'center',collapsible:false, border:false" style="padding:5px;width:15%;height:100%">
-                        <div><button  type="button" type="button" style="width:100%" onclick="addArtist()">Add Artist</button></div>
-                        <div><button  type="button" style="width:100%" onclick="clear Song Info()">Clear Song</button></div>
-                        <div><button  type="button" style="width:100%" onclick="removeArtist('dgListOldArtist')">Remove Artist</button></div>
-                        <div><button  type="button" style="width:100%" onclick="refreshCombo('cbOldArtist')">Refresh Artist List</button></div>
-                        <div><button  type="button" style="width:100%" onclick="copyArtist()">Copy Artist</button></div>
-                    </div>
-                    <div data-options="region:'east',collapsible:false, border:false" style="width:40%;height:100%">
-                        <table id="dgListOldArtist" class="easyui-datagrid" style="width:95%;height:95%"
-                               title="Unordered Artist Group"
-                               data-options="fitColumns:true,
-                                             data:oldData,
-                                             singleSelect:true">
-                            <thead>
-                            <tr>
-                                <th data-options="field:'id',hidden:true">Id</th>
-                                <th data-options="field:'name',width:100">Artist</th>
-                            </tr>
-                            </thead>
-                        </table>
-
+                    $smarty->display('TableGridV4.tpl');
+                    ?>
+                </div>
+                <div id="oldArtistRightSideLayout" data-options="region:'east',collapsible:false, border:false" style="padding:0px;width:60%;height:100%">
+                    <div class="easyui-layout" style="width:95%;height:95%;">
+                        <div id="oldArtistListButtonsLayout" data-options="region:'west',collapsible:false, border:false" style="padding:0px;width:50%;height:30%">
+                            <div><button  type="button" type="button" style="width:100%" onclick="addArtist()">Add Artist</button></div>
+                            <div><button  type="button" style="width:100%" onclick="clear Song Info()">Clear Song</button></div>
+                            <div><button  type="button" style="width:100%" onclick="removeArtist('dgListOldArtist')">Remove Artist</button></div>
+                            <div><button  type="button" style="width:100%" onclick="copyArtist()">Copy Artist</button></div>
+                        </div>
+                        <div id="oldArtistListSelectedDatagridLayout" data-options="region:'east',collapsible:false, border:false" style="width:50%;height:42%">
+                            <table id="dgListOldArtist" class="easyui-datagrid" style="width:95%;height:95%"
+                                   title="Unordered Artist Group"
+                                   data-options="fitColumns:true,
+                                                 data:oldData,
+                                                 singleSelect:true">
+                                <thead>
+                                <tr>
+                                    <th data-options="field:'id',hidden:true">Id</th>
+                                    <th data-options="field:'name',width:100">Artist</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <div id="oldArtistInputFieldsLayout" data-options="region:'south',collapsible:false, border:false" style="padding:5px;width:100%;height:58%">
+                            MultiArtist<br>
+                            <input id="cbOldMultiArtist" class="easyui-combobox" style="height:30px;"
+                                   name="cbOldMultiArtist"
+                                   value="<?= $artistSongRelationshipObj->oldMultiArtistId ?>"
+                                   data-options="valueField:'id',
+                                 width:400,
+                                 textField:'description2',
+                                 url:'MP3PrettifierAction.php?method=getMultiArtistList'
+                                 ">
+                            <br>
+                            <div style="margin-bottom:5px">
+                                <input id="oldFreeArtist" class="easyui-textbox" label="Old Artist (Free)" value="<?= $artistSongRelationshipObj->oldArtist ?>" labelPosition="top" style="width:80%;height:52px">
+                                <button type="button" onclick="addFreeArtist();">Add</button>
+                            </div>
+                            <div style="margin-bottom:20px">
+                                <input id="oldSong" class="easyui-textbox" value="<?= $artistSongRelationshipObj->oldSong ?>"
+                                       label="Old Song" labelPosition="top" style="width:80%;height:52px">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div data-options="region:'south',collapsible:false, border:false" style="padding:5px;width:100%;height:30%">
-                MultiArtist<br>
-                <input id="cbOldMultiArtist" class="easyui-combobox" style="height:30px;"
-                       name="cbOldMultiArtist"
-                       value="<?= $artistSongRelationshipObj->oldMultiArtistId ?>"
-                       data-options="valueField:'id',
-                             width:500,
-                             textField:'description2',
-                             url:'MP3PrettifierAction.php?method=getMultiArtistList'
-                             ">
-                <br>
-                <div style="margin-bottom:20px">
-                    <input id="oldFreeArtist" class="easyui-textbox" label="Old Artist (Free)" value="<?= $artistSongRelationshipObj->oldArtist ?>" labelPosition="top" style="width:80%;height:52px">
-                    <button type="button" onclick="addFreeArtist();">Add</button>
+        </div>
+
+        <div id="newArtistLayout" data-options="region:'east',collapsible:false" title="New Artist" style="width:50%;height:90%">
+            <div class="easyui-layout" style="width:100%;height:100%;">
+                <div data-options="region:'north',collapsible:false, border:false" style="padding:5px;width:100%;height:20%">
+                    <div style="line-height:22px;background:#fafafa;padding:5px;">Select The New Artist Type</div>
+                    <div style="padding:10px">
+                        <input type="radio" name="newArtistType" value="<?= ArtistType::ARTIST?>" <?= radioButton(ArtistType::ARTIST, $artistSongRelationshipObj->newArtistType); ?>><span>Artist</span><br/>
+                        <input type="radio" name="newArtistType" value="<?= ArtistType::MULTIARTIST?>" <?= radioButton(ArtistType::MULTIARTIST, $artistSongRelationshipObj->newArtistType); ?>><span>MultiArtist</span><br/>
+                    </div>
+
                 </div>
-                <div style="margin-bottom:20px">
-                    <input id="oldSong" class="easyui-textbox" value="<?= $artistSongRelationshipObj->oldSong ?>"
-                           label="Old Song" labelPosition="top" style="width:80%;height:52px">
+                <div data-options="region:'center',collapsible:false, border:false" style="padding:5px;width:100%;height:10%">
+                    New Artist<br>
+                    <input id="cbNewArtist" class="easyui-combobox" name="cbNewArtist"
+                           value="<?= $artistSongRelationshipObj->newArtistId ?>"
+                           data-options="valueField:'id',
+                                 width:200,
+                                 textField:'name',
+                                 url:'MP3PrettifierAction.php?method=listArtists'
+                                 ">
                 </div>
+                <div data-options="region:'south',collapsible:false, border:false" style="padding:5px;width:100%;height:70%">
+                    New MultiArtist<br>
+                    <input id="cbNewMultiArtist" class="easyui-combobox" style="height:30px;"
+                           name="cbNewMultiArtist"
+                           value="<?= $artistSongRelationshipObj->newMultiArtistId ?>"
+                           data-options="valueField:'id',
+                                 width:500,
+                                 textField:'description2',
+                                 url:'MP3PrettifierAction.php?method=getMultiArtistList'
+                                 ">
+                    <div style="margin-bottom:20px">
+                        <input id="newSong" class="easyui-textbox"
+                               value="<?= $artistSongRelationshipObj->newSong ?>"
+                               label="New Song" labelPosition="top" style="width:80%;height:52px">
+                    </div>
+                    <div style="margin-bottom:20px">
+                        <input id="priority"
+                               value="<?= $artistSongRelationshipObj->priority ?>"
+                               class="easyui-numberspinner" style="width:80px;"
+                               data-options="required:false,min:0,editable:true">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="buttonLayOut" data-options="region:'south',collapsible:false" title="Buttons" style="width:100%;height:10%">
+            <div><button type="button" onclick="validateAndSave()">Save</button>
+                <button type="button" onclick="clearForm()">Clear</button>
+                <button  type="button" onclick="refreshCombo('cbOldArtist')">Refresh Artist List</button></div>
             </div>
         </div>
     </div>
 
-    <div data-options="region:'east',collapsible:false" title="New Artist" style="width:50%;height:90%">
-        <div class="easyui-layout" style="width:100%;height:100%;">
-            <div data-options="region:'north',collapsible:false, border:false" style="padding:5px;width:100%;height:20%">
-                <div style="line-height:22px;background:#fafafa;padding:5px;">Select The New Artist Type</div>
-                <div style="padding:10px">
-                    <input type="radio" name="newArtistType" value="<?= ArtistType::ARTIST?>" <?= radioButton(ArtistType::ARTIST, $artistSongRelationshipObj->newArtistType); ?>><span>Artist</span><br/>
-                    <input type="radio" name="newArtistType" value="<?= ArtistType::MULTIARTIST?>" <?= radioButton(ArtistType::MULTIARTIST, $artistSongRelationshipObj->newArtistType); ?>><span>MultiArtist</span><br/>
-                </div>
-
-            </div>
-            <div data-options="region:'center',collapsible:false, border:false" style="padding:5px;width:100%;height:10%">
-                New Artist<br>
-                <input id="cbNewArtist" class="easyui-combobox" name="cbNewArtist"
-                       value="<?= $artistSongRelationshipObj->newArtistId ?>"
-                       data-options="valueField:'id',
-                             width:200,
-                             textField:'name',
-                             url:'MP3PrettifierAction.php?method=listArtists'
-                             ">
-            </div>
-            <div data-options="region:'south',collapsible:false, border:false" style="padding:5px;width:100%;height:70%">
-                New MultiArtist<br>
-                <input id="cbNewMultiArtist" class="easyui-combobox" style="height:30px;"
-                       name="cbNewMultiArtist"
-                       value="<?= $artistSongRelationshipObj->newMultiArtistId ?>"
-                       data-options="valueField:'id',
-                             width:500,
-                             textField:'description2',
-                             url:'MP3PrettifierAction.php?method=getMultiArtistList'
-                             ">
-                <div style="margin-bottom:20px">
-                    <input id="newSong" class="easyui-textbox"
-                           value="<?= $artistSongRelationshipObj->newSong ?>"
-                           label="New Song" labelPosition="top" style="width:80%;height:52px">
-                </div>
-                <div style="margin-bottom:20px">
-                    <input id="priority"
-                           value="<?= $artistSongRelationshipObj->priority ?>"
-                           class="easyui-numberspinner" style="width:80px;"
-                           data-options="required:false,min:0,editable:true">
-                </div>
-            </div>
-        </div>
-    </div>
-    <div data-options="region:'south',collapsible:false" title="Buttons" style="width:100%;height:10%">
-        <div><button type="button" onclick="validateAndSave()">Save</button>
-            <button type="button" onclick="clearForm()">Clear</button></div>
-    </div>
-
-</div></form>
+</form>
 </body>
 </html>
 
@@ -401,16 +403,12 @@ else {
         return row;
     }
 
-    function clearArtist(){
-        $('#dgOldArtist').datagrid('removeFilterRule');
-        $('#dgOldArtist').datagrid('doFilter');
-    }
-
     function addArtist(){
         var row = $('#dgOldArtist').datagrid('getSelected');
         if (row) {
 
             var rows = $('#dgListOldArtist').edatagrid('getRows');
+            var rowIndex = $('#dgListOldArtist').edatagrid("getRowIndex", row);
             var alreadyAdded = false;
             for(var i=0; i<rows.length; i++){
                 if (rows[i].id == row.id) {
@@ -426,7 +424,7 @@ else {
                 });
                 $('#dgListOldArtist').datagrid('enableDnd');
                 $('#dgOldArtist').datagrid('unselectRow', rowIndex);
-                clearArtist();
+                clearFilter('dgOldArtist');
             }
             else {
                 $.messager.alert('Warning','Artist already added');

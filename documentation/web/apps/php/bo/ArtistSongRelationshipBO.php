@@ -1,5 +1,6 @@
 <?php
 require_once documentPath (ROOT_PHP, "config.php");
+require_once documentPath (ROOT_PHP_HTML, "config.php");
 require_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 require_once documentPath (ROOT_PHP_BO, "CacheBO.php");
 require_once documentPath (ROOT_PHP_BO, "ArtistBO.php");
@@ -145,75 +146,121 @@ class ArtistSongRelationshipBO
         return null;
     }
 
-    function loadFullData($filterRules = null){
-        if (CacheBO::isInCache(CacheBO::ARTISTSONG)){
-            $list = CacheBO::getObject(CacheBO::ARTISTSONG);
+    function convertToArtistSongForm(MultiArtistBO $multiArtistBO, $item){
+        $artistSongRelationshipTO = new ArtistSongRelationshipTO($item);
+        $artistBO = $multiArtistBO->getArtistBO();
+        if (isset($artistSongRelationshipTO->oldArtistId)){
+            $artistTO = $artistBO->lookupArtist($artistSongRelationshipTO->oldArtistId);
+            $artistSongRelationshipTO->oldArtist = isset($artistTO) ? $artistTO->name : "";
         }
-        else {
-            $list = Array();
-            ArtistBO:$artistBO = new ArtistBO();
-            $multiArtistBO = new MultiArtistBO();
-            $multiArtistBO->loadData();
-            foreach ($this->artistSongRelationshipObj->items as $key => $item) {
-                $artistSongRelationshipTO = new ArtistSongRelationshipTO($item);
-                if (isset($artistSongRelationshipTO->oldArtistId)){
-                    $artistTO = $artistBO->lookupArtist($artistSongRelationshipTO->oldArtistId);
-                    $artistSongRelationshipTO->oldArtist = isset($artistTO) ? $artistTO->name : "";
-                }
-                else if (isset($artistSongRelationshipTO->oldArtistList) && count($artistSongRelationshipTO->oldArtistList) > 0){
-                    $artistSongRelationshipTO->oldArtist = "";
-                    $first = true;
-                    /* @var $artist AristItemTO */
-                    foreach($artistSongRelationshipTO->oldArtistList as $artist){
-                        $artistSongRelationshipTO->oldArtist .= $first ? "" : "|";
-                        $first = false;
-                        if (isset($artist->id)){
-                            $artistTO = $artistBO->lookupArtist($artist->id);
-                            $artistSongRelationshipTO->oldArtist .= isset($artistTO) ? $artistTO->name : "";
-                        }
-                        else {
-                            $artistSongRelationshipTO->oldArtist .= $artist->text;
-                        }
-                    }
-                }
-                else if (isset($artistSongRelationshipTO->oldMultiArtistId)){
-                    $multiArtist = $multiArtistBO->findMultiArtist($artistSongRelationshipTO->oldMultiArtistId);
-                    if (isset($multiArtist)){
-                        $multiArtistTO = $multiArtistBO->convertToMultiArtistTO($multiArtist);
-                        $artistSongRelationshipTO->oldArtist = $multiArtistTO->description2;
-                    }
-                }
-
-                if (isset($artistSongRelationshipTO->newArtistId)){
-                    $artistTO = $artistBO->lookupArtist($artistSongRelationshipTO->newArtistId);
-                    $artistSongRelationshipTO->newArtist = isset($artistTO) ? $artistTO->name : "";
-                }
-                else if (isset($artistSongRelationshipTO->newMultiArtistId)){
-                    $multiArtist = $multiArtistBO->findMultiArtist($artistSongRelationshipTO->newMultiArtistId);
-                    if (isset($multiArtist)){
-                        $multiArtistTO = $multiArtistBO->convertToMultiArtistTO($multiArtist);
-                        $artistSongRelationshipTO->newArtist = $multiArtistTO->description2;
-                    }
-                }
-                if ($filterRules != null) {
-                    foreach ($filterRules as $item) {
-                        $test = $item;
-                        if ($test->field == "oldArtist") {
-                            if (strpos(strtoupper($artistSongRelationshipTO->oldArtist), strtoupper($item->value)) !== false) {
-                                $list[] = $artistSongRelationshipTO;
-                                break;
-                            }
-                        }
-                    }
+        else if (isset($artistSongRelationshipTO->oldArtistList) && count($artistSongRelationshipTO->oldArtistList) > 0){
+            $artistSongRelationshipTO->oldArtist = "";
+            $first = true;
+            /* @var $artist AristItemTO */
+            foreach($artistSongRelationshipTO->oldArtistList as $artist){
+                $artistSongRelationshipTO->oldArtist .= $first ? "" : "|";
+                $first = false;
+                if (isset($artist->id)){
+                    $artistTO = $artistBO->lookupArtist($artist->id);
+                    $artistSongRelationshipTO->oldArtist .= isset($artistTO) ? $artistTO->name : "";
                 }
                 else {
-                    $list[] = $artistSongRelationshipTO;
+                    $artistSongRelationshipTO->oldArtist .= $artist->text;
                 }
-
             }
-            CacheBO::saveObject(CacheBO::ARTISTSONG, $list);
         }
-        return $list;
+        else if (isset($artistSongRelationshipTO->oldMultiArtistId)){
+            $multiArtist = $multiArtistBO->findMultiArtist($artistSongRelationshipTO->oldMultiArtistId);
+            if (isset($multiArtist)){
+                $multiArtistTO = $multiArtistBO->convertToMultiArtistTO($multiArtist);
+                $artistSongRelationshipTO->oldArtist = $multiArtistTO->description2;
+            }
+        }
+
+        if (isset($artistSongRelationshipTO->newArtistId)){
+            $artistTO = $artistBO->lookupArtist($artistSongRelationshipTO->newArtistId);
+            $artistSongRelationshipTO->newArtist = isset($artistTO) ? $artistTO->name : "";
+        }
+        else if (isset($artistSongRelationshipTO->newMultiArtistId)){
+            $multiArtist = $multiArtistBO->findMultiArtist($artistSongRelationshipTO->newMultiArtistId);
+            if (isset($multiArtist)){
+                $multiArtistTO = $multiArtistBO->convertToMultiArtistTO($multiArtist);
+                $artistSongRelationshipTO->newArtist = $multiArtistTO->description2;
+            }
+        }
+        return $artistSongRelationshipTO;
+    }
+
+    function loadFullData($filterRules = null){
+        $filterRuleSet = isSetFilterRule($filterRules);
+        $normalList = Array();
+        $cacheList = Array();
+        if (CacheBO::isInCache(CacheBO::ARTISTSONG)){
+            $cacheList = CacheBO::getObject(CacheBO::ARTISTSONG);
+            if ($filterRuleSet){
+                $filteredList = [];
+                foreach($cacheList as $artistSongRelationshipTO){
+                    if (!$this->isItemFiltered($artistSongRelationshipTO, $filterRules)){
+                        $filteredList[] = $artistSongRelationshipTO;
+                    }
+                }
+                $normalList = $filteredList;
+            }
+            else {
+                $normalList = array_values($cacheList);
+            }
+        }
+        else {
+            $multiArtistBO = new MultiArtistBO();
+            $multiArtistBO->loadData();
+            $filteredList = [];
+            foreach ($this->artistSongRelationshipObj->items as $key => $item) {
+                $artistSongRelationshipTO = $this->convertToArtistSongForm($multiArtistBO, $item);
+                $cacheList[$artistSongRelationshipTO->id] = $artistSongRelationshipTO;
+                $normalList = $artistSongRelationshipTO;
+                if (!$this->isItemFiltered($artistSongRelationshipTO, $filterRules)){
+                    $filteredlist[] = $artistSongRelationshipTO;
+                }
+            }
+            // Save The Full List In The Cache
+            CacheBO::saveObject(CacheBO::ARTISTSONG, $cacheList);
+            if ($filterRuleSet) {
+                $normalList = $filteredList;
+            }
+        }
+        return $normalList;
+    }
+
+    /* filterRules is an array of objects containging 2 fields:
+       field = name of the field of the filter rule
+       op = possible values: for the moment we threat everything as 'contains'
+       value = the value of the filter field
+    */
+    function isItemFiltered(ArtistSongRelationshipTO $artistSongRelationshipTO, $filterRules) {
+        $filtered = false;
+        if ($filterRules != null) {
+            $nr = 0;
+            foreach ($filterRules as $item) {
+                switch ($item->field){
+                    case "newArtist":
+                        if (strpos(strtoupper($artistSongRelationshipTO->newArtist), strtoupper($item->value)) !== false) {
+                            $nr++;
+                        }
+                        break;
+                    case "newSong":
+                        if (strpos(strtoupper($artistSongRelationshipTO->newSong), strtoupper($item->value)) !== false) {
+                            $nr++;
+                        }
+                        break;
+                    default:
+                        // filter Rule set but not checking on it, threat it as it does not have to be filtered
+                        $nr++;
+                        break;
+                }
+            }
+            $filtered = $nr != count($filterRules);
+        }
+        return $filtered;
     }
 
 
@@ -224,6 +271,8 @@ class ArtistSongRelationshipBO
             if (strcmp($value->id, $artistSongRelationship->id) == 0) {
                 $this->artistSongRelationshipObj->items[$counter] = $artistSongRelationship;
                 writeJSON($this->artistSongRelationshipObj, $this->file);
+                $artistSongForm = $this->convertToArtistSongForm(new MultiArtistBO(), $artistSongRelationship);
+                CacheBO::saveCacheObject(CacheBO::ARTISTSONG, $artistSongRelationship->id, $artistSongForm);
                 return true;
             }
             $counter++;
@@ -236,6 +285,8 @@ class ArtistSongRelationshipBO
         $artistSongRelationship->id = getUniqueId();
         array_push($this->artistSongRelationshipObj->items, $artistSongRelationship);
         writeJSON($this->artistSongRelationshipObj, $this->file);
+        $artistSongForm = $this->convertToArtistSongForm(new MultiArtistBO(), $artistSongRelationship);
+        CacheBO::saveCacheObject(CacheBO::ARTISTSONG, $artistSongRelationship->id, $artistSongForm);
     }
 
     function isArtistUsed($id){
@@ -274,6 +325,7 @@ class ArtistSongRelationshipBO
                 $array = array_values($this->artistSongRelationshipObj->items);
                 $this->artistSongRelationshipObj->items = $array;
                 writeJSON($this->artistSongRelationshipObj, $this->file);
+                CacheBO::clearCacheObject(CacheBO::ARTISTSONG, $id);
                 return true;
         }
         return false;

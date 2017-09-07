@@ -47,10 +47,10 @@ goMenu();
         $smarty->assign('id',$fieldId);
         $smarty->assign('fitColumns',"true");
         $smarty->assign('pageSize',"20");
-        $smarty->assign('customEdit',"editLink2()");
+        $smarty->assign('customEdit',"editLink()");
         $smarty->assign('viewUrl',$url . "?method=listArtistSong");
         $smarty->assign('updateUrl', "'" . $url2 . "?id='+row['" . $fieldId . "']");
-        $smarty->assign('deleteUrl', $url . "?method=deleteMultiArtist");
+        $smarty->assign('deleteUrl', $url . "?method=deleteArtistSong");
         //$smarty->assign('deleteUrl', $url . "?method=delete");
 
 
@@ -74,6 +74,7 @@ goMenu();
     <div data-options="region:'south',collapsible:false" title="Result" style="width:100%;height:15%">
 
         <button type="button" onclick="refreshMultiArtist()">Refresh</button>
+        <button type="button" onclick="clearFilterAA('dgListArtistSong')">Clear Filter</button>
 
     </div>
 
@@ -95,7 +96,11 @@ goMenu();
                 alert('Hi!');
             });
 
-            function editLink2(){
+            function clearFilterAA(datagrid){
+                clearFilter(datagrid);
+            }
+
+            function editLink(){
                 var selectedRow = $('#dgListArtistSong').edatagrid("getSelected");
                 var url = "<?php echo webPath(ROOT_PHP_CONFIGURATION_MP3PRETTIFIER, 'ArtistSongRelationshipView.php') ?>" + '?id='+selectedRow.id;
                 var win = window.open(url, '_blank');

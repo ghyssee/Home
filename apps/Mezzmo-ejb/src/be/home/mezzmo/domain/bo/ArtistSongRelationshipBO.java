@@ -37,6 +37,15 @@ public class ArtistSongRelationshipBO {
         return artistSongRelationship;
     }
 
+    public ArtistSongRelationship.ArtistSongRelation findArtistSongRelationshipById(String id){
+        for (ArtistSongRelationship.ArtistSongRelation item : artistSongRelationship.items) {
+            if (item.id.equals(id)){
+                return item;
+            }
+        }
+        return null;
+    }
+
     public static ArtistSongRelationshipBO getInstance() {
         if (artistSongRelationshipBO == null){
             artistSongRelationshipBO = new ArtistSongRelationshipBO();

@@ -4,4 +4,5 @@
 <script type="text/javascript" src="<?php echo webPath(ROOT_JS_EASYUI, 'jquery.easyui.min.js')?>"></script>
 <script type="text/javascript" src="<?php echo webPath(ROOT_JS_EASYUI, 'datagrid-dnd.js')?>"></script>
 <script type="text/javascript" src="<?php echo webPath(ROOT_JS_EASYUI, 'datagrid-filter.js')?>"></script>
+<script type="text/javascript" src="<?php echo webPath(ROOT_JS_EASYUI, 'easyUIUtils.js')?>"></script>
 

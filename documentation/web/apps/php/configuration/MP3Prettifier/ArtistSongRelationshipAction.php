@@ -15,6 +15,9 @@ try {
         case "listArtistSong":
             listArtistSong();
             break;
+        case "deleteArtistSong":
+            deleteArtistSong();
+            break;
         case "add":
             addArtistSong();
             break;
@@ -28,7 +31,6 @@ catch(Exception $e){
     logError($e->getFile(), $e->getLine(), $e->getMessage());
 }
 catch(Error $e) {
-//    echo $e->getMessage();
     logError($e->getFile(), $e->getLine(), $e->getMessage());
 }
 
@@ -39,13 +41,12 @@ function addErrorMsg($msg){
 function listArtistSong(){
     $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
     $rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
+    $filterRules = null;
     if (isSetFilterRule()){
         $filterRules = json_decode($_POST["filterRules"]);
     }
-    else {
-    }
     $artistSongRelationshipBO = new ArtistSongRelationshipBO();
-    $list = $artistSongRelationshipBO->loadFullData();
+    $list = $artistSongRelationshipBO->loadFullData($filterRules);
     $newArray = $list;
 
     //if (isset($_POST['sort'])){
@@ -80,7 +81,7 @@ function validateArtistSong($config){
         return $errorObj;
     }
     switch ($config->oldArtistType){
-        case "01":
+        case ArtistType::ARTIST:
             if (empty($config->oldArtists)){
                 $errorObj->success = false;
                 $errorObj->errorMsg = "No Old Artists Added";
@@ -99,7 +100,7 @@ function validateArtistSong($config){
             }
             $artistSongRelationShipTO->oldArtistList = $list;
             break;
-        case "02":
+        case ArtistType::MULTIARTIST:
             if (empty($config->oldMultiArtist)){
                 $errorObj->success = false;
                 $errorObj->errorMsg = "Old Multi Artist is empty";
@@ -107,7 +108,7 @@ function validateArtistSong($config){
             }
             $artistSongRelationShipTO->oldMultiArtistId = $config->oldMultiArtist;
             break;
-        case "03":
+        case ArtistType::FREE:
             if (empty($config->oldFreeArtist)){
                 $errorObj->success = false;
                 $errorObj->errorMsg = "Old Free Artist is empty";
@@ -125,7 +126,7 @@ function validateArtistSong($config){
         return $errorObj;
     }
     switch ($config->newArtistType) {
-        case "01":
+        case ArtistType::ARTIST:
             if (empty($config->newArtist)){
                 $errorObj->success = false;
                 $errorObj->errorMsg = "No New Artist Selected";
@@ -133,7 +134,7 @@ function validateArtistSong($config){
             }
             $artistSongRelationShipTO->newArtistId = $config->newArtist->id;
             break;
-        case "02":
+        case ArtistType::MULTIARTIST:
             if (empty($config->newMultiArtist)){
                 $errorObj->success = false;
                 $errorObj->errorMsg = "No New Multi Artist Selected";
@@ -185,4 +186,15 @@ function addArtistSong(){
     }
 }
 
+function deleteArtistSong(){
+    $id = $_REQUEST['id'];
+    $artistSongRelationShipBO = new ArtistSongRelationShipBO();
+    $success = $artistSongRelationShipBO->deleteArtistSong($id);
+    $returnObj = array('success' => $success);
+    if (!$success) {
+        $returnObj['errorMessage'] = "There was a problem trying to delete the MultiArtist!";
+    }
+    echo json_encode($returnObj);
+
+}
 ?>
