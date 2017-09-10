@@ -23,14 +23,13 @@ public class ArtistSongRelationshipBO {
     private static ArtistSongRelationshipBO artistSongRelationshipBO = null;
     private static ArtistSongRelationship artistSongRelationship;
     private static final Logger log = Logger.getLogger(ArtistSongRelationshipBO.class);
-    public static List<MP3Prettifier.ArtistSongExceptions.ArtistSong> artistSongs;
     public static List<ArtistSongRelationship.ArtistSongRelation> artistSongRelationshipList;
 
 
     private ArtistSongRelationshipBO() {
         artistSongRelationship = (ArtistSongRelationship) JSONUtils.openJSONWithCode(Constants.JSON.ARTISTSONGRELATIONSHIP, ArtistSongRelationship.class);
-        artistSongs = construct();
-        Collections.sort(artistSongs, (a1, b1) -> b1.priority - a1.priority);
+        artistSongRelationshipList = artistSongRelationship.items;
+        Collections.sort(artistSongRelationshipList, (a1, b1) -> b1.priority - a1.priority);
     }
 
     public ArtistSongRelationship getArtistSongRelationship(){
@@ -57,11 +56,7 @@ public class ArtistSongRelationshipBO {
         return artistSongRelationshipList;
     }
 
-    private static void constructArtistSong(){
-
-    }
-
-    public static List<MP3Prettifier.ArtistSongExceptions.ArtistSong> construct() {
+   public static List<MP3Prettifier.ArtistSongExceptions.ArtistSong> oldConstruct() {
 
         log.info("Started: Constructing ArtistSongRelationship");
         List <MP3Prettifier.ArtistSongExceptions.ArtistSong> items = new ArrayList<>();
@@ -123,6 +118,45 @@ public class ArtistSongRelationshipBO {
         log.info("Ended: Constructing ArtistSongRelationship");
 
         return items;
+    }
+
+    private static String getArtist(String id){
+        Artists.Artist artistObj = ArtistBO.getInstance().getArtistWithException(id);
+        String artistName = artistObj.getName();
+        return artistName;
+    }
+
+    public boolean matchArtist(String artist, ArtistSongRelationship.ArtistSongRelation artistSong){
+        boolean match = false;
+        String artistName = null;
+        if (artistSong.oldArtistList != null && artistSong.oldArtistList.size() > 0) {
+            for (ArtistSongRelationship.ArtistItem artistItem : artistSong.oldArtistList) {
+                if (StringUtils.isBlank(artistItem.getId())) {
+                    artistName = artistItem.text;
+                } else {
+                    artistName = getArtist(artistItem.id);
+                }
+                if (artist.startsWith(artistName)) {
+                    match = true;
+                    break;
+                }
+            }
+        }
+        else if (artistSong.oldArtistId != null){
+            artistName = getArtist(artistSong.oldArtistId);
+            if (artist.startsWith(artistName)) {
+                match = true;
+            }
+        }
+        else if (artistSong.oldMultiArtistId != null){
+            MultiArtistConfig.Item multiArtistItem = ArtistConfigBO.getInstance().getMultiArtist(artistSong.oldMultiArtistId);
+            artistName = ArtistConfigBO.getInstance().constructNewArtistName(multiArtistItem.artistSequence);
+            if (artist.startsWith(artistName)) {
+                match = true;
+            }
+        }
+        return match;
+
     }
 
 }

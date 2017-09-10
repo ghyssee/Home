@@ -527,12 +527,8 @@ public class MP3Helper {
         if (isModified(song, prettifiedSong, "ArtistSong / Song / Level 1 => Updated")){
             return prettifiedSong;
         }
-        prettifiedSong = checkTitleArtistRelation(artist, song, "Title ExceptionV2", ArtistSongRelationshipBO.getInstance().artistSongs);
-        if (isModified(song, prettifiedSong, "ArtistSong / Song / Level 2 => Updated")){
-            return prettifiedSong;
-        }
         prettifiedSong = checkArtistTitleExceptions3(artist, song, ARTIST_SONG_TYPE.SONG);
-        if (isModified(song, prettifiedSong, "ArtistSong / Song / Level 3 => Updated")){
+        if (isModified(song, prettifiedSong, "ArtistSong / Song / Level 2 => Updated")){
             return prettifiedSong;
         }
         return prettifiedSong;
@@ -544,12 +540,8 @@ public class MP3Helper {
         if (isModified(artist, prettifiedArtist, "ArtistSong / Artist / Level 1 => Updated")){
             return prettifiedArtist;
         }
-        prettifiedArtist = checkArtistTitleRelation(artist, song, "Artist ExceptionV2",  ArtistSongRelationshipBO.getInstance().artistSongs);
-        if (isModified(artist, prettifiedArtist, "ArtistSong / Artist / Level 2 => Updated")){
-            return prettifiedArtist;
-        }
         prettifiedArtist = checkArtistTitleExceptions3(artist, song, ARTIST_SONG_TYPE.ARTIST);
-        if (isModified(artist, prettifiedArtist, "ArtistSong / Artist / Level 3 => Updated")){
+        if (isModified(artist, prettifiedArtist, "ArtistSong / Artist / Level 2 => Updated")){
             return prettifiedArtist;
         }
         return prettifiedArtist;
@@ -564,6 +556,7 @@ public class MP3Helper {
      This is never an exact match. For exact match use oldArtistId or oldMultiArtistId
      */
 
+
     public String checkArtistTitleExceptions3(String artist, String song, ARTIST_SONG_TYPE type){
         String value = null;
         switch (type) {
@@ -576,42 +569,28 @@ public class MP3Helper {
         }
         List <ArtistSongRelationship.ArtistSongRelation>  list = ArtistSongRelationshipBO.getInstance().getArtistSongRelationshipList();
         for (ArtistSongRelationship.ArtistSongRelation item : list) {
-            for (ArtistSongRelationship.ArtistItem artistItem : item.oldArtistList) {
-                String artistName = null;
-                if (StringUtils.isBlank(artistItem.getId())){
-                    artistName = artistItem.text;
-                }
-                else{
-                    Artists.Artist artistObj = ArtistBO.getInstance().getArtist(artistItem.id);
-                    if (artistObj == null) {
-                        log.error("Artist Id Not Found: " + artistItem.id);
-                        break;
-                    }
-                    artistName = ArtistBO.getInstance().getStageName(artistObj);
-                }
+            if (ArtistSongRelationshipBO.getInstance().matchArtist(artist, item)){
                 ArtistSongItem artistSongItem = null;
                 artistSongItem = checkTitle(song, item.oldSong, item.newSong, item.exactMatchTitle, item.indexTitle);
-                if (artist.startsWith(artistName)) {
-                    switch (type){
-                        case ARTIST:
-                            if (StringUtils.isNotBlank(item.newMultiArtistId)){
-                                MultiArtistConfig.Item tmp = ArtistConfigBO.getInstance().getMultiArtist(item.newMultiArtistId);
-                                MP3Prettifier.Word word = ArtistConfigBO.getInstance().constructItem(tmp);
-                                artistSongItem.setItem(word.newWord);
-                            }
-                            else if (StringUtils.isNotBlank(item.newArtistId)){
-                                Artists.Artist newArtistObj = ArtistBO.getInstance().getArtist(item.newArtistId);
-                                artistSongItem.setItem(ArtistBO.getInstance().getStageName(newArtistObj));
-                            }
-                            break;
-                        case SONG:
-                            break;
-                    }
-                    if (artistSongItem != null && artistSongItem.isMatched()) {
-                        value = artistSongItem.getItem();
-                        logRule("Title ExceptionV3", item);
+                switch (type){
+                    case ARTIST:
+                        if (StringUtils.isNotBlank(item.newMultiArtistId)){
+                            MultiArtistConfig.Item tmp = ArtistConfigBO.getInstance().getMultiArtist(item.newMultiArtistId);
+                            MP3Prettifier.Word word = ArtistConfigBO.getInstance().constructItem(tmp);
+                            artistSongItem.setItem(word.newWord);
+                        }
+                        else if (StringUtils.isNotBlank(item.newArtistId)){
+                            Artists.Artist newArtistObj = ArtistBO.getInstance().getArtist(item.newArtistId);
+                            artistSongItem.setItem(ArtistBO.getInstance().getStageName(newArtistObj));
+                        }
                         break;
-                    }
+                    case SONG:
+                        break;
+                }
+                if (artistSongItem != null && artistSongItem.isMatched()) {
+                    value = artistSongItem.getItem();
+                    logRule("Title ExceptionV3", item);
+                    break;
                 }
             }
         }

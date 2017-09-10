@@ -187,7 +187,7 @@ public class ArtistConfigBO {
         return word;
     }
 
-    private String constructNewArtistName(List<MultiArtistConfig.Item.ArtistSequenceItem> list){
+    public String constructNewArtistName(List<MultiArtistConfig.Item.ArtistSequenceItem> list){
         String word = "";
         for (MultiArtistConfig.Item.ArtistSequenceItem artistSequenceItem : list){
 

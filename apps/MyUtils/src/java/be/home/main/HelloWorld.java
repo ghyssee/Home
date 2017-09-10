@@ -56,7 +56,7 @@ public class HelloWorld extends BatchJobV2 {
         //System.out.println(MP3Helper.getInstance().checkRegExpDollar("$1Text$1", 1));
         //updateMP3();
         //batchProcess();
-        myInit();
+        //myInit();
         testMP3Prettifier();
         //testAlbumArtist();
 
@@ -149,13 +149,15 @@ private static void testAlbumArtist(){
         System.out.println(mp3Helper.prettifySong("Voulez Vous Coucher Avec Moi Ce Soir? (Lady Marmalade)"));
         System.out.println(mp3Helper.prettifyAlbum("The Flying Dutch 2017 Edition NL", null));
         System.out.println(getTitleArtistException("Lost Frequencies", "Reality"));
+        System.out.println(getArtistTitleException("Lost Frequencies", "Reality"));
         System.out.println(getArtistTitleException("Brunner Und Brunner", "Im Namen Der Liebe"));
         System.out.println(mp3Helper.prettifySong("LOL (Radio Mix FT Fast Edit)"));
         System.out.println(mp3Helper.prettifyArtist("Person Z"));
         System.out.println(mp3Helper.prettifyArtist("Person Z, (a"));
-        System.out.println(mp3Helper.prettifyArtist("Person Y"));
+        System.out.println(mp3Helper.prettifyArtist("The Him"));
         System.out.println(getTitleArtistException("Tina Turner", "Teach Me Again"));
-        System.out.println(getArtistTitleException("Tina Turner", "Teach Me Again"));
+        System.out.println(getArtistTitleException("Bob Marley Vs. Funkstar De Luxe", "Sun Is Shining"));
+        System.out.println(getArtistTitleException("Bob Marley", "Sun Is Shining"));
 
     }
 
