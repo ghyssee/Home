@@ -164,8 +164,8 @@ function validateArtistSong($config){
     else {
         $artistSongRelationShipTO->newSong = $config->newSong;
     }
-    $artistSongRelationShipTO->priority = $config->priority;
-    $artistSongRelationShipTO->indexTitle = $config->indexTitle;
+    $artistSongRelationShipTO->priority = intval($config->priority);
+    $artistSongRelationShipTO->indexTitle = intval($config->indexTitle);
     $errorObj->success = true;
     $artistSongRelationShipBO = new ArtistSongRelationShipBO();
     if (isset($artistSongRelationShipTO->id) && !empty($artistSongRelationShipTO->id)){

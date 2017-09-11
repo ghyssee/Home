@@ -90,7 +90,7 @@ public class ArtistSongRelationshipBO {
                 } else {
                     artistName = getArtist(artistItem.id);
                 }
-                if (artist.startsWith(artistName)) {
+                if (artist.matches(artistName + ".*")) {
                     match = true;
                     break;
                 }
