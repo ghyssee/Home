@@ -23,6 +23,7 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -61,6 +62,26 @@ public class TestArtistSong extends BatchJobV2 {
             log.info("Item Found: " + id);
         }
     }
+
+    /*
+    private static void convertArtistSong() throws IOException {
+        ArtistSongRelationshipBO bo = ArtistSongRelationshipBO.getInstance();
+        boolean save = false;
+        for (ArtistSongRelationship.ArtistSongRelation item : bo.getArtistSongRelationship().items) {
+            List<ArtistSongRelationship.ArtistItem> artistItems = new ArrayList<>();
+            if (StringUtils.isNotBlank(item.oldArtistId)){
+                ArtistSongRelationship.ArtistItem artistItem = new ArtistSongRelationship(). new ArtistItem();
+                artistItem.setId(item.oldArtistId);
+                artistItems.add(artistItem);
+                item.oldArtistId = null;
+                item.oldArtistList = artistItems;
+                save = true;
+            }
+        }
+        if (save){
+            bo.save();
+        }
+    }*/
 
     @Override
     public void run() {

@@ -18,7 +18,8 @@ class ArtistSongExceptionTO  {
     public $exactMatchArtist;
     public $priority;
     public $indexTitle;
-    public function __construct7($oldArtist, $newArtist, $oldSong, $newSong, $exactMatchArtist,$exactMatchTitle, $priority, $indexTitle)
+    public $oldFreeArtist;
+    public function __construct9($oldArtist, $newArtist, $oldSong, $newSong, $exactMatchArtist,$exactMatchTitle, $priority, $indexTitle, $oldFreeArtist)
     {
         $this->oldArtist = $oldArtist;
         $this->newArtist = $newArtist;
@@ -28,6 +29,7 @@ class ArtistSongExceptionTO  {
         $this->exactMatchArtist = $exactMatchArtist;
         $this->priority = $priority;
         $this->indexTitle = $indexTitle;
+        $this->$oldFreeArtist = $oldFreeArtist;
     }
 }
 

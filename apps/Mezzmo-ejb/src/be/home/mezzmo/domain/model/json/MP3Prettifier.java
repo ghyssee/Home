@@ -42,6 +42,7 @@ public class MP3Prettifier {
         public class ArtistSong {
             public String id;
             public String oldArtist;
+            public boolean oldFreeArtist;
             public String newArtist;
             public String oldSong;
             public String newSong;

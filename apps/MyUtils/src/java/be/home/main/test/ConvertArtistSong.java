@@ -49,7 +49,7 @@ public class ConvertArtistSong extends BatchJobV2 {
         List<MP3Prettifier.ArtistSongExceptions.ArtistSong> newArtistSongExceptionsList = new ArrayList<>();
         for (MP3Prettifier.ArtistSongExceptions.ArtistSong artistSong : mp3Prettifier.artistSongExceptions.items){
             ArtistSongRelationship.ArtistSongRelation artistSongRelation = new ArtistSongRelationship().new ArtistSongRelation();
-            boolean converted = convertArtist(artistSong.oldArtist, ArtistType.Old, artistSongRelation);
+            boolean converted = convertArtist(artistSong.oldArtist, artistSong.oldFreeArtist, ArtistType.Old, artistSongRelation);
             if (!converted){
                 printInfo(badFile, artistSong);
                 newArtistSongExceptionsList.add(artistSong);
@@ -57,7 +57,7 @@ public class ConvertArtistSong extends BatchJobV2 {
                 continue;
             }
             else {
-                converted = convertArtist(artistSong.newArtist, ArtistType.New, artistSongRelation);
+                converted = convertArtist(artistSong.newArtist, artistSong.oldFreeArtist, ArtistType.New, artistSongRelation);
                 if (!converted){
                     printInfo(badFile, artistSong);
                     newArtistSongExceptionsList.add(artistSong);
@@ -82,7 +82,8 @@ public class ConvertArtistSong extends BatchJobV2 {
         //writeJsonFile(mp3Prettifier, Setup.getFullPath(Constants.JSON.MP3PRETTIFIER) + ".NEW");
         //writeJsonFile(artistSongRelationship, Setup.getFullPath(Constants.JSON.ARTISTSONGRELATIONSHIP) + ".NEW");
         writeJsonFileWithCode(mp3Prettifier, Constants.JSON.MP3PRETTIFIER);
-        writeJsonFileWithCode(artistSongRelationship, Constants.JSON.ARTISTSONGRELATIONSHIP);
+        //writeJsonFileWithCode(artistSongRelationship, Constants.JSON.ARTISTSONGRELATIONSHIP);
+        ArtistSongRelationshipBO.getInstance().save();
 
     }
 
@@ -129,7 +130,7 @@ public class ConvertArtistSong extends BatchJobV2 {
         Old, New
     }
 
-    private boolean convertArtist(String artistName, ArtistType artistType, ArtistSongRelationship.ArtistSongRelation artistSongRelation){
+    private boolean convertArtist(String artistName, boolean oldFreeArtist, ArtistType artistType, ArtistSongRelationship.ArtistSongRelation artistSongRelation){
         log.info("Converting " + artistType.name() + " Artist");
         ArtistBO artistBO = ArtistBO.getInstance();
         Artists.Artist artist = artistBO.findArtistByName(artistName);
@@ -147,20 +148,23 @@ public class ConvertArtistSong extends BatchJobV2 {
                 converted = true;
                 log.info("MultiArtist Found: Id= " + multiArtist.getId());
             }
-            else {
-                if (artistType.equals(ArtistType.Old)){
-                    // artist can be (?:Artist A|Artist B)
-                    converted = checkForMultiArtistList(artistName, artistSongRelation);
-                    if (converted) {
-                        log.info("Artist List Found For " + artistName);
-                    }
+            else if (artistType.equals(ArtistType.Old)){
+                // artist can be (?:Artist A|Artist B)
+                converted = checkForMultiArtistList(artistName, oldFreeArtist, artistSongRelation);
+                if (converted) {
+                    log.info("Artist List Found For " + artistName);
+                }
+                else if (oldFreeArtist){
+                    artistSongRelation.oldArtistList = ArtistSongRelationshipBO.getInstance().convertToArtistList(null, artistName);
+                    log.info("Artist (Free Text) Found: Text= " + artistName);
+                    converted = true;
                 }
             }
         }
         else {
             converted = true;
             if (artistType == ArtistType.Old) {
-                artistSongRelation.oldArtistId = artist.getId();
+                artistSongRelation.oldArtistList = ArtistSongRelationshipBO.getInstance().convertToArtistList(artist.getId(), null);
             }
             else {
                 artistSongRelation.newArtistId = artist.getId();
@@ -170,7 +174,7 @@ public class ConvertArtistSong extends BatchJobV2 {
         return converted;
     }
 
-    private boolean checkForMultiArtistList(String artistName, ArtistSongRelationship.ArtistSongRelation artistSongRelation){
+    private boolean checkForMultiArtistList(String artistName, boolean oldFreeArtist, ArtistSongRelationship.ArtistSongRelation artistSongRelation){
         String tmp = artistName.replaceAll("^\\(\\?:", "");
         ArtistBO artistBO = ArtistBO.getInstance();
         tmp = tmp.replaceAll("\\)$", "");

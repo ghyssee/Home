@@ -186,6 +186,12 @@ else {
                                class="easyui-numberspinner" style="width:80px;"
                                data-options="required:false,min:0,editable:true">
                     </div>
+                    <div style="margin-bottom:20px">
+                        <input id="indexTitle"
+                               value="<?= $artistSongRelationshipObj->indexTitle ?>"
+                               class="easyui-numberspinner" style="width:80px;"
+                               data-options="required:false,min:0,editable:true">
+                    </div>
                 </div>
             </div>
         </div>
@@ -323,6 +329,7 @@ else {
         var newMultiArtist = getCmbArtist("cbNewMultiArtist");
         var newSong =$("#newSong").textbox('getValue');
         var priority = $("#priority").numberspinner('getValue');
+        var indexTitle = $("#indexTitle").numberspinner('getValue');
 
         var object = {
                       id:'<?= $artistSongId?>',
@@ -335,7 +342,8 @@ else {
                       newArtist:newArtist,
                       newMultiArtist:newMultiArtist == null ? "" : newMultiArtist.id,
                       newSong:newSong,
-                      priority:priority
+                      priority:priority,
+                      indexTitle:indexTitle
         };
 
         var tmp = $.post('ArtistSongRelationshipAction.php?method=add', { config : JSON.stringify(object)}, function(data2){

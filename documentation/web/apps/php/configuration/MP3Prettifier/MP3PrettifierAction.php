@@ -437,6 +437,7 @@ function fillArtistSong(ArtistSongExceptionTO $artistSongException){
     assignCheckbox($artistSongException->exactMatchArtist, "exactMatchArtist");
     assignNumber($artistSongException->priority, "priority", !HTML_SPECIAL_CHAR);
     assignNumber($artistSongException->indexTitle, "indexTitle", !HTML_SPECIAL_CHAR);
+    assignCheckbox($artistSongException->oldFreeArtist, "oldFreeArtist");
 }
 
 function updateArtistSong($file, $type, $category){

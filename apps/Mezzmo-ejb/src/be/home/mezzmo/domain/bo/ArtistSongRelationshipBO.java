@@ -1,5 +1,6 @@
 package be.home.mezzmo.domain.bo;
 
+import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
 import be.home.common.utils.JSONUtils;
 import be.home.mezzmo.domain.model.json.ArtistSongRelationship;
@@ -9,11 +10,14 @@ import be.home.mezzmo.domain.model.json.MultiArtistConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
+
+import static be.home.common.utils.JSONUtils.writeJsonFile;
+import static be.home.common.utils.JSONUtils.writeJsonFileWithCode;
 
 /**
  * Created by Gebruiker on 27/04/2017.
@@ -28,12 +32,17 @@ public class ArtistSongRelationshipBO {
 
     private ArtistSongRelationshipBO() {
         artistSongRelationship = (ArtistSongRelationship) JSONUtils.openJSONWithCode(Constants.JSON.ARTISTSONGRELATIONSHIP, ArtistSongRelationship.class);
-        artistSongRelationshipList = artistSongRelationship.items;
+        artistSongRelationshipList = artistSongRelationship.items.stream().collect(Collectors.toList());
         Collections.sort(artistSongRelationshipList, (a1, b1) -> b1.priority - a1.priority);
     }
 
     public ArtistSongRelationship getArtistSongRelationship(){
         return artistSongRelationship;
+    }
+
+    public void save() throws IOException {
+        writeJsonFileWithCode(artistSongRelationship, Constants.JSON.ARTISTSONGRELATIONSHIP);
+        //writeJsonFile(artistSongRelationship, Setup.getFullPath(Constants.JSON.ARTISTSONGRELATIONSHIP) + ".NEW");
     }
 
     public ArtistSongRelationship.ArtistSongRelation findArtistSongRelationshipById(String id){
@@ -56,74 +65,19 @@ public class ArtistSongRelationshipBO {
         return artistSongRelationshipList;
     }
 
-   public static List<MP3Prettifier.ArtistSongExceptions.ArtistSong> oldConstruct() {
-
-        log.info("Started: Constructing ArtistSongRelationship");
-        List <MP3Prettifier.ArtistSongExceptions.ArtistSong> items = new ArrayList<>();
-        artistSongRelationshipList = new ArrayList<>();
-        for (ArtistSongRelationship.ArtistSongRelation item : artistSongRelationship.items){
-            MP3Prettifier.ArtistSongExceptions.ArtistSong artistSong = new MP3Prettifier().new ArtistSongExceptions().new ArtistSong();
-            artistSong.oldSong = item.oldSong;
-            artistSong.newSong = item.newSong;
-
-            // old artist
-
-            if (StringUtils.isNotBlank(item.oldMultiArtistId)){
-                MultiArtistConfig.Item multiArtistItem = ArtistConfigBO.getInstance().getMultiArtist(item.oldMultiArtistId);
-                if (multiArtistItem == null){
-                    log.warn("Id: " + item.id + "/ Old MultiArtistId Not Found: " + item.oldMultiArtistId);
-                    continue;
-                }
-                MP3Prettifier.Word word = ArtistConfigBO.getInstance().constructItem(multiArtistItem);
-                artistSong.oldArtist = word.newWord;
-            }
-            else if (StringUtils.isNotBlank(item.oldArtistId)) {
-                Artists.Artist artistItem = ArtistBO.getInstance().getArtistWithException(item.oldArtistId) ;
-                artistSong.oldArtist = artistItem.getName();
-            }
-            else if (item.oldArtistList != null) {
-                artistSongRelationshipList.add(item);
-            }
-
-            artistSong.exactMatchArtist = item.exact;
-            artistSong.exactMatchTitle = item.exactMatchTitle;
-            artistSong.indexTitle = item.indexTitle;
-            artistSong.priority = item.priority;
-
-            // new artist
-
-            if (StringUtils.isNotBlank(item.newMultiArtistId)){
-                MultiArtistConfig.Item multiArtistItem = ArtistConfigBO.getInstance().getMultiArtist(item.newMultiArtistId);
-                if (multiArtistItem == null){
-                    log.warn("Id: " + item.id + "/ New MultiArtistId Not Found: " + item.newMultiArtistId);
-                    continue;
-                }
-                MP3Prettifier.Word word = ArtistConfigBO.getInstance().constructItem(multiArtistItem);
-                artistSong.newArtist = word.newWord;
-            }
-            else {
-               Artists.Artist artistItem = ArtistBO.getInstance().getArtistWithException(item.newArtistId) ;
-                artistSong.newArtist = ArtistBO.getInstance().getStageName(artistItem);
-            }
-            items.add(artistSong);
-            /*
-            log.info("Old Artist: " + artistSong.oldArtist);
-            log.info("New Artist: " + artistSong.newArtist);
-            log.info("Old Song: " + artistSong.oldSong);
-            log.info("New Song: " + artistSong.newSong);
-            log.info(StringUtils.repeat("=", 150));
-            */
-
-        }
-        log.info("Ended: Constructing ArtistSongRelationship");
-
-        return items;
-    }
-
-    private static String getArtist(String id){
+    private String getArtist(String id){
         Artists.Artist artistObj = ArtistBO.getInstance().getArtistWithException(id);
         String artistName = artistObj.getName();
         return artistName;
+    }
+
+    public List<ArtistSongRelationship.ArtistItem> convertToArtistList(String id, String text){
+        List<ArtistSongRelationship.ArtistItem> artistItems = new ArrayList<>();
+        ArtistSongRelationship.ArtistItem artistItem = new ArtistSongRelationship(). new ArtistItem();
+        artistItem.setId(id);
+        artistItem.setText(text);
+        artistItems.add(artistItem);
+        return artistItems;
     }
 
     public boolean matchArtist(String artist, ArtistSongRelationship.ArtistSongRelation artistSong){
@@ -140,12 +94,6 @@ public class ArtistSongRelationshipBO {
                     match = true;
                     break;
                 }
-            }
-        }
-        else if (artistSong.oldArtistId != null){
-            artistName = getArtist(artistSong.oldArtistId);
-            if (artist.startsWith(artistName)) {
-                match = true;
             }
         }
         else if (artistSong.oldMultiArtistId != null){

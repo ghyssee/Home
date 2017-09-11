@@ -11,7 +11,6 @@ public class ArtistSongRelationship {
 
     public class ArtistSongRelation {
         public String id;
-        public String oldArtistId;
         public String oldMultiArtistId;
         public List<ArtistItem> oldArtistList;
         public String newMultiArtistId;

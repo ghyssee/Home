@@ -24,6 +24,7 @@ $smarty->assign('deleteUrl', constructUrl($url, "deleteArtistSong", $type, $cate
 
 $smarty->assign("contacts", array(
         array("field" => "oldArtist", "label"=>"Old Artist", "size" => 25, "required" => true, "sortable" => true),
+        array("field" => "oldFreeArtist", "label"=>"Free", "size" => 10, "formatter" => "checkboxFormatter", "align" => "center", "checkbox" => true),
         array("field" => "newArtist", "label"=>"New Artist", "size" => 35, "required" => true, "sortable" => true),
         array("field" => "oldSong", "label"=>"Old Song", "size" => 35, "required" => true, "sortable" => true),
         array("field" => "newSong", "label"=>"New Song", "size" => 35, "required" => true, "sortable" => true),
