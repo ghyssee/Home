@@ -190,9 +190,17 @@ public class ConvertArtistSong extends BatchJobV2 {
                 found = true;
             }
             else {
-                log.warn("Could Not Find Artist From List: " + artist);
-                found = false;
-                break;
+                if (oldFreeArtist){
+                    ArtistSongRelationship.ArtistItem artistItem = new ArtistSongRelationship(). new ArtistItem();
+                    artistItem.setText(artist);
+                    artistList.add(artistItem);
+                    found = true;
+                }
+                else {
+                    log.warn("Could Not Find Artist From List: " + artist);
+                    found = false;
+                    break;
+                }
             }
         }
         if (found){

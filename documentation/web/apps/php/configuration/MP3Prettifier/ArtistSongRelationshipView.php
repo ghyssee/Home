@@ -115,6 +115,7 @@ else {
                                 <thead>
                                 <tr>
                                     <th data-options="field:'id',hidden:true">Id</th>
+                                    <th data-options="field:'type',width:20,align:'center',formatter:function(value,row,index){return formatArtistType(value,row,index);}">Free</th>
                                     <th data-options="field:'name',width:100">Artist</th>
                                 </tr>
                                 </thead>
@@ -440,6 +441,15 @@ else {
         }
         else {
             $.messager.alert('Warning','No Artist Selected');
+        }
+    }
+
+    function formatArtistType(value, row, index){
+        if (row.id) {
+            return '';
+        }
+        else {
+            return '√';
         }
     }
 
