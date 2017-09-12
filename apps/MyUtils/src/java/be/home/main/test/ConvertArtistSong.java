@@ -2,6 +2,7 @@ package be.home.main.test;
 
 import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
+import be.home.common.exceptions.ApplicationException;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.DateUtils;
 import be.home.common.utils.MyFileWriter;
@@ -10,6 +11,7 @@ import be.home.mezzmo.domain.bo.ArtistBO;
 import be.home.mezzmo.domain.bo.ArtistConfigBO;
 import be.home.mezzmo.domain.bo.ArtistSongRelationshipBO;
 import be.home.mezzmo.domain.model.json.*;
+import javafx.application.Application;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.DocumentException;
@@ -84,7 +86,61 @@ public class ConvertArtistSong extends BatchJobV2 {
         writeJsonFileWithCode(mp3Prettifier, Constants.JSON.MP3PRETTIFIER);
         //writeJsonFileWithCode(artistSongRelationship, Constants.JSON.ARTISTSONGRELATIONSHIP);
         ArtistSongRelationshipBO.getInstance().save();
+        checkOldArtists();
 
+    }
+
+    private void checkOldArtists() throws IOException {
+        MP3Prettifier mp3Prettifier = MP3Helper.getInstance().getMp3Prettifier();
+        ArtistSongRelationship artistSongRelationship = ArtistSongRelationshipBO.getInstance().getArtistSongRelationship();
+        ArtistConfigBO artistConfigBO = ArtistConfigBO.getInstance();
+        boolean save= false;
+        for (ArtistSongRelationship.ArtistSongRelation artistSong :  artistSongRelationship.items){
+            if (StringUtils.isNotBlank(artistSong.newMultiArtistId)){
+                if (StringUtils.isBlank(artistSong.oldMultiArtistId)){
+                    MultiArtistConfig.Item multiArtistItem = artistConfigBO.getMultiArtist(artistSong.newMultiArtistId);
+                    if (multiArtistItem == null){
+                        throw new ApplicationException("Multi Artist Id Not Found: " + artistSong.newMultiArtistId);
+                    }
+                    else {
+                        save = save || checkNewMultiArtistsExistInOldArtistList(multiArtistItem.artistSequence, artistSong.oldArtistList);
+                    }
+                }
+            }
+        }
+        if (save){
+//            ArtistSongRelationshipBO.getInstance().save();
+        }
+
+    }
+
+    private boolean checkNewMultiArtistsExistInOldArtistList(List<MultiArtistConfig.Item.ArtistSequenceItem> artistSequenceItems, List<ArtistSongRelationship.ArtistItem> artistItems) throws IOException {
+        ArtistBO artistBO = ArtistBO.getInstance();
+        boolean save = false;
+        for (MultiArtistConfig.Item.ArtistSequenceItem artistSequenceItem : artistSequenceItems){
+            if (!findArtistInOldArtistList(artistSequenceItem.getArtistId(), artistItems)){
+                Artists.Artist artist = artistBO.getArtist(artistSequenceItem.getArtistId());
+                if (artist != null) {
+                    log.info("Artist Not Found In Old Artist List: " + artist.getName());
+                    ArtistSongRelationship.ArtistItem newArtistItem = new ArtistSongRelationship().new ArtistItem();
+                    newArtistItem.setId(artist.getId());
+                    artistItems.add(newArtistItem);
+                    save = true;
+                }
+            }
+        }
+        return save;
+    }
+
+    private boolean findArtistInOldArtistList(String id, List<ArtistSongRelationship.ArtistItem> artistItems){
+        boolean found = false;
+        for (ArtistSongRelationship.ArtistItem artistItem : artistItems){
+            if (StringUtils.isNotBlank(artistItem.getId()) && artistItem.getId().equals(id)){
+                found = true;
+                break;
+            }
+        }
+        return found;
     }
 
     private  MultiArtistConfig.Item findMultiArtist(String multiArtistName){
