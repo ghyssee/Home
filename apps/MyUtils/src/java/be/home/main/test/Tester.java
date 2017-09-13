@@ -13,6 +13,7 @@ import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.json.ArtistSongRelationship;
 import be.home.mezzmo.domain.model.json.ArtistSongTest;
 import be.home.mezzmo.domain.model.json.MP3Prettifier;
+import be.home.mezzmo.domain.model.json.MultiArtistConfig;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -22,7 +23,9 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by ghyssee on 20/02/2015.
@@ -36,6 +39,19 @@ public class Tester extends BatchJobV2 {
         batchProcess();
         //convertArtistSongArtist();
         //convertArtistSongRelationship();
+    }
+
+    private static void test(){
+        MultiArtistConfig multiArtistConfig = (MultiArtistConfig) JSONUtils.openJSONWithCode(Constants.JSON.MULTIARTISTCONFiG, MultiArtistConfig.class);
+        Map map = new HashMap();
+        for (MultiArtistConfig.Item item : multiArtistConfig.list){
+            System.out.println(item.getId());
+            if (map.get(item.getId()) != null){
+                System.out.println("Already Exit");
+            }
+            map.put(item.id, item);
+        }
+
     }
 
     private static void convertArtistSong() throws IOException {
@@ -132,7 +148,13 @@ public class Tester extends BatchJobV2 {
     }
 
     private static String getArtistTitleException(String artist, String title){
-        String prettifiedArtist = MP3Helper.getInstance().prettifyArtist(artist);
+        String prettifiedArtist = "";
+        try {
+            prettifiedArtist = MP3Helper.getInstance().prettifyArtist(artist);
+        }
+        catch (Exception ex){
+            throw ex;
+        }
         String prettifiedTitle = MP3Helper.getInstance().prettifySong(title);
         prettifiedArtist = MP3Helper.getInstance().prettifyArtistSong(prettifiedArtist, prettifiedTitle);
         return prettifiedArtist;

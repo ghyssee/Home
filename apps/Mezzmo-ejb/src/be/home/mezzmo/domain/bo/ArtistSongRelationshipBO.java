@@ -41,8 +41,8 @@ public class ArtistSongRelationshipBO {
     }
 
     public void save() throws IOException {
-        writeJsonFileWithCode(artistSongRelationship, Constants.JSON.ARTISTSONGRELATIONSHIP);
-        //writeJsonFile(artistSongRelationship, Setup.getFullPath(Constants.JSON.ARTISTSONGRELATIONSHIP) + ".NEW");
+        //writeJsonFileWithCode(artistSongRelationship, Constants.JSON.ARTISTSONGRELATIONSHIP);
+        writeJsonFile(artistSongRelationship, Setup.getFullPath(Constants.JSON.ARTISTSONGRELATIONSHIP) + ".NEW");
     }
 
     public ArtistSongRelationship.ArtistSongRelation findArtistSongRelationshipById(String id){

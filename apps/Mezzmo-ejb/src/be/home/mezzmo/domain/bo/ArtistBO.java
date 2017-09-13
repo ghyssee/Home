@@ -37,6 +37,10 @@ public class ArtistBO {
         return artist;
     }
 
+    public List<Artists.Artist> getArtistList(){
+        return artists.list;
+    }
+
     public Artists.Artist getArtistWithException(String id){
         Artists.Artist artist = mapArtists.get(id);
         if (artist == null){

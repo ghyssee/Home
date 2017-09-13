@@ -262,14 +262,18 @@ class MultiArtistBO {
             return false;
 
         } else {
-            unset( $this->multiArtistObj->list[$key]);
-            $array = array_values( $this->multiArtistObj->list);
-            $this->multiArtistObj->list = $array;
-            writeJSON($this->multiArtistObj, $this->file);
-            //CacheBO::clearCache(CacheBO::MULTIARTIST2);
-            CacheBO::clearCacheObject(CacheBO::MULTIARTIST2, $id);
+            $artistSongRelationshipBO = new ArtistSongRelationshipBO();
+            if (!$artistSongRelationshipBO->isMultiArtistUsed($id)) {
+                unset($this->multiArtistObj->list[$key]);
+                $array = array_values($this->multiArtistObj->list);
+                $this->multiArtistObj->list = $array;
+                writeJSON($this->multiArtistObj, $this->file);
+                //CacheBO::clearCache(CacheBO::MULTIARTIST2);
+                CacheBO::clearCacheObject(CacheBO::MULTIARTIST2, $id);
+                return true;
+            }
         }
-        return true;
+        return false;
 
     }
 

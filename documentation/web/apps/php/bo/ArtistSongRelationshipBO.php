@@ -290,7 +290,7 @@ class ArtistSongRelationshipBO
             }
             if (isset($value->oldArtistList)) {
                 foreach ($value->oldArtistList as $value) {
-                    if ($value->id == $id) {
+                    if (isset($value->id) && $value == $id) {
                         return true;
                     }
                 }

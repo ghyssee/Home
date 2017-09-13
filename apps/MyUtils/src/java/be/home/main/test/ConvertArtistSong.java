@@ -87,11 +87,32 @@ public class ConvertArtistSong extends BatchJobV2 {
         //writeJsonFileWithCode(artistSongRelationship, Constants.JSON.ARTISTSONGRELATIONSHIP);
         ArtistSongRelationshipBO.getInstance().save();
         checkOldArtists();
+        checkArtistsWithThe();
 
+    }
+    private void checkArtistsWithThe() throws IOException {
+        ArtistBO artistBO = ArtistBO.getInstance();
+        for (Artists.Artist artist : artistBO.getArtistList()){
+            if (artist.getName().startsWith("The ")){
+                // ignore the following list
+                if (artist.getName().equals("The Vanguard")
+                        || artist.getName().equals("The Mackenzie") // used in  Apollo vs. Mackenzie
+                        || artist.getName().equals("The Jam") // used in Jam & Spoon
+                        || artist.getName().equals("The Sunclub") // used in The Underdog Project Vs. Sunclub
+                        || artist.getName().equals("The Wulf") // used in Sam Feldt x Lucas & Steve ft. Wulf
+                        ){
+                    continue;
+                }
+                String searchArtist = artist.getName().replaceFirst("^The ", "");
+                Artists.Artist foundArtist = artistBO.findArtistByName(searchArtist);
+                if (foundArtist != null){
+                    log.warn("Artist Without The Prefix Found: " + foundArtist.getName());
+                }
+            }
+        }
     }
 
     private void checkOldArtists() throws IOException {
-        MP3Prettifier mp3Prettifier = MP3Helper.getInstance().getMp3Prettifier();
         ArtistSongRelationship artistSongRelationship = ArtistSongRelationshipBO.getInstance().getArtistSongRelationship();
         ArtistConfigBO artistConfigBO = ArtistConfigBO.getInstance();
         boolean save= false;
@@ -103,18 +124,18 @@ public class ConvertArtistSong extends BatchJobV2 {
                         throw new ApplicationException("Multi Artist Id Not Found: " + artistSong.newMultiArtistId);
                     }
                     else {
-                        save = save || checkNewMultiArtistsExistInOldArtistList(multiArtistItem.artistSequence, artistSong.oldArtistList);
+                        save = checkNewMultiArtistExistInOldArtistList(multiArtistItem.artistSequence, artistSong.oldArtistList) || save;
                     }
                 }
             }
         }
         if (save){
-//            ArtistSongRelationshipBO.getInstance().save();
+            ArtistSongRelationshipBO.getInstance().save();
         }
 
     }
 
-    private boolean checkNewMultiArtistsExistInOldArtistList(List<MultiArtistConfig.Item.ArtistSequenceItem> artistSequenceItems, List<ArtistSongRelationship.ArtistItem> artistItems) throws IOException {
+    private boolean checkNewMultiArtistExistInOldArtistList(List<MultiArtistConfig.Item.ArtistSequenceItem> artistSequenceItems, List<ArtistSongRelationship.ArtistItem> artistItems) throws IOException {
         ArtistBO artistBO = ArtistBO.getInstance();
         boolean save = false;
         for (MultiArtistConfig.Item.ArtistSequenceItem artistSequenceItem : artistSequenceItems){
@@ -144,7 +165,6 @@ public class ConvertArtistSong extends BatchJobV2 {
     }
 
     private  MultiArtistConfig.Item findMultiArtist(String multiArtistName){
-        ArtistConfigBO multiArtistBO = ArtistConfigBO.getInstance();
         MultiArtistConfig.Item multiArtistItem = null;
         List<String> splitters = constructSplitters();
         for (String splitter : splitters) {
