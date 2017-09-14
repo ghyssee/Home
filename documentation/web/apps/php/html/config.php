@@ -422,14 +422,6 @@ function comboBoxOld($array, $id, $value, Input $input){
     echo PHP_EOL;
 }
 
-function checkBoxOld(Input $input){
-    echo '<input type="checkbox" name="' . $input->name . '"';
-    echo ' value="' . $input->value . '"';
-    echo ($input->value ? " checked" : "");
-    echo '>';
-    echo PHP_EOL;
-}
-
 function buttonOld(Input $input){
     echo '<button name="' . $input->name . '"';
     echo ' value="' . $input->value . '"';
@@ -561,5 +553,17 @@ function isSetFilterRule($filterRules = null){
     }
     return $isSet;
 }
+
+function checkBox(Input $input){
+    echo '<input type="checkbox"';
+    echo ' name="' . $input->name . '"';
+    echo ' id="' . $input->name . '"';
+    echo ' value="' . $input->value . '"';
+    echo ($input->value ? " checked" : "");
+    echo '>';
+    echo $input->label;
+    echo PHP_EOL;
+}
+
 
 ?>

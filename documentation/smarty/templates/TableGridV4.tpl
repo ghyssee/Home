@@ -53,7 +53,7 @@
 <span style="font-size:20px">
 	<div id="toolbar{{$tablegrid}}">
         {{if isset($newUrl)}}
-        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newRecord{{$tablegrid}}()">New {{$item}}</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="{{if isset($customAdd)}}{{$customAdd}}{{else}}newRecord{{$tablegrid}}(){{/if}}">New {{$item}}</a>
         {{/if}}
         {{if isset($updateUrl)}}
         <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="{{if isset($customEdit)}}{{$customEdit}}{{else}}editRecord{{$tablegrid}}(){{/if}}">Edit {{$item}}</a>

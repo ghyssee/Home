@@ -90,9 +90,18 @@ public class ArtistSongRelationshipBO {
                 } else {
                     artistName = getArtist(artistItem.id);
                 }
-                if (artist.matches(artistName + ".*")) {
+                if (artist.matches((artistSong.exact ? ".*" : "^") + artistName + ".*")) {
                     match = true;
-                    break;
+                    if (!artistSong.exact){
+                        // one match is enough
+                        break;
+                    }
+                }
+                else {
+                    if (artistSong.exact){
+                        match = false;
+                        break;
+                    }
                 }
             }
         }

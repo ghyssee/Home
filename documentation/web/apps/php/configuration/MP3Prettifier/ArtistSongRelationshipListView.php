@@ -48,7 +48,9 @@ goMenu();
         $smarty->assign('fitColumns',"true");
         $smarty->assign('pageSize',"20");
         $smarty->assign('customEdit',"editLink()");
+        $smarty->assign('customAdd',"addArtistSong()");
         $smarty->assign('viewUrl',$url . "?method=listArtistSong");
+        $smarty->assign('newUrl',$url2);
         $smarty->assign('updateUrl', "'" . $url2 . "?id='+row['" . $fieldId . "']");
         $smarty->assign('deleteUrl', $url . "?method=deleteArtistSong");
         //$smarty->assign('deleteUrl', $url . "?method=delete");
@@ -103,6 +105,12 @@ goMenu();
             function editLink(){
                 var selectedRow = $('#dgListArtistSong').edatagrid("getSelected");
                 var url = "<?php echo webPath(ROOT_PHP_CONFIGURATION_MP3PRETTIFIER, 'ArtistSongRelationshipView.php') ?>" + '?id='+selectedRow.id;
+                var win = window.open(url, '_blank');
+                win.focus();
+            }
+
+            function addArtistSong(){
+                var url = "<?php echo webPath(ROOT_PHP_CONFIGURATION_MP3PRETTIFIER, 'ArtistSongRelationshipView.php') ?>";
                 var win = window.open(url, '_blank');
                 win.focus();
             }

@@ -48,6 +48,10 @@ public class ArtistConfigBO {
         return (artist != null);
     }
 
+    public List<MultiArtistConfig.Item> getMultiArtistList(){
+        return multiArtistConfig.list;
+    }
+
     public String getSplitterString(){
         return splitter;
     }

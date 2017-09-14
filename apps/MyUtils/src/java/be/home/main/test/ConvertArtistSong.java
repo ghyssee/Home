@@ -20,7 +20,9 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static be.home.common.utils.JSONUtils.writeJsonFile;
 import static be.home.common.utils.JSONUtils.writeJsonFileWithCode;
@@ -88,8 +90,25 @@ public class ConvertArtistSong extends BatchJobV2 {
         ArtistSongRelationshipBO.getInstance().save();
         checkOldArtists();
         checkArtistsWithThe();
+        checkMultiArtistNames();
 
     }
+
+    private void checkMultiArtistNames() throws IOException {
+        ArtistConfigBO artistConfigBO = ArtistConfigBO.getInstance();
+        Map<String,MultiArtistConfig.Item> map = new HashMap();
+        for (MultiArtistConfig.Item item : artistConfigBO.getMultiArtistList()){
+            String name = artistConfigBO.constructNewArtistName(item.artistSequence);
+            MultiArtistConfig.Item searchItem = map.get(name);
+            if (searchItem == null){
+                map.put(name, item);
+            }
+            else {
+                log.warn("Multi Artist Already Exist: " + item.getId() + " / " + name);
+            }
+        }
+    }
+
     private void checkArtistsWithThe() throws IOException {
         ArtistBO artistBO = ArtistBO.getInstance();
         for (Artists.Artist artist : artistBO.getArtistList()){
@@ -106,7 +125,7 @@ public class ConvertArtistSong extends BatchJobV2 {
                 String searchArtist = artist.getName().replaceFirst("^The ", "");
                 Artists.Artist foundArtist = artistBO.findArtistByName(searchArtist);
                 if (foundArtist != null){
-                    log.warn("Artist Without The Prefix Found: " + foundArtist.getName());
+                    log.warn("Double Artist With/Without The Prefix 'The' Found: " + foundArtist.getName());
                 }
             }
         }

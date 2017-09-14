@@ -140,6 +140,14 @@ else {
                                 <input id="oldSong" class="easyui-textbox" value="<?= $artistSongRelationshipObj->oldSong ?>"
                                        label="Old Song" labelPosition="top" style="width:80%;height:52px">
                             </div>
+                            <div style="margin-bottom:20px">
+                                <?php
+                                    $input = new Input(array('name' => "exact",
+                                        'label' => 'Each Artist Must Match',
+                                        'value' => $artistSongRelationshipObj->exact));
+                                checkBox($input);
+                                ?>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -331,6 +339,7 @@ else {
         var newSong =$("#newSong").textbox('getValue');
         var priority = $("#priority").numberspinner('getValue');
         var indexTitle = $("#indexTitle").numberspinner('getValue');
+        var exact = $('#exact').is(':checked');
 
         var object = {
                       id:'<?= $artistSongId?>',
@@ -344,7 +353,8 @@ else {
                       newMultiArtist:newMultiArtist == null ? "" : newMultiArtist.id,
                       newSong:newSong,
                       priority:priority,
-                      indexTitle:indexTitle
+                      indexTitle:indexTitle,
+                      exact:exact
         };
 
         var tmp = $.post('ArtistSongRelationshipAction.php?method=add', { config : JSON.stringify(object)}, function(data2){
