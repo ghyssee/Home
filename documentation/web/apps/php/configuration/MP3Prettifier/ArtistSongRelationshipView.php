@@ -193,13 +193,13 @@ else {
                         <input id="priority"
                                value="<?= $artistSongRelationshipObj->priority ?>"
                                class="easyui-numberspinner" style="width:80px;"
-                               data-options="required:false,min:0,editable:true">
+                               data-options="value:0,required:false,min:0,editable:true">
                     </div>
                     <div style="margin-bottom:20px">
                         <input id="indexTitle"
                                value="<?= $artistSongRelationshipObj->indexTitle ?>"
                                class="easyui-numberspinner" style="width:80px;"
-                               data-options="required:false,min:0,editable:true">
+                               data-options="value:0,required:false,min:0,editable:true">
                     </div>
                 </div>
             </div>
