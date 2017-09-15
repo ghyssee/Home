@@ -46,7 +46,7 @@ goMenu();
         $smarty->assign('tablegrid',"ListArtistSong");
         $smarty->assign('id',$fieldId);
         $smarty->assign('fitColumns',"true");
-        $smarty->assign('pageSize',"20");
+        $smarty->assign('pageSize',"15");
         $smarty->assign('customEdit',"editLink()");
         $smarty->assign('customAdd',"addArtistSong()");
         $smarty->assign('viewUrl',$url . "?method=listArtistSong");

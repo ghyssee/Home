@@ -196,8 +196,6 @@ public class MezzmoBO extends BusinessObject {
         return getMezzmoDAO().findFileById(id);
     }
 
-
-
     public static int findMaxDiscLength(Map<String, MGOFileAlbumCompositeTO> map, MGOFileAlbumCompositeTO comp) {
         String key = comp.getFileAlbumTO().getName() + comp.getAlbumArtistTO().getName();
         MGOFileAlbumCompositeTO foundComp = map.get(key);
@@ -221,6 +219,10 @@ public class MezzmoBO extends BusinessObject {
     private String formatTrack(Map<String, MGOFileAlbumCompositeTO> map, MGOFileAlbumCompositeTO comp){
         String track = StringUtils.leftPad(String.valueOf(comp.getFileTO().getTrack()), findMaxDiscLength(map, comp), '0');
         return track;
+    }
+
+    public List<MGOFileAlbumCompositeTO> getAllMP3Files(TransferObject to){
+        return getMezzmoDAO().getAllMP3Files(to);
     }
 
     public MezzmoDAOImpl getMezzmoDAO(){

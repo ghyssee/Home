@@ -18,7 +18,7 @@
        rownumbers:true,
        pagePosition:{{if isset($pagePosition)}}"{{$pagePosition}}"{{else}}"bottom"{{/if}},
        pageSize:{{if isset($pageSize)}}{{$pageSize}}{{else}}10{{/if}},
-       pageList:[5,10,20,25,30,40,50],
+       pageList:[5,10,15,20,25,30,40,50],
        singleSelect:{{if isset($singleSelect)}}{{$singleSelect}}{{else}}true{{/if}}
 '>
 <thead>

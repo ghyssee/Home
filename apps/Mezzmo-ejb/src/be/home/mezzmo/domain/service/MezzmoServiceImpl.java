@@ -1,5 +1,6 @@
 package be.home.mezzmo.domain.service;
 
+import be.home.common.dao.jdbc.Databases;
 import be.home.common.enums.MP3Tag;
 import be.home.common.model.TransferObject;
 import be.home.mezzmo.domain.bo.AlbumArtistBO;
@@ -12,6 +13,7 @@ import org.apache.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,137 +22,140 @@ import java.util.Map;
  */
 public class MezzmoServiceImpl {
 
-    private static MezzmoServiceImpl instance = null;
+    private static Map<Databases, MezzmoServiceImpl> instances = new HashMap<>();
     private static final Logger log = Logger.getLogger(MezzmoServiceImpl.class);
-    private static String db = null;
+    private static Databases db = null;
 
-    protected MezzmoServiceImpl(){
+    private MezzmoServiceImpl() {
     }
-    protected MezzmoServiceImpl(String db){
+
+    protected MezzmoServiceImpl(Databases db) {
         this.db = db;
     }
 
+    private static String getDatabase() {
+        return db.name();
+    }
 
     public int updatePlayCount(String fileTitle, String album, int playCount, java.util.Date dateLastPlayed) throws SQLException {
-        MezzmoBO bo = new MezzmoBO(db);
+        MezzmoBO bo = getMezzmoBO();
         return bo.updatePlayCount(fileTitle, album, playCount, dateLastPlayed);
     }
 
-    public int updateSong (MGOFileAlbumCompositeTO comp, MP3Tag type) throws SQLException {
-        MezzmoBO bo = new MezzmoBO(db);
+    public int updateSong(MGOFileAlbumCompositeTO comp, MP3Tag type) throws SQLException {
+        MezzmoBO bo = getMezzmoBO();
         return bo.updateSong(comp, type);
     }
 
-    public List<MGOFileTO> findMP3Files(MGOFileAlbumCompositeTO compSearchTO){
-        MezzmoBO bo = new MezzmoBO(db);
+    public List<MGOFileTO> findMP3Files(MGOFileAlbumCompositeTO compSearchTO) {
+        MezzmoBO bo = getMezzmoBO();
         return bo.findMP3Files(compSearchTO);
 
     }
 
-    public List<MGOFileAlbumCompositeTO> getMP3FilesWithPlayCount(TransferObject to){
-        MezzmoBO bo = new MezzmoBO(db);
+    public List<MGOFileAlbumCompositeTO> getMP3FilesWithPlayCount(TransferObject to) {
+        MezzmoBO bo = getMezzmoBO();
         return bo.getMP3FilesWithPlayCount(to);
     }
 
-    public List<MGOFileAlbumCompositeTO> getAlbums(MGOFileAlbumTO albumTO, TransferObject to){
-        MezzmoBO bo = new MezzmoBO(db);
+    public List<MGOFileAlbumCompositeTO> getAlbums(MGOFileAlbumTO albumTO, TransferObject to) {
+        MezzmoBO bo = getMezzmoBO();
         return bo.getAlbums(albumTO, to);
     }
 
-    public List<MGOFileAlbumCompositeTO> getAlbumsWithExcludeList(MGOFileAlbumTO albumTO, List <String> list,
-                                                                  TransferObject to){
-        MezzmoBO bo = new MezzmoBO(db);
+    public List<MGOFileAlbumCompositeTO> getAlbumsWithExcludeList(MGOFileAlbumTO albumTO, List<String> list,
+                                                                  TransferObject to) {
+        MezzmoBO bo = getMezzmoBO();
         return bo.getAlbumsWithExcludeList(albumTO, list, to);
     }
 
-    public List<MGOFileAlbumCompositeTO> getAlbumTracks(TransferObject to){
-        MezzmoBO bo = new MezzmoBO(db);
+    public List<MGOFileAlbumCompositeTO> getAlbumTracks(TransferObject to) {
+        MezzmoBO bo = getMezzmoBO();
         return bo.getAlbumTracks(to);
     }
 
-    public List<MGOFileAlbumCompositeTO> getTop20(){
-        MezzmoBO bo = new MezzmoBO(db);
+    public List<MGOFileAlbumCompositeTO> getTop20() {
+        MezzmoBO bo = getMezzmoBO();
         return bo.getTop20();
     }
 
-    public List<MGOFileAlbumCompositeTO> getCustomPlayListSongs(List <MGOFileAlbumCompositeTO> albums, int limit){
-        MezzmoBO bo = new MezzmoBO(db);
+    public List<MGOFileAlbumCompositeTO> getCustomPlayListSongs(List<MGOFileAlbumCompositeTO> albums, int limit) {
+        MezzmoBO bo = getMezzmoBO();
         return bo.getCustomPlayListSongs(albums, limit);
     }
 
 
-
-    public List<MGOFileTO> getFiles(MGOFileAlbumCompositeTO compSearchTO){
-        MezzmoBO bo = new MezzmoBO(db);
+    public List<MGOFileTO> getFiles(MGOFileAlbumCompositeTO compSearchTO) {
+        MezzmoBO bo = getMezzmoBO();
         return bo.getFiles(compSearchTO);
     }
 
-    public MGOFileTO findByFile(String file){
-        MezzmoBO bo = new MezzmoBO(db);
+    public MGOFileTO findByFile(String file) {
+        MezzmoBO bo = getMezzmoBO();
         return bo.findByFile(file);
     }
 
-    public MGOFileTO findCoverArt(Long albumId){
-        MezzmoBO bo = new MezzmoBO(db);
+    public MGOFileTO findCoverArt(Long albumId) {
+        MezzmoBO bo = getMezzmoBO();
         return bo.findCoverArt(albumId);
     }
 
 
-    public List<MGOFileAlbumCompositeTO> findAlbum(String album, String albumArtist){
-        MezzmoBO bo = new MezzmoBO(db);
+    public List<MGOFileAlbumCompositeTO> findAlbum(String album, String albumArtist) {
+        MezzmoBO bo = getMezzmoBO();
         return bo.findAlbum(album, albumArtist);
     }
 
-    public List<MGOPlaylistTO> findPlaylist (MGOPlaylistTO search) {
-        MezzmoBO bo = new MezzmoBO(db);
+    public List<MGOPlaylistTO> findPlaylist(MGOPlaylistTO search) {
+        MezzmoBO bo = getMezzmoBO();
         return bo.findPlaylist(search);
 
     }
 
-    public int insertPlaylist (MGOPlaylistTO playlist) {
-        MezzmoBO bo = new MezzmoBO(db);
+    public int insertPlaylist(MGOPlaylistTO playlist) {
+        MezzmoBO bo = getMezzmoBO();
         return bo.insertPlaylist(playlist);
     }
 
-    public int updateRanking (Long fileID, int ranking) throws SQLException {
-        MezzmoBO bo = new MezzmoBO(db);
+    public int updateRanking(Long fileID, int ranking) throws SQLException {
+        MezzmoBO bo = getMezzmoBO();
         return bo.updateRanking(fileID, ranking);
     }
 
-    public MGOPlaylistTO cleanUpPlaylistWithChildren (String playlistName) {
+    public MGOPlaylistTO cleanUpPlaylistWithChildren(String playlistName) {
         PlaylistBO bo = new PlaylistBO();
         System.out.println(TablesEnum.MGOPlaylist.tableAlias());
         return bo.cleanUpPlaylistWithChildren(playlistName);
         //return null;
     }
 
-    public List<String> validateAndInsertCondition(PlaylistSetup.Condition condition, Integer playlistID){
+    public List<String> validateAndInsertCondition(PlaylistSetup.Condition condition, Integer playlistID) {
         PlaylistBO bo = new PlaylistBO();
         return bo.validateAndInsertCondition(condition, playlistID);
     }
 
-    public MGOFileTO findByTitleAndAlbum(MGOFileAlbumCompositeTO comp){
-        MezzmoBO bo = new MezzmoBO(db);
+    public MGOFileTO findByTitleAndAlbum(MGOFileAlbumCompositeTO comp) {
+        MezzmoBO bo = getMezzmoBO();
         return bo.findByTitleAndAlbum(comp);
     }
 
-    public List <MGOFileAlbumCompositeTO> findSongsByAlbum(MGOFileAlbumCompositeTO comp){
-        MezzmoBO bo = new MezzmoBO(db);
+    public List<MGOFileAlbumCompositeTO> findSongsByAlbum(MGOFileAlbumCompositeTO comp) {
+        MezzmoBO bo = getMezzmoBO();
         return bo.findSongsByAlbum(comp);
     }
 
     public List<MGOFileAlbumCompositeTO> getSongsAlbum(Long albumId, Long albumArtistId) {
-        MezzmoBO bo = new MezzmoBO(db);
+        MezzmoBO bo = getMezzmoBO();
         return bo.getSongsAlbum(albumId, albumArtistId);
     }
 
     public List<MGOFileAlbumCompositeTO> getLastPlayed(int number) {
-        MezzmoBO bo = new MezzmoBO(db);
+        MezzmoBO bo = getMezzmoBO();
         return bo.getLastPlayed(number);
     }
 
-    public MGOFileArtistTO findArtist(MGOFileArtistTO artist){
-        MezzmoBO bo = new MezzmoBO(db);
+    public MGOFileArtistTO findArtist(MGOFileArtistTO artist) {
+        MezzmoBO bo = getMezzmoBO();
         return bo.findArtist(artist);
     }
 
@@ -165,36 +170,33 @@ public class MezzmoServiceImpl {
         return nr;
     }
 
-    public int updateArtist (MGOFileAlbumCompositeTO comp) throws SQLException {
-        MezzmoBO bo = new MezzmoBO(db);
+    public int updateArtist(MGOFileAlbumCompositeTO comp) throws SQLException {
+        MezzmoBO bo = getMezzmoBO();
         int nr = 0;
         MGOFileArtistTO artist = null;
         try {
             artist = bo.findArtistById(comp.getFileArtistTO());
-            if (artist.getArtist().toUpperCase().equals(comp.getFileArtistTO().getArtist().toUpperCase())){
+            if (artist.getArtist().toUpperCase().equals(comp.getFileArtistTO().getArtist().toUpperCase())) {
                 try {
                     // Major Lazer Feat. Justin Bieber & Mø is Not The Same As
                     // Major Lazer Feat. Justin Bieber & MØ
                     // look up the artist just to be sure it does not exist
                     nr = findAndUpdateArtist(comp, bo);
+                } catch (EmptyResultDataAccessException e) {
+                    // artist is case insensitive equal, example Jojo == JoJo
+                    // look up the artist by name and update the artist (+link) and it is ok
+                    log.info("Artist is case insensitive equal: " + comp.getFileArtistTO().getArtist());
+                    nr = bo.updateArtist(comp.getFileArtistTO());
                 }
-                    catch (EmptyResultDataAccessException e){
-                        // artist is case insensitive equal, example Jojo == JoJo
-                        // look up the artist by name and update the artist (+link) and it is ok
-                        log.info("Artist is case insensitive equal: " + comp.getFileArtistTO().getArtist());
-                        nr = bo.updateArtist(comp.getFileArtistTO());
-                    }
 
-            }
-            else {
+            } else {
                 try {
                     // artist is different, and exist
                     // update artist to be sure it is case sensitive correct
                     // check if there are other songs linked to the old artist, if not, delete it
                     log.info("Artist is different, but exist already: " + comp.getFileArtistTO().getArtist());
                     nr = findAndUpdateArtist(comp, bo);
-                }
-                catch (EmptyResultDataAccessException e){
+                } catch (EmptyResultDataAccessException e) {
                     // artist is different, and does not exist already, example Jojo Ft. Dodo <==> Jojo Feat. Dodo
                     // insert new artist and link it to the file
                     // maybe check if there are other songs linked to the old artist, if not, delete it
@@ -202,22 +204,20 @@ public class MezzmoServiceImpl {
                     // MØ and Mø is not case insensitive the same for SQLite, this will create a new artist for this
                     // situation
                     Long artistId = bo.insertArtist(comp.getFileArtistTO());
-                    if (artistId != null){
+                    if (artistId != null) {
                         log.info("New Artist created: " + comp.getFileArtistTO().getArtist() + "/Id: " + artistId);
                         MGOFileArtistTO oldArtist = new MGOFileArtistTO();
                         oldArtist.setID(comp.getFileArtistTO().getID());
                         comp.getFileArtistTO().setID(artistId);
                         nr = bo.updateLinkFileArtist2(comp);
                         checkArtistLinked(oldArtist);
-                    }
-                    else {
+                    } else {
                         // if insert failed nr will be empty and tag info of the song will not be updated
                         log.error("Insert Artist failed: " + comp.getFileArtistTO().getArtist());
                     }
                 }
             }
-        }
-        catch (EmptyResultDataAccessException e){
+        } catch (EmptyResultDataAccessException e) {
             // artist not found By Id
             // this should never occur
             log.error("Find Artist By Id failed: " + comp.getFileArtistTO().getArtist() + " Id: " + comp.getFileArtistTO().getID());
@@ -228,34 +228,34 @@ public class MezzmoServiceImpl {
 
     private void checkArtistLinked(MGOFileArtistTO artist) {
 
-        MezzmoBO bo = new MezzmoBO(db);
-            List<MGOFileAlbumCompositeTO> list = bo.findLinkedArtist(artist);
-            if (list == null || list.size() == 0) {
-                // nothing linked to it, safe to delete the link + the artist
-                int del = bo.deleteArtist(artist);
-                log.info("Nr Of Artists Deleted: " + del + " /Id: " + artist.getID());
-            }
+        MezzmoBO bo = getMezzmoBO();
+        List<MGOFileAlbumCompositeTO> list = bo.findLinkedArtist(artist);
+        if (list == null || list.size() == 0) {
+            // nothing linked to it, safe to delete the link + the artist
+            int del = bo.deleteArtist(artist);
+            log.info("Nr Of Artists Deleted: " + del + " /Id: " + artist.getID());
+        }
     }
 
 
-    public Result updateLinkFileArtist(MGOFileArtistTO artist, Long newId){
-        MezzmoBO bo = new MezzmoBO(db);
+    public Result updateLinkFileArtist(MGOFileArtistTO artist, Long newId) {
+        MezzmoBO bo = getMezzmoBO();
         return bo.updateLinkFileArtist(artist, newId);
     }
 
     public Map<String, MGOFileAlbumCompositeTO> getMaxDisc() {
-        MezzmoBO bo = new MezzmoBO(db);
+        MezzmoBO bo = getMezzmoBO();
         return bo.getMaxDisc();
     }
 
-    public static String constructFileTitle( Map<String, MGOFileAlbumCompositeTO> map, MGOFileAlbumCompositeTO comp){
-        MezzmoBO bo = new MezzmoBO(db);
+    public static String constructFileTitle(Map<String, MGOFileAlbumCompositeTO> map, MGOFileAlbumCompositeTO comp) {
+        MezzmoBO bo = getMezzmoBO();
         return bo.constructFileTitle(map, comp);
 
     }
 
-    public int updateAlbum (MGOFileAlbumCompositeTO comp, String newAlbum) throws SQLException {
-        MezzmoBO bo = new MezzmoBO(db);
+    public int updateAlbum(MGOFileAlbumCompositeTO comp, String newAlbum) throws SQLException {
+        MezzmoBO bo = getMezzmoBO();
         int nr = 0;
         MGOFileAlbumTO album = null;
         try {
@@ -282,8 +282,7 @@ public class MezzmoServiceImpl {
                 log.info("New Album created: " + comp.getFileAlbumTO().getName() + "/Id: " + albumId);
                 nr = bo.updateLinkFileAlbum(comp, albumId);
             }
-        }
-        catch (EmptyResultDataAccessException e) {
+        } catch (EmptyResultDataAccessException e) {
             // this should never occur
             log.error("Album: " + comp.getFileAlbumTO().getName() + " / AlbumId Not Found: " + comp.getFileAlbumTO().getId());
         }
@@ -292,7 +291,7 @@ public class MezzmoServiceImpl {
 
     private void checkAlbummLinked(MGOFileAlbumTO album) {
 
-        MezzmoBO bo = new MezzmoBO(db);
+        MezzmoBO bo = getMezzmoBO();
         List<MGOFileAlbumCompositeTO> list = bo.findLinkedAlbum(album);
         if (list == null || list.size() == 0) {
             // nothing linked to it, safe to delete the link + the album
@@ -301,29 +300,41 @@ public class MezzmoServiceImpl {
         }
     }
 
-    public int updateAlbumArtist (MGOFileAlbumCompositeTO comp) throws SQLException {
+    public int updateAlbumArtist(MGOFileAlbumCompositeTO comp) throws SQLException {
         AlbumArtistBO bo = new AlbumArtistBO();
         return bo.update(comp);
 
     }
 
-    public MGOFileAlbumCompositeTO findFileById(long id){
-        MezzmoBO bo = new MezzmoBO(db);
+    public MGOFileAlbumCompositeTO findFileById(long id) {
+        MezzmoBO bo = getMezzmoBO();
         return bo.findFileById(id);
     }
 
+    public List<MGOFileAlbumCompositeTO> getAllMP3Files(TransferObject to){
+        MezzmoBO bo = getMezzmoBO();
+        return bo.getAllMP3Files(to);
+    }
+
+    private static MezzmoBO getMezzmoBO() {
+        return new MezzmoBO(getDatabase());
+    }
 
     public synchronized static MezzmoServiceImpl getInstance() {
-        if(instance == null) {
-            instance = new MezzmoServiceImpl();
+        Databases db = Databases.MEZZMO;
+        if (instances.get(db) == null) {
+            MezzmoServiceImpl instance = new MezzmoServiceImpl(db);
+            instances.put(db, instance);
         }
-        return instance;
-    }
-    public synchronized static MezzmoServiceImpl getInstance(String db) {
-        if(instance == null) {
-            instance = new MezzmoServiceImpl(db);
-        }
-        return instance;
+        return instances.get(db);
     }
 
+    public synchronized static MezzmoServiceImpl getInstance(Databases db) {
+        if (instances.get(db) == null) {
+            MezzmoServiceImpl instance = new MezzmoServiceImpl(db);
+            instances.put(db, instance);
+        }
+        return instances.get(db);
+
     }
+}

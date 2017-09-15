@@ -69,6 +69,20 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
         return list;
     }
 
+    public List<MGOFileAlbumCompositeTO> getAllMP3Files(TransferObject to)
+    {
+        Object[] params = {to.getIndex(), to.getLimit()};
+        SQLBuilder FILE_GET_ALL_MP3 = ((SQLBuilder) SerializationUtils.clone(FILE_FIND_BASIC))
+                .limitBy();
+
+        List<MGOFileAlbumCompositeTO> list  = getInstance(db).getJDBCTemplate().query(FILE_GET_ALL_MP3.render(), new MezzmoRowMappers.SongsAlbumRowMapper(), params);
+        if (list.size() == 0 || list.size() < to.getLimit()){
+            to.setEndOfList(true);
+        }
+        to.addIndex(list.size());
+        return list;
+    }
+
     public List<MGOFileAlbumCompositeTO> getAlbums(MGOFileAlbumTO albumTO, TransferObject to)
     {
         List<MGOFileAlbumCompositeTO> list = null;

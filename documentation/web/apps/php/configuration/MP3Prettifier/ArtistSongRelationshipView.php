@@ -59,14 +59,29 @@ else {
             <div class="easyui-layout" style="width:100%;height:100%;">
 
                 <div id="oldArtistTypeLayOut" data-options="region:'north',collapsible:false, border:false" style="padding:0px;width:100%;height:22%">
-                    <div style="line-height:22px;background:#fafafa;padding:3px;">Select The Artist Type</div>
-                    <div style="padding:10px">
-                        <input type="radio" name="oldArtistType" value="<?= ArtistType::ARTIST?>" <?= radioButton(ArtistType::ARTIST, $artistSongRelationshipObj->oldArtistType); ?>><span>Artist</span><br/>
-                        <input type="radio" name="oldArtistType" value="<?= ArtistType::MULTIARTIST?>" <?= radioButton(ArtistType::MULTIARTIST, $artistSongRelationshipObj->oldArtistType); ?>><span>MultiArtist</span><br/>
+                    <div class="easyui-layout" style="width:100%;height:100%;">
+                        <div data-options="region:'west',collapsible:false, border:false"
+                             style="padding:5px;width:40%;height:100%">
+                            <div style="line-height:22px;background:#fafafa;padding:3px;">Select The Artist Type</div>
+                            <div style="padding:0px">
+                                <input type="radio" name="oldArtistType" value="<?= ArtistType::ARTIST?>" <?= radioButton(ArtistType::ARTIST, $artistSongRelationshipObj->oldArtistType); ?>><span>Artist</span><br/>
+                                <input type="radio" name="oldArtistType" value="<?= ArtistType::MULTIARTIST?>" <?= radioButton(ArtistType::MULTIARTIST, $artistSongRelationshipObj->oldArtistType); ?>><span>MultiArtist</span><br/>
+                            </div>
+                        </div>
+                        <div data-options="region:'east',collapsible:false, border:false"
+                             style="padding:8px;width:60%;height:100%">
+                                <?php
+                                $input = new Input(array('name' => "exact",
+                                    'label' => 'Each Old Artist Must Match',
+                                    'value' => $artistSongRelationshipObj->exact));
+                                checkBox($input);
+                                ?>
+                        </div>
                     </div>
                 </div>
 
-                <div id="oldArtistListDataGridLayout" data-options="region:'west',collapsible:false, border:false" style="padding:0px;width:40%;height:100%">
+                <div id="oldArtistListDataGridLayout" data-options="region:'west',collapsible:false, border:false"
+                     style="padding:0px;width:40%;height:100%">
                     <?php
                     include_once('Smarty.class.php');
                     $url = webPath(ROOT_PHP_CONFIGURATION_MP3PRETTIFIER, 'MP3PrettifierAction.php');
@@ -100,11 +115,12 @@ else {
                 </div>
                 <div id="oldArtistRightSideLayout" data-options="region:'east',collapsible:false, border:false" style="padding:0px;width:60%;height:100%">
                     <div class="easyui-layout" style="width:95%;height:95%;">
-                        <div id="oldArtistListButtonsLayout" data-options="region:'west',collapsible:false, border:false" style="padding:0px;width:50%;height:30%">
-                            <div><button  type="button" type="button" style="width:100%" onclick="addArtist()">Add Artist</button></div>
-                            <div><button  type="button" style="width:100%" onclick="clear Song Info()">Clear Song</button></div>
-                            <div><button  type="button" style="width:100%" onclick="removeArtist('dgListOldArtist')">Remove Artist</button></div>
-                            <div><button  type="button" style="width:100%" onclick="copyArtist()">Copy Artist</button></div>
+                        <div id="oldArtistListButtonsLayout" data-options="region:'west',collapsible:false, border:false"
+                             style="text-align:center;padding:0px;width:50%;height:30%">
+                            <div><button  type="button" type="button" style="width:80%" onclick="addArtist()">Add Artist</button></div>
+                            <div><button  type="button" style="width:80%" onclick="clear Song Info()">Clear Song</button></div>
+                            <div><button  type="button" style="width:80%" onclick="removeArtist('dgListOldArtist')">Remove Artist</button></div>
+                            <div><button  type="button" style="width:80%" onclick="copyArtist()">Copy Artist</button></div>
                         </div>
                         <div id="oldArtistListSelectedDatagridLayout" data-options="region:'east',collapsible:false, border:false" style="width:50%;height:42%">
                             <table id="dgListOldArtist" class="easyui-datagrid" style="width:95%;height:95%"
@@ -133,20 +149,17 @@ else {
                                  ">
                             <br>
                             <div style="margin-bottom:5px">
-                                <input id="oldFreeArtist" class="easyui-textbox" label="Old Artist (Free)" value="<?= $artistSongRelationshipObj->oldArtist ?>" labelPosition="top" style="width:80%;height:52px">
+                                <input id="oldFreeArtist"
+                                       class="easyui-textbox"
+                                       label="Old Artist (Free)"
+                                       value="<?= $artistSongRelationshipObj->oldArtist ?>"
+                                       labelPosition="top"
+                                       style="width:80%;height:52px">
                                 <button type="button" onclick="addFreeArtist();">Add</button>
                             </div>
                             <div style="margin-bottom:20px">
                                 <input id="oldSong" class="easyui-textbox" value="<?= $artistSongRelationshipObj->oldSong ?>"
                                        label="Old Song" labelPosition="top" style="width:80%;height:52px">
-                            </div>
-                            <div style="margin-bottom:20px">
-                                <?php
-                                    $input = new Input(array('name' => "exact",
-                                        'label' => 'Each Artist Must Match',
-                                        'value' => $artistSongRelationshipObj->exact));
-                                checkBox($input);
-                                ?>
                             </div>
                         </div>
                     </div>
@@ -158,11 +171,13 @@ else {
             <div class="easyui-layout" style="width:100%;height:100%;">
                 <div data-options="region:'north',collapsible:false, border:false" style="padding:5px;width:100%;height:20%">
                     <div style="line-height:22px;background:#fafafa;padding:5px;">Select The New Artist Type</div>
-                    <div style="padding:10px">
+                    <div style="padding:0px">
                         <input type="radio" name="newArtistType" value="<?= ArtistType::ARTIST?>" <?= radioButton(ArtistType::ARTIST, $artistSongRelationshipObj->newArtistType); ?>><span>Artist</span><br/>
                         <input type="radio" name="newArtistType" value="<?= ArtistType::MULTIARTIST?>" <?= radioButton(ArtistType::MULTIARTIST, $artistSongRelationshipObj->newArtistType); ?>><span>MultiArtist</span><br/>
                     </div>
-
+                    <div data-options="region:'north',collapsible:false, border:false"
+                         style="padding:5px;width:50%;height:100%">
+                    </div>
                 </div>
                 <div data-options="region:'center',collapsible:false, border:false" style="padding:5px;width:100%;height:10%">
                     New Artist<br>
@@ -189,16 +204,22 @@ else {
                                value="<?= $artistSongRelationshipObj->newSong ?>"
                                label="New Song" labelPosition="top" style="width:80%;height:52px">
                     </div>
-                    <div style="margin-bottom:20px">
+                    <div>
                         <input id="priority"
                                value="<?= $artistSongRelationshipObj->priority ?>"
-                               class="easyui-numberspinner" style="width:80px;"
+                               labelPosition="top"
+                               style="width:80px;height:52px"
+                               label="Priority"
+                               class="easyui-numberspinner" style="width:100px;"
                                data-options="value:0,required:false,min:0,editable:true">
                     </div>
-                    <div style="margin-bottom:20px">
+                    <div>
                         <input id="indexTitle"
                                value="<?= $artistSongRelationshipObj->indexTitle ?>"
-                               class="easyui-numberspinner" style="width:80px;"
+                               labelPosition="top"
+                               style="width:80px;height:52px"
+                               label="Index Title"
+                               class="easyui-numberspinner" style="width:100px;"
                                data-options="value:0,required:false,min:0,editable:true">
                     </div>
                 </div>
