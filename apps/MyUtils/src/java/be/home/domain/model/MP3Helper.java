@@ -190,6 +190,7 @@ public class MP3Helper {
     }
 
     public String prettifyArtist(String text){
+        if (text == null) return "";
         String prettifiedText = prettifyString(text);
         if (StringUtils.isNotBlank(text)) {
             prettifiedText = prettifiedText.replaceAll(replaceBetweenBrackets("Remix"), "");

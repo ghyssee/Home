@@ -136,6 +136,8 @@ public class ConvertArtistSong extends BatchJobV2 {
         ArtistConfigBO artistConfigBO = ArtistConfigBO.getInstance();
         boolean save= false;
         for (ArtistSongRelationship.ArtistSongRelation artistSong :  artistSongRelationship.items){
+            // if old artist is exact, don't add any other artists anymore
+            if (artistSong.exact) continue;
             if (StringUtils.isNotBlank(artistSong.newMultiArtistId)){
                 if (StringUtils.isBlank(artistSong.oldMultiArtistId)){
                     MultiArtistConfig.Item multiArtistItem = artistConfigBO.getMultiArtist(artistSong.newMultiArtistId);

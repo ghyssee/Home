@@ -71,6 +71,7 @@ public class ArtistBO {
                 MP3Prettifier.Word word = new MP3Prettifier().new Word();
                 word.oldWord = artistItem.getPattern();
                 word.newWord = artistItem.getName();
+                        //ArtistBO.getInstance().getStageName(artistItem);
                 /* endWord is enabled by default for all artists */
                 word.endOfWord = 1;
                 word.priority = artistItem.priority;

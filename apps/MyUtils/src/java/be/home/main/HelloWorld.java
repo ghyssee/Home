@@ -128,12 +128,13 @@ private static void testAlbumArtist(){
 
 
         //System.out.println(getArtistTitleException("Kellis Feat. Too Short", "bossy"));
-        System.out.println(mp3Helper.stripFilename("B.A.D. (Big Audio Dynamite) - E = MC2"));
         //System.out.println(getArtistTitleException("Malvin Big", "Here Comes The Devil"));
         //System.out.println("The Partysquad Feat. Sjaak, Dio, Sef".replaceAll("((Sef|Dio|Sjaak)( ?& ?|, ?| |\\.|$)){3,}", "Dio, Sef & Sjaak"));
         //System.out.println(mp3Helper.prettifyArtist("Ll Cool J Feat. 7 Aurelius"));
         //System.out.println("Fuck It! (I Don't Want You Back)".replaceAll("F(?:uc|\\\\*\\\\*)k It!?(?:\\\\(I Don't Want You Back\\\\))?(.*)",
           //      "Fuck It (I Don't Want You Back)$1"));
+
+        System.out.println(mp3Helper.stripFilename("B.A.D. (Big Audio Dynamite) - E = MC2"));
         System.out.println(mp3Helper.prettifySong("Voulez Vous Coucher Avec Moi Ce Soir? (Lady Marmalade)"));
         System.out.println(mp3Helper.prettifyAlbum("The Flying Dutch 2017 Edition NL", null));
         System.out.println(getTitleArtistException("Lost Frequencies", "Reality"));
@@ -142,10 +143,11 @@ private static void testAlbumArtist(){
         System.out.println(mp3Helper.prettifySong("LOL (Radio Mix FT Fast Edit)"));
         System.out.println(mp3Helper.prettifyArtist("Person Z"));
         System.out.println(mp3Helper.prettifyArtist("Person Z, (a"));
-        System.out.println(mp3Helper.prettifyArtist("The Him"));
+        System.out.println(mp3Helper.prettifyArtist("Duke Dumont Feat. A*M*E"));
         System.out.println(getTitleArtistException("Tina Turner", "Teach Me Again"));
-        System.out.println(getArtistTitleException("Bob Marley Vs. Funkstar De Luxe", "Sun Is Shining"));
-        System.out.println(getArtistTitleException("Bob Marley", "Sun Is Shining"));
+
+        System.out.println(getArtistTitleException("Fifth Harmony Feat. Ty Dolla Sign", "Work From Home"));
+        System.out.println(getArtistTitleException("The Ramblers", "Dag Schatteboutje"));
 
     }
 
