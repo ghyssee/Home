@@ -69,8 +69,6 @@ goMenu();
     </div>
 </div>
 
-
-
 <?php
 /*<script src="<?php echo webPath(ROOT_JS_EASYUI, 'EasyUITabsMouseHover.js')?>"></script>*/
 goMenu();
