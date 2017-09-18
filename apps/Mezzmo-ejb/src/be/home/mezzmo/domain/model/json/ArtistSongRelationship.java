@@ -21,6 +21,7 @@ public class ArtistSongRelationship {
         public boolean exactMatchTitle;
         public int priority;
         public int indexTitle;
+        public boolean noCheckOnNewMultiArtist;
     }
 
     public class ArtistItem {

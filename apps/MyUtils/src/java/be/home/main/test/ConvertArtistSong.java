@@ -145,7 +145,9 @@ public class ConvertArtistSong extends BatchJobV2 {
                         throw new ApplicationException("Multi Artist Id Not Found: " + artistSong.newMultiArtistId);
                     }
                     else {
-                        save = checkNewMultiArtistExistInOldArtistList(multiArtistItem.artistSequence, artistSong.oldArtistList) || save;
+                        if (!artistSong.noCheckOnNewMultiArtist) {
+                            save = checkNewMultiArtistExistInOldArtistList(multiArtistItem.artistSequence, artistSong.oldArtistList) || save;
+                        }
                     }
                 }
             }

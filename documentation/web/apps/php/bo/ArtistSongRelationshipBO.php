@@ -45,8 +45,9 @@ class ArtistSongRelationshipTO extends Castable {
     public $newArtistId;
     public $newSong;
     public $exactMatchTitle;
-    public $indexTitle;
-    public $priority;
+    public $indexTitle = 0;
+    public $priority = 0;
+    public $noCheckOnNewMultiArtist;
 
 }
 

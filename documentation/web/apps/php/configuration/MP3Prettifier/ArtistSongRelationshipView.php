@@ -211,7 +211,7 @@ else {
                                style="width:80px;height:52px"
                                label="Priority"
                                class="easyui-numberspinner" style="width:100px;"
-                               data-options="value:0,required:false,min:0,editable:true">
+                               data-options="value:<?= $artistSongRelationshipObj->priority ?>,required:false,min:0,editable:true">
                     </div>
                     <div>
                         <input id="indexTitle"
@@ -221,6 +221,14 @@ else {
                                label="Index Title"
                                class="easyui-numberspinner" style="width:100px;"
                                data-options="value:0,required:false,min:0,editable:true">
+                    </div>
+                    <div style="padding-top:8px">
+                        <?php
+                        $input = new Input(array('name' => "noCheckOnNewMultiArtist",
+                            'label' => 'NoCheckOnNewMultiArtist',
+                            'value' => $artistSongRelationshipObj->noCheckOnNewMultiArtist));
+                        checkBox($input);
+                    ?>
                     </div>
                 </div>
             </div>
@@ -361,21 +369,23 @@ else {
         var priority = $("#priority").numberspinner('getValue');
         var indexTitle = $("#indexTitle").numberspinner('getValue');
         var exact = $('#exact').is(':checked');
+        var noCheckOnNewMultiArtist = $('#noCheckOnNewMultiArtist').is(':checked');
 
         var object = {
                       id:'<?= $artistSongId?>',
                       oldArtistType:oldArtistType,
                       oldArtists:oldArtists,
                       oldMultiArtist:oldMultiArtist == null ? "" : oldMultiArtist.id,
-                      oldFreeArtist:($("#oldFreeArtist").val()),
-                      oldSong:($("#oldSong").val()),
+                      oldFreeArtist:oldFreeArtist,
+                      oldSong:oldSong,
                       newArtistType:newArtistType,
                       newArtist:newArtist,
                       newMultiArtist:newMultiArtist == null ? "" : newMultiArtist.id,
                       newSong:newSong,
                       priority:priority,
                       indexTitle:indexTitle,
-                      exact:exact
+                      exact:exact,
+                      noCheckOnNewMultiArtist:noCheckOnNewMultiArtist
         };
 
         var tmp = $.post('ArtistSongRelationshipAction.php?method=add', { config : JSON.stringify(object)}, function(data2){
