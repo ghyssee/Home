@@ -105,7 +105,7 @@ $multiArtist = readJSONWithCode(JSON_MULTIARTIST);
                 </td>
                 </tr>
                 <tr><td colspan = 2><input type="checkbox" id="exactPosition" name="exactPosition" value="0">Exact Position</td></tr>
-                <tr><td>Config</td><td><input id="multiArtistConfig" name="multiArtistConfig"><button onclick="addConfig()">Add</button></td></tr>
+                <tr><td>Config</td><td><input id="multiArtistConfig" name="multiArtistConfig"><button type="button" onclick="addConfig()">Add</button></td></tr>
 
             </table>
         </div>
@@ -142,7 +142,6 @@ $multiArtist = readJSONWithCode(JSON_MULTIARTIST);
             selectedrow.splitterId = $(ed.target).combobox('getValue');
             selectedrow.splitterName = $(ed.target).combobox('getText');
         }
-        console.log(JSON.stringify(selectedrow, null, 4));
     }
 
     function clearArtists(){

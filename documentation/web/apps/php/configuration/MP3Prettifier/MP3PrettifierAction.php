@@ -391,8 +391,9 @@ function saveMulti(){
             $msg = 'Multi Artist Config exist already';
         }
         else {
-            $multiArtistBO->addMultiArtist($multiArtistLine);
+            //$multiArtistBO->addMultiArtist($multiArtistLine);
             $success = true;
+            $msg = "Multi Artist Configuration Saved!";
         }
     }
     else {

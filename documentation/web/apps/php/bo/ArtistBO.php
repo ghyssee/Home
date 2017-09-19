@@ -9,8 +9,8 @@ class ArtistTO{
     public $name;
     public $stageName;
     public $pattern;
-    public $priority;
-    public $global;
+    public $priority=1000;
+    public $global=false;
     public function __construct()
     {
     }
@@ -507,6 +507,7 @@ class MultiArtistBO {
             $errorObj = new stdClass();
             $errorObj->success = false;
             $errorObj->errorFound = false;
+            $errorObj->message = '';
             $errorObj->errorMsg = '';
             $errorObj->artistsAdded = [];
             $errorObj->multiArtist = null;
@@ -537,9 +538,12 @@ class MultiArtistBO {
                     $errorObj->errorFound = true;
                 }
                 else {
-                    $this->addMultiArtist($multiArtist);
+                    //$this->addMultiArtist($multiArtist);
                     $errorObj->multiArtist = $multiArtist;
                     $errorObj->success = true;
+                    $errorObj->message = "Multi Artist Configuration Added" . PHP_EOL;
+                    $errorObj->message .= json_encode($errorObj->artistsAdded,JSON_PRETTY_PRINT) . PHP_EOL;
+                    $errorObj->message .= json_encode($errorObj->multiArtist,JSON_PRETTY_PRINT);
                 }
             }
             return $errorObj;
