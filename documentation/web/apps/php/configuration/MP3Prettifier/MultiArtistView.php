@@ -135,7 +135,6 @@ else {
             <table  id="dgArtistSeq" style="width:400px;height:150px"
                     title="Ordered Artist Group"
                     data-options="singleSelect:true">
-            >
                 <thead>
                 <tr>
                     <th field="artistId" hidden="true">ID</th>
