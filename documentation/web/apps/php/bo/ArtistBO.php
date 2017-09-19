@@ -29,7 +29,10 @@ class MultiArtistListTO {
     public $description;
     public $description2;
 
-    function __construct($id, $exactPosition, $master) {
+    function __construct() {
+        
+    }
+    function __construct3($id, $exactPosition, $master) {
         $this->id = $id;
         $this->exactPosition = $exactPosition;
         $this->master = $master;

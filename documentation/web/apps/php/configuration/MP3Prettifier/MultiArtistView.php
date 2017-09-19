@@ -25,18 +25,26 @@
 sessionStart();
 goMenu();
 if (isset($_REQUEST["id"])) {
-    //$artistSongId = htmlspecialchars($_REQUEST['id']);
+    $multiArtistId = htmlspecialchars($_REQUEST['id']);
+    //$multiAritstBO = new MultiArtistBO();
+    //$multiArtistListTO = $multiAritstBO->findMultiArtist($multiArtistId);
+    //if ($multiArtistListTO != null){
+
+    //}
+
     //$artistSongRelationShipBO = new ArtistSongRelationShipBO();
     //$artistSongRelationshipTO = $artistSongRelationShipBO->findArtistSongRelationship($artistSongId);
     //$artistSongRelationshipObj = new ArtistSongRelationshipCompositeTO($artistSongRelationshipTO);
 }
 else {
-    //$artistSongId = null;
-    //$artistSongRelationshipObj = new ArtistSongRelationshipCompositeTO(null);
+    $multiArtistId = null;
+    $multiArtistListTO = new MultiArtistListTO();
 }
 ?>
 <script>
     var oldData = [{"id":"1", "name":"test"}];
+    var tmpData1 = [{"artistId":"Bodyrox", "artistName":"Bodyrox","splitterId":"FEAT","splitterName":" Feat. "}];
+    var tmpData2 = [{"id":"Bodyrox", "name":"Bodyrox"}];
 </script>
 <h1>Multi Artist Configuration</h1>
 <div class="horizontalLine">.</div>
@@ -103,7 +111,7 @@ else {
 
             <table id="dgArtist" class="easyui-datagrid" style="width:400px;height:150px"
                    title="Unordered Artist Group"
-                   data-options="fitColumns:true,singleSelect:true">
+                   data-options="data:tmpData2,fitColumns:true,singleSelect:true">
                 <thead>
                 <tr>
                     <th data-options="field:'id',hidden:true">Id</th>
@@ -126,7 +134,7 @@ else {
 
             <table  id="dgArtistSeq" style="width:400px;height:150px"
                     title="Ordered Artist Group"
-                    singleSelect="true"
+                    data-options="singleSelect:true">
             >
                 <thead>
                 <tr>
@@ -158,6 +166,11 @@ else {
 </form>
 
 <script>
+    //alert("add artists");
+    insertArtist("Bodyrox", "Bodyrox", "FEAT", " Feat. ");
+</script>
+
+<script>
     function testChk(){
         alert($('input[name=master]:checked').val());
     }
@@ -171,6 +184,7 @@ else {
         datagridName = "#" + datagridName;
         $(datagridName).datagrid('reload');
     }
+
     function saveCombo(){
         var selectedrow = $("#dgArtistSeq").edatagrid("getSelected");
         if (selectedrow != null){
@@ -219,6 +233,27 @@ else {
         return row;
     }
 
+    function insertArtist(id, artist, splitterId, splitterValue){
+        $('#dgArtist').datagrid('appendRow',{
+             name: artist,
+             id: id
+         });
+        var index = $('#dgArtistSeq').edatagrid('getRows').length;
+         $('#dgArtistSeq').edatagrid('addRow',{
+                index: index,
+                row:{
+                    artistId: id,
+                    artistName: artist,
+                    splitterId: splitterId,
+                    splitterName: splitterValue
+                }
+         });
+         //$('#dlArtistList').datagrid('clearSelections');
+         $('#dgArtistSeq').datagrid('enableDnd');
+         $('#dgArtistSeq').edatagrid('selectRow', index);
+         saveCombo();
+    }
+
     function insert(){
         //var row = $('#dlArtistList').datagrid('getSelected');
         var cbArtist = '#cbArtist';
@@ -233,21 +268,7 @@ else {
                 }
             }
             if (!alreadyAdded) {
-                $('#dgArtist').datagrid('appendRow',{
-                    name: row.value,
-                    id: row.id
-                });
-                var index = $('#dgArtistSeq').edatagrid('getRows').length;
-                $('#dgArtistSeq').edatagrid('addRow',{
-                    index: index,
-                    row:{
-                        artistId: row.id,
-                        artistName: row.value,
-                        splitterId: DEFAULT_SPLITTER.id,
-                        splitterName: DEFAULT_SPLITTER.value2
-                    }
-                });
-
+                insertArtist(row.id, row.value, DEFAULT_SPLITTER.id, DEFAULT_SPLITTER.value2);
                 //$('#dlArtistList').datagrid('clearSelections');
                 $(cbArtist).combobox('clear');
                 $('#dgArtistSeq').datagrid('enableDnd');
