@@ -140,37 +140,5 @@ class TableGrid
   }
 }
 
-class ArtistItem{
-    public $id;
-    public function __construct($id)
-    {
-        $this->id = $id;
-    }
-}
-
-class MultiArtist{
-  public $id;
-  public $exactPosition;
-  public $master;
-  public $artists;
-  public $artistSequence;
-    public function __construct()
-    {
-        $this->artists = array();
-        $this->artistSequence = array();
-        $this->exactPosition = false;
-    }
-}
-
-class ArtistSequence{
-  public $artistId;
-  public $splitterId;
-  public function __construct($artistId, $splitterId)
-  {
-    $this->artistId = $artistId;
-    $this->splitterId = $splitterId;
-  }
-}
-
 ?>
 

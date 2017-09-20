@@ -30,7 +30,11 @@ body {
 	margin-top: -6px;
 	margin-bottom: 10px;
 }
-
+.verticallyalign {
+	position: relative;
+	top: 50%;
+	transform: perspective(1px) translateY(-50%);
+}
 /*
 table.displayTable {
 border-collapse: collapse;

@@ -26,27 +26,31 @@ sessionStart();
 goMenu();
 if (isset($_REQUEST["id"])) {
     $multiArtistId = htmlspecialchars($_REQUEST['id']);
-    //$multiAritstBO = new MultiArtistBO();
-    //$multiArtistListTO = $multiAritstBO->findMultiArtist($multiArtistId);
-    //if ($multiArtistListTO != null){
-
-    //}
-
-    //$artistSongRelationShipBO = new ArtistSongRelationShipBO();
-    //$artistSongRelationshipTO = $artistSongRelationShipBO->findArtistSongRelationship($artistSongId);
-    //$artistSongRelationshipObj = new ArtistSongRelationshipCompositeTO($artistSongRelationshipTO);
+    $multiAritstBO = new MultiArtistBO();
+    $multiArtistTO = $multiAritstBO->findMultiArtist($multiArtistId);
+    $multiAritstBO->fillMultiArtistInfo($multiArtistTO);
 }
 else {
     $multiArtistId = null;
-    $multiArtistListTO = new MultiArtistListTO();
+    $multiArtistTO = new MultiArtist();
+    $multiArtistTO->master = MasterType::SEQUENCE;
 }
 ?>
 <script>
     var oldData = [{"id":"1", "name":"test"}];
-    var tmpData1 = [{"artistId":"Bodyrox", "artistName":"Bodyrox","splitterId":"FEAT","splitterName":" Feat. "}];
-    var tmpData2 = [{"id":"Bodyrox", "name":"Bodyrox"}];
+    //var tmpData1 = [{"artistId":"Bodyrox", "artistName":"Bodyrox","splitterId":"FEAT","splitterName":" Feat. "}];
+    //var tmpData2 = [{"id":"Bodyrox", "name":"Bodyrox"}];
+    var artists = <?php echo json_encode($multiArtistTO->artists); ?>;
+    var artistSequence = <?php echo json_encode($multiArtistTO->artistSequence); ?>;
 </script>
-<h1>Multi Artist Configuration</h1>
+<h1><?php
+        if (isset($multiArtistId)){
+            echo " Update ";
+        }
+        else {
+            echo " Add ";
+        }
+        ?>Multi Artist Configuration</h1>
 <div class="horizontalLine">.</div>
 <br>
 
@@ -56,7 +60,7 @@ else {
         <div id="leftPanel"
              data-options="region:'west',collapsible:false, border:false"
              style="padding:0px;width:42%;height:95%"
-             title="Artist List"
+             title=" "
         >
             <div style="padding-top:8px;padding-left:8px;padding-bottom:0px">
                 List Artists
@@ -70,22 +74,32 @@ else {
                              url:'MP3PrettifierAction.php?method=listArtists'"
                 >
             </div>
-            <div style="padding:8px">
-                <table>
-                    <tr><td colspan="2">Master</td></tr>
-                    <tr><td>
-                            <input type="radio" name="master"
-                                   value="<?php echo MULTIARTIST_RADIO_ARTISTS ?>">Artist
-                        </td>
-                        <td>
-                            <input type="radio" name="master" checked
-                                   value="<?php echo MULTIARTIST_RADIO_ARTISTSEQUENCE ?>">Artist Sequence
-                        </td>
-                    </tr>
-                    <tr><td colspan = 2><input type="checkbox" id="exactPosition" name="exactPosition" value="0">Exact Position</td></tr>
-                    <tr><td>Config</td><td><input id="multiArtistConfig" name="multiArtistConfig"><button type="button" onclick="addConfig()">Add</button></td></tr>
-
-                </table>
+            <div id="p" class="easyui-panel" title="Type"
+                 style="width:100%;height:300px;padding:10px;background:#fafafa;"
+                 data-options="closable:false,
+                    collapsible:false,minimizable:false,maximizable:false">
+                <div style="line-height:22px;background:#fafafa;padding:5px;">Master</div>
+                <div style="padding:0px">
+                    <input type="radio" name="master" value="<?= MasterType::ARTIST?>" <?= radioButton(MasterType::ARTIST, $multiArtistTO->master); ?>><span>Artists</span><br/>
+                    <input type="radio" name="master" value="<?= MasterType::SEQUENCE?>" <?= radioButton(MasterType::SEQUENCE, $multiArtistTO->master); ?>><span>Artist Sequence</span><br/>
+                </div>
+                <div style="padding-top:8px">
+                    <?php
+                    $input = new Input(array('name' => "exactPosition",
+                        'label' => 'Exact Position',
+                        'value' => $multiArtistTO->exactPosition));
+                    checkBox($input);
+                    ?>
+                </div>
+                <div style="margin-top:10px">
+                    <input id="multiArtistConfig"
+                           class="easyui-textbox"
+                           label="Multi Artist Config"
+                           value=""
+                           labelPosition="top"
+                           style="width:80%;height:52px">
+                    <button type="button" onclick="addConfig();">Add</button>
+                </div>
             </div>
 
 
@@ -93,8 +107,9 @@ else {
         <div id="actions"
              data-options="region:'center',collapsible:false, border:false"
              style="text-align:center;padding:0px;width:16%;height:95%"
-             title="Actions"
+             title=" "
         >
+            <div class="verticallyalign">
             <div><button type="button" style="width:80%" onclick="insert()">Add</button></div>
             <div><button type="button" style="width:80%" onclick="clearArtists()">Clear</button></div>
             <div><button type="button" style="width:80%" onclick="validateAndSave()">Save</button></div>
@@ -102,16 +117,17 @@ else {
             <div><button type="button" style="width:80%" onclick="removeDatagridRow('dgArtistSeq', 'Please select an artist to remove!')">Remove A2</button></div>
             <div><button type="button" style="width:80%" onclick="refreshCombo('cbArtist')">Refresh Art.</button></div>
             <div><button type="button" style="width:80%" onclick="testChk()">Test Check</button></div>
+            </div>
         </div>
         <div id="rightPanel"
              data-options="region:'east',collapsible:false, border:false"
              style="padding:0px;width:42%;height:95%"
-             title="Selected Artists"
+             title=" "
         >
 
             <table id="dgArtist" class="easyui-datagrid" style="width:400px;height:150px"
                    title="Unordered Artist Group"
-                   data-options="data:tmpData2,fitColumns:true,singleSelect:true">
+                   data-options="data:artists,fitColumns:true,singleSelect:true">
                 <thead>
                 <tr>
                     <th data-options="field:'id',hidden:true">Id</th>
@@ -134,7 +150,7 @@ else {
 
             <table  id="dgArtistSeq" style="width:400px;height:150px"
                     title="Ordered Artist Group"
-                    data-options="singleSelect:true">
+                    data-options="data:artistSequence,singleSelect:true">
                 <thead>
                 <tr>
                     <th field="artistId" hidden="true">ID</th>
@@ -165,11 +181,6 @@ else {
 </form>
 
 <script>
-    //alert("add artists");
-    insertArtist("Bodyrox", "Bodyrox", "FEAT", " Feat. ");
-</script>
-
-<script>
     function testChk(){
         alert($('input[name=master]:checked').val());
     }
@@ -192,8 +203,10 @@ else {
                 index: rowIndex,
                 field: 'splitterId'
             });
-            selectedrow.splitterId = $(ed.target).combobox('getValue');
-            selectedrow.splitterName = $(ed.target).combobox('getText');
+            if (ed != null) {
+                selectedrow.splitterId = $(ed.target).combobox('getValue');
+                selectedrow.splitterName = $(ed.target).combobox('getText');
+            }
         }
         console.log(JSON.stringify(selectedrow, null, 4));
     }
@@ -250,7 +263,7 @@ else {
          //$('#dlArtistList').datagrid('clearSelections');
          $('#dgArtistSeq').datagrid('enableDnd');
          $('#dgArtistSeq').edatagrid('selectRow', index);
-         saveCombo();
+         //saveCombo();
     }
 
     function insert(){
@@ -261,7 +274,7 @@ else {
             var rows = $('#dgArtistSeq').edatagrid('getRows');
             var alreadyAdded = false;
             for(var i=0; i<rows.length; i++){
-                if (rows[i].id == row.id) {
+                if (rows[i].artistId == row.id) {
                     alreadyAdded = true;
                     break;
                 }
@@ -270,9 +283,6 @@ else {
                 insertArtist(row.id, row.value, DEFAULT_SPLITTER.id, DEFAULT_SPLITTER.value2);
                 //$('#dlArtistList').datagrid('clearSelections');
                 $(cbArtist).combobox('clear');
-                $('#dgArtistSeq').datagrid('enableDnd');
-                $('#dgArtistSeq').edatagrid('selectRow', index);
-                saveCombo();
             }
             else {
                 alert("already added");
@@ -291,21 +301,26 @@ else {
         return "";
     }
 
-    function savedOK(){
+    function clearForm(){
         clearArtists();
-        alert("Multi Artist Config Item successfully saved");
         $('#dgMultiArtistList').datagrid('reload');
     }
-
+    
     function saveMulti(rowsArtists, rowsSeq){
 
         var object = {artists:rowsArtists,
+            id:'<?= $multiArtistId?>',
             artistSequence:rowsSeq,
             exactPosition: $('#exactPosition').is(":checked"),
             master: $('input[name=master]:checked').val()
 
         };
-        saveObject(object, 'MP3PrettifierAction.php?method=saveMulti', savedOK);
+        if (object.id){
+            saveObject(object, 'MP3PrettifierMultiArtistAction.php?method=saveMulti', null);
+        }
+        else {
+            saveObject(object, 'MP3PrettifierMultiArtistAction.php?method=saveMulti', clearForm);
+        }
     }
 
     function validateAndSave(){

@@ -29,10 +29,7 @@ class MultiArtistListTO {
     public $description;
     public $description2;
 
-    function __construct() {
-        
-    }
-    function __construct3($id, $exactPosition, $master) {
+    function __construct($id, $exactPosition, $master) {
         $this->id = $id;
         $this->exactPosition = $exactPosition;
         $this->master = $master;
@@ -167,6 +164,78 @@ class ArtistBO
         return false;
     }
 }
+
+class ArtistItem{
+    public $id;
+    public function __construct($id)
+    {
+        $this->id = $id;
+    }
+}
+
+class ArtistItemForm extends ArtistItem {
+    public $name;
+    public function __construct($id, $name)
+    {
+        $this->id = $id;
+        $this->name = $name;
+    }
+}
+
+class MultiArtist extends Castable {
+    public $id;
+    public $exactPosition;
+    public $master;
+    public $artists;
+    public $artistSequence;
+
+    public function __construct($object = null)
+    {
+        parent::__construct($object);
+        if ($object == null) {
+            $this->artists = array();
+            $this->artistSequence = array();
+            $this->exactPosition = false;
+        }
+    }
+}
+
+class ArtistSequence{
+    public $artistId;
+    public $splitterId;
+    
+    public function __construct($artistId, $splitterId)
+    {
+        $this->artistId = $artistId;
+        $this->splitterId = $splitterId;
+    }
+}
+
+class ArtistSequenceForm{
+    public $artistName;
+    public $splitterName;
+    
+    public function __construct($artistId, $artistName, $splitterId, $splitterName)
+    {
+        $this->artistId = $artistId;
+        $this->splitterId = $splitterId;
+        $this->artistName = $artistName;
+        $this->splitterName = $splitterName;
+    }
+}
+
+class Delimiter extends Castable {
+    public $id;
+    public $value1;
+    public $value2;
+}
+
+abstract class MasterType
+{
+    const ARTIST = "artists";
+    const SEQUENCE = "artistSequence";
+}
+
 class MultiArtistBO {
     public $multiArtistObj;
     public $file;
@@ -199,7 +268,7 @@ class MultiArtistBO {
         $multiArtistObj = $this->loadData();
         foreach ($multiArtistObj->list as $key => $item) {
             if ($item->id == $id){
-                return $item;
+                return new MultiArtist($item);
             }
         }
         return null;
@@ -396,8 +465,7 @@ class MultiArtistBO {
             //$obj = readJSON($file);
             foreach ($this->multiArtistObj->splitters as $key => $value) {
                 if (strcmp($value->id, $id) == 0) {
-                    $delimiterObj = $value;
-                    return $delimiterObj;
+                    return new Delimiter($value);
                 }
             }
             return null;
@@ -486,6 +554,8 @@ class MultiArtistBO {
     
     function convertToMultiArtistTO($object){
         $multiArtistTO = new MultiArtistListTO($object->id, $object->exactPosition, $object->master);
+        $multiArtistTO->id = $object->id;
+
         //$item->description = $multiArtistBO->constructMultiArtistDescription($artistBO, $item);
         //$item->description2 = $multiArtistBO->constructMultiArtistSequeceDescription($artistBO, $item);
         $multiArtistTO->description = $this->constructMultiArtistDescription($this->getArtistBO(), $object);
@@ -493,13 +563,69 @@ class MultiArtistBO {
         return $multiArtistTO;
     }
 
+    function fillMultiArtistInfo(MultiArtist $multiArtist){
+        if (!isset($multiArtist)){
+            return null;
+        }
+        $artistBO = $this->getArtistBO();
+        $artists = Array();
+        foreach ($multiArtist->artists as $item){
+            $artist = $artistBO->lookupArtist($item->id);
+            if ($artist != null) {
+                $artistItemForm = new ArtistItemForm($artist->id, $artist->name);
+            }
+            else {
+                $artistItemForm = new ArtistItemForm($artist->id, "UNKNOWN ARTIST");
+            }
+            $artists[] = $artistItemForm;
+        }
+        $artistSequence = Array();
+        foreach ($multiArtist->artistSequence as $item){
+            $artist = $artistBO->lookupArtist($item->artistId);
+            $splitter = $this->lookupDelimiter($item->splitterId);
+            if ($splitter == null){
+                $splitter = new Delimiter();
+                $splitter->id = "";
+                $splitter->value1 = "UNKNOWN";
+                $splitter->value2 = "UNKNOWN";
+            }
+            if ($artist != null) {
+                $artistSequenceForm = new ArtistSequenceForm($artist->id, $artist->name, $splitter->id, $splitter->value2);
+            }
+            else {
+                $artistSequenceForm = new ArtistSequenceForm($artist->id, "UNKNOWN ARTIST",  $splitter->id, $splitter->value2);
+            }
+            $artistSequence[] = $artistSequenceForm;
+        }
+        $multiArtist->artists = $artists;
+        $multiArtist->artistSequence = $artistSequence;
+        return $multiArtist;
+    }
 
+    function updateMultiArtist($multiArtistItem){
+        $this->loadData();
+        $counter = 0;
+        foreach ($this->multiArtistObj->list as $key => $value) {
+            if (strcmp($value->id, $multiArtistItem->id) == 0) {
+                $this->multiArtistObj->list[$counter] = $multiArtistItem;
+                $this->commit();
+                CacheBO::saveCacheObject(CacheBO::MULTIARTIST2, $multiArtistItem->id, $this->convertToMultiArtistTO($multiArtistItem));
+                return true;
+            }
+            $counter++;
+        }
+        return false;
+    }
+    
+    function commit(){
+        writeJSON($this->multiArtistObj, $this->file);
+    }
 
     function addMultiArtist($multiArtistItem){
         $this->loadData();
         $multiArtistItem->id = getUniqueId();
         $this->multiArtistObj->list[] = $multiArtistItem;
-        writeJSON($this->multiArtistObj, $this->file);
+        $this->commit();
         CacheBO::saveCacheObject(CacheBO::MULTIARTIST2, $multiArtistItem->id, $this->convertToMultiArtistTO($multiArtistItem));
         //CacheBO::clearCache(CacheBO::MULTIARTIST2);
     }

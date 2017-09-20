@@ -12,6 +12,9 @@ try {
         case "addMulti":
             addMultiArtist();
             break;
+        case "saveMulti":
+            saveMulti();
+            break;
         case "batch":
             batchProcess();
         default :
@@ -35,7 +38,7 @@ function addMultiArtist(){
     if (isset($_POST['config'])) {
         $config = json_decode($_POST['config']);
         $multiArtistBO = new MultiArtistBO();
-        $result = $multiArtistBO->addMultiAristConfig($config->multiArtistConfig);
+        $result = $multiArtistBO->addMultiArtistConfig($config->multiArtistConfig);
         echo json_encode($result);
     }
     else {
@@ -43,10 +46,51 @@ function addMultiArtist(){
     }
 }
 
+function saveMulti(){
+    $msg = '';
+    if (isset($_POST['config'])){
+        $config = json_decode($_POST['config']);
+        $multiArtistLine = new MultiArtist();
+        $multiArtistLine->exactPosition = $config->exactPosition;
+        $multiArtistLine->master = $config->master;
+        foreach ($config->artists as $value){
+            $multiArtistLine->artists[] = new ArtistItem($value->id);
+        }
+        foreach ($config->artistSequence as $value){
+            $multiArtistLine->artistSequence[] = new ArtistSequence($value->artistId, $value->splitterId);
+        }
+        $multiArtistBO = new MultiArtistBO();
+        if (isset($config->id)){
+            $multiArtistLine->id = $config->id;
+            $multiArtistBO->updateMultiArtist($multiArtistLine);
+            $success = true;
+            $msg = "Multi Artist Configuration Saved!";
+        }
+        else {
+            $multiArtistLine->id = getUniqueId();
+            $existAlready = $multiArtistBO->checkMultiArtistConfigExist($multiArtistLine);
+            if ($existAlready){
+                $success = false;
+                $msg = 'Multi Artist Config exist already';
+            }
+            else {
+                //$multiArtistBO->addMultiArtist($multiArtistLine);
+                $success = true;
+                $msg = "Multi Artist Configuration Saved!";
+            }
+        }
+    }
+    else {
+        $success = false;
+    }
+    echo json_encode(array('success'=>$success,'message'=>$msg));
+
+}
+
 function addMultiArtist2(){
     $line = "Zucchero & Ilse DeLange";
     $multiArtistBO = new MultiArtistBO();
-    $result = $multiArtistBO->addMultiAristConfig($line);
+    $result = $multiArtistBO->addMultiArtistConfig($line);
     if ($result->errorFound){
         println($result->errorMsg);
     }

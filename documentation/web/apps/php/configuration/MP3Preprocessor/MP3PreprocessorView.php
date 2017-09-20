@@ -56,7 +56,7 @@ goMenu();
 if (isset($_SESSION["splitter"])) {
     $splitter = $_SESSION["splitter"];
 } else {
-    $splitter = new Splitter();
+    $splitter = new Delimiter();
 }
 ?>
 

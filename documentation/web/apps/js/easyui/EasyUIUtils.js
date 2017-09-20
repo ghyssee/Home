@@ -23,7 +23,7 @@ function refreshCombo(datagridName){
 
 function saveObject(object, url, callback){
 
-    var tmp = $.post('MP3PrettifierMultiArtistAction.php?method=addMulti', { config : JSON.stringify(object)}, function(data2){
+    var tmp = $.post(url, { config : JSON.stringify(object)}, function(data2){
             if (data2.success){
                 if (data2.message){
                     alert(data2.message);

@@ -110,7 +110,7 @@ function getListConfigurations($id){
 function add()
 {
 
-    $splitter = new Splitter();
+    $splitter = new Delimiter();
     assignField($splitter->description, "description");
     assignField($splitter->pattern, "pattern");
     $save = true;
@@ -128,7 +128,7 @@ function add()
 
 function update(){
     $id = $_REQUEST['id'];
-    $splitter = new Splitter();
+    $splitter = new Delimiter();
     assignField($splitter->description, "description");
     assignField($splitter->pattern, "pattern");
     $splitter->id = $id;
@@ -160,7 +160,7 @@ function addSplitter($file)
 {
 
     $mp3PreprocesorObj = initSave(JSON_MP3PREPROCESSOR);
-    $splitter = new Splitter();
+    $splitter = new Delimiter();
 
     assignField($splitter->id, "splitterId");
     assignField($splitter->pattern, "pattern");

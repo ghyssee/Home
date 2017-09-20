@@ -18,7 +18,7 @@ function addSplitter($file)
 {
 
     $mp3PreprocesorObj = initSave(JSON_MP3PREPROCESSOR);
-    $splitter = new Splitter();
+    $splitter = new Delimiter();
 
     assignField($splitter->id, "splitterId");
     assignField($splitter->pattern, "pattern");

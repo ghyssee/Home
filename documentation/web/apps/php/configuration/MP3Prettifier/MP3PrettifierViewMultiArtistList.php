@@ -8,9 +8,13 @@ $smarty->assign('item','Artist');
 $smarty->assign('tableWidth','100%');
 $smarty->assign('tableHeight','400px');
 $url = "MP3PrettifierAction.php";
+$url2 = "MultiArtistView.php";
 $smarty->assign('tablegrid',"MultiArtistList");
 $smarty->assign('id',$fieldId);
 $smarty->assign('fitColumns',"true");
+$smarty->assign('newUrl',$url2);
+$smarty->assign('customAdd',"addMultiArtist()");
+$smarty->assign('customEdit',"editMultiArtist()");
 $smarty->assign('viewUrl',$url . "?method=listMultiArtists");
 $smarty->assign('updateUrl', "'" . $url . "?method=updateMultiArtist&id='+row['" . $fieldId . "']");
 $smarty->assign('deleteUrl', $url . "?method=deleteMultiArtist");
@@ -37,15 +41,17 @@ $smarty->display('TableGridV4.tpl');
     function refreshMultiArtist(){
         $('#dgMultiArtistList').datagrid('reload');
     }
-    $(".datagrid-header-rownumber").click(function(){
-        alert("clicked");
-    });
-    var div = document.getElementsByClassName('datagrid-header-rownumber')[0];
-
-    div.addEventListener('click', function (event) {
-        alert('Hi!');
-    });
-
+    function addMultiArtist(){
+        var url = "<?php echo webPath(ROOT_PHP_CONFIGURATION_MP3PRETTIFIER, 'MultiArtistView.php') ?>";
+        var win = window.open(url, '_blank');
+        win.focus();
+    }
+    function editMultiArtist(){
+        var selectedRow = $('#dgMultiArtistList').edatagrid("getSelected");
+        var url = "<?php echo webPath(ROOT_PHP_CONFIGURATION_MP3PRETTIFIER, 'MultiArtistView.php') ?>" + '?id='+selectedRow.id;
+        var win = window.open(url, '_blank');
+        win.focus();
+    }
 </script>
 <script type="text/javascript">
     $(function(){

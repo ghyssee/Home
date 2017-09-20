@@ -61,9 +61,6 @@ try {
         case "deleteMultiArtist":
             deleteMultiArtist();
             break;
-        case "saveMulti":
-            saveMulti();
-            break;
         case "updateMultiArtist":
             updateMultiArtist();
             break;
@@ -365,41 +362,6 @@ function listArtists(){
 function listSplitters(){
     $multiArtistBO = new MultiArtistBO();
     echo json_encode($multiArtistBO->getSplitters());
-
-}
-
-function saveMulti(){
-    $msg = '';
-    if (isset($_POST['config'])){
-        $config = json_decode($_POST['config']);
-        $saveConfig = new MultiArtist();
-        $saveConfig->id = getUniqueId();
-        $multiArtistLine = new MultiArtist();
-        $multiArtistLine->id = getUniqueId();
-        $multiArtistLine->exactPosition = $config->exactPosition;
-        $multiArtistLine->master = $config->master;
-        foreach ($config->artists as $value){
-            $multiArtistLine->artists[] = new ArtistItem($value->id);
-        }
-        foreach ($config->artistSequence as $value){
-            $multiArtistLine->artistSequence[] = new ArtistSequence($value->artistId, $value->splitterId);
-        }
-        $multiArtistBO = new MultiArtistBO();
-        $existAlready = $multiArtistBO->checkMultiArtistConfigExist($multiArtistLine);
-        if ($existAlready){
-            $success = false;
-            $msg = 'Multi Artist Config exist already';
-        }
-        else {
-            //$multiArtistBO->addMultiArtist($multiArtistLine);
-            $success = true;
-            $msg = "Multi Artist Configuration Saved!";
-        }
-    }
-    else {
-        $success = false;
-    }
-    echo json_encode(array('success'=>$success,'message'=>$msg));
 
 }
 
