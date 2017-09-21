@@ -68,7 +68,9 @@ public class SQLiteJDBC
         if (config.sqlLogging.enabled){
             url = "p6spy:";
         }
-        dataSource.setUrl("jdbc:" + url + "sqlite:" + file.getAbsolutePath());
+        url = "jdbc:" + url + "sqlite:" + file.getAbsolutePath();
+        log.info("Database URL: " + url);
+        dataSource.setUrl(url);
         jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         linkDatabase(database, jdbcTemplate);
 

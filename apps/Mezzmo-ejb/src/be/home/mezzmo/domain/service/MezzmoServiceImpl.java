@@ -24,7 +24,7 @@ public class MezzmoServiceImpl {
 
     private static Map<Databases, MezzmoServiceImpl> instances = new HashMap<>();
     private static final Logger log = Logger.getLogger(MezzmoServiceImpl.class);
-    private static Databases db = null;
+    private Databases db = null;
 
     private MezzmoServiceImpl() {
     }
@@ -33,7 +33,7 @@ public class MezzmoServiceImpl {
         this.db = db;
     }
 
-    private static String getDatabase() {
+    private String getDatabase() {
         return db.name();
     }
 
@@ -248,7 +248,7 @@ public class MezzmoServiceImpl {
         return bo.getMaxDisc();
     }
 
-    public static String constructFileTitle(Map<String, MGOFileAlbumCompositeTO> map, MGOFileAlbumCompositeTO comp) {
+    public String constructFileTitle(Map<String, MGOFileAlbumCompositeTO> map, MGOFileAlbumCompositeTO comp) {
         MezzmoBO bo = getMezzmoBO();
         return bo.constructFileTitle(map, comp);
 
@@ -316,8 +316,8 @@ public class MezzmoServiceImpl {
         return bo.getAllMP3Files(to);
     }
 
-    private static MezzmoBO getMezzmoBO() {
-        return new MezzmoBO(getDatabase());
+    private MezzmoBO getMezzmoBO() {
+        return new MezzmoBO(db.name());
     }
 
     public synchronized static MezzmoServiceImpl getInstance() {
@@ -337,4 +337,9 @@ public class MezzmoServiceImpl {
         return instances.get(db);
 
     }
+
+    public String getDatabaseName(){
+        return db.name();
+    }
+
 }

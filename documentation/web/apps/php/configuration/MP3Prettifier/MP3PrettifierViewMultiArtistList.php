@@ -7,7 +7,7 @@ $smarty->assign('title','Mulit Artist List');
 $smarty->assign('item','Artist');
 $smarty->assign('tableWidth','100%');
 $smarty->assign('tableHeight','400px');
-$url = "MP3PrettifierAction.php";
+$url = "MP3PrettifierMultiArtistAction.php";
 $url2 = "MultiArtistView.php";
 $smarty->assign('tablegrid',"MultiArtistList");
 $smarty->assign('id',$fieldId);
@@ -18,8 +18,6 @@ $smarty->assign('customEdit',"editMultiArtist()");
 $smarty->assign('viewUrl',$url . "?method=listMultiArtists");
 $smarty->assign('updateUrl', "'" . $url . "?method=updateMultiArtist&id='+row['" . $fieldId . "']");
 $smarty->assign('deleteUrl', $url . "?method=deleteMultiArtist");
-//$smarty->assign('deleteUrl', $url . "?method=delete");
-
 
 $smarty->assign("contacts", array(
         array("field" => "id", "label"=>"Id", "size" => 40, "editable" => false),

@@ -15,6 +15,15 @@ try {
         case "saveMulti":
             saveMulti();
             break;
+        case "deleteMultiArtist":
+            deleteMultiArtist();
+            break;
+        case "getMultiArtistList":
+            getMultiArtistList();
+            break;
+        case "listMultiArtists":
+            listMultiArtists();
+            break;
         case "batch":
             batchProcess();
         default :
@@ -60,7 +69,7 @@ function saveMulti(){
             $multiArtistLine->artistSequence[] = new ArtistSequence($value->artistId, $value->splitterId);
         }
         $multiArtistBO = new MultiArtistBO();
-        if (isset($config->id)){
+        if (isset($config->id) && $config->id != ''){
             $multiArtistLine->id = $config->id;
             $multiArtistBO->updateMultiArtist($multiArtistLine);
             $success = true;
@@ -74,7 +83,7 @@ function saveMulti(){
                 $msg = 'Multi Artist Config exist already';
             }
             else {
-                //$multiArtistBO->addMultiArtist($multiArtistLine);
+                $multiArtistBO->addMultiArtist($multiArtistLine);
                 $success = true;
                 $msg = "Multi Artist Configuration Saved!";
             }
@@ -85,6 +94,57 @@ function saveMulti(){
     }
     echo json_encode(array('success'=>$success,'message'=>$msg));
 
+}
+
+function deleteMultiArtist(){
+    $id = $_REQUEST['id'];
+    $multiArtistBO = new MultiArtistBO();
+    $success = $multiArtistBO->deleteMultiAristConfig($id);
+    $returnObj = array('success' => $success);
+    if (!$success) {
+        $returnObj['errorMessage'] = "There was a problem trying to delete the MultiArtist!";
+    }
+    echo json_encode($returnObj);
+
+}
+
+function getMultiArtistList(){
+    $multiArtistBO = new MultiArtistBO();
+    $newArray = $multiArtistBO->loadFullData();
+    $sort = new CustomSort();
+    $array = $sort->sortObjectArrayByField($newArray, "description2", "asc");
+    echo json_encode($array);
+}
+
+function listMultiArtists(){
+    $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
+    $rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
+    $multiArtistBO = new MultiArtistBO();
+    $newArray = $multiArtistBO->loadFullData();
+
+    if (isSetFilterRule()){
+        $filterRules = json_decode($_POST["filterRules"]);
+        $newArray = $multiArtistBO->filterData($filterRules, $newArray);
+    }
+
+
+    $field = isset($_POST['sort']) ? strval($_POST['sort']) : 'description';
+    if ($field != 'description') {
+        $order = isset($_POST['order']) ? strval($_POST['order']) : 'asc';
+        $sort = new CustomSort();
+        $array = $sort->sortObjectArrayByField($newArray, $field, $order);
+    }
+    else {
+        //$array = $multi->list;
+        $array = $newArray;
+    }
+    //}
+    $array = array_slice($array, ($page-1)*$rows, $rows);
+
+    $result = array();
+    $result["total"] = count($newArray);
+    $result["rows"] = $array;
+    echo json_encode($result);
 }
 
 function addMultiArtist2(){

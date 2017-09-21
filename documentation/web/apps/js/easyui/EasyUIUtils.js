@@ -56,35 +56,4 @@ function saveObject(object, url, callback){
 
 }
 
-function save2(object, url, callback){
-
-    var tmp = $.post(url, { config : JSON.stringify(object)}, function(data2){
-            if (data2.success){
-                //clearArtists();
-                alert("Multi Artist Config Item successfully saved");
-                //alert(JSON.stringify(data2, null, 4));
-                //$('#dgMultiArtistList').datagrid('reload');
-            }
-            else {
-                if (data2.errorMsg) {
-                    alert(data2.errorMsg);
-                }
-                else {
-                    alert("Data Not Saved!");
-                }
-            }
-        },'json')
-        .done(function() {
-            //alert( "second success" );
-        })
-        .fail(function(response) {
-            alert( "Fail: "  + response.responseText);
-        })
-        .always(function() {
-            //alert( "finished" );
-        });
-    tmp.always(function() {
-        //alert( "second finished" );
-    });
-}
 

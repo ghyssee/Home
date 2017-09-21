@@ -145,7 +145,7 @@ else {
                                    data-options="valueField:'id',
                                  width:400,
                                  textField:'description2',
-                                 url:'MP3PrettifierAction.php?method=getMultiArtistList'
+                                 url:'MP3PrettifierMultiArtistAction.php?method=getMultiArtistList'
                                  ">
                             <br>
                             <div style="margin-bottom:5px">
@@ -197,7 +197,7 @@ else {
                            data-options="valueField:'id',
                                  width:500,
                                  textField:'description2',
-                                 url:'MP3PrettifierAction.php?method=getMultiArtistList'
+                                 url:'MP3PrettifierMultiArtistAction.php?method=getMultiArtistList'
                                  ">
                     <div style="margin-bottom:20px">
                         <input id="newSong" class="easyui-textbox"

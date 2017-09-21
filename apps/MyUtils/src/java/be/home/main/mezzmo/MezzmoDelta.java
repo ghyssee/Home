@@ -12,7 +12,9 @@ import be.home.common.utils.JSONUtils;
 import be.home.common.utils.MyFileWriter;
 import be.home.domain.model.MP3Helper;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
+import be.home.mezzmo.domain.model.eric.MezzmoFileTO;
 import be.home.mezzmo.domain.model.json.ArtistSongTest;
+import be.home.mezzmo.domain.service.EricServiceImpl;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.Mp3File;
@@ -47,6 +49,7 @@ public class MezzmoDelta extends BatchJobV2 {
     private static final Logger log = getMainLog(be.home.main.mezzmo.MezzmoDelta.class);
     private MezzmoServiceImpl impl = MezzmoServiceImpl.getInstance(Databases.MEZZMOV1);
     private MezzmoServiceImpl impl2 = MezzmoServiceImpl.getInstance(Databases.MEZZMOV2);
+    private EricServiceImpl ericServiceImpl = EricServiceImpl.getInstance();
 
     public static void main(String args[]) {
 
@@ -57,29 +60,44 @@ public class MezzmoDelta extends BatchJobV2 {
 
     private void myInit(){
         SQLiteJDBC.initialize();
-        MGOFileAlbumCompositeTO comp = getMezzmoV2Instance().findFileById(175435);
-        System.out.println(comp.getFileTO().getFile());
         //MGOFileAlbumCompositeTO comp2 = impl.findFileById(175435);
         //System.out.println(comp2.getFileTO().getFile());
         TransferObject to = new TransferObject();
             do {
-                List<MGOFileAlbumCompositeTO> list = impl.getAllMP3Files(to);
+                List<MGOFileAlbumCompositeTO> list = getMezzmoV2Instance().getAllMP3Files(to);
                 log.info("Index = " + to.getIndex());
-                checkFile(list);
+                try {
+                    checkFile(list);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    break;
+                }
             }
             while (!to.isEndOfList());
     }
 
-    private void checkFile(List<MGOFileAlbumCompositeTO> list){
+    private void checkFile(List<MGOFileAlbumCompositeTO> list) throws SQLException {
         for (MGOFileAlbumCompositeTO comp : list){
             try {
-                getMezzmoV1Instance().findFileById(comp.getFileTO().getId());
-                log.info("Found: " + comp.getFileTO().getId());
+                MezzmoServiceImpl tmp = getMezzmoV1Instance();
+                tmp.findFileById(comp.getFileTO().getId());
+                //log.info("Found: " + comp.getFileTO().getId());
             }
             catch (IncorrectResultSizeDataAccessException ex){
                 log.info("Not Found: " + comp.getFileTO().getId());
+                insertMezzmoFile(comp);
+
             }
         }
+    }
+
+    private void insertMezzmoFile(MGOFileAlbumCompositeTO comp) throws SQLException {
+        MezzmoFileTO mezzmoFile = new MezzmoFileTO();
+        mezzmoFile.setId(comp.getFileTO().getId());
+        mezzmoFile.setArtistId(comp.getFileArtistTO().getID());
+        mezzmoFile.setArtistName((comp.getFileArtistTO().getArtist()));
+        ericServiceImpl.insertMezzmoFile(mezzmoFile);
+
     }
 
     private MezzmoServiceImpl getMezzmoV1Instance(){
@@ -90,6 +108,9 @@ public class MezzmoDelta extends BatchJobV2 {
         return impl2;
     }
 
+    private EricServiceImpl geteEricServiceInstance(){
+        return ericServiceImpl;
+    }
 
     @Override
     public void run() {
