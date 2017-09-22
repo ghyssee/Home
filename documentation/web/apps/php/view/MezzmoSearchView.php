@@ -16,6 +16,7 @@ include_once documentPath (ROOT_PHP, "config.php");
 include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 include_once documentPath (ROOT_PHP_HTML, "config.php");
 include_once documentPath (ROOT_PHP_BO, "SongBO.php");
+include_once documentPath (ROOT_PHP_BO, "EricBO.php");
 $albumSave = 'MezzmoSearchview.php';
 
 $mp3Settings = readJSONWithCode(JSON_MP3SETTINGS);
@@ -42,6 +43,9 @@ if (isset($_POST['submit'])) {
         $mp3Settings->mezzmo->artistId = getNextArtistId($artistArray, $mp3Settings->mezzmo->artistId);
         $data = $songBO->searchSong($song);
         $songBO->saveArtistSongTest($data);
+        $ericBO = new EricBO();
+        $tmp = $ericBO->findMezzmoFileById(10741);
+        $a = "";
         
     }
 }
@@ -131,6 +135,7 @@ function getNextArtistId($artistArray, $artistId){
 
            data-options='fitColumns:true,
                          singleSelect:true,
+                         rowStyler: function(index,row){ return formatRow(index,row) },
                          data:data
                          '
            pagination="false"
@@ -150,6 +155,7 @@ function getNextArtistId($artistArray, $artistId){
             <th data-options="field:'album',width:50">Album</th>
             <th data-options="field:'fileId',width:15">File</th>
             <th data-options="field:'file',width:200">File</th>
+            <th data-options="field:'status',width:20">Status</th>
         </tr>
         </thead>
     </table>
@@ -179,3 +185,15 @@ function getSongViewLink(){
 </body>
 </html>
 
+<script>
+    function formatRow(index, row) {
+        if (row.status) {
+            switch (row.status){
+                case "NEW":
+                    return 'background-color:#739900;color:#fff;'
+                    break;
+            }
+        }
+        return '';
+    }
+</script>

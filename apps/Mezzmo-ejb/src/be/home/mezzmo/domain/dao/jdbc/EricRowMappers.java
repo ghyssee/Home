@@ -16,15 +16,16 @@ public class EricRowMappers extends EricDAOQueries {
 
     public static class MezzmoFileRowMapper implements RowMapper {
         public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-            MezzmoFileTO fileTO = mapFileTO(rs, rowNum);
+            MezzmoFileTO fileTO = mapFileTO(rs);
             return fileTO;
         }
     }
 
-    private static MezzmoFileTO mapFileTO(ResultSet rs, int rowNum)throws SQLException {
+    private static MezzmoFileTO mapFileTO(ResultSet rs)throws SQLException {
         MezzmoFileTO fileTO = new MezzmoFileTO();
         fileTO.setId(getLong(rs, MezzmoFileColumns.ID));
         fileTO.setArtistId(getLong(rs, MezzmoFileColumns.ARTISTID));
+        fileTO.setStatus(getString(rs, MezzmoFileColumns.STATUS));
         return fileTO;
     }
 

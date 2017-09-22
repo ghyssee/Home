@@ -7,18 +7,14 @@ const MEZZMO = "MEZZMO";
 const MEZZMOV2 = "MEZZMOV2";
 
 /* Just extend the class, add our method */
-class MezzmoSQLiteDatabase extends PDO {
+class MezzmoSQLiteDatabase extends CustomDatabase {
 
-    /* A neat way to see which tables are inside a valid sqlite file */
-    public function getTables()  {
-        $tables=array();
-        $q = $this->query(sprintf("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"));
-        $result = $q->fetchAll();
-        foreach($result as $tot_table) {
-            $tables[]=$tot_table['name'];
-        }
-        return($tables);
+    public $db;
+
+    function __construct($id) {
+        parent::__construct($id);
     }
+
 
     public function getFileColumns(){
         $cols = "FILE.id             AS ID, ".

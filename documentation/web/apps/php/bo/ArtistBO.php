@@ -630,7 +630,7 @@ class MultiArtistBO {
         //CacheBO::clearCache(CacheBO::MULTIARTIST2);
     }
 
-        function addMultiAristConfig($multiArtistTxt)
+        function addMultiArtistConfig($multiArtistTxt)
         {
             $this->loadData();
             $errorObj = new stdClass();
@@ -667,7 +667,7 @@ class MultiArtistBO {
                     $errorObj->errorFound = true;
                 }
                 else {
-                    //$this->addMultiArtist($multiArtist);
+                    $this->addMultiArtist($multiArtist);
                     $errorObj->multiArtist = $multiArtist;
                     $errorObj->success = true;
                     $errorObj->message = "Multi Artist Configuration Added" . PHP_EOL;

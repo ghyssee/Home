@@ -24,5 +24,14 @@ class SongCorrection{
     public $artist;
     public $track;
     public $source;
+    public $status;
 }
+
+class MezzmoFileTO {
+    public $id;
+    public $artistId;
+    public $artistName;
+    public $status;
+}
+
 ?>

@@ -8,6 +8,12 @@ $htmlFile = getFullPath(JSON_SONGCORRECTIONS);
 
 class SongBO
 {
+    public $db;
+    function __construct() {
+        $this->db = new MezzmoSQLiteDatabase(MEZZMOV2);
+    }
+
+
     function loadArtistIdsFile() : array {
         $file = getFullPath(PATH_CONFIG) . '/ArtistIds.txt';
         $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
@@ -70,27 +76,33 @@ class SongBO
             }
         }
         // song not found in JSON file, look up in DB
-        $db = openDatabase(MEZZMOV2);
-        $result = $db->getMezzmoSong($id);
-        $songObj = $db->convertToSongUpdateObj($result);
+        //$db = openDatabase(MEZZMOV2);
+        $result = $this->db->getMezzmoSong($id);
+        $songObj = $this->db->convertToSongUpdateObj($result);
         $songObj->source = "DB";
-        $db = NULL;
+        //$db = NULL;
 
         return $songObj;
     }
 
     function searchSong($songTO)
     {
-        $db = openDatabase(MEZZMOV2);
-        $result = $db->searchSong($songTO->artistId);
+        //$db = openDatabase(MEZZMOV2);
+        $result = $this->db->searchSong($songTO->artistId);
         $nr = count($result);
         $songs = array();
+        $ericBO = new EricBO();
         if ($nr > 0) {
             foreach ($result as $songRec) {
-                $songs[] = $db->convertToSongObj($songRec);
+                $song = $this->db->convertToSongObj($songRec);
+                $songs[] = $song;
+                $mezzmoFileTO = $ericBO->findMezzmoFileById($song->fileId);
+                if ($mezzmoFileTO != null){
+                    $song->status = $mezzmoFileTO->status;
+                }
             }
         }
-        $db = NULL;
+        //$db = NULL;
 
         return $songs;
     }

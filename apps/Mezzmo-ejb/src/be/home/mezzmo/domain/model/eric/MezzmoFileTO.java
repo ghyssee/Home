@@ -7,6 +7,7 @@ public class MezzmoFileTO {
     private long id;
     private long artistId;
     private String artistName;
+    private String status;
 
     public long getId() {
         return id;
@@ -30,5 +31,13 @@ public class MezzmoFileTO {
 
     public void setArtistName(String artistName) {
         this.artistName = artistName;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
