@@ -30,6 +30,7 @@ public class MP3Helper {
     private static List<MP3Prettifier.Word> multiArtistNames;
     private static List<MP3Prettifier.Word> artistNames;
     private static List<MP3Prettifier.Word> globalArtistNames;
+    private boolean logging = true;
 
     private MP3Helper() {
         mp3Prettifer = (MP3Prettifier) JSONUtils.openJSONWithCode(Constants.JSON.MP3PRETTIFIER, MP3Prettifier.class);
@@ -55,6 +56,14 @@ public class MP3Helper {
     public MP3Prettifier getMp3Prettifier(){
         return this.mp3Prettifer;
     }
+
+    public void enableLogging(){
+        this.logging = true;
+    }
+    public void disableLogging(){
+        this.logging = false;
+    }
+
 
     public String removeDurationFromString(String text){
         String prettifiedText = text;
@@ -238,7 +247,11 @@ public class MP3Helper {
                 }
             }
             catch (Exception ex){
-                System.out.println(ex.getStackTrace());
+                System.out.println(ex.getMessage());
+                System.out.println(wordObj.id);
+                System.out.println(wordObj.oldWord);
+                System.out.println(wordObj.newWord);
+                throw ex;
             }
         }
         return text;
@@ -256,24 +269,30 @@ public class MP3Helper {
     }
 
     private void logRule(String category, MP3Prettifier.Word word){
-        log.info("Rule applied: Category: " + category +
-                 " / Old Word: " + word.oldWord +
-                 " / New Word: " + word.newWord +
-                " / BeginOfWord: " + (word.beginOfWord ? "Yes" : "No") +
-                " / EndOfWord Index: " + word.endOfWord);
+        if (logging) {
+            log.info("Rule applied: Category: " + category +
+                    " / Old Word: " + word.oldWord +
+                    " / New Word: " + word.newWord +
+                    " / BeginOfWord: " + (word.beginOfWord ? "Yes" : "No") +
+                    " / EndOfWord Index: " + word.endOfWord);
+        }
     }
 
     private void logRule(String category, MP3Prettifier.ArtistSongExceptions.ArtistSong word){
-        log.info("Rule applied: Category: " + category);
-        log.info("Old Artist: " + word.oldArtist + " / New Artist: " + word.newArtist);
-        log.info("Old Title: " + word.oldSong + " / New Title: " + word.newSong);
+        if (logging) {
+            log.info("Rule applied: Category: " + category);
+            log.info("Old Artist: " + word.oldArtist + " / New Artist: " + word.newArtist);
+            log.info("Old Title: " + word.oldSong + " / New Title: " + word.newSong);
+        }
     }
 
     private void logRule(String category, ArtistSongRelationship.ArtistSongRelation word){
-        log.info("Rule applied: Category: " + category);
-        String newArtist = StringUtils.isNotBlank(word.newArtistId) ? "(ARTIST) " + word.newArtistId : "(MULTI) " + word.newMultiArtistId;
-        log.info("Old Artist: " + "<LIST>" + " / New Artist: " + newArtist);
-        log.info("Old Title: " + word.oldSong + " / New Title: " + word.newSong);
+        if (logging) {
+            log.info("Rule applied: Category: " + category);
+            String newArtist = StringUtils.isNotBlank(word.newArtistId) ? "(ARTIST) " + word.newArtistId : "(MULTI) " + word.newMultiArtistId;
+            log.info("Old Artist: " + "<LIST>" + " / New Artist: " + newArtist);
+            log.info("Old Title: " + word.oldSong + " / New Title: " + word.newSong);
+        }
     }
 
     private enum Mp3Tag {
@@ -395,7 +414,9 @@ public class MP3Helper {
     public String prettifyAlbum(String album, String albumArtist){
         String prettifiedText = prettifySong(album);
         if (albumArtist != null) {
-            prettifiedText = prettifySongArtist(albumArtist, prettifiedText);
+            ArtistSongItem item = prettifyRuleSongArtist(albumArtist, prettifiedText, true);
+            item.setRule(Rules.ALBUM_RELATION);
+            prettifiedText = item.getItem();
         }
         /*
         if (StringUtils.isNotBlank(prettifiedText)) {
@@ -431,9 +452,41 @@ public class MP3Helper {
         return prettifiedText;
     }
 
+    public enum Rules {
+        SONG_EXCEPTION("SONG EXCEPTION", "EXCEPTION"),
+        SONG_RELATION("SONG RELATION", "RELATION"),
+        ARTIST_EXCEPTION("ARTIST EXCEPTION", "EXCEPTION"),
+        ARTIST_RELATION("ARTIST RELATION", "RELATION"),
+        ALBUM_RELATION("ALBUM/ARTIST RELATION", "RELATION");
+
+        private String message;
+        private String code;
+
+        Rules (String message, String code){
+            this.message = message;
+        }
+
+        public String getMessage(){
+            return message;
+        }
+
+        public String getCode(){
+            return code;
+        }
+
+    }
+
     public class ArtistSongItem{
         private boolean matched = false;
         private String item;
+        private Rules rule;
+
+        public ArtistSongItem(){
+        }
+
+        public ArtistSongItem(String item){
+            this.item = item;
+        }
 
         public String getItem() {
             return item;
@@ -451,6 +504,13 @@ public class MP3Helper {
             this.matched = true;
         }
 
+        public Rules getRule() {
+            return rule;
+        }
+
+        public void setRule(Rules rule) {
+            this.rule = rule;
+        }
     }
 
     private ArtistSongItem checkTitle(String song, String oldSong, String newSong, boolean exactMatchTitle, int index){
@@ -486,49 +546,97 @@ public class MP3Helper {
 
 
 
-    public String checkTitleArtistRelation(String artist, String song, String logRule, List<MP3Prettifier.ArtistSongExceptions.ArtistSong> listOfSongs){
+    public ArtistSongItem checkTitleArtistException(String artist, String song, String logRule, List<MP3Prettifier.ArtistSongExceptions.ArtistSong> listOfSongs){
+        ArtistSongItem item = new ArtistSongItem(song);
         for (MP3Prettifier.ArtistSongExceptions.ArtistSong artistSong : listOfSongs) {
             if (artist.matches(getMatchKey(artistSong.oldArtist, artistSong.exactMatchArtist))) {
-                ArtistSongItem item = checkTitle(song, artistSong.oldSong, artistSong.newSong, artistSong.exactMatchTitle, artistSong.indexTitle);
+                item = checkTitle(song, artistSong.oldSong, artistSong.newSong, artistSong.exactMatchTitle, artistSong.indexTitle);
                 if (item.isMatched()) {
-                    song = item.getItem();
                     logRule(logRule, artistSong);
                     break;
                 }
             }
         }
-        return song;
+        return item;
 
     }
 
-    public String checkArtistTitleRelation(String artist, String song, String logRule, List<MP3Prettifier.ArtistSongExceptions.ArtistSong> listOfSongs){
+    public ArtistSongItem checkArtistTitleException(String artist, String song, String logRule, List<MP3Prettifier.ArtistSongExceptions.ArtistSong> listOfSongs){
+        ArtistSongItem item = new ArtistSongItem(artist);
         for (MP3Prettifier.ArtistSongExceptions.ArtistSong artistSong : listOfSongs) {
             if (song.matches(getMatchKey(artistSong.oldSong, artistSong.exactMatchTitle))) {
-                ArtistSongItem item = checkArtist(artist, artistSong.oldArtist, artistSong.newArtist, artistSong.exactMatchArtist);
+                item = checkArtist(artist, artistSong.oldArtist, artistSong.newArtist, artistSong.exactMatchArtist);
                 if (item.isMatched()) {
-                    artist = item.getItem();
                     logRule(logRule, artistSong);
                     break;
                 }
             }
         }
-        return artist;
+        return item;
     }
 
     public boolean isModified(String oldVal, String newVal, String logMessage){
         boolean changed = !oldVal.equals(newVal);
-        if (changed){
-            log.info(logMessage);
+        if (changed && logMessage != null){
+            if (logging) {
+                log.info(logMessage);
+            }
         }
         return changed;
     }
 
+    public boolean isModified(String oldVal, ArtistSongItem newItem, boolean logMsg){
+        boolean changed = !oldVal.equals(newItem.getItem());
+        if (changed && logMsg){
+            if (logging) {
+                log.info(newItem.getRule().getMessage());
+                log.info("Old: " + oldVal);
+                log.info("New: " + newItem.getItem());
+            }
+        }
+        return changed;
+    }
+
+    public void logModification(String oldVal, ArtistSongItem newItem, boolean logMsg){
+        boolean changed = !oldVal.equals(newItem.getItem());
+        if (changed && logMsg){
+            if (logging) {
+                log.info(newItem.getRule().getMessage());
+                log.info("Old: " + oldVal);
+                log.info("New: " + newItem.getItem());
+            }
+        }
+    }
+
+    public ArtistSongItem prettifyRuleSongArtist(String artist, String song, boolean logging){
+        ArtistSongItem item = checkTitleArtistException(artist, song, "Title Exception", mp3Prettifer.artistSongExceptions.items);
+        item.setRule(Rules.SONG_EXCEPTION);
+        logModification(song, item, logging);
+        if (item.isMatched()){
+            return item;
+        }
+        item = checkArtistTitleRelation(artist, song, ARTIST_SONG_TYPE.SONG);
+        item.setRule(Rules.SONG_RELATION);
+        logModification(song, item, logging);
+        if (item.isMatched()){
+            return item;
+        }
+        return item;
+    }
+
     public String prettifySongArtist(String artist, String song){
-        String prettifiedSong = checkTitleArtistRelation(artist, song, "Title Exception", mp3Prettifer.artistSongExceptions.items);
+        ArtistSongItem item  = prettifyRuleSongArtist(artist, song, true);
+        return item.getItem();
+    }
+
+    public String _prettifySongArtist(String artist, String song){
+        ArtistSongItem item = checkTitleArtistException(artist, song, "Title Exception", mp3Prettifer.artistSongExceptions.items);
+        String prettifiedSong = item.getItem();
         if (isModified(song, prettifiedSong, "ArtistSong / Song / Level 1 => Updated")){
             return prettifiedSong;
         }
-        prettifiedSong = checkArtistTitleExceptions3(artist, song, ARTIST_SONG_TYPE.SONG);
+        item = checkArtistTitleRelation(artist, song, ARTIST_SONG_TYPE.SONG);
+        prettifiedSong = item.getItem();
         if (isModified(song, prettifiedSong, "ArtistSong / Song / Level 2 => Updated")){
             return prettifiedSong;
         }
@@ -536,12 +644,37 @@ public class MP3Helper {
     }
 
 
+
+
+    public ArtistSongItem prettifyRuleArtistSong(String artist, String song, boolean logging){
+        ArtistSongItem item = checkArtistTitleException(artist, song, "Artist Exception",  mp3Prettifer.artistSongExceptions.items);
+        item.setRule(Rules.ARTIST_EXCEPTION);
+        logModification(artist, item, logging);
+        if (item.isMatched()){
+            return item;
+        }
+        item = checkArtistTitleRelation(artist, song, ARTIST_SONG_TYPE.ARTIST);
+        item.setRule(Rules.ARTIST_RELATION);
+        logModification(artist, item, logging);
+        if (item.isMatched()){
+            return item;
+        }
+        return item;
+    }
+
     public String prettifyArtistSong(String artist, String song){
-        String prettifiedArtist = checkArtistTitleRelation(artist, song, "Artist Exception",  mp3Prettifer.artistSongExceptions.items);
+        ArtistSongItem item  = prettifyRuleArtistSong(artist, song, true);
+        return item.getItem();
+    }
+
+    public String _prettifyArtistSong(String artist, String song){
+        ArtistSongItem item = checkArtistTitleException(artist, song, "Artist Exception",  mp3Prettifer.artistSongExceptions.items);
+        String prettifiedArtist = item.getItem();
         if (isModified(artist, prettifiedArtist, "ArtistSong / Artist / Level 1 => Updated")){
             return prettifiedArtist;
         }
-        prettifiedArtist = checkArtistTitleExceptions3(artist, song, ARTIST_SONG_TYPE.ARTIST);
+        item = checkArtistTitleRelation(artist, song, ARTIST_SONG_TYPE.ARTIST);
+        prettifiedArtist = item.getItem();
         if (isModified(artist, prettifiedArtist, "ArtistSong / Artist / Level 2 => Updated")){
             return prettifiedArtist;
         }
@@ -558,20 +691,19 @@ public class MP3Helper {
      */
 
 
-    public String checkArtistTitleExceptions3(String artist, String song, ARTIST_SONG_TYPE type){
-        String value = null;
+    public ArtistSongItem checkArtistTitleRelation(String artist, String song, ARTIST_SONG_TYPE type){
+        ArtistSongItem artistSongItem = null;
         switch (type) {
             case ARTIST:
-                value = artist;
+                artistSongItem = new ArtistSongItem(artist);
                 break;
             case SONG:
-                value = song;
+                artistSongItem = new ArtistSongItem(song);
                 break;
         }
         List <ArtistSongRelationship.ArtistSongRelation>  list = ArtistSongRelationshipBO.getInstance().getArtistSongRelationshipList();
         for (ArtistSongRelationship.ArtistSongRelation item : list) {
             if (ArtistSongRelationshipBO.getInstance().matchArtist(artist, item)){
-                ArtistSongItem artistSongItem = null;
                 artistSongItem = checkTitle(song, item.oldSong, item.newSong, item.exactMatchTitle, item.indexTitle);
                 switch (type){
                     case ARTIST:
@@ -589,13 +721,12 @@ public class MP3Helper {
                         break;
                 }
                 if (artistSongItem != null && artistSongItem.isMatched()) {
-                    value = artistSongItem.getItem();
-                    logRule("Title ExceptionV3", item);
+                    //logRule("Title ExceptionV3", item);
                     break;
                 }
             }
         }
-        return value;
+        return artistSongItem;
     }
 
     public String[] splitArtist(String artist){

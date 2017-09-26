@@ -109,7 +109,8 @@ public class MP3TagUtils {
     }
 
     private boolean checkForTitleExceptions(MGOFileAlbumCompositeTO comp, String originalArtist){
-        String title = MP3Helper.getInstance().prettifySongArtist(originalArtist, comp.getFileTO().getTitle());
+        MP3Helper.ArtistSongItem item = MP3Helper.getInstance().prettifyRuleSongArtist(originalArtist, comp.getFileTO().getTitle(), true);
+        String title = item.getItem();
         boolean ok = true;
         if (!title.equals(comp.getFileTO().getTitle())){
                     addItem(comp.getFileTO().getId(),
@@ -124,7 +125,8 @@ public class MP3TagUtils {
     }
 
     private boolean checkForArtistExceptions(MGOFileAlbumCompositeTO comp){
-        String artist = MP3Helper.getInstance().prettifyArtistSong(comp.getFileArtistTO().getArtist(), comp.getFileTO().getTitle());
+        MP3Helper.ArtistSongItem item = MP3Helper.getInstance().prettifyRuleArtistSong(comp.getFileArtistTO().getArtist(), comp.getFileTO().getTitle(), true);
+        String artist = item.getItem();
         boolean ok = true;
         if (!artist.equals(comp.getFileArtistTO().getArtist())){
             addItem(comp.getFileTO().getId(),

@@ -62,12 +62,14 @@ public class MezzmoDelta extends BatchJobV2 {
         SQLiteJDBC.initialize();
         //MGOFileAlbumCompositeTO comp2 = impl.findFileById(175435);
         //System.out.println(comp2.getFileTO().getFile());
+        MP3Helper mp3Helper = MP3Helper.getInstance();
+        mp3Helper.disableLogging();
         TransferObject to = new TransferObject();
             do {
                 List<MGOFileAlbumCompositeTO> list = getMezzmoV2Instance().getAllMP3Files(to);
                 log.info("Index = " + to.getIndex());
                 try {
-                    checkFile(list);
+                    checkFile(list, mp3Helper);
                 } catch (SQLException e) {
                     e.printStackTrace();
                     break;
@@ -76,27 +78,55 @@ public class MezzmoDelta extends BatchJobV2 {
             while (!to.isEndOfList());
     }
 
-    private void checkFile(List<MGOFileAlbumCompositeTO> list) throws SQLException {
+    private void checkFile(List<MGOFileAlbumCompositeTO> list, MP3Helper mp3Helper) throws SQLException {
         for (MGOFileAlbumCompositeTO comp : list){
+            if (comp.getFileTO().getId() == 17116){
             try {
                 MezzmoServiceImpl tmp = getMezzmoV1Instance();
                 tmp.findFileById(comp.getFileTO().getId());
-                //log.info("Found: " + comp.getFileTO().getId());
+                checkArtist(comp);
+
             }
             catch (IncorrectResultSizeDataAccessException ex){
                 log.info("Not Found: " + comp.getFileTO().getId());
-                insertMezzmoFile(comp);
+                insertMezzmoFile(comp, "NEW");
 
             }
         }
+        }
+
     }
 
-    private void insertMezzmoFile(MGOFileAlbumCompositeTO comp) throws SQLException {
+    private void checkArtist(MGOFileAlbumCompositeTO comp) throws SQLException {
+        String prettifiedArtist = MP3Helper.getInstance().prettifyArtist(comp.getFileArtistTO().getArtist());
+        String prettifiedTitle = MP3Helper.getInstance().prettifySong(comp.getFileTO().getTitle());
+        MP3Helper.ArtistSongItem artistItem =  MP3Helper.getInstance().prettifyRuleArtistSong(prettifiedArtist, prettifiedTitle, false);
+        MP3Helper.ArtistSongItem songItem =  MP3Helper.getInstance().prettifyRuleSongArtist(prettifiedArtist, prettifiedTitle, false);
+        String tmp = artistItem.isMatched() ? "1": "0";
+        tmp += songItem.isMatched() ? "1": "0";
+        switch (tmp) {
+            case "10":
+                insertMezzmoFile(comp, "ARTIST");
+                break;
+            case "11":
+                insertMezzmoFile(comp, "ARTISTSONG");
+                break;
+            case "01":
+                insertMezzmoFile(comp, "SONG");
+                break;
+            default:
+                break;
+        }
+
+        }
+
+
+    private void insertMezzmoFile(MGOFileAlbumCompositeTO comp, String status) throws SQLException {
         MezzmoFileTO mezzmoFile = new MezzmoFileTO();
         mezzmoFile.setId(comp.getFileTO().getId());
         mezzmoFile.setArtistId(comp.getFileArtistTO().getID());
         mezzmoFile.setArtistName((comp.getFileArtistTO().getArtist()));
-        mezzmoFile.setStatus("NEW");
+        mezzmoFile.setStatus(status);
         ericServiceImpl.insertMezzmoFile(mezzmoFile);
 
     }

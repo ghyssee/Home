@@ -37,8 +37,6 @@ public class Tester extends BatchJobV2 {
     public static void main(String args[]) throws SAXException, DocumentException, IOException, IllegalAccessException, NoSuchFieldException, ParserConfigurationException {
 
         batchProcess();
-        //convertArtistSongArtist();
-        //convertArtistSongRelationship();
     }
 
     private static void test(){
@@ -52,59 +50,6 @@ public class Tester extends BatchJobV2 {
             map.put(item.id, item);
         }
 
-    }
-
-    private static void convertArtistSong() throws IOException {
-        MP3Prettifier mp3Prettifer = (MP3Prettifier) JSONUtils.openJSONWithCode(Constants.JSON.MP3PRETTIFIER, MP3Prettifier.class);
-        for (MP3Prettifier.ArtistSongExceptions.ArtistSong artistSong : mp3Prettifer.artistSongExceptions.items){
-            if (artistSong.oldSong.endsWith("(.*)")){
-                artistSong.exactMatchTitle = false;
-                artistSong.oldSong = artistSong.oldSong.replaceFirst("\\(\\.\\*\\)$", "");
-                artistSong.newSong = artistSong.newSong.replaceFirst("\\$1$", "");
-                System.out.println("old: " + artistSong.oldSong);
-                System.out.println("new: " + artistSong.newSong);
-            }
-            else {
-                artistSong.exactMatchTitle = true;
-            }
-        }
-        String file = Setup.getFullPath(Constants.JSON.MP3PRETTIFIER) + ".NEW";
-        JSONUtils.writeJsonFile(mp3Prettifer, file);
-    }
-
-    private static void convertArtistSongArtist() throws IOException {
-        MP3Prettifier mp3Prettifer = (MP3Prettifier) JSONUtils.openJSONWithCode(Constants.JSON.MP3PRETTIFIER, MP3Prettifier.class);
-        for (MP3Prettifier.ArtistSongExceptions.ArtistSong artistSong : mp3Prettifer.artistSongExceptions.items){
-            if (artistSong.oldArtist.endsWith("(.*)")){
-                artistSong.exactMatchArtist = false;
-                artistSong.oldArtist = artistSong.oldArtist.replaceFirst("\\(\\.\\*\\)$", "");
-                //artistSong.newSong = artistSong.newSong.replaceFirst("\\$1$", "");
-                System.out.println("old: " + artistSong.oldArtist);
-                System.out.println("new: " + artistSong.newArtist);
-            }
-            else {
-                artistSong.exactMatchArtist = true;
-            }
-        }
-        String file = Setup.getFullPath(Constants.JSON.MP3PRETTIFIER) + ".NEW";
-        JSONUtils.writeJsonFile(mp3Prettifer, file);
-    }
-    private static void convertArtistSongRelationship() throws IOException {
-        ArtistSongRelationship artistSongRelationship = ArtistSongRelationshipBO.getInstance().getArtistSongRelationship();
-        for (ArtistSongRelationship.ArtistSongRelation artistSong : artistSongRelationship.items){
-            if (artistSong.oldSong.endsWith("(.*)")){
-                artistSong.exactMatchTitle = false;
-                artistSong.oldSong = artistSong.oldSong.replaceFirst("\\(\\.\\*\\)$", "");
-                artistSong.newSong = artistSong.newSong.replaceFirst("\\$1$", "");
-                System.out.println("old: " + artistSong.oldSong);
-                System.out.println("new: " + artistSong.newSong);
-            }
-            else {
-                artistSong.exactMatchTitle = true;
-            }
-        }
-        String file = Setup.getFullPath(Constants.JSON.ARTISTSONGRELATIONSHIP) + ".NEW";
-        JSONUtils.writeJsonFile(artistSongRelationship, file);
     }
 
     private static void batchProcess() throws IOException {
@@ -149,22 +94,17 @@ public class Tester extends BatchJobV2 {
 
     private static String getArtistTitleException(String artist, String title){
         String prettifiedArtist = "";
-        try {
-            prettifiedArtist = MP3Helper.getInstance().prettifyArtist(artist);
-        }
-        catch (Exception ex){
-            throw ex;
-        }
+        prettifiedArtist = MP3Helper.getInstance().prettifyArtist(artist);
         String prettifiedTitle = MP3Helper.getInstance().prettifySong(title);
-        prettifiedArtist = MP3Helper.getInstance().prettifyArtistSong(prettifiedArtist, prettifiedTitle);
-        return prettifiedArtist;
+        MP3Helper.ArtistSongItem item =  MP3Helper.getInstance().prettifyRuleArtistSong(prettifiedArtist, prettifiedTitle, true);
+        return item.getItem();
     }
 
     private static String getTitleArtistException(String artist, String title){
         String prettifiedArtist = MP3Helper.getInstance().prettifyArtist(artist);
         String prettifiedTitle = MP3Helper.getInstance().prettifySong(title);
-        prettifiedTitle = MP3Helper.getInstance().prettifySongArtist(prettifiedArtist, prettifiedTitle);
-        return prettifiedTitle;
+        MP3Helper.ArtistSongItem item = MP3Helper.getInstance().prettifyRuleSongArtist(prettifiedArtist, prettifiedTitle, true);
+        return item.getItem();
     }
 
     @Override
