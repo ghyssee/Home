@@ -107,7 +107,7 @@ public class ArtistSongRelationshipBO {
         }
         else if (artistSong.oldMultiArtistId != null){
             MultiArtistConfig.Item multiArtistItem = ArtistConfigBO.getInstance().getMultiArtist(artistSong.oldMultiArtistId);
-            artistName = ArtistConfigBO.getInstance().constructNewArtistName(multiArtistItem.artistSequence);
+            artistName = ArtistConfigBO.getInstance().constructNewArtistName(multiArtistItem.artistSequence, true);
             if (artist.startsWith(artistName)) {
                 match = true;
             }

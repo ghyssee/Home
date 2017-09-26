@@ -1,42 +1,18 @@
 package be.home.main.mezzmo;
 
-import be.home.common.configuration.Setup;
-import be.home.common.constants.Constants;
 import be.home.common.dao.jdbc.Databases;
 import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.main.BatchJobV2;
 import be.home.common.model.TransferObject;
-import be.home.common.mp3.MP3Utils;
-import be.home.common.utils.FileUtils;
-import be.home.common.utils.JSONUtils;
-import be.home.common.utils.MyFileWriter;
+import be.home.domain.model.ArtistSongItem;
 import be.home.domain.model.MP3Helper;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.eric.MezzmoFileTO;
-import be.home.mezzmo.domain.model.json.ArtistSongTest;
 import be.home.mezzmo.domain.service.EricServiceImpl;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
-import com.mpatric.mp3agic.ID3v2;
-import com.mpatric.mp3agic.Mp3File;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.io.OutputFormat;
-import org.dom4j.io.SAXReader;
-import org.dom4j.io.XMLWriter;
-import org.dom4j.util.XMLErrorHandler;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.validation.SchemaFactory;
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -100,25 +76,11 @@ public class MezzmoDelta extends BatchJobV2 {
     private void checkArtist(MGOFileAlbumCompositeTO comp) throws SQLException {
         String prettifiedArtist = MP3Helper.getInstance().prettifyArtist(comp.getFileArtistTO().getArtist());
         String prettifiedTitle = MP3Helper.getInstance().prettifySong(comp.getFileTO().getTitle());
-        MP3Helper.ArtistSongItem artistItem =  MP3Helper.getInstance().prettifyRuleArtistSong(prettifiedArtist, prettifiedTitle, false);
-        MP3Helper.ArtistSongItem songItem =  MP3Helper.getInstance().prettifyRuleSongArtist(prettifiedArtist, prettifiedTitle, false);
-        String tmp = artistItem.isMatched() ? "1": "0";
-        tmp += songItem.isMatched() ? "1": "0";
-        switch (tmp) {
-            case "10":
-                insertMezzmoFile(comp, "ARTIST");
-                break;
-            case "11":
-                insertMezzmoFile(comp, "ARTISTSONG");
-                break;
-            case "01":
-                insertMezzmoFile(comp, "SONG");
-                break;
-            default:
-                break;
+        ArtistSongItem artistItem = MP3Helper.getInstance().prettifyRuleArtistSong(prettifiedArtist, prettifiedTitle, false);
+        if (artistItem.isMatched()) {
+            insertMezzmoFile(comp, "ARTISTSONG");
         }
-
-        }
+    }
 
 
     private void insertMezzmoFile(MGOFileAlbumCompositeTO comp, String status) throws SQLException {

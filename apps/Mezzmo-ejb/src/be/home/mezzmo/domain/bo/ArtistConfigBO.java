@@ -56,7 +56,7 @@ public class ArtistConfigBO {
         return splitter;
     }
 
-    public MP3Prettifier.Word constructItem(MultiArtistConfig.Item item){
+    public MP3Prettifier.Word constructItem(MultiArtistConfig.Item item, boolean matching){
         MP3Prettifier.Word word = new MP3Prettifier().new Word();
         word.oldWord = "";
         word.oldWord += "(";
@@ -69,7 +69,7 @@ public class ArtistConfigBO {
             word.oldWord = constructArtistSearchExact(item.artists, this.splitter);
         }
         // construct new Artist Name
-        word.newWord = constructNewArtistName(item.artistSequence);
+        word.newWord = constructNewArtistName(item.artistSequence, matching);
 
         //String tst = "Bodyrox & Luciana".replaceAll(word.oldWord, word.newWord);
         return word;
@@ -128,7 +128,7 @@ public class ArtistConfigBO {
         String splitterText = splitter;
 
         for (MultiArtistConfig.Item item : multiArtistConfig.list){
-            MP3Prettifier.Word word = constructItem(item);
+            MP3Prettifier.Word word = constructItem(item, true);
             if (this.LOG_ARTIST_CONFIG) {
                 log.info("Artist Name Old Word: " + word.oldWord);
                 log.info("Artist Name New Word: " + word.newWord);
@@ -192,6 +192,10 @@ public class ArtistConfigBO {
     }
 
     public String constructNewArtistName(List<MultiArtistConfig.Item.ArtistSequenceItem> list){
+        return constructNewArtistName(list, true);
+    }
+
+    public String constructNewArtistName(List<MultiArtistConfig.Item.ArtistSequenceItem> list, boolean matching){
         String word = "";
         for (MultiArtistConfig.Item.ArtistSequenceItem artistSequenceItem : list){
 
@@ -205,8 +209,13 @@ public class ArtistConfigBO {
                 throw new ApplicationException(("Splitter Id not found in config:" + artistSequenceItem.splitterId));
             }
             //word += (StringUtils.isBlank(artistObj.stageName) ? artistObj.name : artistObj.stageName) + splitterObj.value2;
-            //word += ArtistBO.getInstance().getStageName(artistObj) + splitterObj.value2;
-            word += artistObj.getName() + splitterObj.value2;
+            if (matching) {
+                word += artistObj.getName();
+            }
+            else {
+                word += ArtistBO.getInstance().getStageName(artistObj);
+            }
+            word += splitterObj.value2;
         }
         return word;
     }

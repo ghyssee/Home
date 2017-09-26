@@ -98,7 +98,7 @@ public class ConvertArtistSong extends BatchJobV2 {
         ArtistConfigBO artistConfigBO = ArtistConfigBO.getInstance();
         Map<String,MultiArtistConfig.Item> map = new HashMap();
         for (MultiArtistConfig.Item item : artistConfigBO.getMultiArtistList()){
-            String name = artistConfigBO.constructNewArtistName(item.artistSequence);
+            String name = artistConfigBO.constructNewArtistName(item.artistSequence, false);
             MultiArtistConfig.Item searchItem = map.get(name);
             if (searchItem == null){
                 map.put(name, item);

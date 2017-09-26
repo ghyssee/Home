@@ -2,19 +2,14 @@ package be.home.main.test;
 
 import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
-import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.FileUtils;
 import be.home.common.utils.JSONUtils;
 import be.home.common.utils.MyFileWriter;
+import be.home.domain.model.ArtistSongItem;
 import be.home.domain.model.MP3Helper;
-import be.home.mezzmo.domain.bo.ArtistSongRelationshipBO;
-import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
-import be.home.mezzmo.domain.model.json.ArtistSongRelationship;
 import be.home.mezzmo.domain.model.json.ArtistSongTest;
-import be.home.mezzmo.domain.model.json.MP3Prettifier;
 import be.home.mezzmo.domain.model.json.MultiArtistConfig;
-import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.DocumentException;
@@ -22,7 +17,6 @@ import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,16 +51,17 @@ public class Tester extends BatchJobV2 {
         for (ArtistSongTest.AristSongTestItem item : artistSongTest.items){
             System.out.println(item.oldArtist);
             System.out.println(item.oldSong);
-            if (org.apache.commons.lang3.StringUtils.isNotBlank(item.oldArtist)) {
-                item.newArtist = getArtistTitleException(item.oldArtist, item.oldSong);
+            boolean artistSong = false;
+            if (org.apache.commons.lang3.StringUtils.isNotBlank(item.oldArtist)
+                    && org.apache.commons.lang3.StringUtils.isNotBlank(item.oldSong)) {
+                ArtistSongItem artistSongItem = getPrettifiedArtistTitle(item.oldArtist, item.oldSong);
+                item.newArtist = artistSongItem.getArtist();
+                item.newSong = artistSongItem.getSong();
             }
-            else {
+            else if (org.apache.commons.lang3.StringUtils.isNotBlank(item.oldArtist)){
                 item.newArtist = MP3Helper.getInstance().prettifyArtist(item.oldArtist);
             }
-            if (org.apache.commons.lang3.StringUtils.isNotBlank(item.oldSong)) {
-                item.newSong = getTitleArtistException(item.oldArtist, item.oldSong);
-            }
-            else {
+            else if (org.apache.commons.lang3.StringUtils.isNotBlank(item.oldSong)){
                 item.newSong = MP3Helper.getInstance().prettifySong(item.oldSong);
             }
         }
@@ -92,20 +87,30 @@ public class Tester extends BatchJobV2 {
         }
     }
 
+    private static ArtistSongItem getPrettifiedArtistTitle(String artist, String title){
+        String prettifiedArtist = "";
+        prettifiedArtist = MP3Helper.getInstance().prettifyArtist(artist);
+        String prettifiedTitle = MP3Helper.getInstance().prettifySong(title);
+        ArtistSongItem item =  MP3Helper.getInstance().prettifyRuleArtistSong(prettifiedArtist, prettifiedTitle, true);
+        return item;
+    }
+
+    /*
+
     private static String getArtistTitleException(String artist, String title){
         String prettifiedArtist = "";
         prettifiedArtist = MP3Helper.getInstance().prettifyArtist(artist);
         String prettifiedTitle = MP3Helper.getInstance().prettifySong(title);
-        MP3Helper.ArtistSongItem item =  MP3Helper.getInstance().prettifyRuleArtistSong(prettifiedArtist, prettifiedTitle, true);
+        ArtistSongItem item =  MP3Helper.getInstance().prettifyRuleArtistSong(prettifiedArtist, prettifiedTitle, true);
         return item.getItem();
     }
 
     private static String getTitleArtistException(String artist, String title){
         String prettifiedArtist = MP3Helper.getInstance().prettifyArtist(artist);
         String prettifiedTitle = MP3Helper.getInstance().prettifySong(title);
-        MP3Helper.ArtistSongItem item = MP3Helper.getInstance().prettifyRuleSongArtist(prettifiedArtist, prettifiedTitle, true);
+        ArtistSongItem item = MP3Helper.getInstance().prettifyRuleSongArtist(prettifiedArtist, prettifiedTitle, true);
         return item.getItem();
-    }
+    }*/
 
     @Override
     public void run() {

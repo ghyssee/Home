@@ -1,6 +1,7 @@
 package be.home.main;
 
 import be.home.common.mp3.MP3Utils;
+import be.home.domain.model.ArtistSongItem;
 import be.home.mezzmo.domain.model.Compilation;
 import be.home.model.json.AlbumInfo;
 import be.home.model.ConfigTO;
@@ -124,8 +125,9 @@ public class MP3Processor extends BatchJobV2 {
         for (AlbumInfo.Track track: album.tracks){
             track.artist = helper.prettifyArtist(constructArtist(track));
             track.title = helper.prettifySong(constructTitle(track));
-            track.artist = helper.prettifyArtistSong(track.artist, track.title);
-            track.title = helper.prettifySongArtist(track.artist, track.title);
+            ArtistSongItem item = helper.prettifyRuleArtistSong(track.artist, track.title, true);
+            track.artist = item.getArtist();
+            track.title = item.getSong();
             helper.checkTrack(track);
         }
 
