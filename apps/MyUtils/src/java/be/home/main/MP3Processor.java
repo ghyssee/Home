@@ -123,9 +123,14 @@ public class MP3Processor extends BatchJobV2 {
 
         album.album = helper.prettifyAlbum(album.album, null);
         for (AlbumInfo.Track track: album.tracks){
+            /*
             track.artist = helper.prettifyArtist(constructArtist(track));
             track.title = helper.prettifySong(constructTitle(track));
             ArtistSongItem item = helper.prettifyRuleArtistSong(track.artist, track.title, true);
+            track.artist = item.getArtist();
+            track.title = item.getSong();
+            */
+            ArtistSongItem item = helper.formatSong(constructArtist(track), constructTitle(track));
             track.artist = item.getArtist();
             track.title = item.getSong();
             helper.checkTrack(track);

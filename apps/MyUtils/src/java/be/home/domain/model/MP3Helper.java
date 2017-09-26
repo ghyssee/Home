@@ -465,19 +465,6 @@ public class MP3Helper {
         return item;
     }
 
-    private ArtistSongItem checkArtist(String artist, String oldArtist, String newArtist, boolean exactMatchArtist){
-        String matchKey = oldArtist + (exactMatchArtist ? "" : "(.*)");
-        String newKey = newArtist;
-        String newFormattedArtist = artist;
-        ArtistSongItem item = new ArtistSongItem();
-        if (artist.matches(matchKey)) {
-            item.enableMatched();
-            newFormattedArtist = artist.replaceAll(matchKey, newKey);
-        }
-        item.setArtist(newFormattedArtist);
-        return item;
-    }
-
     private String getMatchKey(String key, boolean exact){
         String matchKey = key + (exact ? "" : "(.*)");
         return matchKey;
@@ -485,22 +472,22 @@ public class MP3Helper {
 
 
 
-    public ArtistSongItem checkForArtistTitleException(String artist, String song, String logRule, List<MP3Prettifier.ArtistSongExceptions.ArtistSong> listOfSongs){
+    public ArtistSongItem checkForArtistTitleException(String artist, String song, List<MP3Prettifier.ArtistSongExceptions.ArtistSong> listOfSongs){
         ArtistSongItem item = new ArtistSongItem();
         item.setSong(song);
         item.setArtist(artist);
         for (MP3Prettifier.ArtistSongExceptions.ArtistSong artistSong : listOfSongs) {
             if (artist.matches(getMatchKey(artistSong.oldArtist, artistSong.exactMatchArtist))) {
-                item = checkTitle(song, artistSong.oldSong, artistSong.newSong, artistSong.exactMatchTitle, artistSong.indexTitle);
-                if (item.isMatched()) {
+                ArtistSongItem newItem = checkTitle(song, artistSong.oldSong, artistSong.newSong, artistSong.exactMatchTitle, artistSong.indexTitle);
+                if (newItem.isMatched()) {
                     item.setArtist(artistSong.newArtist);
-                    logRule(logRule, artistSong);
+                    item.setSong(newItem.getSong());
+                    item.enableMatched();
                     break;
                 }
             }
         }
         return item;
-
     }
 
     public ArtistSongItem _checkTitleArtistException(String artist, String song, String logRule, List<MP3Prettifier.ArtistSongExceptions.ArtistSong> listOfSongs){
@@ -517,21 +504,6 @@ public class MP3Helper {
         }
         return item;
 
-    }
-
-    public ArtistSongItem _checkArtistTitleException(String artist, String song, String logRule, List<MP3Prettifier.ArtistSongExceptions.ArtistSong> listOfSongs){
-        ArtistSongItem item = new ArtistSongItem();
-        item.setArtist(artist);
-        for (MP3Prettifier.ArtistSongExceptions.ArtistSong artistSong : listOfSongs) {
-            if (song.matches(getMatchKey(artistSong.oldSong, artistSong.exactMatchTitle))) {
-                item = checkArtist(artist, artistSong.oldArtist, artistSong.newArtist, artistSong.exactMatchArtist);
-                if (item.isMatched()) {
-                    logRule(logRule, artistSong);
-                    break;
-                }
-            }
-        }
-        return item;
     }
 
     public boolean isModified(String oldVal, String newVal, String logMessage){
@@ -564,8 +536,20 @@ public class MP3Helper {
         }
     }
 
+    public ArtistSongItem formatSong(String artist, String song) {
+        return formatSong(artist, song, true);
+    }
+
+    public ArtistSongItem formatSong(String artist, String song, boolean logging){
+        ArtistSongItem item;
+        String prettifiedArtist = prettifyArtist(artist);
+        String prettifiedSong = prettifySong(song);
+        item = prettifyRuleArtistSong(prettifiedArtist, prettifiedSong, logging);
+        return item;
+    }
+
     public ArtistSongItem prettifyRuleArtistSong(String artist, String song, boolean logging){
-        ArtistSongItem item = checkForArtistTitleException(artist, song, "Artist/Title Exception", mp3Prettifer.artistSongExceptions.items);
+        ArtistSongItem item = checkForArtistTitleException(artist, song, mp3Prettifer.artistSongExceptions.items);
         item.setRule(Rules.AS_EXCEPTION);
         if (item.isMatched()){
             logModification(song, item, ARTIST_SONG_TYPE.SONG, logging);

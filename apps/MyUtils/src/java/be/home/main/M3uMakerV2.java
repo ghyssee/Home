@@ -5,6 +5,7 @@ import be.home.common.constants.Constants;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.FileUtils;
 import be.home.common.utils.JSONUtils;
+import be.home.domain.model.ArtistSongItem;
 import be.home.domain.model.MP3Helper;
 import be.home.model.ConfigTO;
 import be.home.model.M3uTO;
@@ -224,12 +225,18 @@ public class M3uMakerV2 extends BatchJobV2 {
                 break;
         }
         MP3Helper mp3Helper = MP3Helper.getInstance();
+        ArtistSongItem item = mp3Helper.formatSong(song.getArtist(), song.getSong());
+        song.setArtist(item.getArtist());
+        song.setSong(item.getSong());
+        /*
         String artist = mp3Helper.prettifyArtist(song.getArtist());
         String title = mp3Helper.prettifySong(song.getSong());
         song.setArtist(mp3Helper.prettifyArtistSong(artist, title));
         song.setSong(mp3Helper.prettifySongArtist(artist, title));
+        */
         song.setArtist(mp3Helper.stripFilename(song.getArtist()));
         song.setSong(mp3Helper.stripFilename(song.getSong()));
+
         return song;
     }
 

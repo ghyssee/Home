@@ -8,6 +8,7 @@ import be.home.common.mp3.MP3Utils;
 import be.home.common.utils.FileUtils;
 import be.home.common.utils.JSONUtils;
 import be.home.common.utils.MyFileWriter;
+import be.home.domain.model.ArtistSongItem;
 import be.home.domain.model.MP3Helper;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.json.ArtistSongTest;
@@ -44,8 +45,6 @@ public class HelloWorld extends BatchJobV2 {
     public static void main(String args[]) throws SAXException, DocumentException, IOException, IllegalAccessException, NoSuchFieldException, ParserConfigurationException {
 
 
-        //System.out.println(MP3TagUtils.stripFilename("(Hot S+++)"));
-
         //processArtistFile();
         //testMP3Prettifier();
         //System.out.println(MP3Helper.getInstance().test("A\\$2AP$2Test$2Test$3Test$4", "\\$2", "\\$3", 2));
@@ -55,27 +54,6 @@ public class HelloWorld extends BatchJobV2 {
         testMP3Prettifier();
         //testAlbumArtist();
 
-    }
-
-    private static void batchProcess() throws IOException {
-        ArtistSongTest artistSongTest = (ArtistSongTest) JSONUtils.openJSONWithCode(Constants.JSON.ARTISTSONGTEST, ArtistSongTest.class);
-        for (ArtistSongTest.AristSongTestItem item : artistSongTest.items){
-            System.out.println(item.oldArtist);
-            System.out.println(item.oldSong);
-            if (org.apache.commons.lang3.StringUtils.isNotBlank(item.oldArtist)) {
-                item.newArtist = getArtistTitleException(item.oldArtist, item.oldSong);
-            }
-            else {
-                item.newArtist = MP3Helper.getInstance().prettifyArtist(item.oldArtist);
-            }
-            if (org.apache.commons.lang3.StringUtils.isNotBlank(item.oldSong)) {
-                item.newSong = getTitleArtistException(item.oldArtist, item.oldSong);
-            }
-            else {
-                item.newSong = MP3Helper.getInstance().prettifySong(item.oldSong);
-            }
-        }
-        JSONUtils.writeJsonFileWithCode(artistSongTest, Constants.JSON.ARTISTSONGTEST);
     }
 
 private static void testAlbumArtist(){
@@ -134,7 +112,8 @@ private static void testAlbumArtist(){
         //System.out.println("Fuck It! (I Don't Want You Back)".replaceAll("F(?:uc|\\\\*\\\\*)k It!?(?:\\\\(I Don't Want You Back\\\\))?(.*)",
           //      "Fuck It (I Don't Want You Back)$1"));
 
-        System.out.println(mp3Helper.stripFilename("B.A.D. (Big Audio Dynamite) - E = MC2"));
+        //System.out.println(mp3Helper.stripFilename("B.A.D. (Big Audio Dynamite) - E = MC2"));
+
         System.out.println(mp3Helper.prettifySong("Voulez Vous Coucher Avec Moi Ce Soir? (Lady Marmalade)"));
         System.out.println(mp3Helper.prettifyAlbum("The Flying Dutch 2017 Edition NL", null));
         System.out.println(getTitleArtistException("Lost Frequencies", "Reality"));
@@ -147,20 +126,19 @@ private static void testAlbumArtist(){
         System.out.println(getTitleArtistException("Tina Turner", "Teach Me Again"));
 
         System.out.println(getArtistTitleException("Fifth Harmony Feat. Ty Dolla Sign", "Work From Home"));
-        System.out.println(getArtistTitleException("The Ramblers", "Dag Schatteboutje"));
+        //System.out.println(getArtistTitleException("The Ramblers", "Dag Schatteboutje"));
+
 
     }
 
     private static String getArtistTitleException(String artist, String title){
-        String prettifiedArtist = MP3Helper.getInstance().prettifyArtist(artist);
-        String prettifiedTitle = MP3Helper.getInstance().prettifySong(title);
-        prettifiedArtist = MP3Helper.getInstance().prettifyArtistSong(prettifiedArtist, prettifiedTitle);
-        return prettifiedArtist;
+        ArtistSongItem item =  MP3Helper.getInstance().formatSong(artist, title, true);
+        return item.getArtist();
     }
 
     private static String getTitleArtistException(String artist, String title){
-        String prettifiedTitle = MP3Helper.getInstance().prettifySongArtist(artist, title);
-        return prettifiedTitle;
+        ArtistSongItem item = MP3Helper.getInstance().formatSong(artist, title, true);
+        return item.getSong();
     }
 
     private static void updateMP3(){

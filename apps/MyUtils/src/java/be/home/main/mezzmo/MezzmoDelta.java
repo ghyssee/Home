@@ -56,7 +56,7 @@ public class MezzmoDelta extends BatchJobV2 {
 
     private void checkFile(List<MGOFileAlbumCompositeTO> list, MP3Helper mp3Helper) throws SQLException {
         for (MGOFileAlbumCompositeTO comp : list){
-            if (comp.getFileTO().getId() == 17116){
+            //if (comp.getFileTO().getId() == 17116){
             try {
                 MezzmoServiceImpl tmp = getMezzmoV1Instance();
                 tmp.findFileById(comp.getFileTO().getId());
@@ -68,17 +68,15 @@ public class MezzmoDelta extends BatchJobV2 {
                 insertMezzmoFile(comp, "NEW");
 
             }
-        }
+        //}
         }
 
     }
 
     private void checkArtist(MGOFileAlbumCompositeTO comp) throws SQLException {
-        String prettifiedArtist = MP3Helper.getInstance().prettifyArtist(comp.getFileArtistTO().getArtist());
-        String prettifiedTitle = MP3Helper.getInstance().prettifySong(comp.getFileTO().getTitle());
-        ArtistSongItem artistItem = MP3Helper.getInstance().prettifyRuleArtistSong(prettifiedArtist, prettifiedTitle, false);
+        ArtistSongItem artistItem = MP3Helper.getInstance().formatSong(comp.getFileArtistTO().getArtist(), comp.getFileTO().getTitle(), false);
         if (artistItem.isMatched()) {
-            insertMezzmoFile(comp, "ARTISTSONG");
+            insertMezzmoFile(comp, artistItem.getRule().name());
         }
     }
 
@@ -89,7 +87,7 @@ public class MezzmoDelta extends BatchJobV2 {
         mezzmoFile.setArtistId(comp.getFileArtistTO().getID());
         mezzmoFile.setArtistName((comp.getFileArtistTO().getArtist()));
         mezzmoFile.setStatus(status);
-        ericServiceImpl.insertMezzmoFile(mezzmoFile);
+        getEricServiceInstance().insertMezzmoFile(mezzmoFile);
 
     }
 
@@ -101,7 +99,7 @@ public class MezzmoDelta extends BatchJobV2 {
         return impl2;
     }
 
-    private EricServiceImpl geteEricServiceInstance(){
+    private EricServiceImpl getEricServiceInstance(){
         return ericServiceImpl;
     }
 
