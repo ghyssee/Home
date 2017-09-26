@@ -43,10 +43,6 @@ if (isset($_POST['submit'])) {
         $mp3Settings->mezzmo->artistId = getNextArtistId($artistArray, $mp3Settings->mezzmo->artistId);
         $data = $songBO->searchSong($song);
         $songBO->saveArtistSongTest($data);
-        $ericBO = new EricBO();
-        $tmp = $ericBO->findMezzmoFileById(10741);
-        $a = "";
-        
     }
 }
 else {
@@ -155,6 +151,7 @@ function getNextArtistId($artistArray, $artistId){
             <th data-options="field:'album',width:50">Album</th>
             <th data-options="field:'fileId',width:15">File</th>
             <th data-options="field:'file',width:200">File</th>
+            <th data-options="field:'isNew',width:15,align:'center',formatter:function(value,row,index){return checkboxFormatter(value,row,index);} ">New</th>
             <th data-options="field:'status',width:20">Status</th>
         </tr>
         </thead>
@@ -186,10 +183,23 @@ function getSongViewLink(){
 </html>
 
 <script>
+    function checkboxFormatter(val,row,index){
+
+        if (val== 1) {
+            return "√";
+        }
+        else {
+            return "";
+        }
+    }
+
     function formatRow(index, row) {
+        if (row.isNew){
+            return 'background-color:#e60000;color:#fff;'
+        }
         if (row.status) {
             switch (row.status){
-                case "NEW":
+                case "AS_RELATION":
                     return 'background-color:#739900;color:#fff;'
                     break;
             }

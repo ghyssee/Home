@@ -99,6 +99,7 @@ class SongBO
                 $mezzmoFileTO = $ericBO->findMezzmoFileById($song->fileId);
                 if ($mezzmoFileTO != null){
                     $song->status = $mezzmoFileTO->status;
+                    $song->isNew = $mezzmoFileTO->isNew;
                 }
             }
         }

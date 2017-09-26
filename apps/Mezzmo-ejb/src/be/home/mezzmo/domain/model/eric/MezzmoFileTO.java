@@ -8,6 +8,7 @@ public class MezzmoFileTO {
     private long artistId;
     private String artistName;
     private String status;
+    private boolean isNew;
 
     public long getId() {
         return id;
@@ -40,4 +41,13 @@ public class MezzmoFileTO {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    public boolean isNew() {
+        return isNew;
+    }
+
+    public void setNew(boolean aNew) {
+        isNew = aNew;
+    }
+
 }

@@ -32,6 +32,7 @@ class MezzmoFileTO {
     public $artistId;
     public $artistName;
     public $status;
+    public $isNew;
 }
 
 ?>

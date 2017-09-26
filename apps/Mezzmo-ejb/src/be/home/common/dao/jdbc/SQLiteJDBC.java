@@ -144,6 +144,10 @@ public class SQLiteJDBC
         return SQLiteUtils.convertToDate(f);
     }
 
+    public static boolean getBoolean(ResultSet rs, DatabaseColumn column) throws SQLException {
+        return rs.getBoolean(column.name());
+    }
+
     public static String getString(ResultSet rs, DatabaseColumn column) throws SQLException {
         return rs.getString(column.name());
     }

@@ -41,6 +41,20 @@ public class MezzmoDelta extends BatchJobV2 {
         MP3Helper mp3Helper = MP3Helper.getInstance();
         mp3Helper.disableLogging();
         TransferObject to = new TransferObject();
+        /*
+        MezzmoFileTO myTO = new MezzmoFileTO();
+        myTO.setId(3);
+        myTO.setStatus("TEST");
+        myTO.setArtistId(3);
+        myTO.setArtistName("TESTARTIST");
+        myTO.setNew(false);
+
+        try {
+            getEricServiceInstance().insertMezzmoFile(myTO);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }*/
+
             do {
                 List<MGOFileAlbumCompositeTO> list = getMezzmoV2Instance().getAllMP3Files(to);
                 log.info("Index = " + to.getIndex());
@@ -52,41 +66,43 @@ public class MezzmoDelta extends BatchJobV2 {
                 }
             }
             while (!to.isEndOfList());
+
     }
 
     private void checkFile(List<MGOFileAlbumCompositeTO> list, MP3Helper mp3Helper) throws SQLException {
         for (MGOFileAlbumCompositeTO comp : list){
             //if (comp.getFileTO().getId() == 17116){
+            boolean isNew = false;
             try {
                 MezzmoServiceImpl tmp = getMezzmoV1Instance();
                 tmp.findFileById(comp.getFileTO().getId());
-                checkArtist(comp);
 
             }
             catch (IncorrectResultSizeDataAccessException ex){
                 log.info("Not Found: " + comp.getFileTO().getId());
-                insertMezzmoFile(comp, "NEW");
-
+                isNew = true;
             }
+            checkArtist(comp, isNew);
         //}
         }
 
     }
 
-    private void checkArtist(MGOFileAlbumCompositeTO comp) throws SQLException {
+    private void checkArtist(MGOFileAlbumCompositeTO comp, boolean isNew) throws SQLException {
         ArtistSongItem artistItem = MP3Helper.getInstance().formatSong(comp.getFileArtistTO().getArtist(), comp.getFileTO().getTitle(), false);
         if (artistItem.isMatched()) {
-            insertMezzmoFile(comp, artistItem.getRule().name());
+            insertMezzmoFile(comp, artistItem.getRule().name(), isNew);
         }
     }
 
 
-    private void insertMezzmoFile(MGOFileAlbumCompositeTO comp, String status) throws SQLException {
+    private void insertMezzmoFile(MGOFileAlbumCompositeTO comp, String status, boolean isNew) throws SQLException {
         MezzmoFileTO mezzmoFile = new MezzmoFileTO();
         mezzmoFile.setId(comp.getFileTO().getId());
         mezzmoFile.setArtistId(comp.getFileArtistTO().getID());
         mezzmoFile.setArtistName((comp.getFileArtistTO().getArtist()));
         mezzmoFile.setStatus(status);
+        mezzmoFile.setNew(isNew);
         getEricServiceInstance().insertMezzmoFile(mezzmoFile);
 
     }

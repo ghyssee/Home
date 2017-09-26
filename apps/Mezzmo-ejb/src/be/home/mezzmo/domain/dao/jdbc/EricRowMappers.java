@@ -26,6 +26,7 @@ public class EricRowMappers extends EricDAOQueries {
         fileTO.setId(getLong(rs, MezzmoFileColumns.ID));
         fileTO.setArtistId(getLong(rs, MezzmoFileColumns.ARTISTID));
         fileTO.setStatus(getString(rs, MezzmoFileColumns.STATUS));
+        fileTO.setNew(getBoolean(rs, MezzmoFileColumns.ISNEW));
         return fileTO;
     }
 

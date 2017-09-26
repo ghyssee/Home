@@ -63,7 +63,7 @@ class CustomDatabase extends PDO
             throw new ApplicationException("DB does not exist: " . $database);
         }
     }
-
+    
     function openDatabase($id)
     {
         $dbFile = getFullPath(JSON_DATABASE);
@@ -90,5 +90,14 @@ class CustomDatabase extends PDO
         return $database;
     }
 }
+
+function getBoolean($result, $field){
+    $boolean = $result[$field];
+    if (!isset($boolean)){
+        return false;
+    }
+    return ($boolean == 1);
+}
+
 
 ?>

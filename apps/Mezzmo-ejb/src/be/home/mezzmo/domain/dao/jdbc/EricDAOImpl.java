@@ -21,6 +21,7 @@ public class EricDAOImpl extends EricRowMappers {
         Object[] params = {mezzmoFile.getId(),
                 mezzmoFile.getArtistId(),
                 mezzmoFile.getArtistName(),
+                mezzmoFile.isNew(),
                 mezzmoFile.getStatus()};
         getInstance().getJDBCTemplate().update(INSERT_MEZZMOFILE, params);
     }
