@@ -90,7 +90,7 @@ public class MezzmoDelta extends BatchJobV2 {
 
     private void checkArtist(MGOFileAlbumCompositeTO comp, boolean isNew) throws SQLException {
         ArtistSongItem artistItem = MP3Helper.getInstance().formatSongObj(comp.getFileArtistTO().getArtist(), comp.getFileTO().getTitle(), false);
-        if (artistItem.isMatched()) {
+        if (artistItem.isMatched() || isNew) {
             insertMezzmoFile(comp, artistItem, isNew);
         }
     }
