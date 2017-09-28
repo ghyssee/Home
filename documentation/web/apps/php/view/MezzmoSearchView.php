@@ -213,12 +213,18 @@ function getSongViewLink(){
 
     function formatRow(index, row) {
         if (row.isNew){
+            // red background
             return 'background-color:#e60000;color:#fff;'
         }
         if (row.status) {
             switch (row.status){
                 case "AS_RELATION":
-                    return 'background-color:#739900;color:#fff;'
+                    // light green
+                    return 'background-color:#ccffd9;color:#000;';
+                    break;
+                case "AS_EXCEPTION":
+                    // light green
+                    return 'background-color:#ccffd9;color:#000;';
                     break;
             }
         }

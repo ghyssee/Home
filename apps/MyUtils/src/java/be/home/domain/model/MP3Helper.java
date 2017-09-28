@@ -593,50 +593,6 @@ public class MP3Helper {
         return item;
     }
 
-    /*
-    public ArtistSongItem _prettifyRuleSongArtist(String artist, String song, boolean logging){
-        ArtistSongItem item = checkForArtistTitleException(artist, song, "Title Exception", mp3Prettifer.artistSongExceptions.items);
-        item.setRule(Rules.AS_EXCEPTION);
-        logModification(song, item, ARTIST_SONG_TYPE.SONG, logging);
-        if (item.isMatched()){
-            return item;
-        }
-        item = checkArtistTitleRelation(artist, song, ARTIST_SONG_TYPE.SONG);
-        item.setRule(Rules.AS_RELATION);
-        logModification(song, item, ARTIST_SONG_TYPE.SONG, logging);
-        if (item.isMatched()){
-            return item;
-        }
-        return item;
-    }*/
-
-    public String prettifySongArtist(String artist, String song){
-        ArtistSongItem item  = prettifyRuleArtistSong(artist, song, true);
-        return item.getSong();
-    }
-
-    /*
-    public ArtistSongItem _prettifyRuleArtistSong(String artist, String song, boolean logging){
-        ArtistSongItem item = checkForArtistTitleException(artist, song, "Artist Exception",  mp3Prettifer.artistSongExceptions.items);
-        item.setRule(Rules.AS_EXCEPTION);
-        if (item.isMatched()){
-            logModification(artist, item, ARTIST_SONG_TYPE.ARTIST, logging);
-            return item;
-        }
-        item = checkArtistTitleRelation(artist, song, ARTIST_SONG_TYPE.ARTIST);
-        item.setRule(Rules.AS_RELATION);
-        if (item.isMatched()){
-            logModification(artist, item, ARTIST_SONG_TYPE.ARTIST, logging);
-            return item;
-        }
-        return item;
-    }*/
-
-    public String prettifyArtistSong(String artist, String song){
-        ArtistSongItem item  = prettifyRuleArtistSong(artist, song, true);
-        return item.getArtist();
-    }
-
     public enum ARTIST_SONG_TYPE {
         ARTIST, SONG
     }
