@@ -577,15 +577,15 @@ public class MP3Helper {
 
     public ArtistSongItem prettifyRuleArtistSong(String artist, String song, boolean logging){
         ArtistSongItem item = checkForArtistTitleException(artist, song, mp3Prettifer.artistSongExceptions.items);
-        item.setRule(Rules.AS_EXCEPTION);
         if (item.isMatched()){
+            item.setRule(Rules.AS_EXCEPTION);
             logModification(song, item, ARTIST_SONG_TYPE.SONG, logging);
             logModification(artist, item, ARTIST_SONG_TYPE.ARTIST, logging);
             return item;
         }
         item = checkArtistTitleRelation(artist, song);
-        item.setRule(Rules.AS_RELATION);
         if (item.isMatched()){
+            item.setRule(Rules.AS_RELATION);
             logModification(song, item, ARTIST_SONG_TYPE.SONG, logging);
             logModification(artist, item, ARTIST_SONG_TYPE.ARTIST, logging);
             return item;
