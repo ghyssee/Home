@@ -9,6 +9,7 @@ public class MezzmoFileTO {
     private String artistName;
     private String status;
     private boolean isNew;
+    private String ruleId;
 
     public long getId() {
         return id;
@@ -50,4 +51,11 @@ public class MezzmoFileTO {
         isNew = aNew;
     }
 
+    public String getRuleId() {
+        return ruleId;
+    }
+
+    public void setRuleId(String ruleId) {
+        this.ruleId = ruleId;
+    }
 }

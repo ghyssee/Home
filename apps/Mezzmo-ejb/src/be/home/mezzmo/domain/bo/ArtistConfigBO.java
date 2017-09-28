@@ -70,6 +70,7 @@ public class ArtistConfigBO {
         }
         // construct new Artist Name
         word.newWord = constructNewArtistName(item.artistSequence, matching);
+        word.id = item.getId();
 
         //String tst = "Bodyrox & Luciana".replaceAll(word.oldWord, word.newWord);
         return word;

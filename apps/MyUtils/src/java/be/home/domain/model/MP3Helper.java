@@ -198,9 +198,11 @@ public class MP3Helper {
 
     }
 
-    public String prettifyArtist(String text){
-        if (text == null) return "";
+    public MultiArtistItem prettifyArtistObj(String text){
+        MultiArtistItem multiArtistItem = new MultiArtistItem();
+        if (text == null) return multiArtistItem;
         String prettifiedText = prettifyString(text);
+        multiArtistItem.setName(prettifiedText);
         if (StringUtils.isNotBlank(text)) {
             prettifiedText = prettifiedText.replaceAll(replaceBetweenBrackets("Remix"), "");
             prettifiedText = prettifiedText.replaceAll(replaceBetweenBrackets("Black Box Radio Edit"), "");
@@ -214,7 +216,7 @@ public class MP3Helper {
             prettifiedText = prettifySentence(artistNames, prettifiedText, "Artist Names Patterns");
             prettifiedText = prettifySentence(globalArtistNames, prettifiedText, "Global Artist Names Patterns");
             prettifiedText = prettifySentence(mp3Prettifer.artist.postprocess, prettifiedText, "Artist Post Processing");
-            prettifiedText = checkArtistNames2(multiArtistNames, prettifiedText, "Multi Artist Names");
+            multiArtistItem = checkArtistNames2(multiArtistNames, prettifiedText, "Multi Artist Names");
             /*
             for (MP3Prettifier.Word wordObj : mp3Prettifer.artist.names){
                //prettifiedText = prettifiedText.replaceAll(wordObj.oldWord, wordObj.newWord);
@@ -226,22 +228,31 @@ public class MP3Helper {
                 }
             }*/
         }
-        return prettifiedText;
+        return multiArtistItem;
 
     }
-    private String checkArtistNames2(List<MP3Prettifier.Word> list, String text, String logMsg){
+
+    public String prettifyArtist(String text){
+        MultiArtistItem item = prettifyArtistObj(text);
+        return item.getName();
+    }
+
+    private MultiArtistItem checkArtistNames2(List<MP3Prettifier.Word> list, String text, String logMsg){
+        MultiArtistItem multiArtistItem = new MultiArtistItem(text);
         if (ArtistConfigBO.getInstance().isArtist(text)){
-            return text;
+            return multiArtistItem;
         }
         for (MP3Prettifier.Word wordObj : list){
             //Pattern pattern = Pattern.compile(wordObj.oldWord);
             try {
                 if (text.matches(wordObj.oldWord)) {
+                    multiArtistItem.setId(wordObj.id);
                     String oldText = text;
                     text = replaceString(oldText, wordObj);
                     if (!oldText.equals(text)) {
                         logRule(logMsg, wordObj);
                     }
+                    multiArtistItem.setName(text);
                     // exit the loop if a match is found
                     break;
                 }
@@ -254,7 +265,7 @@ public class MP3Helper {
                 throw ex;
             }
         }
-        return text;
+        return multiArtistItem;
     }
 
     private String prettifySentence(List<MP3Prettifier.Word> list, String text, String logMsg){
@@ -483,6 +494,7 @@ public class MP3Helper {
                     item.setArtist(artistSong.newArtist);
                     item.setSong(newItem.getSong());
                     item.enableMatched();
+                    item.setRuleId(artistSong.id);
                     break;
                 }
             }
@@ -545,6 +557,21 @@ public class MP3Helper {
         String prettifiedArtist = prettifyArtist(artist);
         String prettifiedSong = prettifySong(song);
         item = prettifyRuleArtistSong(prettifiedArtist, prettifiedSong, logging);
+        return item;
+    }
+
+    public ArtistSongItem formatSongObj(String artist, String song, boolean logging){
+        ArtistSongItem item;
+        MultiArtistItem multiArtistItem = prettifyArtistObj(artist);
+        String prettifiedSong = prettifySong(song);
+        item = prettifyRuleArtistSong(multiArtistItem.getName(), prettifiedSong, logging);
+        if (!item.isMatched()){
+            if (multiArtistItem.getId() != null) {
+                item.setRuleId(multiArtistItem.getId());
+                item.setRule(Rules.MULTIARTIST);
+                item.enableMatched();
+            }
+        }
         return item;
     }
 
@@ -632,6 +659,7 @@ public class MP3Helper {
                     // artist & song are the same, if artist construct the new artist name
                     artistSongItem.setSong(newTitle.getSong());
                     artistSongItem.enableMatched();
+                    artistSongItem.setRuleId(item.id);
                     if (StringUtils.isNotBlank(item.newMultiArtistId)) {
                         MultiArtistConfig.Item tmp = ArtistConfigBO.getInstance().getMultiArtist(item.newMultiArtistId);
                         MP3Prettifier.Word word = ArtistConfigBO.getInstance().constructItem(tmp, false);

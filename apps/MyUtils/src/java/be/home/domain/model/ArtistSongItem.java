@@ -8,6 +8,7 @@ public class ArtistSongItem {
     private String artist;
     private String song;
     private Rules rule;
+    private String ruleId;
 
     public ArtistSongItem() {
     }
@@ -42,5 +43,17 @@ public class ArtistSongItem {
 
     public void setRule(Rules rule) {
         this.rule = rule;
+    }
+
+    public void setMatched(boolean matched) {
+        this.matched = matched;
+    }
+
+    public String getRuleId() {
+        return ruleId;
+    }
+
+    public void setRuleId(String ruleId) {
+        this.ruleId = ruleId;
     }
 }

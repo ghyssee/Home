@@ -56,4 +56,9 @@ function saveObject(object, url, callback){
 
 }
 
+function openUrl(url) {
+    var win = window.open(url, '_blank');
+    win.focus();
+}
+
 

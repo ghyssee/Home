@@ -6,7 +6,8 @@ package be.home.domain.model;
 public enum Rules {
     AS_EXCEPTION("ARTIST/SONG EXCEPTION", "EXCEPTION"),
     AS_RELATION("ARTIST SONG RELATION", "RELATION"),
-    ALBUM_RELATION("ALBUM/ARTIST RELATION", "RELATION");
+    ALBUM_RELATION("ALBUM/ARTIST RELATION", "RELATION"),
+    MULTIARTIST("MULTIARTIST", "MULTIARTIST");
 
     private String message;
     private String code;

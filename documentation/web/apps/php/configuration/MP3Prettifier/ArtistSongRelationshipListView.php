@@ -110,9 +110,7 @@ goMenu();
             }
 
             function addArtistSong(){
-                var url = "<?php echo webPath(ROOT_PHP_CONFIGURATION_MP3PRETTIFIER, 'ArtistSongRelationshipView.php') ?>";
-                var win = window.open(url, '_blank');
-                win.focus();
+                openUrl("<?php echo webPath(ROOT_PHP_CONFIGURATION_MP3PRETTIFIER, 'ArtistSongRelationshipView.php') ?>");
             }
 
         </script>

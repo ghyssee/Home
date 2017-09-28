@@ -1,14 +1,3 @@
-<html>
-<head>
-    <link rel="stylesheet" type="text/css" href="../../css/stylesheet.css">
-    <link rel="stylesheet" type="text/css" href="../../Themes/easyui/metro-blue/easyui.css">
-    <link rel="stylesheet" type="text/css" href="../../Themes/easyui/icon.css">
-    <link rel="stylesheet" type="text/css" href="../../css/form.css">
-    <script type="text/javascript" src="../../js/jquery-3.1.1.js"></script>
-    <script type="text/javascript" src="../../js/jquery.easyui.min.js"></script>
-</head>
-<body>
-
 <?php
 session_start();
 include_once("../setup.php");
@@ -17,6 +6,17 @@ include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 include_once documentPath (ROOT_PHP_HTML, "config.php");
 include_once documentPath (ROOT_PHP_BO, "SongBO.php");
 include_once documentPath (ROOT_PHP_BO, "EricBO.php");
+?>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="../../css/stylesheet.css">
+    <link rel="stylesheet" type="text/css" href="../../Themes/easyui/metro-blue/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../../Themes/easyui/icon.css">
+    <link rel="stylesheet" type="text/css" href="../../css/form.css">
+    <?php include documentRoot ("apps/php/templates/easyui.php");?>
+</head>
+<body>
+<?php
 $albumSave = 'MezzmoSearchview.php';
 
 $mp3Settings = readJSONWithCode(JSON_MP3SETTINGS);
@@ -110,6 +110,14 @@ function getNextArtistId($artistArray, $artistId){
         }
     </script>
     <script>
+        function editSong(){
+            var row = $('#dgSearch').datagrid('getSelected');
+            if (row) {
+                var url = "<?php echo getSongViewLink(); ?>" + '?id='+row.fileId;
+                var win = window.open(url, '_blank');
+                win.focus();
+            }
+        }
         function editLink(val,row){
             var url = "<?php echo getSongViewLink(); ?>" + '?id=' + row.fileId;
             return '<a href="'+url+'" target="_blank">Edit</a>';
@@ -132,6 +140,7 @@ function getNextArtistId($artistArray, $artistId){
            data-options='fitColumns:true,
                          singleSelect:true,
                          rowStyler: function(index,row){ return formatRow(index,row) },
+                         toolbar:"#toolbarArtistWord",
                          data:data
                          '
            pagination="false"
@@ -156,6 +165,15 @@ function getNextArtistId($artistArray, $artistId){
         </tr>
         </thead>
     </table>
+
+    <span style="font-size:20px">
+        <div id="toolbarArtistWord">
+            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="addRule()">Add Rule</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editRule()">Edit Rule</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editSong()">Edit Song</a>
+        </div>
+	</span>
+
 
 </form>
 
@@ -206,4 +224,9 @@ function getSongViewLink(){
         }
         return '';
     }
+
+    function addRule(){
+        openUrl("<?php echo webPath(ROOT_PHP_CONFIGURATION_MP3PRETTIFIER, 'ArtistSongRelationshipView.php') ?>");
+    }
+
 </script>

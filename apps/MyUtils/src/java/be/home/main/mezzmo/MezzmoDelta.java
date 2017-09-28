@@ -59,7 +59,7 @@ public class MezzmoDelta extends BatchJobV2 {
                 List<MGOFileAlbumCompositeTO> list = getMezzmoV2Instance().getAllMP3Files(to);
                 log.info("Index = " + to.getIndex());
                 try {
-                    checkFile(list, mp3Helper);
+                    checkFile(list);
                 } catch (SQLException e) {
                     e.printStackTrace();
                     break;
@@ -69,7 +69,7 @@ public class MezzmoDelta extends BatchJobV2 {
 
     }
 
-    private void checkFile(List<MGOFileAlbumCompositeTO> list, MP3Helper mp3Helper) throws SQLException {
+    private void checkFile(List<MGOFileAlbumCompositeTO> list) throws SQLException {
         for (MGOFileAlbumCompositeTO comp : list){
             //if (comp.getFileTO().getId() == 17116){
             boolean isNew = false;
@@ -89,20 +89,21 @@ public class MezzmoDelta extends BatchJobV2 {
     }
 
     private void checkArtist(MGOFileAlbumCompositeTO comp, boolean isNew) throws SQLException {
-        ArtistSongItem artistItem = MP3Helper.getInstance().formatSong(comp.getFileArtistTO().getArtist(), comp.getFileTO().getTitle(), false);
+        ArtistSongItem artistItem = MP3Helper.getInstance().formatSongObj(comp.getFileArtistTO().getArtist(), comp.getFileTO().getTitle(), false);
         if (artistItem.isMatched()) {
-            insertMezzmoFile(comp, artistItem.getRule().name(), isNew);
+            insertMezzmoFile(comp, artistItem, isNew);
         }
     }
 
 
-    private void insertMezzmoFile(MGOFileAlbumCompositeTO comp, String status, boolean isNew) throws SQLException {
+    private void insertMezzmoFile(MGOFileAlbumCompositeTO comp, ArtistSongItem artistSongItem, boolean isNew) throws SQLException {
         MezzmoFileTO mezzmoFile = new MezzmoFileTO();
         mezzmoFile.setId(comp.getFileTO().getId());
         mezzmoFile.setArtistId(comp.getFileArtistTO().getID());
         mezzmoFile.setArtistName((comp.getFileArtistTO().getArtist()));
-        mezzmoFile.setStatus(status);
+        mezzmoFile.setStatus(artistSongItem.getRule().name());
         mezzmoFile.setNew(isNew);
+        mezzmoFile.setRuleId(artistSongItem.getRuleId());
         getEricServiceInstance().insertMezzmoFile(mezzmoFile);
 
     }
