@@ -57,48 +57,45 @@ class ArtistSongRelationshipExtendedTO extends ArtistSongRelationshipTO {
 }
 
 class ArtistSongRelationshipCompositeTO extends ArtistSongRelationshipExtendedTO {
-    public $multiArtistBO;
     public $oldArtistListObj;
     public $oldArtistType;
     public $newArtistType;
     function __construct($object)
     {
         parent::__construct($object);
-        $this->oldArtistObj = new ArtistTO();
-        //$this->oldMultiArtistObj = new MultiArtistListTO();
         $this->oldArtistListObj = array();
         if (isset($object)) {
-            $this->multiArtistBO = new MultiArtistBO();
+            $multiArtistBO = new MultiArtistBO();
             if (isset($this->oldArtistList)) {
                 $this->oldArtistType = ArtistType::ARTIST;
-                $artistBO = $this->multiArtistBO->getArtistBO();
+                $artistBO = $multiArtistBO->getArtistBO();
                 foreach($this->oldArtistList as $item){
                     $tmp = new ArtistItemTO($item);
                     $this->oldArtistListObj[] =  $this->getArtist($artistBO, $tmp);
             }
             } else if (isset($this->oldMultiArtistId)) {
                 $this->oldArtistType = ArtistType::MULTIARTIST;
-                $multiArtistObj = $this->multiArtistBO->findMultiArtist($this->oldMultiArtistId);
+                $multiArtistObj = $multiArtistBO->findMultiArtist($this->oldMultiArtistId);
                 if (isset($multiArtistObj)){
                     $this->oldMultiArtistId = $multiArtistObj->id;
                 }
             }
             if (isset($this->newArtistId)) {
                 $this->newArtistType = ArtistType::ARTIST;
-                $artistBO = $this->multiArtistBO->getArtistBO();
+                $artistBO = $multiArtistBO->getArtistBO();
                 $artistTO = $artistBO->lookupArtist($this->newArtistId);
                 $this->newArtistId = $artistTO->id;
             } else if (isset($this->newMultiArtistId)) {
                 $this->newArtistType = ArtistType::MULTIARTIST;
-                $multiArtistObj = $this->multiArtistBO->findMultiArtist($this->newMultiArtistId);
+                $multiArtistObj = $multiArtistBO->findMultiArtist($this->newMultiArtistId);
                 if (isset($multiArtistObj)){
                     $this->newMultiArtistId = $multiArtistObj->id;
                 }
             }
         }
-        else {
-            $this->oldArtistObj = new ArtistTO();
-        }
+        //else {
+        //    $this->oldArtistObj = new ArtistTO();
+        //}
     }
 
     function getArtist(ArtistBO $artistBO, ArtistItemTO $artistItemTO){

@@ -30,6 +30,7 @@ if (isset($_REQUEST["id"])) {
     $artistSongRelationshipObj = new ArtistSongRelationshipCompositeTO($artistSongRelationshipTO);
 }
 else if (isset($_REQUEST["song"]) || isset($_REQUEST["artist"])) {
+    $artistSongId = null;
     $artistSongRelationshipObj = new ArtistSongRelationshipCompositeTO(null);
     if (isset($_REQUEST["song"])){
         $song = $_REQUEST["song"];
@@ -40,14 +41,11 @@ else if (isset($_REQUEST["song"]) || isset($_REQUEST["artist"])) {
         $artist = $_REQUEST["artist"];
         $artistBO = new ArtistBO();
         $artistTO = $artistBO->lookupArtistByName($artist);
+        $list = Array();
         if ($artist != null){
-            $list = Array();
-            $artistItemTO = new ArtistItemTO();
-            $artistItemTO->id = $artistTO->id;
-            $artistItemTO->text = $artistTO->name;
-            $list[] = $artistItemTO;
+            $list[] = $artistTO;
         }
-        //$artistSongRelationshipObj->oldArtistListObj = $list;
+        $artistSongRelationshipObj->oldArtistListObj = $list;
     }
 }
 else {
