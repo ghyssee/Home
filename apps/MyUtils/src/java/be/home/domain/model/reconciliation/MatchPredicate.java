@@ -4,14 +4,14 @@ package be.home.domain.model.reconciliation;
  * Created by ghyssee on 22/03/2017.
  */
 public class MatchPredicate {
-    private String leftColumnName;
-    private String fieldOperator;
-    private String rightColumnName;
-    private String relOperator;
-    private String resultValue;
-    private Function leftFunction;
-    private Function rightFunction;
-    private String warning;
+    public String leftColumnName;
+    public String fieldOperator;
+    public String rightColumnName;
+    public String relOperator;
+    public String resultValue;
+    public Function leftFunction;
+    public Function rightFunction;
+    public String warning;
 
     private String description;
 

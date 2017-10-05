@@ -6,11 +6,12 @@ import java.util.List;
  * Created by ghyssee on 22/03/2017.
  */
 public class Stream extends Base {
-    private String inputType;
-    private String launchMatchEngine;
-    private Datasource datasource;
+    public String inputType;
+    public String launchMatchEngine;
+    public Datasource datasource;
+    public List<Field> fields;
 
-    private List<FileType> fileTypes;
+    public List<FileType> fileTypes;
 
     public Stream(String description, String inputType, String launchMatchEngine, Datasource datasource, List<FileType> fileTypes){
         super("", description);
@@ -51,5 +52,11 @@ public class Stream extends Base {
         this.fileTypes = fileTypes;
     }
 
+    public List<Field> getFields() {
+        return fields;
+    }
 
+    public void setFields(List<Field> fields) {
+        this.fields = fields;
+    }
 }

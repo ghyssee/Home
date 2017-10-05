@@ -7,11 +7,11 @@ import java.util.List;
  */
 public class MatchAlgorithm extends Base {
 
-    private String leftCard;
-    private String rightCard;
-    private String sequence;
-    private String process;
-    private List<MatchPredicate> matchPredicates;
+    public String leftCard;
+    public String rightCard;
+    public String sequence;
+    public String process;
+    public List<MatchPredicate> matchPredicates;
 
 
     public MatchAlgorithm(String code, String description, String leftCard, String rightCard,

@@ -5,8 +5,8 @@ package be.home.domain.model.reconciliation;
  */
 public abstract class Base {
 
-    String code;
-    String description;
+    public String code;
+    public String description;
 
     public Base(String code, String description){
         this.code = code;
