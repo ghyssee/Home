@@ -239,7 +239,7 @@ else {
                                style="width:80px;height:52px"
                                label="Index Title"
                                class="easyui-numberspinner" style="width:100px;"
-                               data-options="value:0,required:false,min:0,editable:true">
+                               data-options="required:false,min:0,editable:true">
                     </div>
                     <div style="padding-top:8px">
                         <?php

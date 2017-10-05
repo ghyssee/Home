@@ -608,7 +608,9 @@ public class MP3Helper {
         artistSongItem.setArtist(artist);
         artistSongItem.setSong(song);
         List <ArtistSongRelationship.ArtistSongRelation>  list = ArtistSongRelationshipBO.getInstance().getArtistSongRelationshipList();
+        int i=0;
         for (ArtistSongRelationship.ArtistSongRelation item : list) {
+            i++;
             if (ArtistSongRelationshipBO.getInstance().matchArtist(artist, item)){
                 ArtistSongItem newTitle = checkTitle(song, item.oldSong, item.newSong, item.exactMatchTitle, item.indexTitle);
                 if (newTitle != null && newTitle.isMatched()) {
@@ -624,6 +626,7 @@ public class MP3Helper {
                         Artists.Artist newArtistObj = ArtistBO.getInstance().getArtist(item.newArtistId);
                         artistSongItem.setArtist(ArtistBO.getInstance().getStageName(newArtistObj));
                     }
+                    break;
                 }
             }
         }
