@@ -7,6 +7,7 @@ include_once documentPath (ROOT_PHP, "config.php");
 include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 include_once documentPath (ROOT_PHP_HTML, "config.php");
 include_once documentPath (ROOT_PHP_BO, "SessionBO.php");
+include_once documentPath (ROOT_PHP_BO, "MyClasses.php");
 include_once documentPath (ROOT_PHP_BO, "ArtistSongRelationshipBO.php");
 ?>
 <html>
@@ -47,8 +48,21 @@ else if (isset($_REQUEST["song"]) || isset($_REQUEST["artist"])) {
             $artistSongRelationshipObj->oldArtistType = ArtistType::ARTIST;
             $artistSongRelationshipObj->newArtistType = ArtistType::ARTIST;
             $artistSongRelationshipObj->newArtistId = $artistTO->id;
+            $artistSongRelationshipObj->oldArtistListObj = $list;
         }
-        $artistSongRelationshipObj->oldArtistListObj = $list;
+        else {
+            $multiArtistBO = new MultiArtistBO();
+            $errorObj = new FeedBackTO();
+            $array = Array();
+            $multiArtistBO->buildArtists($artist, $errorObj, $array);
+            if (count($array) > 1){
+                $artistSongRelationshipObj->oldArtistListObj = $array;
+                $item = $multiArtistBO->findMultiArtistSequence($array);
+                if ($item != null){
+                    $artistSongRelationshipObj->newMultiArtistId = $item->id;
+                }
+            }
+        }
     }
 }
 else {

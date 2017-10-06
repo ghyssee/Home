@@ -25,6 +25,7 @@ class SongCorrection{
     public $track;
     public $source;
     public $status;
+    public $ruleId;
 }
 
 class MezzmoFileTO {
@@ -33,6 +34,7 @@ class MezzmoFileTO {
     public $artistName;
     public $status;
     public $isNew;
+    public $ruleId;
 }
 
 class FeedBackTO {

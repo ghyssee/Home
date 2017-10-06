@@ -62,3 +62,13 @@ padding-right: 15px;
 .centered {
  text-align: center;
 }
+/*
+	easyui datagrid: these lines are necessary to show the selected row
+	if background color is changed for a row
+*/
+.datagrid-row-over td{
+	background:#D0E5F5;
+}
+.datagrid-row-selected td{
+	background:#FBEC88;
+}

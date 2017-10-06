@@ -563,6 +563,44 @@ class MultiArtistBO {
         return $multiArtistTO;
     }
 
+    function getDefaultSplitter(){
+        return $this->multiArtistObj->splitters[0];
+    }
+
+    function getEOLSplitter(){
+        foreach($this->multiArtistObj->splitters as $splitter){
+            if ($splitter->id == $this->multiArtistObj->splitterEndId){
+                return $splitter;
+            }
+        }
+        return $this->multiArtistObj->splitters[[count($this->multiArtistObj->splitters)-1]];
+    }
+
+    
+    function fillMultiArtistForm($artistArray){
+        $multiArtist = new MultiArtist();
+        $artistBO = $this->getArtistBO();
+        $artists = Array();
+        $artistSequence = Array();
+        $array_keys = array_keys($artistArray);
+        $lastElementKey = end($array_keys);
+        $eolSplitter = $this->getEOLSplitter();
+        $defaultSplitter = $this->getDefaultSplitter();
+        foreach ($artistArray as $key=>$item){
+           $artistItemForm = new ArtistItemForm($item->id, $item->name);
+           $artists[] = $artistItemForm;
+            if ($key == $lastElementKey){
+                $defaultSplitter = $eolSplitter;
+            }
+           $artistSequenceForm = new ArtistSequenceForm($item->id, $item->name,
+               $defaultSplitter->id, $defaultSplitter->value2);
+            $artistSequence[] = $artistSequenceForm;
+        }
+        $multiArtist->artists = $artists;
+        $multiArtist->artistSequence = $artistSequence;
+        return $multiArtist;
+    }
+
     function fillMultiArtistInfo(MultiArtist $multiArtist){
         if (!isset($multiArtist)){
             return null;
@@ -619,6 +657,52 @@ class MultiArtistBO {
     
     function commit(){
         writeJSON($this->multiArtistObj, $this->file);
+    }
+    
+    function findMultiArtistSequence($artistArray){
+        $size = count($artistArray);
+        foreach($this->multiArtistObj->list as $item){
+            if ($size == count($item->artistSequence)) {
+                if ($item->exactPosition){
+                    $found = $this->findArtistInSequenceExact($artistArray, $item->artistSequence);
+                }
+                else {
+                    $found = $this->findArtistInSequence($artistArray, $item->artistSequence);
+                }
+                if ($found) {
+                    return $item;
+                }
+            }
+        }
+        return null;
+    }
+
+
+    function findArtistInSequenceExact($artistArray, $sequence){
+        $counter = 0;
+        $found = false;
+        foreach($artistArray as $key => $artistItem){
+            $item = $sequence[$counter++];
+            if ($item->artistId != $artistItem->id){
+                return false;
+            }
+            else {
+                $found = true;
+            }
+        }
+        return $found;
+    }
+
+    function findArtistInSequence($artistArray, $sequence){
+        $count = 0;
+        foreach($artistArray as $key => $artistItem){
+            foreach ($sequence as $key2 => $sequenceItem){
+                if ($artistItem->id == $sequenceItem->artistId){
+                    $count++;
+                }
+            }
+        }
+        return ($count == count($artistArray));
     }
 
     function addMultiArtist($multiArtistItem){

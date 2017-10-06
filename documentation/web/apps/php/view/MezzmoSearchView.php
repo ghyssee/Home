@@ -127,9 +127,36 @@ function getNextArtistId($artistArray, $artistId){
             var url = "<?php echo webPath(ROOT_PHP_CONFIGURATION_MP3PRETTIFIER, 'ArtistSongRelationshipView.php') ?>";
             var row = $('#dgSearch').datagrid('getSelected');
             if (row) {
-                url += "?artist=" + row.artist + "&song=" + row.title;
+                url += "?artist=" + encodeURIComponent(row.artist) + "&song=" + encodeURIComponent(row.title);
             }
             openUrl(url);
+        }
+        function editRule(){
+            var url = "<?php echo webPath(ROOT_PHP_CONFIGURATION_MP3PRETTIFIER, 'ArtistSongRelationshipView.php') ?>";
+            var row = $('#dgSearch').datagrid('getSelected');
+            if (row && row.status == "AS_RELATION") {
+                url += "?id=" + row.ruleId;
+                openUrl(url);
+            }
+            else {
+                alert("No row selected or No rule Defined");
+            }
+        }
+        function addOrModifyMultiArtist(){
+            var url = "<?php echo webPath(ROOT_PHP_CONFIGURATION_MP3PRETTIFIER, 'MultiArtistView.php') ?>";
+            var row = $('#dgSearch').datagrid('getSelected');
+            if (row){
+                if (row.status == "MULTIARTIST") {
+                    url += "?id=" + row.ruleId;
+                }
+                else {
+                    url += "?artist=" + encodeURIComponent(row.artist);
+                }
+                openUrl(url);
+            }
+            else {
+                alert("No row selected");
+            }
         }
         function formatPrice(val,row){
             var text = row.artist + ' ' + row.title;
@@ -178,6 +205,7 @@ function getNextArtistId($artistArray, $artistId){
         <div id="toolbarArtistWord">
             <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="addRule()">Add Rule</a>
             <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editRule()">Edit Rule</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="addOrModifyMultiArtist()">MultiArtist</a>
             <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editSong()">Edit Song</a>
         </div>
 	</span>

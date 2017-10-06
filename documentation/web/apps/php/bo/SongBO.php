@@ -100,6 +100,7 @@ class SongBO
                 if ($mezzmoFileTO != null){
                     $song->status = $mezzmoFileTO->status;
                     $song->isNew = $mezzmoFileTO->isNew;
+                    $song->ruleId = $mezzmoFileTO->ruleId;
                 }
             }
         }

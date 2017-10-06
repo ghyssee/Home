@@ -8,6 +8,7 @@
     include_once documentPath (ROOT_PHP_HTML, "config.php");
     include_once documentPath (ROOT_PHP_BO, "SessionBO.php");
     include_once documentPath (ROOT_PHP_BO, "ArtistBO.php");
+    include_once documentPath (ROOT_PHP_BO, "MyClasses.php");
     $multiArtist = readJSONWithCode(JSON_MULTIARTIST);
 ?>
 <html>
@@ -30,10 +31,24 @@ if (isset($_REQUEST["id"])) {
     $multiArtistTO = $multiAritstBO->findMultiArtist($multiArtistId);
     $multiAritstBO->fillMultiArtistInfo($multiArtistTO);
 }
+else if (isset($_REQUEST["artist"])) {
+    $artist = $_REQUEST["artist"];
+    $multiArtistId = null;
+    $multiArtistTO = new MultiArtist();
+    $errorObj = new FeedBackTO();
+    $array = Array();
+    $multiArtistBO = new MultiArtistBO();
+    $multiArtistBO->buildArtists($artist, $errorObj, $array);
+    if (count($array) > 1){
+        $multiArtistTO = $multiArtistBO->fillMultiArtistForm($array);
+    }
+    $multiArtistTO->master = MasterType::SEQUENCE;
+}
 else {
     $multiArtistId = null;
     $multiArtistTO = new MultiArtist();
     $multiArtistTO->master = MasterType::SEQUENCE;
+
 }
 ?>
 <script>
