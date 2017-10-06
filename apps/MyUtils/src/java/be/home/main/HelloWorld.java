@@ -114,19 +114,20 @@ private static void testAlbumArtist(){
 
         //System.out.println(mp3Helper.stripFilename("B.A.D. (Big Audio Dynamite) - E = MC2"));
 
-        System.out.println(mp3Helper.prettifySong("Voulez Vous Coucher Avec Moi Ce Soir? (Lady Marmalade)"));
+        /*System.out.println(mp3Helper.prettifySong("Voulez Vous Coucher Avec Moi Ce Soir? (Lady Marmalade)"));
         System.out.println(mp3Helper.prettifyAlbum("The Flying Dutch 2017 Edition NL", null));
         System.out.println(getTitleArtistException("Lost Frequencies", "Reality"));
         System.out.println(getArtistTitleException("Lost Frequencies", "Reality"));
-        System.out.println(getArtistTitleException("Brunner Und Brunner", "Im Namen Der Liebe"));
         System.out.println(mp3Helper.prettifySong("LOL (Radio Mix FT Fast Edit)"));
         System.out.println(mp3Helper.prettifyArtist("Person Z"));
         System.out.println(mp3Helper.prettifyArtist("Person Z, (a"));
-        System.out.println(mp3Helper.prettifyArtist("Duke Dumont Feat. A*M*E"));
+        System.out.println(mp3Helper.prettifyArtist("KC Flight"));
         System.out.println(getTitleArtistException("Tina Turner", "Teach Me Again"));
 
         System.out.println(getArtistTitleException("Fifth Harmony Feat. Ty Dolla Sign", "Work From Home"));
         //System.out.println(getArtistTitleException("The Ramblers", "Dag Schatteboutje"));
+        */
+        System.out.println(getArtistTitleException("Sarah Brightman", "Time To Say Goodbye (Con Te Partiro) (Sarah's Intimate Version)"));
 
 
     }
