@@ -35,4 +35,13 @@ class MezzmoFileTO {
     public $isNew;
 }
 
+class FeedBackTO {
+    public $success;
+    public $errorFound;
+    public $message;
+    public $errorMsg;
+    public $artistsAdded;
+    public $multiArtist;
+}
+
 ?>

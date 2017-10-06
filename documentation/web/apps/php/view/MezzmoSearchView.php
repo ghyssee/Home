@@ -123,6 +123,14 @@ function getNextArtistId($artistArray, $artistId){
             return '<a href="'+url+'" target="_blank">Edit</a>';
             //return "edit";
         }
+        function addRule(){
+            var url = "<?php echo webPath(ROOT_PHP_CONFIGURATION_MP3PRETTIFIER, 'ArtistSongRelationshipView.php') ?>";
+            var row = $('#dgSearch').datagrid('getSelected');
+            if (row) {
+                url += "?artist=" + row.artist + "&song=" + row.title;
+            }
+            openUrl(url);
+        }
         function formatPrice(val,row){
             var text = row.artist + ' ' + row.title;
             var url = "https://www.google.be/search?q=" +encodeURIComponent(text);
@@ -156,7 +164,7 @@ function getNextArtistId($artistArray, $artistId){
             <th data-options="field:'artistId',width:15">ArtistId</th>
             <th data-options="field:'artist',width:100, formatter: formatArtist">Artist</th>
             <th data-options="field:'title',width:100">Title</th>
-            <th data-options="field:'Song',width:100, formatter: formatPrice">Song</th>
+            <th data-options="field:'song',width:100, formatter: formatPrice">Song</th>
             <th data-options="field:'album',width:50">Album</th>
             <th data-options="field:'fileId',width:15">File</th>
             <th data-options="field:'file',width:200">File</th>
@@ -231,8 +239,5 @@ function getSongViewLink(){
         return '';
     }
 
-    function addRule(){
-        openUrl("<?php echo webPath(ROOT_PHP_CONFIGURATION_MP3PRETTIFIER, 'ArtistSongRelationshipView.php') ?>");
-    }
 
 </script>

@@ -27,7 +27,7 @@ try {
         case "batch":
             batchProcess();
         default :
-            addMultiArtist2();
+            //addMultiArtist2();
             break;
     }
 }
@@ -147,6 +147,7 @@ function listMultiArtists(){
     echo json_encode($result);
 }
 
+/*
 function addMultiArtist2(){
     $line = "Zucchero & Ilse DeLange";
     $multiArtistBO = new MultiArtistBO();
@@ -161,7 +162,7 @@ function addMultiArtist2(){
         println("ID: " . $result->multiArtist->id);
     }
 }
-
+*/
 function batchProcess(){
     $text = trim($_POST['multiArtistList']);
     $values = preg_split('/[\n\r]+/', $text);

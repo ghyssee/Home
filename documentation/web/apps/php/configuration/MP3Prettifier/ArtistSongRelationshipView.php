@@ -42,8 +42,11 @@ else if (isset($_REQUEST["song"]) || isset($_REQUEST["artist"])) {
         $artistBO = new ArtistBO();
         $artistTO = $artistBO->lookupArtistByName($artist);
         $list = Array();
-        if ($artist != null){
+        if ($artistTO != null){
             $list[] = $artistTO;
+            $artistSongRelationshipObj->oldArtistType = ArtistType::ARTIST;
+            $artistSongRelationshipObj->newArtistType = ArtistType::ARTIST;
+            $artistSongRelationshipObj->newArtistId = $artistTO->id;
         }
         $artistSongRelationshipObj->oldArtistListObj = $list;
     }

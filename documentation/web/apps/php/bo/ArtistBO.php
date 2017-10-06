@@ -381,7 +381,7 @@ class MultiArtistBO {
         return $text;
     }
 
-    function buildArtists($multiArtistTxt, $errorObj, &$artistArray){
+    function buildArtists($multiArtistTxt, FeedBackTO $errorObj, &$artistArray){
         //$array = preg_split("/(, |Feat. )/", $multiArtistTxt);
         $text = $this->getDelimterText();
         $array = preg_split($text, $multiArtistTxt);
@@ -407,7 +407,7 @@ class MultiArtistBO {
         }
     }
 
-    function buildDelimiters($multiArtistTxt, $errorObj, $artistArray, &$delimiterArray)
+    function buildDelimiters($multiArtistTxt, FeedbackTO $errorObj, $artistArray, &$delimiterArray)
     {
         $this->loadData();
         $multiArtistTxt = $multiArtistTxt;
@@ -633,7 +633,7 @@ class MultiArtistBO {
         function addMultiArtistConfig($multiArtistTxt)
         {
             $this->loadData();
-            $errorObj = new stdClass();
+            $errorObj = new FeedBackTO();
             $errorObj->success = false;
             $errorObj->errorFound = false;
             $errorObj->message = '';

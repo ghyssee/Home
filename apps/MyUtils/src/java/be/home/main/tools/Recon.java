@@ -112,7 +112,8 @@ public class Recon  {
         createCommonTables(DATA_MGR, config.code, getFile("DML_2_MATCHENGINE"));
         //createMatchingTables(DATA_MGR, fieldsStream1, dataSource1, dataType, getFile("DML_ILPOST"));
         //createMatchingTables(DATA_MGR, fieldsStream2, dataSource2, dataType, getFile("DML_ILPOST_SUPl"));
-        createMatchingTables2(DATA_MGR, config.leftStream, config.datatype, getFile("DML_2_ILPOST"));
+        createMatchingTables2(DATA_MGR, config.leftStream, config.datatype, getFile("DML_2_PST"));
+        createMatchingTables2(DATA_MGR, config.rightStream, config.datatype, getFile("DML_2_ALVADIS"));
         createSynonyms(FAR_USER, config.description, config.leftStream.getDatasource().code, config.rightStream.getDatasource().code,
                 config.datatype.code, getFile("FU_SYNONYMS"));
         createSynonyms(FAR_READ, config.description, config.leftStream.getDatasource().code, config.rightStream.getDatasource().code,
