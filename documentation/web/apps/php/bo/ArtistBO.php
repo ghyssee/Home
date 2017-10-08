@@ -2,6 +2,7 @@
 require_once documentPath (ROOT_PHP, "config.php");
 require_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 require_once documentPath (ROOT_PHP_BO, "CacheBO.php");
+require_once documentPath (ROOT_PHP_BO, "MyClasses.php");
 require_once documentPath (ROOT_PHP_BO, "ArtistSongRelationshipBO.php");
 
 class ArtistTO{

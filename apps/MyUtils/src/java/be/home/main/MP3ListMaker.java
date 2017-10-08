@@ -56,6 +56,7 @@ public class MP3ListMaker extends BatchJobV2 {
             writer= new PrintWriter(new OutputStreamWriter(new FileOutputStream(destinationFile),
                     StandardCharsets.UTF_8), true);
             String iPodBase = Setup.getInstance().getFullPath(Constants.Path.IPOD);
+            //String iPodBase = "o:/Shared/Mijn Muziek/Eric/Ultratop/";
             File folder = new File(iPodBase);
             if (folder.isDirectory()) {
                 File[] listOfFiles = folder.listFiles();

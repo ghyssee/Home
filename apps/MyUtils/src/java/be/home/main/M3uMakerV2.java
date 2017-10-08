@@ -74,6 +74,7 @@ public class M3uMakerV2 extends BatchJobV2 {
     public void processMonth(UltratopConfig.Config m3u, UltratopConfig.Year year, UltratopConfig.Month m3uMonth) {
 
         String baseFolder = Setup.getFullPath(Constants.Path.IPOD) + File.separator + m3uMonth.baseDir + File.separator;
+        //String baseFolder = "o:/Shared/Mijn Muziek/Eric/Ultratop/" + m3uMonth.baseDir + File.separator;
         String inputFile =  baseFolder + m3uMonth.inputFile;
         List <M3uTO> songsOfUltratop = null;
         try {
@@ -220,7 +221,7 @@ public class M3uMakerV2 extends BatchJobV2 {
                 song.setArtist(array[0].trim());
                 song.setSong(array[1].trim());
                 for (int i=2; i < array.length; i++){
-                    song.setSong(song.getSong()+array[i]);
+                    song.setSong(song.getSong()+ SPLIT_SONG + array[i]);
                 }
                 break;
         }
