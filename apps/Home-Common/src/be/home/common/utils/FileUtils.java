@@ -10,12 +10,14 @@ import java.net.URLEncoder;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
+
+import static java.nio.file.FileVisitOption.FOLLOW_LINKS;
 
 public class FileUtils {
 
@@ -253,5 +255,41 @@ public class FileUtils {
 		Path pathRelative = pathBase.relativize(pathAbsolute);
 		return pathRelative;
 	}
+
+	public static String normalizePath(String path){
+		if (!path.endsWith("\\") || !path.endsWith("/")){
+			path += File.separator;
+		}
+		return path;
+	}
+
+	public static List<Path> match(String glob, String location, int depth) throws IOException {
+
+		List <Path> files = new ArrayList<>();
+		final PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher(
+				glob);
+
+
+		EnumSet<FileVisitOption> opts = EnumSet.of(FOLLOW_LINKS);
+		Files.walkFileTree(Paths.get(location), opts, depth, new SimpleFileVisitor<Path>() {
+
+			@Override
+			public FileVisitResult visitFile(Path path,
+											 BasicFileAttributes attrs) throws IOException {
+				if (pathMatcher.matches(path)) {
+					files.add(path);
+				}
+				return FileVisitResult.CONTINUE;
+			}
+
+			@Override
+			public FileVisitResult visitFileFailed(Path file, IOException exc)
+					throws IOException {
+				return FileVisitResult.CONTINUE;
+			}
+		});
+		return files;
+	}
+
 
 }

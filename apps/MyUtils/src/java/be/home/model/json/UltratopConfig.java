@@ -12,6 +12,8 @@ public class UltratopConfig  {
         public String year;
         public String listFile;
         public boolean enabled;
+        public String relativePathId;
+        public String filter;
         public List <Month> m3uMonth = new ArrayList <Month> ();
 
         public String toString() {
