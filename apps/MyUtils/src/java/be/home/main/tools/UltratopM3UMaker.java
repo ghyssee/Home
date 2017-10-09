@@ -120,13 +120,6 @@ public class UltratopM3UMaker extends BatchJobV2 {
 
     }
 
-    private String getFullPathYearListFile(String listFile) {
-        String base = Setup.getInstance().getFullPath(Constants.Path.ONEDRIVE) +
-                File.separator + listFile;
-        return base;
-
-    }
-
     private void makePlayList(List<M3uTO> ultratopList, String baseDir){
         PrintWriter writer = null;
         //OutputStreamWriter writer = null;
