@@ -100,7 +100,7 @@ public class UltratopM3UMaker extends BatchJobV2 {
             makePlayList(songsOfUltratop, baseFolder);
             boolean errorFound = false;
             for (M3uTO song : songsOfUltratop){
-                if (song.getM3uSong() == null){
+                if (!song.isMatched()){
                     if (!errorFound){
                         errorFound = true;
                         log.error("ERRORS Found");
@@ -149,13 +149,9 @@ public class UltratopM3UMaker extends BatchJobV2 {
              */
             writer.print('\ufeff');
             for (M3uTO m3uTO : ultratopList) {
-                if (m3uTO.getM3uSong() != null) {
-                    //System.out.println(m3uTO.getM3uSong());
+                if (m3uTO.isMatched()) {
                     writer.println(convertSongNameToM3uSongName(m3uTO.getM3uSong()));
                     counter++;
-                }
-                else {
-                    //System.out.println("ERROR: " + m3uTO.getOriginalLine());
                 }
             }
         } finally{
@@ -300,6 +296,7 @@ public class UltratopM3UMaker extends BatchJobV2 {
                 log.info("Lookup: " + song.getLine());
                 if (foundSong != null) {
                     song.setM3uSong(foundSong.getM3uSong());
+                    song.setMatched(true);
                 }
             }
         }

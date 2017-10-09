@@ -48,24 +48,12 @@ public class M3uTO {
         this.track = track;
     }
 
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
-    }
-
     public int getStatus() {
         return status;
     }
 
     public void setStatus(int status) {
         this.status = status;
-    }
-
-    public String getOriginalLine() {
-        return originalLine;
     }
 
     public String getM3uSong() {
@@ -76,26 +64,20 @@ public class M3uTO {
         this.m3uSong = m3uSong;
     }
 
-    public void setOriginalLine(String originalLine) {
-        this.originalLine = originalLine;
-    }
-
-    public File getMp3File() {
-        return mp3File;
-    }
-
-    public void setMp3File(File mp3File) {
-        this.mp3File = mp3File;
-    }
 
     private String song;
     private String artist;
     private String line;
     private String track;
-    private String errorMessage;
     private int status;
-    private String originalLine;
     private String m3uSong;
-    private File mp3File;
+    private boolean matched;
 
+    public boolean isMatched() {
+        return matched;
+    }
+
+    public void setMatched(boolean matched) {
+        matched = matched;
+    }
 }
