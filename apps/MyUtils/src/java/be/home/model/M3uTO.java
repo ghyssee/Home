@@ -78,6 +78,6 @@ public class M3uTO {
     }
 
     public void setMatched(boolean matched) {
-        matched = matched;
+        this.matched = matched;
     }
 }

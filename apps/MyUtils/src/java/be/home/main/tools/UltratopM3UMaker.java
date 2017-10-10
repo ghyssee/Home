@@ -284,7 +284,7 @@ public class UltratopM3UMaker extends BatchJobV2 {
         log.info("Start: Match Ultratop");
 
         for (M3uTO song: ultratopList) {
-            if (song.getM3uSong() == null) {
+            if (!song.isMatched()) {
                 M3uTO foundSong = findSong(song, ListOfMP3Files);
                 log.info("Lookup: " + song.getLine());
                 if (foundSong != null) {
