@@ -46,7 +46,7 @@ $smarty->display('TableGridV4.tpl');
 ?>
 <script type="text/javascript">
     $(function(){
-        var dg = $('#dgArtistCRUD').datagrid();
+        var dg = $('#dgArtistCRUD');
         dg.datagrid('enableFilter');
     });
 </script>

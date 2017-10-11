@@ -36,7 +36,7 @@
 ?>
 <script type="text/javascript">
     $(function(){
-        var dg = $('#dgGlobalWord').datagrid();
+        var dg = $('#dgGlobalWord');
         dg.datagrid('enableFilter');
     });
 </script>

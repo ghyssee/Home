@@ -39,7 +39,7 @@ $smarty->display('TableGridV4.tpl');
 ?>
 <script type="text/javascript">
     $(function(){
-        var dg = $('#dgGlobalSentence').datagrid();
+        var dg = $('#dgGlobalSentence');
         dg.datagrid('enableFilter',);
     });
 </script>

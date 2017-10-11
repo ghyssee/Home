@@ -58,55 +58,12 @@ public class Recon  {
 
     public void start() {
 
-        Configuration config = (Configuration) JSONUtils.openJSON("C:\\Projects\\far\\DBUtil\\Setup.json", Configuration.class);
+        Configuration config = (Configuration) JSONUtils.openJSON("C:\\Projects\\far\\DBUtil\\SetupGiftcards.json", Configuration.class);
 
         List<FileRuleSet> fileRuleSetList = Arrays.asList(
                 new FileRuleSet("ALLREADY_LOADED_FILE")
         );
 
-        List<Field> fieldsStream1 = Arrays.asList(
-                new Field("CATEGORY", "VARCHAR2", "100", false, "Category"),
-                new Field("CATEGORY_CODE", "VARCHAR2", "10", false, "Category Code"),
-                new Field("DEST_DATE", "VARCHAR2", "50", false, "Destination Date"),
-                new Field("FLIGHTCODE", "VARCHAR2", "100", true, "Flight Code"),
-                new Field("WEIGHT", "NUMBER", null, false, "Weight"),
-                new Field("LETTER", "NUMBER", null, false, "Letter"),
-                new Field("EMS", "NUMBER", null, false, "EMS"),
-                new Field("SV", "NUMBER", null, false, "SV"),
-                new Field("ARRIVAL_CENTER", "VARCHAR2", "100", false, "Arrival Center"),
-                new Field("DISP_OFFICE", "VARCHAR2", "20", true, "Disposit Office"),
-                new Field("DEST_OFFICE", "VARCHAR2", "20", true, "Destination Office"),
-                new Field("DISP_OFFICE_SHORT", "VARCHAR2", "20", true, "Disposit Office (Short)"),
-                new Field("DEST_OFFICE_SHORT", "VARCHAR2", "20", true, "Destination Office (Short)"),
-                new Field("MAIL_NO", "VARCHAR2", "20", false, "Mail No")
-        );
-        List<Field> fieldsStream2 = Arrays.asList(
-                new Field("SUPPLIER", "VARCHAR2", "100", false, "Supplier"),
-                new Field("CATEGORY", "VARCHAR2", "100", false, "Category"),
-                new Field("CATEGORY_CODE", "VARCHAR2", "10", false, "Category Code"),
-                new Field("FLIGHTCODE", "VARCHAR2", "100", false, "Flight Code"),
-                new Field("MAIL_NO", "VARCHAR2", "20", false, "Mail No"),
-                new Field("DISP_OFFICE", "VARCHAR2", "20", false, "Disposit Office"),
-                new Field("DEST_OFFICE", "VARCHAR2", "20", false, "Destination Office"),
-                new Field("FORWARD_FROM", "VARCHAR2", "20", false, "Forwarded From"),
-                new Field("FORWARD_TO", "VARCHAR2", "20", false, "Forwarded To"),
-                new Field("DEST_DATE", "VARCHAR2", "50", false, "Destination Date"),
-                new Field("SORTE", "VARCHAR2", "50", false, "Sorte"),
-                new Field("WEIGHT", "NUMBER", null, false, "Weight"),
-                new Field("WEIGHT_LCAO", "NUMBER", null, false, "Wieght LCAO"),
-                new Field("WEIGHT_EMS", "NUMBER", null, false, "Weight EMS"),
-                new Field("WEIGHT_CP", "NUMBER", null, false, "Weight CP")
-        );
-        List<FileType> fileTypesStream1 = Arrays.asList(
-                new FileType("PST_GIFTCARD_FILE", "^ILPOST_.*\\.csv$", "pst-giftcard", "PST Giftcard File", "DEFAULT", fileRuleSetList)
-        );
-        List<FileType> fileTypesStream2 = Arrays.asList(
-                new FileType("ALV_GIFTCARD_FILE", "^ALVADIS.*\\.txt$", "alvadis-giftcard", "Alvadis Giftcard File", "DEFAULT", fileRuleSetList)
-        );
-
-        List<FileType> fileTypes = new ArrayList<>();
-        fileTypes.addAll(fileTypesStream1);
-        fileTypes.addAll(fileTypesStream2);
 
         createCommonTables(DATA_MGR, config.description, getFile("DML_MATCHENGINE"));
         createCommonTables(DATA_MGR, config.code, getFile("DML_2_MATCHENGINE"));
@@ -126,68 +83,7 @@ public class Recon  {
         );
 
         createGlobal(META_DATA_MGR, config.userId, config.datatype, streams, getFile("MDM_SETUP_GLOBAL"));
-        //Datasource datasource1 = new Datasource(dataSource1, "PST_GIFTCARD");
-        //Datasource datasource2 = new Datasource(dataSource2, "ALV_GIFTCARD");
 
-        //Datatype datatype = new Datatype(dataType, "Giftcards");
-        /*
-        Stream stream1 = new Stream("PST Giftcards", "FILE", "N", datasource1, fileTypesStream1);
-        Stream stream2 = new Stream("ALVADIS Giftcards", "FILE", "N", datasource2, fileTypesStream2);
-        List<Stream> streams = Arrays.asList(
-                stream1,
-                stream2
-        );
-        createGlobal(META_DATA_MGR, userId, datatype, streams, getFile("MDM_SETUP_GLOBAL"));
-
-        List<MatchPredicate> listMatchPredicateManual = Arrays.asList(
-                new MatchPredicate("Amount Equals", "AMOUNT", null, "AMOUNT", "=", null, null, null, "N")
-        );
-        List<MatchPredicate> listMatchPredicateAutomatic = Arrays.asList(
-                new MatchPredicate("Dispatching Office Equals", "DISP_OFFICE", null, "DISP_OFFICE", "=", null, null, null, "N"),
-                new MatchPredicate("Office Of Destination Equals", "DEST_OFFICE", null, "DEST_OFFICE", "=", null, null, null, "N"),
-                new MatchPredicate("Mail No Equals", "MAIL_NO", null, "MAIL_NO", "=", null, null, null, "N"),
-                new MatchPredicate("Mail Type Equals", "CATEGORY_CODE", null, "CATEGORY_CODE", "=", null, null, null, "N")
-        );
-        List<MatchPredicate> listMatchPredicateAutomatic2 = Arrays.asList(
-                new MatchPredicate("Dispatching Office Equals", "DISP_OFFICE", null, "DISP_OFFICE_SHORT", "=", null, null, null, "N"),
-                new MatchPredicate("Office Of Destination Equals", "DEST_OFFICE", null, "DEST_OFFICE_SHORT", "=", null, null, null, "N"),
-                new MatchPredicate("Mail No Equals", "MAIL_NO", null, "MAIL_NO", "=", null, null, null, "N"),
-                new MatchPredicate("Mail Type Equals", "CATEGORY_CODE", null, "CATEGORY_CODE", "=", null, null, null, "N")
-        );
-        List<MatchPredicate> listMatchPredicateAutomatic3 = Arrays.asList(
-                new MatchPredicate("Flight Code", "FLIGHTCODE", null, "FLIGHTCODE", "=", null, null, null, "N")
-        );
-        //Function makeNull = new Function("MakeNull", "Make Null", Function.DataType.NUMBER, Function.FunctionType.M);
-        List<Function> newFunctions = new ArrayList();
-        //List<Function> newFunctions =  Arrays.asList(
-//                makeNull
-  //      );
-        //Function isNull = new Function("IsNull", "Is Null");
-        List<MatchPredicate> listMatchPredicateAutomatic4 = Arrays.asList(
-                new MatchPredicate("Dispatching Office Equals", "DISP_OFFICE", null, "DISP_OFFICE_SHORT", "=", null, null, null, "N"),
-                new MatchPredicate("Office Of Destination Equals", "DEST_OFFICE", null, "DEST_OFFICE_SHORT", "=", null, null, null, "N"),
-                new MatchPredicate("Mail No Equals", "MAIL_NO", null, "MAIL_NO", "=", null, null, null, "N"),
-                new MatchPredicate("Categroy Code Is Null", "CATEGORY_CODE", null, "CATEGORY_CODE", "=", null, null, null, "N")
-        );
-        List<MatchPredicate> listMatchPredicateAutomatic5 = Arrays.asList(
-                new MatchPredicate("Office Of Destination Equals", "DEST_OFFICE", null, "DEST_OFFICE_SHORT", "=", null, null, null, "N"),
-                new MatchPredicate("Mail No Equals", "MAIL_NO", null, "MAIL_NO", "=", null, null, null, "N"),
-                new MatchPredicate("Mail Type Equals", "CATEGORY_CODE", null, "CATEGORY_CODE", "=", null, null, null, "N"),
-                new MatchPredicate("Disp Office Is Null", "DISP_OFFICE", null, "DISP_OFFICE", "=", null, null, null, "N")
-        );
-
-        List<MatchAlgorithm> listMatchAlgorithm = Arrays.asList(
-                new MatchAlgorithm("ILPOST_MAN", "Match on Amount", "n", "n", "1", "MANUAL", listMatchPredicateManual),
-                new MatchAlgorithm("ILPOST_RUN1", "Match on Flight code", "n", "n", "1", "AUTOMATIC", listMatchPredicateAutomatic3),
-                new MatchAlgorithm("ILPOST_RUN2", "Match on DISP / DEST / MAIL_NO", "n", "n", "2", "AUTOMATIC", listMatchPredicateAutomatic),
-                new MatchAlgorithm("ILPOST_RUN3", "Match on CATEGORY / Match on SHORT DISP / DEST / MAIL_NO", "n", "n", "3", "AUTOMATIC", listMatchPredicateAutomatic2),
-                new MatchAlgorithm("ILPOST_RUN4", "Match On SHORT DISP / DEST / MAIL_NO And On Empty Category Code", "n", "n", "4", "AUTOMATIC", listMatchPredicateAutomatic4),
-                new MatchAlgorithm("ILPOST_RUN5", "Match on CATEGORY / Match on SHORT DEST / MAIL_NO And On Empty Disp Office", "n", "n", "5", "AUTOMATIC", listMatchPredicateAutomatic5)
-        );
-
-        MatchEngine me = new MatchEngine("GIFTCARD", "Giftcards", stream1, stream2, listMatchAlgorithm);
-        //createFunctions(META_DATA_MGR, userId, newFunctions, getFile("MDM_SETUP_FUNCTIONS"));
-        */
         createMatchEngine(META_DATA_MGR, config.userId, config, getFile("MDM_SETUP_MATCHENGINE"));
 
         createReport(META_DATA_MGR, config.userId, config.leftStream.getDescription(), config.rightStream.getDescription(),

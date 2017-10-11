@@ -108,8 +108,17 @@ function getFullPath($pathId)
 
 }
 
+function getHostNameCache(){
+    static $host;
+    if (!isset($host)){
+        $host = gethostname();
+    }
+    return $host;
+}
+
 function replaceSystemVariables($string){
     $string = str_replace("%ONEDRIVE%", getOneDrivePath(), $string );
+    $string = str_replace("%HOST%",getHostNameCache(), $string );
     return $string;
 }
 
@@ -142,6 +151,7 @@ function readJSON($file, $associative = false){
 
 function readJSONWithCode($code, $associative = false){
     $file = getFullPath($code);
+    logInfo("read " . $file);
     return readJSON($file, $associative);
 }
 

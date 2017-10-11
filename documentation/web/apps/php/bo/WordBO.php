@@ -2,16 +2,15 @@
 require_once documentPath (ROOT_PHP, "config.php");
 require_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 
-$file = getFullPath(JSON_MP3PRETTIFIER);
-$backupFile = getFullPath(PATH_CONFIG_BACKUP) . "/MP3Prettiffier." . date("Ymd") . ".json";
-
 class WordBO
 {
     public $mp3PrettifierObj;
     public $file;
+    public $backupFile;
 
     function __construct() {
         $this->file = getFullPath(JSON_MP3PRETTIFIER);
+        $this->backupFile = getFullPath(PATH_CONFIG_BACKUP) . "/MP3Prettiffier." . date("Ymd") . ".json";
         //$this->artistObj = readJSON( $this->file);
         //$this->loadFullData();
     }
@@ -60,7 +59,7 @@ class WordBO
     }
 
     function backupGlobalWord($word, $type, $category, $mode){
-        $file = $GLOBALS['backupFile'];
+        $file = $this->backupFile;
         $today = date("d/m/Y H:i:s");
         $word->type = $type;
         $word->category = $category;
