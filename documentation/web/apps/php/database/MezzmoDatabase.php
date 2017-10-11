@@ -130,7 +130,7 @@ class MezzmoSQLiteDatabase extends CustomDatabase {
         return $songRec;
     }
 
-    public function searchSong($id){
+    public function searchSong($song){
 
         $query = "SELECT " .
             $this->getFileColumns() . "," .
@@ -141,11 +141,19 @@ class MezzmoSQLiteDatabase extends CustomDatabase {
             $this->joinArtist() .
             $this->joinAlbumArtist() .
             $this->joinFileExtension() .
-            "WHERE  FILEEXTENSION.data = 'mp3' " .
-            "AND FILEARTIST.id = :id ";
+            "WHERE  FILEEXTENSION.data = 'mp3' ";
 //        $result = $this->query($query);
+        $array = Array();
+        if (isset($song->artistId)){
+            $query .= "AND FILEARTIST.id = :id ";
+            $array[":id"] =  $song->artistId;
+        }
+        else if (isset($song->artist)){
+            $query .= "AND FILEARTIST.data = :artist ";
+            $array[":artist"] =  $song->artist;
+        }
         $sth = $this->prepare($query, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-        $sth->execute(array(':id' => $id));
+        $sth->execute($array);
         $result = $sth->fetchAll();
         return $result;
     }

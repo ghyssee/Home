@@ -88,7 +88,7 @@ class SongBO
     function searchSong($songTO)
     {
         //$db = openDatabase(MEZZMOV2);
-        $result = $this->db->searchSong($songTO->artistId);
+        $result = $this->db->searchSong($songTO);
         $nr = count($result);
         $songs = array();
         $ericBO = new EricBO();

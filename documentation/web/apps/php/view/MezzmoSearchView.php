@@ -28,19 +28,23 @@ if (isset($_POST['submit'])) {
     $song = new SongTO();
     assignNumber($artistId, "artistId2");
     assignNumber($song->artistId, "artistId");
+    $listboxArtistId = false; 
     if (empty($song->artistId)){
         $song->artistId = $artistId;
+        $listboxArtistId = true;
         writeJSONWithCode($mp3Settings, JSON_MP3SETTINGS);
     }
     assignNumber($song->fileId, "fileId");
-    assignField($song->artistName, "artistName");
-    if (empty($song->artistId) && empty($song->fileId) && empty($song->artistName)){
+    assignField($song->artist, "artistName");
+    if (empty($song->artistId) && empty($song->fileId) && empty($song->artist)){
         echo "all empty";
     }
     else {
-        $mp3Settings->mezzmo->artistId = $song->artistId;
-        writeJSONWithCode($mp3Settings, JSON_MP3SETTINGS);
-        $mp3Settings->mezzmo->artistId = getNextArtistId($artistArray, $mp3Settings->mezzmo->artistId);
+        if ($listboxArtistId) {
+            $mp3Settings->mezzmo->artistId = $song->artistId;
+            writeJSONWithCode($mp3Settings, JSON_MP3SETTINGS);
+            $mp3Settings->mezzmo->artistId = getNextArtistId($artistArray, $mp3Settings->mezzmo->artistId);
+        }
         $data = $songBO->searchSong($song);
         $songBO->saveArtistSongTest($data);
     }
