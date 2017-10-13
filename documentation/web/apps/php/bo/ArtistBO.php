@@ -59,6 +59,11 @@ class ArtistBO
                             $array[] = $value;
                         }
                     }
+                    else if ($test->field == "stageName"){
+                        if (strpos(strtoupper($value->stageName), strtoupper($item->value)) !== false) {
+                            $array[] = $value;
+                        }
+                    }
                 }
 
             }
@@ -75,6 +80,7 @@ class ArtistBO
         else {
             $list = Array();
             foreach ($this->artistObj->list as $key => $item) {
+                $item->stageName = $this->getStageName($item);
                 $list[$item->id] = $item;
             }
             CacheBO::saveObject(CacheBO::ARTISTS, $list);
@@ -103,15 +109,27 @@ class ArtistBO
         }
         return null;
     }
+
+    function getStageName($artistObj){
+        $artist = isset($artistObj->stageName) ? $artistObj->stageName : $artistObj->name;
+        return $artist;
+    }
+
+
     function lookupArtistByName($name)
     {
         foreach ($this->artistObj->list as $key => $value) {
-            if (strcmp($value->name, $name) == 0) {
+            if (strcmp($value->name, $name) == 0 || strcmp($this->getStageName($value),$name) == 0) {
                 $singleArtistObj = $value;
                 return $singleArtistObj;
             }
         }
         return null;
+    }
+
+    function fillStageName($artistObj)
+    {
+        $artistObj->stageName = $this->getStageName($artistObj);
     }
 
     function saveArtist($artist)

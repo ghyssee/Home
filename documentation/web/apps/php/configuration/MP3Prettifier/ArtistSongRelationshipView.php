@@ -42,6 +42,7 @@ else if (isset($_REQUEST["song"]) || isset($_REQUEST["artist"])) {
         $artist = $_REQUEST["artist"];
         $artistBO = new ArtistBO();
         $artistTO = $artistBO->lookupArtistByName($artist);
+        $artistBO->fillStageName($artistTO);
         $list = Array();
         if ($artistTO != null){
             $list[] = $artistTO;
@@ -140,7 +141,7 @@ else {
 
                     $smarty->assign("contacts", array(
                             array("field" => "id", "label"=>"Id", "size" => 30, "hidden" => true),
-                            array("field" => "name", "label"=>"Name", "size" => 40, "required" => true, "sortable" => true)
+                            array("field" => "stageName", "label"=>"Name", "size" => 40, "required" => true, "sortable" => true)
                         )
                     );
                     //** un-comment the following line to show the debug console
@@ -168,7 +169,7 @@ else {
                                 <tr>
                                     <th data-options="field:'id',hidden:true">Id</th>
                                     <th data-options="field:'type',width:20,align:'center',formatter:function(value,row,index){return formatArtistType(value,row,index);}">Free</th>
-                                    <th data-options="field:'name',width:100">Artist</th>
+                                    <th data-options="field:'stageName',width:100">Artist</th>
                                 </tr>
                                 </thead>
                             </table>
@@ -332,48 +333,6 @@ else {
         }
     }
 
-    function insert(){
-        var cbOldArtist = 'cbOldArtist';
-        var row = getCmbArtist(cbOldArtist);
-        if (row != null){
-            var rows = $('#dgListOldArtist').edatagrid('getRows');
-            var alreadyAdded = false;
-            for(var i=0; i<rows.length; i++){
-                if (rows[i].id == row.id) {
-                    alreadyAdded = true;
-                    break;
-                }
-            }
-            if (!alreadyAdded) {
-
-                $('#dgListOldArtist').datagrid('appendRow',{
-                    name: row.value,
-                    id: row.id
-                });
-                /*
-                var index = $('#dgOldArtist').edatagrid('getRows').length;
-                $('#dgOldArtist').edatagrid('addRow',{
-                    index: index,
-                    row:{
-                        artistId: row.id,
-                        artistName: row.value
-                    }
-                });*/
-
-                //$('#dlArtistList').datagrid('clearSelections');
-                $(cbOldArtist).combobox('clear');
-                $('#dgListOldArtist').datagrid('enableDnd');
-                $('#dgListOldArtist').edatagrid('selectRow', index);
-            }
-            else {
-                alert("already added");
-            }
-        } else {
-            alert("Please select an artist");
-        }
-        return false;
-    }
-
     function clearSongInfo(){
         $("#oldSong").textbox('setValue', '');
         $("#newSong").textbox('setValue', '');
@@ -503,9 +462,8 @@ else {
                 }
             }
             if (!alreadyAdded) {
-
                 $('#dgListOldArtist').datagrid('appendRow',{
-                    name: row.name,
+                    stageName: row.stageName,
                     id: row.id
                 });
                 $('#dgListOldArtist').datagrid('enableDnd');

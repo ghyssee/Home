@@ -144,12 +144,16 @@ class MezzmoSQLiteDatabase extends CustomDatabase {
             "WHERE  FILEEXTENSION.data = 'mp3' ";
 //        $result = $this->query($query);
         $array = Array();
-        if (isset($song->artistId)){
+        if (!empty($song->artistId)){
             $query .= "AND FILEARTIST.id = :id ";
             $array[":id"] =  $song->artistId;
         }
-        else if (isset($song->artist)){
-            $query .= "AND FILEARTIST.data = :artist ";
+        if (!empty($song->fileId)){
+            $query .= "AND FILE.id = :id ";
+            $array[":id"] =  $song->fileId;
+        }
+        else if (!empty($song->artist)){
+            $query .= "AND FILEARTIST.data like :artist ";
             $array[":artist"] =  $song->artist;
         }
         $sth = $this->prepare($query, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));

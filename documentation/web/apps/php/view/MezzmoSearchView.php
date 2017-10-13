@@ -26,16 +26,16 @@ $artistArray = $songBO->loadArtistIdsFile();
 if (isset($_POST['submit'])) {
     $data = array();
     $song = new SongTO();
-    assignNumber($artistId, "artistId2");
+    assignNumber($artistId, "cmbArtistId");
     assignNumber($song->artistId, "artistId");
-    $listboxArtistId = false; 
-    if (empty($song->artistId)){
+    assignNumber($song->fileId, "fileId");
+    assignField($song->artist, "artistName");
+    $listboxArtistId = false;
+    if (empty($song->artistId) && empty($song->fileId) && empty($song->artist)){
         $song->artistId = $artistId;
         $listboxArtistId = true;
         writeJSONWithCode($mp3Settings, JSON_MP3SETTINGS);
     }
-    assignNumber($song->fileId, "fileId");
-    assignField($song->artist, "artistName");
     if (empty($song->artistId) && empty($song->fileId) && empty($song->artist)){
         echo "all empty";
     }
@@ -92,7 +92,7 @@ function getNextArtistId($artistArray, $artistId){
         'size' => 100,
         'label' => 'Artist Name')));
     $layout->comboBox($artistArray, "artistId", "artist",
-        new Input(array('name' => "artistId2",
+        new Input(array('name' => "cmbArtistId",
             'label' => 'List Artists',
             'default' => $mp3Settings->mezzmo->artistId)));
 

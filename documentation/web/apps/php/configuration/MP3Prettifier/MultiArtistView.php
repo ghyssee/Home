@@ -39,8 +39,15 @@ else if (isset($_REQUEST["artist"])) {
     $array = Array();
     $multiArtistBO = new MultiArtistBO();
     $multiArtistBO->buildArtists($artist, $errorObj, $array);
-    if (count($array) > 1){
-        $multiArtistTO = $multiArtistBO->fillMultiArtistForm($array);
+    // filter out non existing artists
+    $filteredArray = Array();
+    foreach ($array as $key=>$item){
+        if (isset($item->id)){
+            $filteredArray[] = $item;
+        }
+    }
+    if (count($filteredArray) > 0){
+        $multiArtistTO = $multiArtistBO->fillMultiArtistForm($filteredArray);
     }
     $multiArtistTO->master = MasterType::SEQUENCE;
 }

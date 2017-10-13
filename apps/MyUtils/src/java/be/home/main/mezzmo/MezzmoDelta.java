@@ -101,7 +101,7 @@ public class MezzmoDelta extends BatchJobV2 {
         mezzmoFile.setId(comp.getFileTO().getId());
         mezzmoFile.setArtistId(comp.getFileArtistTO().getID());
         mezzmoFile.setArtistName((comp.getFileArtistTO().getArtist()));
-        mezzmoFile.setStatus(artistSongItem.getRule().name());
+        mezzmoFile.setStatus(artistSongItem.getRule() != null ? artistSongItem.getRule().name() : null);
         mezzmoFile.setNew(isNew);
         mezzmoFile.setRuleId(artistSongItem.getRuleId());
         getEricServiceInstance().insertMezzmoFile(mezzmoFile);

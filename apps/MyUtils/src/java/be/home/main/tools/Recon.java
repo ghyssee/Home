@@ -38,11 +38,13 @@ public class Recon  {
     private static String FAR_RECO_DATA = "TBS_DATA_DATA_MGR";
     private static String FAR_RECO_INDX = "TBS_INDX_DATA_MGR";
     private static int fileCounter = 1;
+    private static int fileCounterDrop = 990;
 
     public static void main(String args[]) {
         Recon instance = new Recon();
         try {
-            instance.start();
+            instance.start("C:\\Projects\\far\\DBUtil\\SetupEvoucher.json");
+            instance.start("C:\\Projects\\far\\DBUtil\\SetupEvoucher.json");
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -56,24 +58,30 @@ public class Recon  {
         return file;
     }
 
-    public void start() {
+    private String getDropFile(String file){
+        String index = StringUtils.leftPad(String.valueOf(fileCounterDrop++), 3, '0');
+        file = index + "_" + file + ".SQL";
+        return file;
+    }
 
-        Configuration config = (Configuration) JSONUtils.openJSON("C:\\Projects\\far\\DBUtil\\SetupGiftcards.json", Configuration.class);
+    public void start(String configurationFile) {
+
+        Configuration config = (Configuration) JSONUtils.openJSON(configurationFile, Configuration.class);
 
         List<FileRuleSet> fileRuleSetList = Arrays.asList(
                 new FileRuleSet("ALLREADY_LOADED_FILE")
         );
 
 
-        createCommonTables(DATA_MGR, config.description, getFile("DML_MATCHENGINE"));
-        createCommonTables(DATA_MGR, config.code, getFile("DML_2_MATCHENGINE"));
+        //createCommonTables(DATA_MGR, config.description, getFile("DML_MATCHENGINE"));
+        createCommonTables(DATA_MGR, config.code, getFile("DML_MATCHENGINE"));
         //createMatchingTables(DATA_MGR, fieldsStream1, dataSource1, dataType, getFile("DML_ILPOST"));
         //createMatchingTables(DATA_MGR, fieldsStream2, dataSource2, dataType, getFile("DML_ILPOST_SUPl"));
-        createMatchingTables2(DATA_MGR, config.leftStream, config.datatype, getFile("DML_2_PST"));
-        createMatchingTables2(DATA_MGR, config.rightStream, config.datatype, getFile("DML_2_ALVADIS"));
-        createSynonyms(FAR_USER, config.description, config.leftStream.getDatasource().code, config.rightStream.getDatasource().code,
+        createMatchingTables2(DATA_MGR, config.leftStream, config.datatype, getFile("DML_ALVADIS"));
+        createMatchingTables2(DATA_MGR, config.rightStream, config.datatype, getFile("DML_PST"));
+        createSynonyms(FAR_USER, config.code, config.leftStream.getDatasource().code, config.rightStream.getDatasource().code,
                 config.datatype.code, getFile("FU_SYNONYMS"));
-        createSynonyms(FAR_READ, config.description, config.leftStream.getDatasource().code, config.rightStream.getDatasource().code,
+        createSynonyms(FAR_READ, config.code, config.leftStream.getDatasource().code, config.rightStream.getDatasource().code,
                 config.datatype.code, getFile("FR_SYNONYMS"));
 
 
@@ -92,7 +100,7 @@ public class Recon  {
         createSecurity(META_DATA_MGR, config.code, config.role, getFile("MDM_INSERT_SECURITY_LEVELS"));
         createTempMatch(DATA_MGR, getFile("DML_TEMP_MATCH.sql"));
         //createDropTables(me, dataSource1, dataSource2, datatype, streams, fileTypes, newFunctions, "99_DROP.sql");
-        createDropTables(config, "99_DROP.sql");
+        createDropTables(config, getDropFile("DROP"));
         makeDriver();
     }
 
@@ -174,8 +182,8 @@ public class Recon  {
         VelocityUtils vu = new VelocityUtils();
         VelocityContext context = new VelocityContext();
         setObjects(context);
-        context.put("dataType", datatype.getDescription());
-        context.put("dataSource", stream.getDatasource().getDescription());
+        context.put("dataType", datatype.getCode());
+        context.put("dataSource", stream.getDatasource().getCode());
         context.put("columns", stream.getFields());
 
         context.put("date", new DateTool());

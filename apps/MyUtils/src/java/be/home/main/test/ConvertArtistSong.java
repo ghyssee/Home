@@ -88,9 +88,26 @@ public class ConvertArtistSong extends BatchJobV2 {
         writeJsonFileWithCode(mp3Prettifier, Constants.JSON.MP3PRETTIFIER);
         //writeJsonFileWithCode(artistSongRelationship, Constants.JSON.ARTISTSONGRELATIONSHIP);
         ArtistSongRelationshipBO.getInstance().save();
-        checkOldArtists();
+        //checkOldArtists();
+        checkArtistStageNames();
         checkArtistsWithThe();
         checkMultiArtistNames();
+
+    }
+
+    private void checkArtistStageNames() throws IOException {
+        ArtistBO artistBO = ArtistBO.getInstance();
+        boolean save = false;
+        for (Artists.Artist artist : artistBO.getArtistList()){
+            if (artist.getStageName() == null){
+                artist.setStageName(artist.getName());
+                log.info("Stagename not filled in: " + artist.getStageName());
+                save = true;
+            }
+        }
+        if (save){
+            artistBO.save();
+        }
 
     }
 

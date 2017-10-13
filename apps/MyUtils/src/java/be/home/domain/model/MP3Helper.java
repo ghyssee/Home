@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
  */
 public class MP3Helper {
 
-    private static MP3Helper mp3Helper = new MP3Helper();
+    private static MP3Helper mp3Helper = null;
     private static MP3Prettifier mp3Prettifer;
     private static final Logger log = Logger.getLogger(MP3Helper.class);
     private static List<MP3Prettifier.Word> multiArtistNames;
@@ -45,7 +45,12 @@ public class MP3Helper {
 
     }
 
-    public static MP3Helper getInstance() {
+    public static synchronized MP3Helper getInstance() {
+
+        if (mp3Helper == null){
+            mp3Helper = new  MP3Helper();
+        }
+
         return mp3Helper;
     }
 
