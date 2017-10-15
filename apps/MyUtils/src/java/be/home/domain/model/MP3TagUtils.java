@@ -150,6 +150,35 @@ public class MP3TagUtils {
         return ok;
     }
 
+    private boolean checkForAlbumExceptions(MGOFileAlbumCompositeTO comp){
+        ArtistSongItem item = MP3Helper.getInstance().prettifyRuleArtistSong(comp.getAlbumArtistTO().getName(), comp.getFileAlbumTO().getName(), true);
+        String artist = item.getArtist();
+        boolean ok = true;
+        if (!artist.equals(comp.getAlbumArtistTO().getName())){
+            addItem(comp.getFileTO().getId(),
+                    comp.getAlbumArtistTO().getId(),
+                    comp.getFileTO().getFile(),
+                    comp.getFileAlbumTO().getName(),
+                    MP3Tag.ALBUMARTIST, comp.getAlbumArtistTO().getName(), artist);
+            comp.getAlbumArtistTO().setName(artist);
+            ok = false;
+        }
+        // No Album Title Check For The Moment
+        /*
+        String title = item.getSong();
+        if (!title.equals(comp.getFileTO().getTitle())){
+            addItem(comp.getFileTO().getId(),
+                    comp.getFileTO().getId(),
+                    comp.getFileTO().getFile(),
+                    comp.getFileAlbumTO().getName(),
+                    MP3Tag.TITLE, comp.getFileTO().getTitle(), title);
+            comp.getFileTO().setTitle(title);
+            ok = false;
+        }*/
+
+        return ok;
+    }
+
     private boolean _checkForArtistExceptions(MGOFileAlbumCompositeTO comp){
         ArtistSongItem item = MP3Helper.getInstance().prettifyRuleArtistSong(comp.getFileArtistTO().getArtist(), comp.getFileTO().getTitle(), true);
         String artist = item.getArtist();
@@ -185,6 +214,7 @@ public class MP3TagUtils {
                         }
                     }
                     checkAlbumArtist(comp, id3v2Tag.isCompilation(), id3v2Tag.getAlbumArtist());
+                    checkForAlbumExceptions(comp);
                     checkAlbum(comp, id3v2Tag.getAlbum());
 
                     /*System.out.println(StringUtils.repeat('=', 100));
