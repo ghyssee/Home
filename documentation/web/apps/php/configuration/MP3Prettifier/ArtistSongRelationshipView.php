@@ -41,25 +41,24 @@ else if (isset($_REQUEST["song"]) || isset($_REQUEST["artist"])) {
     if (isset($_REQUEST["artist"])) {
         $artist = $_REQUEST["artist"];
         $artistBO = new ArtistBO();
-        $artistTO = $artistBO->lookupArtistByName($artist);
-        $artistBO->fillStageName($artistTO);
-        $list = Array();
-        if ($artistTO != null){
-            $list[] = $artistTO;
-            $artistSongRelationshipObj->oldArtistType = ArtistType::ARTIST;
-            $artistSongRelationshipObj->newArtistType = ArtistType::ARTIST;
-            $artistSongRelationshipObj->newArtistId = $artistTO->id;
-            $artistSongRelationshipObj->oldArtistListObj = $list;
-        }
-        else {
+        $filled = fillArtistSongRelation($artistBO, $artistSongRelationshipObj, $artist);
+        if (!$filled){
             $multiArtistBO = new MultiArtistBO();
             $errorObj = new FeedBackTO();
             $array = Array();
             $multiArtistBO->buildArtists($artist, $errorObj, $array);
-            if (count($array) > 1){
+            $array = $artistBO->mergeArtists($array, $multiArtistBO->multiArtistObj->splitters);
+            if (count($array) == 1){
+                // Two Artists were merged to One Artist
+                fillArtistSongRelation($artistBO, $artistSongRelationshipObj, $array[0]->name);
+
+            }
+            else if (count($array) > 1){
+                $artistSongRelationshipObj->oldArtistType = ArtistType::ARTIST;
+                $artistSongRelationshipObj->newArtistType = ArtistType::MULTIARTIST;
                 $artistSongRelationshipObj->oldArtistListObj = $array;
                 $item = $multiArtistBO->findMultiArtistSequence($array);
-                if ($item != null){
+                if (isset($item)){
                     $artistSongRelationshipObj->newMultiArtistId = $item->id;
                 }
             }
@@ -70,6 +69,23 @@ else {
     $artistSongId = null;
     $artistSongRelationshipObj = new ArtistSongRelationshipCompositeTO(null);
 }
+
+function fillArtistSongRelation(ArtistBO $artistBO, ArtistSongRelationshipCompositeTO $artistSongRelationshipObj, $artist){
+    $artistTO = $artistBO->lookupArtistByName($artist);
+    $list = Array();
+    if ($artistTO != null){
+        $artistBO->fillStageName($artistTO);
+        $list[] = $artistTO;
+        $artistSongRelationshipObj->oldArtistType = ArtistType::ARTIST;
+        $artistSongRelationshipObj->newArtistType = ArtistType::ARTIST;
+        $artistSongRelationshipObj->newArtistId = $artistTO->id;
+        $artistSongRelationshipObj->oldArtistListObj = $list;
+        return true;
+    }
+    return false;
+}
+
+
 ?>
 <script>
     //var oldData = [{"id":"1", "name":"test"}];
@@ -161,7 +177,7 @@ else {
                         </div>
                         <div id="oldArtistListSelectedDatagridLayout" data-options="region:'east',collapsible:false, border:false" style="width:50%;height:42%">
                             <table id="dgListOldArtist" class="easyui-datagrid" style="width:95%;height:95%"
-                                   title="Unordered Artist Group"
+                                   title="Selected Old Artitsts"
                                    data-options="fitColumns:true,
                                                  data:oldData,
                                                  singleSelect:true">
@@ -273,7 +289,7 @@ else {
         <div id="buttonLayOut" data-options="region:'south',collapsible:false" title="Buttons" style="width:100%;height:10%">
             <div><button type="button" onclick="validateAndSave()">Save</button>
                 <button type="button" onclick="clearForm()">Clear</button>
-                <button  type="button" onclick="refreshCombo('cbOldArtist')">Refresh Artist List</button></div>
+                <button  type="button" onclick="refreshAllLists()">Refresh Artist Lists</button></div>
             </div>
         </div>
     </div>
@@ -299,6 +315,12 @@ else {
 
     //$('#cbOldArtist').combobox('setValue', 'Luciana');
 
+    function refreshAllLists(){
+        refreshCombo('cbNewArtist');
+        refreshCombo('cbNewMultiArtist');
+        $('#OldArtist').datagrid('reload');
+    }
+
     function clearForm(){
         $('#artistSongForm')[0].reset();
         $('#dgListOldArtist').datagrid('loadData',[]);
@@ -323,7 +345,7 @@ else {
         var oldFreeArtist =($("#oldFreeArtist").val());
         if (oldFreeArtist != '') {
             $('#dgListOldArtist').datagrid('appendRow', {
-                name: oldFreeArtist,
+                stageName: oldFreeArtist,
                 id: null
             });
             $("#oldFreeArtist").textbox('setValue', '');

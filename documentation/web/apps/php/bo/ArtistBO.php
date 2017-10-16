@@ -182,6 +182,42 @@ class ArtistBO
         }
         return false;
     }
+
+    function mergeArtists(&$artistArray, $splitters){
+        $count = count( $artistArray );
+        $newArray = Array();
+        $artistBO = new ArtistBO();
+        for ($i = 0; $i < $count; $i++) {
+            if ($i != ($count-1)) {
+                $newArtistObj = $this->lookupMergedName($splitters, $artistBO, $artistArray[$i]->name, $artistArray[$i + 1]->name);
+                if ($newArtistObj != null) {
+                    // join 2 artists
+                    $newArray[] = $newArtistObj;
+                    $i++;
+                }
+                else {
+                    $newArray[] = $artistArray[$i];
+                }
+            }
+            else {
+                $newArray[] = $artistArray[$i];
+            }
+        }
+        return $newArray;
+    }
+
+    function lookupMergedName($splitters, ArtistBO $artistBO, $name1, $name2){
+        foreach($splitters as $splitter){
+            $newArtist = $name1 . $splitter->value2 . $name2;
+            $singleArtistObj = $artistBO->lookupArtistByName($newArtist);
+            if ($singleArtistObj != null){
+                return $singleArtistObj;
+            }
+        }
+        return null;
+
+    }
+
 }
 
 class ArtistItem{
@@ -393,7 +429,7 @@ class MultiArtistBO {
             if ($delimiter->id === $this->multiArtistObj->splitterEndId){
                 continue;
             }
-            $text .= ($first ? "" : "|") . $delimiter->value2;
+            $text .= ($first ? "" : "|") . $delimiter->value1;
             $first = false;
         }
         $text .= ")/";
