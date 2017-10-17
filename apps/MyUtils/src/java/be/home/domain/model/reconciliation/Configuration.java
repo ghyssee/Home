@@ -15,6 +15,7 @@ public class Configuration {
     public List<MatchAlgorithm> matchAlgorithms;
     public String role;
     public String userId;
+    public List<Datasource> datasources;
 
     public String getCode() {
         return code;
@@ -78,5 +79,13 @@ public class Configuration {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public List<Datasource> getDatasources() {
+        return datasources;
+    }
+
+    public void setDatasources(List<Datasource> datasources) {
+        this.datasources = datasources;
     }
 }

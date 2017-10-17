@@ -43,8 +43,8 @@ public class Recon  {
     public static void main(String args[]) {
         Recon instance = new Recon();
         try {
-            instance.start("C:\\Projects\\far\\DBUtil\\SetupEvoucher.json");
-            instance.start("C:\\Projects\\far\\DBUtil\\SetupEvoucher.json");
+            instance.start("C:\\Projects\\far\\DBUtil\\01_SetupEvoucher.json");
+            instance.start("C:\\Projects\\far\\DBUtil\\02_SetupPosa.json");
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -79,9 +79,9 @@ public class Recon  {
         //createMatchingTables(DATA_MGR, fieldsStream2, dataSource2, dataType, getFile("DML_ILPOST_SUPl"));
         createMatchingTables2(DATA_MGR, config.leftStream, config.datatype, getFile("DML_ALVADIS"));
         createMatchingTables2(DATA_MGR, config.rightStream, config.datatype, getFile("DML_PST"));
-        createSynonyms(FAR_USER, config.code, config.leftStream.getDatasource().code, config.rightStream.getDatasource().code,
+        createSynonyms(FAR_USER, config.code, config.leftStream.datasourceCode, config.rightStream.datasourceCode,
                 config.datatype.code, getFile("FU_SYNONYMS"));
-        createSynonyms(FAR_READ, config.code, config.leftStream.getDatasource().code, config.rightStream.getDatasource().code,
+        createSynonyms(FAR_READ, config.code, config.leftStream.datasourceCode, config.rightStream.getDatasourceCode(),
                 config.datatype.code, getFile("FR_SYNONYMS"));
 
 
@@ -90,7 +90,7 @@ public class Recon  {
                 config.rightStream
         );
 
-        createGlobal(META_DATA_MGR, config.userId, config.datatype, streams, getFile("MDM_SETUP_GLOBAL"));
+        createGlobal(META_DATA_MGR, config.userId, config.datatype, streams, config.datasources, getFile("MDM_SETUP_GLOBAL"));
 
         createMatchEngine(META_DATA_MGR, config.userId, config, getFile("MDM_SETUP_MATCHENGINE"));
 
@@ -143,48 +143,15 @@ public class Recon  {
 
     }
 
-    public void createMatchingTables(String scheme, List<Field> fields, String dataSource, String dataType,
-                                     String outputFile) {
-        outputFile = getOutputFile(outputFile);
-
-        VelocityUtils vu = new VelocityUtils();
-        VelocityContext context = new VelocityContext();
-        setObjects(context);
-        context.put("dataType", dataType);
-        context.put("dataSource", dataSource);
-        context.put("columns", fields);
-
-        context.put("date", new DateTool());
-        context.put("esc", new EscapeTool());
-        context.put("su", new StringUtils());
-        context.put("mu", new MyTools());
-        context.put("su", new StringUtils());
-        try {
-            vu.makeFile("reconciliation/RECON_02_GEN_STREAM.sql", outputFile, context);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        File script = new File(outputFile);
-        OracleDriver driverLine = new OracleDriver(scheme, script.getName());
-        driverLine = driverLine
-                .addScheme(FAR_RECO_DATA)
-                .addScheme(FAR_RECO_INDX)
-                .addScheme(FAR_USER)
-                .addScheme(FAR_READ);
-        this.driverFile.add(driverLine);
-    }
-
-
-    public void createMatchingTables2(String scheme, Stream stream, Datatype datatype,
-                                     String outputFile) {
+    public void createMatchingTables2(String scheme, Stream stream, Datatype datatype, String outputFile) {
         outputFile = getOutputFile(outputFile);
 
         VelocityUtils vu = new VelocityUtils();
         VelocityContext context = new VelocityContext();
         setObjects(context);
         context.put("dataType", datatype.getCode());
-        context.put("dataSource", stream.getDatasource().getCode());
         context.put("columns", stream.getFields());
+        context.put("dataSource", stream.getDatasourceCode());
 
         context.put("date", new DateTool());
         context.put("esc", new EscapeTool());
@@ -240,8 +207,8 @@ public class Recon  {
         VelocityUtils vu = new VelocityUtils();
         VelocityContext context = new VelocityContext();
         context.put("matchEngine", config);
-        context.put("dataSource1", config.getLeftStream().getDatasource().getCode());
-        context.put("dataSource2", config.getRightStream().getDatasource().getCode());
+        context.put("dataSource1", config.getLeftStream().getDatasourceCode());
+        context.put("dataSource2", config.getRightStream().getDatasourceCode());
         context.put("dataType", config.getDatatype());
         List<FileType> fileTypes = new ArrayList();
         fileTypes.addAll(config.getLeftStream().fileTypes);
@@ -252,34 +219,6 @@ public class Recon  {
         streams.add(config.getRightStream());
         context.put("streams", streams);
         List<Function> newFunctions = new ArrayList();
-        context.put("functions", newFunctions);
-
-        context.put("date", new DateTool());
-        context.put("esc", new EscapeTool());
-        context.put("su", new StringUtils());
-        try {
-            vu.makeFile("reconciliation/RECON_99_DROP.sql", outputFile, context);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void createDropTablesOld(MatchEngine matchEngine, String dataSource1, String dataSource2, Datatype dataType,
-                                 List<Stream> streams,
-                                 List<FileType> fileTypes,
-                                 List<Function> newFunctions,
-                                 String outputFile) {
-        outputFile = getOutputFile(outputFile);
-
-
-        VelocityUtils vu = new VelocityUtils();
-        VelocityContext context = new VelocityContext();
-        context.put("matchEngine", matchEngine);
-        context.put("dataSource1", dataSource1);
-        context.put("dataSource2", dataSource2);
-        context.put("dataType", dataType);
-        context.put("fileTypes", fileTypes);
-        context.put("streams", streams);
         context.put("functions", newFunctions);
 
         context.put("date", new DateTool());
@@ -332,13 +271,14 @@ public class Recon  {
         this.driverFile.add(driverLine);
     }
 
-    private void createGlobal(String scheme, String userId, Datatype datatype, List<Stream> streams, String outputFile) {
+    private void createGlobal(String scheme, String userId, Datatype datatype, List<Stream> streams, List<Datasource> datasources, String outputFile) {
         outputFile = getOutputFile(outputFile);
 
         VelocityUtils vu = new VelocityUtils();
         VelocityContext context = new VelocityContext();
         context.put("userId", userId);
         context.put("datatype", datatype);
+        context.put("datasources", datasources);
         context.put("streams", streams);
         context.put("mu", new MyTools());
 
@@ -359,25 +299,6 @@ public class Recon  {
         VelocityContext context = new VelocityContext();
         context.put("userId", userId);
         context.put("matchEngine", config);
-        context.put("mu", new MyTools());
-
-        try {
-            vu.makeFile("reconciliation/RECON_05_GEN_MDM_MATCHENGINE.sql", outputFile, context);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        File script = new File(outputFile);
-        OracleDriver driverLine = new OracleDriver(scheme, script.getName());
-        this.driverFile.add(driverLine);
-    }
-
-    private void createMatchEngineOld(String scheme, String userId, MatchEngine me, String outputFile) {
-        outputFile = getOutputFile(outputFile);
-
-        VelocityUtils vu = new VelocityUtils();
-        VelocityContext context = new VelocityContext();
-        context.put("userId", userId);
-        context.put("matchEngine", me);
         context.put("mu", new MyTools());
 
         try {

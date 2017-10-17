@@ -8,16 +8,24 @@ import java.util.List;
 public class Stream extends Base {
     public String inputType;
     public String launchMatchEngine;
-    public Datasource datasource;
+    public String datasourceCode;
     public List<Field> fields;
 
     public List<FileType> fileTypes;
+
+    public Stream(String description, String inputType, String launchMatchEngine, String datasourceCode, List<FileType> fileTypes){
+        super("", description);
+        this.inputType = inputType;
+        this.launchMatchEngine = launchMatchEngine;
+        this.datasourceCode = datasourceCode;
+        this.fileTypes = fileTypes;
+    }
 
     public Stream(String description, String inputType, String launchMatchEngine, Datasource datasource, List<FileType> fileTypes){
         super("", description);
         this.inputType = inputType;
         this.launchMatchEngine = launchMatchEngine;
-        this.datasource = datasource;
+        this.datasourceCode = datasource.getCode();
         this.fileTypes = fileTypes;
     }
 
@@ -28,12 +36,12 @@ public class Stream extends Base {
     public void setLaunchMatchEngine(String launchMatchEngine) {
         this.launchMatchEngine = launchMatchEngine;
     }
-    public Datasource getDatasource() {
-        return datasource;
+    public String getDatasourceCode() {
+        return datasourceCode;
     }
 
-    public void setDatasource(Datasource datasource) {
-        this.datasource = datasource;
+    public void setDatasourcecode(String datasourceCode) {
+        this.datasourceCode = datasourceCode;
     }
 
     public String getInputType() {
