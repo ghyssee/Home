@@ -6,6 +6,15 @@ public class Field {
     public String length;
     public boolean required;
     public String description;
+    public boolean match;
+
+    public boolean isMatch() {
+        return match;
+    }
+
+    public void setMatch(boolean match) {
+        this.match = match;
+    }
 
     public String getDescription() {
         return description;

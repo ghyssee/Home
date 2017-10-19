@@ -45,6 +45,7 @@ public class Recon  {
         try {
             instance.start("C:\\Projects\\far\\DBUtil\\01_SetupEvoucher.json");
             instance.start("C:\\Projects\\far\\DBUtil\\02_SetupPosa.json");
+            instance.start("C:\\Projects\\far\\DBUtil\\03_SetupTCS.json");
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -78,6 +79,8 @@ public class Recon  {
         //createMatchingTables(DATA_MGR, fieldsStream1, dataSource1, dataType, getFile("DML_ILPOST"));
         //createMatchingTables(DATA_MGR, fieldsStream2, dataSource2, dataType, getFile("DML_ILPOST_SUPl"));
         createMatchingTables2(DATA_MGR, config.leftStream, config.datatype, getFile("DML_ALVADIS"));
+        // clear the datasource list, because it's already created with the previous line
+        config.datasources = new ArrayList<Datasource>();
         createMatchingTables2(DATA_MGR, config.rightStream, config.datatype, getFile("DML_PST"));
         createSynonyms(FAR_USER, config.code, config.leftStream.datasourceCode, config.rightStream.datasourceCode,
                 config.datatype.code, getFile("FU_SYNONYMS"));
@@ -98,7 +101,7 @@ public class Recon  {
                 config.leftStream.getFields(), config.rightStream.getFields(), getFile("MDM_SETUP_REPORT")
         );
         createSecurity(META_DATA_MGR, config.code, config.role, getFile("MDM_INSERT_SECURITY_LEVELS"));
-        createTempMatch(DATA_MGR, getFile("DML_TEMP_MATCH.sql"));
+        createTempMatch(config, DATA_MGR, getFile("DML_TEMP_MATCH.sql"));
         //createDropTables(me, dataSource1, dataSource2, datatype, streams, fileTypes, newFunctions, "99_DROP.sql");
         createDropTables(config, getDropFile("DROP"));
         makeDriver();
@@ -330,12 +333,27 @@ public class Recon  {
         this.driverFile.add(driverLine);
     }
 
-    private void createTempMatch(String scheme, String outputFile) {
+    private void createTempMatch(Configuration config, String scheme, String outputFile) {
         outputFile = getOutputFile(outputFile);
 
         VelocityUtils vu = new VelocityUtils();
         VelocityContext context = new VelocityContext();
         context.put("mu", new MyTools());
+        context.put("su", new StringUtils());
+        context.put("matchEngine", config.code);
+        List<Field> matchFields = new ArrayList<>();
+
+        for (Field field :config.leftStream.fields){
+            if (field.match){
+                matchFields.add(field);
+            }
+        }
+        for (Field field :config.rightStream.fields){
+            if (field.match){
+                matchFields.add(field);
+            }
+        }
+        context.put("columns", matchFields);
 
         try {
             vu.makeFile("reconciliation/RECON_07_GEN_TEMP_MATCH.sql", outputFile, context);
