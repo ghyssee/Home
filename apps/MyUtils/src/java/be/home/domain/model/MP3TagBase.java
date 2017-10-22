@@ -315,8 +315,16 @@ public abstract class MP3TagBase extends BatchJobV2 {
                     update = true;
                     break;
                 case TRACK:
-                    id3v2Tag.setTrack(item.getNewValue());
-                    update = true;
+                    if (item.getNewValue().equals(id3v2Tag.getTrack())) {
+                        log.info("No Update needed for " + item.getFile());
+                        log.info("MP3 Track Info: " + id3v2Tag.getTrack());
+                        log.info("Update Info: " + item.getType());
+                        setDone(item);
+                    }
+                    else {
+                        id3v2Tag.setTrack(item.getNewValue());
+                        update = true;
+                    }
                     break;
             }
             if (update) {
