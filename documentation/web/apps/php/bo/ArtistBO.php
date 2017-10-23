@@ -453,6 +453,7 @@ class MultiArtistBO {
                 if ($singleArtistObj === null){
                     $artist = new ArtistTO();
                     $artist->name = $value;
+                    $artist->stageName = $value;
                     $artistArray[] = $artist;
                 }
                 else {
