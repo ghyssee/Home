@@ -80,7 +80,6 @@ public class Recon  {
         //createMatchingTables(DATA_MGR, fieldsStream2, dataSource2, dataType, getFile("DML_ILPOST_SUPl"));
         createMatchingTables2(DATA_MGR, config.leftStream, config.datatype, getFile("DML_ALVADIS"));
         // clear the datasource list, because it's already created with the previous line
-        config.datasources = new ArrayList<Datasource>();
         createMatchingTables2(DATA_MGR, config.rightStream, config.datatype, getFile("DML_PST"));
         createSynonyms(FAR_USER, config.code, config.leftStream.datasourceCode, config.rightStream.datasourceCode,
                 config.datatype.code, getFile("FU_SYNONYMS"));
@@ -333,6 +332,15 @@ public class Recon  {
         this.driverFile.add(driverLine);
     }
 
+    private boolean checkIfFieldExist(List<Field> fields, Field searchField){
+        for (Field field : fields){
+            if (field.name.equals(searchField.name)){
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void createTempMatch(Configuration config, String scheme, String outputFile) {
         outputFile = getOutputFile(outputFile);
 
@@ -344,12 +352,12 @@ public class Recon  {
         List<Field> matchFields = new ArrayList<>();
 
         for (Field field :config.leftStream.fields){
-            if (field.match){
+            if (field.match && !checkIfFieldExist(matchFields, field)){
                 matchFields.add(field);
             }
         }
         for (Field field :config.rightStream.fields){
-            if (field.match){
+            if (field.match && !checkIfFieldExist(matchFields, field)){
                 matchFields.add(field);
             }
         }
