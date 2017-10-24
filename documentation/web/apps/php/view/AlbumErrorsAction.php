@@ -3,6 +3,7 @@ include_once("../setup.php");
 include_once("../config.php");
 include_once("../model/HTML.php");
 include_once("../bo/ColorBO.php");
+include_once("../bo/AlbumErrorsBO.php");
 //include_once("../html/config.php");
 
 $file = getFullPath(JSON_ALBUMERRORS);
@@ -81,15 +82,10 @@ function selectRows2($selArray){
 
 function getList(){
 
+    $albumErrorsBO = new AlbumErrorsBO();
     $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
     $rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
-    $albumErrors = readJSONWithCode(JSON_ALBUMERRORS);
-    $filteredArray = [];
-	foreach ($albumErrors->items as $key => $value) {
-		if (!$value->done) { //} && !$value->process) {
-			array_push($filteredArray, $value);
-		}
-	}
+    $filteredArray = $albumErrorsBO->getAlbumErrors();
 
 	if (isset($_POST['sort'])){
 		$field = isset($_POST['sort']) ? strval($_POST['sort']) : '';
@@ -102,6 +98,7 @@ function getList(){
 
     $result = array();
     $result["total"] = count($filteredArray);
+    $result["selectedRows"] = $albumErrorsBO->getSelectedAlbumErrors2();
     $result["rows"] = $array2;
 
 	echo json_encode($result);

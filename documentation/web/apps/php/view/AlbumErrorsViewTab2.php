@@ -16,9 +16,12 @@
 //$tableGrid->title = "Colors222";
 //include ("TableGrid.php");
 include_once('Smarty.class.php');
+include_once("../bo/AlbumErrorsBO.php");
 
+$albumErrorsBO = new AlbumErrorsBO();
 $smarty = initializeSmarty();
-$smarty->assign('title','Album Errors');
+$title = 'Album Errors';
+$smarty->assign('title', $title);
 $smarty->assign('item','Album Errors');
 $smarty->assign('tableWidth','100%');
 $smarty->assign('tableHeight','700px');
@@ -32,7 +35,6 @@ $smarty->assign('viewUrl',$url . "?method=list");
 $smarty->assign('updateUrl',"'" . $url . "?method=update&id='+row['uniqueId']");
 $smarty->assign('newUrl',"'" . $url . "?method=add'");
 $smarty->assign('deleteUrl',"'" . $url . "?method=delete',{id:row['uniqueId']}");
-
 $smarty->assign("contacts", array(array("field" => "process", "selectRow" => true),
         array("field" => "id", "label"=>"Id", "hidden" => "true"),
         array("field" => "file", "label"=>"File", "size" => 200, "sortable" => true),
@@ -52,9 +54,22 @@ $smarty->display('TableGridV4.tpl');
     $('#dg').datagrid({
         onLoadSuccess:function(data){
             var rows = $(this).datagrid('getRows');
-            for(i=0;i<rows.length;++i){
-                if(rows[i]['process']==1) $(this).datagrid('checkRow',i);
+            var tmpSelectedRows = $('#dg').datagrid('getSelections');
+            var count = 0;
+            if (tmpSelectedRows == 0) {
+                $(this).data('datagrid').checkedRows = data.selectedRows;
+                $(this).data('datagrid').selectedRows = data.selectedRows;
+                count = data.selectedRows.length;
             }
+            else {
+                for (i = 0; i < rows.length; ++i) {
+                    if (rows[i]['process'] == 1) $(this).datagrid('checkRow', i);
+                }
+                count = tmpSelectedRows.length;
+            }
+            var dgPanel = $(this).datagrid('getPanel');
+            var title = '<?php echo $title; ?>';
+            dgPanel.panel('setTitle', title + '(' + count + ' rows selected)');
         }
     });
 </script>
