@@ -14,6 +14,8 @@ public class FileType {
     String description;
     String multipleTypes;
     String unmatchedMethod;
+    String root;
+    String xsd;
     List<FileRuleSet> listOfRules = new ArrayList<>();
 
     public FileType(String code, String mask, String relativePath, String description, String unmatchedMethod, List<FileRuleSet> listOfRules){
@@ -26,6 +28,21 @@ public class FileType {
         this.multipleTypes = "N";
     }
 
+    public String getRoot() {
+        return root;
+    }
+
+    public void setRoot(String root) {
+        this.root = root;
+    }
+
+    public String getXsd() {
+        return xsd;
+    }
+
+    public void setXsd(String xsd) {
+        this.xsd = xsd;
+    }
 
     public String getUnmatchedMethod() {
         return unmatchedMethod;
