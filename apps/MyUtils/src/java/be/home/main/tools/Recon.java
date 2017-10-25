@@ -100,7 +100,7 @@ public class Recon  {
                 config.leftStream.getFields(), config.rightStream.getFields(), getFile("MDM_SETUP_REPORT")
         );
         createSecurity(META_DATA_MGR, config.code, config.role, getFile("MDM_INSERT_SECURITY_LEVELS"));
-        createTempMatch(config, DATA_MGR, getFile("DML_TEMP_MATCH.sql"));
+        createTempMatch(config, DATA_MGR, getFile("DML_TEMP_MATCH"));
         //createDropTables(me, dataSource1, dataSource2, datatype, streams, fileTypes, newFunctions, "99_DROP.sql");
         createDropTables(config, getDropFile("DROP"));
         makeDriver();
