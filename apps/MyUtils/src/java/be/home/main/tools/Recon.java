@@ -53,9 +53,9 @@ public class Recon  {
 
     }
 
-    private String getFile(String file){
+    private String getFile(String file, String code){
         String index = StringUtils.leftPad(String.valueOf(fileCounter++), 2, '0');
-        file = index + "_" + file + ".SQL";
+        file = index + "_" + file + "_" + code + ".SQL";
         return file;
     }
 
@@ -75,16 +75,16 @@ public class Recon  {
 
 
         //createCommonTables(DATA_MGR, config.description, getFile("DML_MATCHENGINE"));
-        createCommonTables(DATA_MGR, config.code, getFile("DML_MATCHENGINE"));
-        //createMatchingTables(DATA_MGR, fieldsStream1, dataSource1, dataType, getFile("DML_ILPOST"));
-        //createMatchingTables(DATA_MGR, fieldsStream2, dataSource2, dataType, getFile("DML_ILPOST_SUPl"));
-        createMatchingTables2(DATA_MGR, config.leftStream, config.datatype, getFile("DML_ALVADIS"));
+        createCommonTables(DATA_MGR, config.code, getFile("DML_MATCHENGINE",config.code ));
+        //createMatchingTables(DATA_MGR, fieldsStream1, dataSource1, dataType, getFile("DML_ILPOST",config.code));
+        //createMatchingTables(DATA_MGR, fieldsStream2, dataSource2, dataType, getFile("DML_ILPOST_SUPl",config.code));
+        createMatchingTables2(DATA_MGR, config.leftStream, config.datatype, getFile("DML_ALVADIS",config.code));
         // clear the datasource list, because it's already created with the previous line
-        createMatchingTables2(DATA_MGR, config.rightStream, config.datatype, getFile("DML_PST"));
+        createMatchingTables2(DATA_MGR, config.rightStream, config.datatype, getFile("DML_PST",config.code));
         createSynonyms(FAR_USER, config.code, config.leftStream.datasourceCode, config.rightStream.datasourceCode,
-                config.datatype.code, getFile("FU_SYNONYMS"));
+                config.datatype.code, getFile("FU_SYNONYMS",config.code));
         createSynonyms(FAR_READ, config.code, config.leftStream.datasourceCode, config.rightStream.getDatasourceCode(),
-                config.datatype.code, getFile("FR_SYNONYMS"));
+                config.datatype.code, getFile("FR_SYNONYMS",config.code));
 
 
         List<Stream> streams = Arrays.asList(
@@ -92,15 +92,15 @@ public class Recon  {
                 config.rightStream
         );
 
-        createGlobal(META_DATA_MGR, config.userId, config.datatype, streams, config.datasources, getFile("MDM_SETUP_GLOBAL"));
+        createGlobal(META_DATA_MGR, config.userId, config.datatype, streams, config.datasources, getFile("MDM_SETUP_GLOBAL",config.code));
 
-        createMatchEngine(META_DATA_MGR, config.userId, config, getFile("MDM_SETUP_MATCHENGINE"));
+        createMatchEngine(META_DATA_MGR, config.userId, config, getFile("MDM_SETUP_MATCHENGINE",config.code));
 
         createReport(META_DATA_MGR, config.userId, config.leftStream.getDescription(), config.rightStream.getDescription(),
-                config.leftStream.getFields(), config.rightStream.getFields(), getFile("MDM_SETUP_REPORT")
+                config.leftStream.getFields(), config.rightStream.getFields(), getFile("MDM_SETUP_REPORT",config.code)
         );
-        createSecurity(META_DATA_MGR, config.code, config.role, getFile("MDM_INSERT_SECURITY_LEVELS"));
-        createTempMatch(config, DATA_MGR, getFile("DML_TEMP_MATCH"));
+        createSecurity(META_DATA_MGR, config.code, config.createRole, config.role, getFile("MDM_INSERT_SECURITY_LEVELS",config.code));
+        createTempMatch(config, DATA_MGR, getFile("DML_TEMP_MATCH",config.code));
         //createDropTables(me, dataSource1, dataSource2, datatype, streams, fileTypes, newFunctions, "99_DROP.sql");
         createDropTables(config, getDropFile("DROP"));
         makeDriver();
@@ -233,12 +233,13 @@ public class Recon  {
         }
     }
 
-    public void createSecurity(String scheme, String matchEngine, String role, String outputFile) {
+    public void createSecurity(String scheme, String matchEngine, boolean createRole, String role, String outputFile) {
         outputFile = getOutputFile(outputFile);
 
         VelocityUtils vu = new VelocityUtils();
         VelocityContext context = new VelocityContext();
         context.put("matchEngine", matchEngine);
+        context.put("createRole", createRole);
         context.put("role", role);
 
         try {
