@@ -16,6 +16,7 @@ public class FileType {
     String unmatchedMethod;
     String root;
     String xsd;
+    boolean create;
     List<FileRuleSet> listOfRules = new ArrayList<>();
 
     public FileType(String code, String mask, String relativePath, String description, String unmatchedMethod, List<FileRuleSet> listOfRules){
@@ -26,6 +27,14 @@ public class FileType {
         this.listOfRules = listOfRules;
         this.description = description;
         this.multipleTypes = "N";
+    }
+
+    public boolean isCreate() {
+        return create;
+    }
+
+    public void setCreate(boolean create) {
+        this.create = create;
     }
 
     public String getRoot() {

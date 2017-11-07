@@ -14,8 +14,17 @@ public class Configuration {
     public Stream rightStream;
     public List<MatchAlgorithm> matchAlgorithms;
     public String role;
+    public boolean createRole;
     public String userId;
     public List<Datasource> datasources;
+
+    public boolean isCreateRole() {
+        return createRole;
+    }
+
+    public void setCreateRole(boolean createRole) {
+        this.createRole = createRole;
+    }
 
     public String getCode() {
         return code;
