@@ -208,6 +208,7 @@ public class Recon  {
 
         VelocityUtils vu = new VelocityUtils();
         VelocityContext context = new VelocityContext();
+        context.put("role", config.getRole());
         context.put("matchEngine", config);
         context.put("dataSource1", config.getLeftStream().getDatasourceCode());
         context.put("dataSource2", config.getRightStream().getDatasourceCode());
