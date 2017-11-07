@@ -8,6 +8,7 @@ const CANCELED_BY_USER = -101;
 const LINE_BREAK = "<BR>";
 const SUCCESS = 1;
 
+set_time_limit(0);
 $iim1 = new COM("imacros");
 $s = $iim1->iimOpen("-runner", true, 90);
 echo "iimOpen=";
@@ -20,6 +21,9 @@ if ($retCode === SUCCESS){
     do {
         $iim1->iimSet("FRAME", "0");
         $retCode = playMacro($iim1, "MR\\Jobs", "10_GetEnergy.iim");
+        $energy = $iim1->iimGetExtract;
+        printAndFlush( "Energy: " . $energy);
+        wait($iim1,"10");
     }
     while (true);
 }
@@ -38,4 +42,14 @@ function playMacro($iimHolder, $folder, $macro){
     printAndFlush( "Return code: " . $retCode);
     return $retCode;
 }
+
+function wait($iimHolder, $seconds){
+    $iimHolder->iimSet("seconds", $seconds);
+    $retcode = $iimHolder->iimPlay("Wait.iim");
+    if ($retcode == CANCELED_BY_USER){
+        throw new UserCancelError();
+    }
+    return $retcode;
+}
+
 ?>
