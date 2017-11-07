@@ -94,7 +94,7 @@ function validateArtistSong($config){
                     $artistItemTO->id = $item->id;
                 }
                 else {
-                    $artistItemTO->text = $item->name;
+                    $artistItemTO->text = $item->stageName;
                 }
                 $list[] =  $artistItemTO;
             }

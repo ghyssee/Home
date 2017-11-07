@@ -1,11 +1,5 @@
 package be.home.common.constants;
 
-import be.home.common.utils.NetUtils;
-import be.home.common.utils.WinUtils;
-
-import java.io.File;
-import java.nio.file.FileSystem;
-
 /**
  * Created by ghyssee on 28/09/2015.
  */

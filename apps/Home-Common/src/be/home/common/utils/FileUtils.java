@@ -23,8 +23,9 @@ public class FileUtils {
 
 	private static final Logger log = Logger.getLogger(FileUtils.class);
     public static final boolean REMOVE_EMPTY_LINES = true;
+    public static final String UTF8_BOM = "\uFEFF";
 
-	public static boolean isJPGFile(File fileName) {
+    public static boolean isJPGFile(File fileName) {
 		if (fileName != null
 				&& fileName.getName().toLowerCase().endsWith(".jpg")) {
 			return true;
@@ -291,5 +292,10 @@ public class FileUtils {
 		return files;
 	}
 
-
+	public static String removeUTF8BOM(String s) {
+		if (s.startsWith(UTF8_BOM)) {
+			s = s.substring(1);
+		}
+		return s;
+	}
 }

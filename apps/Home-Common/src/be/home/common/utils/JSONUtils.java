@@ -1,7 +1,6 @@
 package be.home.common.utils;
 
 import be.home.common.configuration.Setup;
-import be.home.common.constants.Constants;
 import be.home.common.exceptions.ApplicationException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

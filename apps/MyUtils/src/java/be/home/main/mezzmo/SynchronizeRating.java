@@ -1,6 +1,7 @@
 package be.home.main.mezzmo;
 
 import be.home.common.dao.jdbc.SQLiteJDBC;
+import be.home.common.utils.FileUtils;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.MGOFileTO;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
@@ -25,6 +26,7 @@ import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import java.io.*;
 import java.nio.file.*;
@@ -92,9 +94,9 @@ public class SynchronizeRating extends BatchJobV2 {
             Tag tag = f.getTag();
             int track = Integer.parseInt(tag.getFirst(FieldKey.TRACK));
             comp.getFileTO().setTrack(track);
-            comp.getFileArtistTO().setArtist(tag.getFirst(FieldKey.ARTIST));
-            comp.getFileTO().setTitle(tag.getFirst(FieldKey.TITLE));
-            comp.getFileAlbumTO().setName(tag.getFirst(FieldKey.ALBUM));
+            comp.getFileArtistTO().setArtist(FileUtils.removeUTF8BOM(tag.getFirst(FieldKey.ARTIST)));
+            comp.getFileTO().setTitle(FileUtils.removeUTF8BOM(tag.getFirst(FieldKey.TITLE)));
+            comp.getFileAlbumTO().setName(FileUtils.removeUTF8BOM(tag.getFirst(FieldKey.ALBUM)));
             int rating = convertRating(settings, tag.getFirst(FieldKey.RATING));
             try {
                 MGOFileTO fileTO = getMezzmoService().findByTitleAndAlbum(comp);
@@ -113,7 +115,13 @@ public class SynchronizeRating extends BatchJobV2 {
                 }
             }
             catch (EmptyResultDataAccessException ex){
-                log.error("File: " + file.toString());
+                log.error("NOT FOUND: File: " + file.toString());
+                log.error("Track: " + comp.getFileTO().getTrack());
+                log.error("Artist: " + comp.getFileArtistTO().getArtist());
+                log.error("Title: " + comp.getFileTO().getTitle());
+            }
+            catch (IncorrectResultSizeDataAccessException ex){
+                log.error("IncorrectResultSize File: " + file.toString());
                 log.error("Track: " + comp.getFileTO().getTrack());
                 log.error("Artist: " + comp.getFileArtistTO().getArtist());
                 log.error("Title: " + comp.getFileTO().getTitle());

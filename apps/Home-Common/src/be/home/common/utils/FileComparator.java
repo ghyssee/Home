@@ -1,7 +1,7 @@
 package be.home.common.utils;
 
-import java.util.*;
 import java.io.File;
+import java.util.Comparator;
 
 public class FileComparator implements Comparator<File> {
 

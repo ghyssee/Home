@@ -1,6 +1,6 @@
 package be.home.common.constants;
 
-import org.apache.commons.lang3.*;
+import org.apache.commons.lang3.StringUtils;
 
 public final class BooleanConstants {
 

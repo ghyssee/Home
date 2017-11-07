@@ -6,11 +6,7 @@ import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
 
 import java.io.File;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Calendar;
-import java.util.Date;
 
 /**
  * Created by Gebruiker on 25/12/2016.
