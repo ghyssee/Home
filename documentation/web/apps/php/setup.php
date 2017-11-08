@@ -2,6 +2,7 @@
 
 include_once('Smarty.class.php');
 
+const PATH_MAIN_CONFIG = "mainConfig";
 const PATH_CONFIG = "config";
 const PATH_CONFIG_BACKUP = "configBackup";
 const PATH_LOCAL_CONFIG = "localConfig";
@@ -181,6 +182,17 @@ function logInfo ($msg){
     $file = addTimeStampToFile(getFullPath(FILE_INFO_LOG));
     $msg = getCurrentTime() . ' ' . $msg;
     file_put_contents($file, $msg . PHP_EOL, FILE_APPEND | LOCK_EX);
+}
+
+const INFO = 0;
+const WARN = 1;
+const ERROR = 2;
+class LogTest {
+    public static $file = "C:\\My Programs\\iMacros\logs\\test.txt";
+
+    public static function log($infoType, $category, $msg){
+        file_put_contents(logTest::$file, $category . ' - ' . $msg . PHP_EOL, FILE_APPEND | LOCK_EX);
+    }
 }
 
 function getCurrentTime(){
