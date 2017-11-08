@@ -21,7 +21,7 @@ $obj = (object) [
     'anArray' => [ 1, 2, 3 ]
 ];
 
-$array = (object) array(
+$CONSTANTS = (object) array(
     'OPPONENT' => (object) array(
         'UNKNOWN' => 0,
         'FRIEND' => 1,
@@ -64,7 +64,8 @@ $globalSettings = (object) array(
     )
 );
 
-Class GlobalSettings {
+Class GlobalSettings
+{
     static $maxLevel = 600;
     static $iced = 0;
     static $money = 0;
@@ -75,6 +76,21 @@ Class GlobalSettings {
     static $maxHealed = 0;
     static $heals = 0;
     static $bossAttacks = 0;
+}
+
+Class GlobalObjects
+{
+    public static $fightersToExclude;
+    public static $friendObj;
+    public static $fighterObj;
+    public static $configMRObj;
+
+    public static function init() {
+        self::$fightersToExclude = readJSON(MR_FIGHTERS_EXCLUDE_FILE);
+        self::$friendObj = readJSON(MR_FRIENDS_FILE);
+        self::$fighterObj = readJSON(MR_FIGHTERS_FILE);
+        self::$configMRObj = readJSON(MR_CONFIG_FILE);
+    }
 }
 
 $fightersToExclude = readJSON(MR_FIGHTERS_EXCLUDE_FILE);
@@ -111,9 +127,6 @@ catch (UserCancelException $ex){
 
 function waitTillEnoughStamina($iimHolder){
     $maxStamina = 200;
-    $stamina = 0;
-    $energy = 0;
-    $total = 0;
     $minStamina = 50;
     do {
         // refreshing stats (health / exp / stamina / energy)
@@ -124,10 +137,10 @@ function waitTillEnoughStamina($iimHolder){
         $exp = getExperience();
         if ($exp > 0){
             $staminaNeeded = $exp / 4;
-            LogTest::log(INFO, "WAIT", "Stamina Needed: " + $staminaNeeded);
-            LogTest::log(INFO, "WAIT", "Total (Energy + Stamina available): " + $total);
-            LogTest::log(INFO, "WAIT", "Stamina: " + $stamina);
-            LogTest::log(INFO, "WAIT", "maxStamina: " + $maxStamina);
+            LogTest::log(INFO, "WAIT", "Stamina Needed: " . $staminaNeeded);
+            LogTest::log(INFO, "WAIT", "Total (Energy + Stamina available): " . $total);
+            LogTest::log(INFO, "WAIT", "Stamina: " . $stamina);
+            LogTest::log(INFO, "WAIT", "maxStamina: " . $maxStamina);
             // maxStamina = Math.min(maxStamina, staminaNeeded);
             if ($stamina >= $minStamina && ($stamina >= $maxStamina || $total >= $staminaNeeded)){
                 break;
@@ -139,6 +152,28 @@ function waitTillEnoughStamina($iimHolder){
         // or stamina + energy > (experience needed to level up / 4)
     while (true);
     logV2(INFO, "WAIT", "Leaving wait");
+}
+
+function startFightBoss(){
+    LogTest::log(INFO, "BOSS", "Start Boss Fight");
+    /*
+    $status = $CONSTANTS->ATTACKSTATUS->OK;
+    if ($configMRObj.boss.defeatedOn !== null){
+        var bossStartTime = formatStringYYYYMMDDHHMISSToDate(configMRObj.boss.defeatedOn);
+        var currDate = new Date();
+        if (bossStartTime < currDate) {
+            status = fightBoss();
+        }
+        else {
+            logV2(INFO, "BOSS", "Start Time is at: " + bossStartTime);
+        }
+    }
+    else {
+        status = fightBoss();
+    }
+    return status;
+    */
+
 }
 
 
