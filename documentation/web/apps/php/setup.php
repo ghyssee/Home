@@ -50,6 +50,7 @@ define ('ROOT_CSS', ROOT_APPS . "/css");
 define ('ROOT_JS', ROOT_APPS . "/js");
 define ('ROOT_JS_EASYUI', ROOT_JS . "/easyui");
 define ('ROOT_THEMES', ROOT_APPS . "/themes");
+define ('ROOT_PHP_TEST', ROOT_PHP . "/test");
 
 const MULTIARTIST_RADIO_ARTISTS = "artists";
 const MULTIARTIST_RADIO_ARTISTSEQUENCE = "artistSequence";
@@ -191,7 +192,22 @@ class LogTest {
     public static $file = "C:\\My Programs\\iMacros\logs\\test.txt";
 
     public static function log($infoType, $category, $msg){
-        file_put_contents(logTest::$file, $category . ' - ' . $msg . PHP_EOL, FILE_APPEND | LOCK_EX);
+        $time = getCurrentTime();
+        $infoMsg = "";
+        switch  ($infoType){
+            case INFO:
+                $infoMsg = "INFO";
+                break;
+            case ERROR:
+                $infoMsg = "ERROR";
+                break;
+            case WARN:
+                $infoMsg = "WARN";
+                break;
+
+        }
+        file_put_contents(logTest::$file, $time . ' ' . $infoMsg . ': TITLE: ' . $category . ' - ' .
+            $msg . PHP_EOL, FILE_APPEND | LOCK_EX);
     }
 }
 
