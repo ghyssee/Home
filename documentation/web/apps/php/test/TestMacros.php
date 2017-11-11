@@ -6,6 +6,7 @@ include_once documentPath (ROOT_PHP_HTML, "config.php");
 include_once documentPath (ROOT_PHP_TEST, "Macros.php");
 include_once documentPath (ROOT_PHP_TEST, "MafiaReloadedCommon.php");
 include_once documentPath (ROOT_PHP_TEST, "FightBoss.php");
+include_once documentPath (ROOT_PHP_TEST, "Fight.php");
 
 const LINE_BREAK = "<BR>";
 
@@ -49,11 +50,6 @@ $globalSettingsOld = (object) array(
 
 set_time_limit(0);
 
-$fightersToExclude = readJSON(MR_FIGHTERS_EXCLUDE_FILE);
-$friendObj = readJSON(MR_FRIENDS_FILE);
-$fighterObj = readJSON(MR_FIGHTERS_FILE);
-$configMRObj = readJSON(MR_CONFIG_FILE);
-
 LogTest::$file = "C:\\My Programs\\iMacros\logs\\test2.txt";
 LogTest::log(INFO,"TEST", "test1");
 
@@ -67,54 +63,42 @@ echo $s . LINE_BREAK;
 
 try {
     $retCode = playMacro(iMacros::$iimHolder, "MR\\Common", "01_Start.iim", MACRO_INFO_LOGGING);
-    /*
-    if ($retCode === SUCCESS) {
-        do {
-            iMacros::$iimHolder->iimSet("FRAME", "0");
-            $retCode = playMacro(iMacros::$iimHolder, "MR\\Jobs", "10_GetEnergy.iim");
-            $energy = iMacros::$iimHolder->iimGetExtract(1);
-            printAndFlush("Energy: " . $energy);
-            wait(iMacros::$iimHolder, "10");
-        } while (true);
-    }*/
-    //$energy = getExperience(iMacros::$iimHolder);
-    //$energy = getEnergy(iMacros::$iimHolder);
-    //$energy = getStamina(iMacros::$iimHolder);
-    //waitTillEnoughStamina(iMacros::$iimHolder);
-    /*
-    $date = new DateTime();
-    echo $date->format("Ymd His") . LINE_BREAK;
-    $timeInterval = new DateInterval("P0DT0H30M5S");
-    $date->add($timeInterval);
-    echo $date->format("Ymd His") . LINE_BREAK;
-    $str = "201711091514";
-            20171109175931
-    $date = DateTime::createFromFormat("YmdHi", $str);
-    if (!$date){
-       echo "Invalid format" . LINE_BREAK;
-       echo serialize(DateTime::getLastErrors()) . LINE_BREAK;
-    }
-    else {
-        echo $date->format("Ymd His") . LINE_BREAK;
-    }
-    */
-    $bossFight = new BossFight($configMRObj);
-    $bossFight->startFightBoss(iMacros::$iimHolder);
-    echo "Done";
+    $fightObj = new Fight();
+    $txt = "<a class=\"ajax_request\" href=\"#\" data-params=\"controller=profile&amp;action=view&amp;id=982390345205927\">cashqueen2</a>";
+    echo $fightObj->extractIdFromString($txt) . LINE_BREAK;
 
+    if ($retCode === SUCCESS) {
+        //$bossFight = new BossFight();
+        do  {
+            waitTillEnoughStamina(iMacros::$iimHolder);
+            $status = ATTACKSTATUS_OK;
+/*
+            if ($bossFight->isBossAvailable()) {
+                $status = $bossFight->startFightBoss(iMacros::$iimHolder);
+            }*/
+            if ($status != ATTACKSTATUS_NOSTAMINA){
+                $fightObj->fight($iim);
+            }
+        }
+        while (true);
+    }
 }
 catch (UserCancelException $ex){
     printAndFlush("User Canceled 1");
 }
+LogTest::log(INFO, "SUMMARY", "Total Iced: " . GlobalSettings::$iced);
+LogTest::log(INFO, "SUMMARY", "Money Gained: " . GlobalSettings::$money);
+LogTest::log(INFO, "SUMMARY", "Nr Of Attacks: " . GlobalSettings::$nrOfAttacks);
+LogTest::log(INFO, "SUMMARY", "Stolen Ices: " . GlobalSettings::$stolenIces);
+LogTest::log(INFO, "SUMMARY", "Skipped Health: " . GlobalSettings::$skippedHealth);
+LogTest::log(INFO, "SUMMARY", "Max Healed: " . GlobalSettings::$maxHealed);
+LogTest::log(INFO, "SUMMARY", "Heals: " . GlobalSettings::$heals);
+
 iMacros::$iimHolder->iimClose();
-//echo "extractTest=";
-//echo $iim1->iimGetExtract;
-//$s2 = $iim1->iimPlay("MR/Common/01_Start.iim");
-//$s = $iim1->iimClose();
 
 function waitTillEnoughStamina($iimHolder){
     $maxStamina = 200;
-    $minStamina = 50;
+    $minStamina = 30;
     do {
         // refreshing stats (health / exp / stamina / energy)
         playMacro($iimHolder, FIGHT_FOLDER, "20_Extract_Start.iim", MACRO_INFO_LOGGING);
@@ -123,16 +107,21 @@ function waitTillEnoughStamina($iimHolder){
         $total = $stamina + $energy;
         $exp = getExperience($iimHolder);
         if ($exp > 0){
-            $staminaNeeded = $exp / 4;
+            $staminaNeeded = $exp / 4.2;
             LogTest::log(INFO, "WAIT", "Stamina Needed: " . $staminaNeeded);
             LogTest::log(INFO, "WAIT", "Total (Energy + Stamina available): " . $total);
             LogTest::log(INFO, "WAIT", "Stamina: " . $stamina);
             LogTest::log(INFO, "WAIT", "maxStamina: " . $maxStamina);
             // maxStamina = Math.min(maxStamina, staminaNeeded);
-            if ($stamina >= $minStamina && ($stamina >= $maxStamina || $total >= $staminaNeeded)){
+            if ($total >= $staminaNeeded && ($stamina >= $minStamina || $exp < 300)) {
+                LogTest::log(INFO, "WAIT", "Enough Stamina to level up");
                 break;
             }
-            wait($iimHolder, "5");
+            elseif ($stamina >= $maxStamina){
+                LogTest::log(INFO, "WAIT", "Enough Stamina to start fighting again");
+                break;
+            }
+            wait($iimHolder, "60");
         }
     }
         // wait till stamina > 100
@@ -140,45 +129,5 @@ function waitTillEnoughStamina($iimHolder){
     while (true);
     LogTest::log(INFO, "WAIT", "Leaving wait");
 }
-
-function getLastExtract($iim, $nr, $title, $value){
-    return $iim->iimGetExtract($nr);
-}
-
-function isNullOrBlank($value){
-    if (isset($value)){
-        if ($value == "#EANF#"){
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-    return true;
-}
-
-function startFightBoss(){
-    LogTest::log(INFO, "BOSS", "Start Boss Fight");
-    /*
-    $status = $CONSTANTS->ATTACKSTATUS->OK;
-    if ($configMRObj.boss.defeatedOn !== null){
-        var bossStartTime = formatStringYYYYMMDDHHMISSToDate(configMRObj.boss.defeatedOn);
-        var currDate = new Date();
-        if (bossStartTime < currDate) {
-            status = fightBoss();
-        }
-        else {
-            logV2(INFO, "BOSS", "Start Time is at: " + bossStartTime);
-        }
-    }
-    else {
-        status = fightBoss();
-    }
-    return status;
-    */
-
-}
-
-
 
 ?>

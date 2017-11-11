@@ -502,7 +502,7 @@ public class MP3TagUtils {
     }
 
     private boolean checkAlbum(MGOFileAlbumCompositeTO comp, String mp3Album){
-        String album = MP3Helper.getInstance().prettifyAlbum(mp3Album, comp.getFileAlbumTO().getName());
+        String album = MP3Helper.getInstance().prettifyAlbum(mp3Album, comp.getAlbumArtistTO().getName());
         boolean ok = true;
         if (!update && !album.equals(mp3Album)){
             log.warn("Album does not match: " + "mp3: " + mp3Album + " / Formatted: " + album);

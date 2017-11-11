@@ -18,8 +18,7 @@ Const FIGHT_FOLDER = "MR\\Fight";
 Const COMMON_FOLDER = "MR\\Common";
 Const JOB_FOLDER = "MR\\Jobs";
 
-define ("MR_PATH", "C:\\My Programs\\OneDrive\\Config\\MR\\");
-    //getFullPath(PATH_MAIN_CONFIG) . "\\MR");
+define ("MR_PATH", getFullPath(PATH_MAIN_CONFIG) . "\\MR");
 Const MR_FIGHTERS_EXCLUDE_FILE = MR_PATH . "\\" . "FightersToExclude.json";
 Const MR_FRIENDS_FILE = MR_PATH . "\\" . "Friends.json";
 Const MR_FIGHTERS_FILE = MR_PATH . "\\" . "Fighters.json";
@@ -52,13 +51,13 @@ function playMacro($iimHolder, $folder, $macro, $logging = true){
     if (!empty($folder)){
         $folder .= "\\";
     }
-    echo $folder . $macro;
+    //echo $folder . $macro;
     $retCode = $iimHolder->iimPlay($folder . $macro);
     if ($retCode == CANCELED_BY_USER){
         throw new UserCancelException();
     }
-    printAndFlush( "Macro: " . $macro);
-    printAndFlush( "Return code: " . $retCode);
+    //printAndFlush( "Macro: " . $macro);
+    //printAndFlush( "Return code: " . $retCode);
     return $retCode;
 }
 
@@ -71,8 +70,35 @@ function wait($iimHolder, $seconds){
     return $retcode;
 }
 
+function getLastExtract($iim, $nr, $title, $value){
+    $value = $iim->iimGetExtract($nr);
+    $value= trim($value);
+    return $value;
+}
+
+function addMacroSetting($iimHolder, $id, $value){
+    $iimHolder->iimSet($id, $value);
+}
+
+function isNullOrBlank($value){
+    if (isset($value)){
+        if ($value == "#EANF#"){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    return true;
+}
+
 function startsWith($msg, $prefix){
     return (strncmp($msg, $prefix, strlen($prefix)) === 0);
+}
+
+function contains ($msg, $substr){
+    $contains = strpos($msg, $substr) !== false;
+    return $contains;
 }
 
 ?>

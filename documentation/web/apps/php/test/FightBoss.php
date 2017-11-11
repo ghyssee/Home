@@ -17,32 +17,44 @@ Class BossFight {
     public $configMRObj;
     public $iimHolder;
 
-    public function __construct($config)
+    public function __construct()
     {
-        $this->configMRObj = $config;
+    }
+
+    function isBossAvailable(){
+        $this->configMRObj = readJSON(MR_CONFIG_FILE);
+        $bossAvailable = false;
+        if ($this->configMRObj->boss->active) {
+            LogTest::log(INFO, "BOSS", "Check Boss Available");
+            if ($this->configMRObj->boss->defeatedOn != null) {
+                $bossStartTime = DateTime::createFromFormat("YmdHis", $this->configMRObj->boss->defeatedOn);
+                if (!$bossStartTime) {
+                    LogTest::log(WARN, "BOSS", "Invalid Time in config: " . $this->configMRObj->defeatedOn);
+                    $bossAvailable = true;
+                } else {
+                    $currDate = new DateTime();
+                    if ($bossStartTime < $currDate) {
+                        $bossAvailable = true;
+                    } else {
+                        LogTest::log(INFO, "BOSS", "Start Time is at: " . $bossStartTime->format("Ymd His"));
+                    }
+                }
+            } else {
+                $bossAvailable = true;
+            }
+            if ($bossAvailable) {
+                LogTest::log(INFO, "BOSS", "Start The Boss Fight");
+            }
+        }
+        else {
+            LogTest::log(INFO, "BOSS", "Boss is disabled");
+        }
+        return $bossAvailable;
     }
 
 function startFightBoss($iimHolder){
     LogTest::log(INFO, "BOSS", "Start Boss Fight");
-    $status = ATTACKSTATUS_OK;
-    $this->configMRObj->boss->defeatedOn = null;
-    if ($this->configMRObj->boss->defeatedOn != null){
-        $bossStartTime = DateTime::createFromFormat("YmdHis", $this->configMRObj->boss->defeatedOn);
-        if (!$bossStartTime){
-            LogTest::log(WARN, "BOSS", "Invalid Time in config: " . $this->configMRObj->defeatedOn);
-        }
-        else {
-            $currDate = new DateTime();
-            if ($bossStartTime < $currDate) {
-                $status = fightBoss();
-            } else {
-                LogTest::log(INFO, "BOSS", "Start Time is at: " . $bossStartTime->format("Ymd His"));
-            }
-        }
-    }
-    else {
-        $status = $this->fightBoss($iimHolder);
-    }
+    $status = $this->fightBoss($iimHolder);
     return $status;
 
 }
@@ -54,7 +66,7 @@ function fightBoss($iimHolder){
         LogTest::log(INFO, "BOSS", "Status: " . $bossObj->status);
         switch ($bossObj->status){
             case ATTACKSTATUS_OK:
-                $this->attackBoss();
+                $this->attackBoss($iimHolder);
                 break;
             case ATTACKSTATUS_PROBLEM:
                 break;
@@ -69,6 +81,7 @@ function fightBoss($iimHolder){
     else {
         LogTest::log(INFO, "BOSS", "Problem Starting Boss Fight");
     }
+    return $bossObj->status;
 }
 
 function evaluateBossResult($iimHolder){
@@ -92,11 +105,11 @@ function attackBoss($iimHolder){
     $retCode = playMacro($iimHolder,FIGHT_FOLDER, "73_Boss_StartAttack.iim", MACRO_INFO_LOGGING);
     if ($retCode == SUCCESS) {
         do {
-            $stamina = getStamina();
+            $stamina = getStamina($iimHolder);
             if ($stamina >= 5) {
-                checkHealth();
+                checkHealth($iimHolder);
+                $retCode = playMacro($iimHolder,FIGHT_FOLDER, "74_Boss_Attack.iim", MACRO_INFO_LOGGING);
                 if ($retCode == SUCCESS) {
-                    $retCode = playMacro($iimHolder,FIGHT_FOLDER, "74_Boss_Attack.iim", MACRO_INFO_LOGGING);
                     $bossHealth = $this->getBossHealth($iimHolder);
                     if ($bossHealth == 0) {
                         LogTest::log(INFO, "BOSS", "Boss is dead!!!");
@@ -175,7 +188,7 @@ function evaluateBossMessage($iimHolder) {
                     $date->add($dateInterval);
                     $formattedDate = $date->format("YmdHis");
                     $this->configMRObj->boss->defeatedOn = $formattedDate;
-                    //writeObject(configMRObj, MR_CONFIG_FILE);
+                    writeJSON($this->configMRObj, MR_CONFIG_FILE);
                     $bossObj->status = ATTACKSTATUS_BOSSALREADYDEAD;
                 }
                 else {

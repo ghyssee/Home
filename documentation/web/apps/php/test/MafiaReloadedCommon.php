@@ -106,8 +106,21 @@ function heal($iimHolder){
     LogTest::log(INFO, "TEST", "Healing...");
     $retCode = playMacro($iimHolder,FIGHT_FOLDER, "10_Heal.iim", MACRO_INFO_LOGGING);
     if ($retCode == SUCCESS) {
-        closePopup();
+        closePopup($iimHolder);
     }
+}
+
+function getHealth($iimHolder){
+    playMacro($iimHolder,FIGHT_FOLDER, "11_GetHealth.iim", MACRO_INFO_LOGGING);
+    $healthInfo = getLastExtract($iimHolder,1, "Health", "50%");
+    LogTest::log(INFO, "BOSS", "healthInfo = " . $healthInfo);
+    if (!isNullOrBlank($healthInfo)){
+        $healthInfo = removeComma($healthInfo);
+        $tmp = explode("/", $healthInfo);
+        $health = intval($tmp[0]);
+        return $health;
+    }
+    return 0;
 }
 
 function checkSaldo($iimHolder){
@@ -120,14 +133,14 @@ function checkSaldo($iimHolder){
 
 function bank($iimHolder, $saldo){
     playMacro($iimHolder,COMMON_FOLDER, "10_Bank.iim", MACRO_INFO_LOGGING);
-    LogTest::log(INFO, "BANK", "Banking " + $saldo);
+    LogTest::log(INFO, "BANK", "Banking " . $saldo);
     GlobalSettings::$money += $saldo;
 }
 
 function getSaldo($iimHolder){
     playMacro($iimHolder,COMMON_FOLDER, "11_GetSaldo.iim", MACRO_INFO_LOGGING);
     $saldoInfo = getLastExtract($iimHolder,1, "Saldo", "$128");
-    LogTest::log(INFO, "BANK", "saldoInfo = " + saldoInfo);
+    LogTest::log(INFO, "BANK", "saldoInfo = " . $saldoInfo);
     if (!isNullOrBlank($saldoInfo)){
         $saldoInfo = removeComma($saldoInfo);
         $saldoInfo = str_replace("$", "", $saldoInfo);
@@ -147,4 +160,25 @@ function closePopup($iimHolder){
         LogTest::log(INFO, "POPUP", "Popup Closed");
     }
 }
+
+function checkIfLevelUp($iimHolder)
+{
+    $retCode = playMacro($iimHolder, COMMON_FOLDER, "12_GetLevel.iim", MACRO_INFO_LOGGING);
+    if ($retCode == SUCCESS) {
+        $msg = strtoupper(getLastExtract($iimHolder, 1, "LEVEL", "Level 300"));
+        $msg = str_replace("LEVEL ", "", $msg);
+        $level = intval($msg);
+        if (GlobalSettings::$currentLevel == 0) {
+            GlobalSettings::$currentLevel = $level;
+        } else if ($level > GlobalSettings::$currentLevel) {
+            LogTest::log(INFO, "LEVELUP", "New Level: " . $level . ". Checking For Dialog Box");
+            $retCode = closePopup($iimHolder);
+            if ($retCode == SUCCESS) {
+                LogTest::log(INFO, "LEVELUP", "Dialog Box Closed");
+            }
+            GlobalSettings::$currentLevel = $level;
+        }
+    }
+}
+
 ?>
