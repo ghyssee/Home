@@ -196,7 +196,7 @@ function evaluateBossMessage($iimHolder) {
                     LogTest::log(INFO, "BOSS", "No Time Found");
                 }
             }
-            else if (startsWith($msg,"ANTON")) {
+            else if (startsWith($msg,strtoupper($this->configMRObj->boss->name))) {
                 $bossObj->status = ATTACKSTATUS_OK;
                 LogTest::log(INFO, "BOSS", "BOSS AVAILABLE ???");
             }

@@ -112,7 +112,7 @@ function heal($iimHolder){
 
 function getHealth($iimHolder){
     playMacro($iimHolder,FIGHT_FOLDER, "11_GetHealth.iim", MACRO_INFO_LOGGING);
-    $healthInfo = getLastExtract($iimHolder,1, "Health", "50%");
+    $healthInfo = getLastExtract($iimHolder,1, "Health", "50/200");
     LogTest::log(INFO, "BOSS", "healthInfo = " . $healthInfo);
     if (!isNullOrBlank($healthInfo)){
         $healthInfo = removeComma($healthInfo);

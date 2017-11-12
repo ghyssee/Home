@@ -53,48 +53,59 @@ set_time_limit(0);
 LogTest::$file = "C:\\My Programs\\iMacros\logs\\test2.txt";
 LogTest::log(INFO,"TEST", "test1");
 
+//startFightScript();
+$fight = new Fight();
+$fight->addFighter(new Fighter("TEST", "TEST", 1500));
+
+
 //$s = $iim1->iimSet("keyword", $_GET["keyword"]);
 //$s2 = $iim1->iimPlay("MR\\Common\\01_Start.iim");
- $iim = new COM("iMacros");
-iMacros::$iimHolder = $iim;
-$s = iMacros::$iimHolder->iimOpen("-runner", true, 90);
-echo "iimOpen=";
-echo $s . LINE_BREAK;
 
-try {
-    $retCode = playMacro(iMacros::$iimHolder, "MR\\Common", "01_Start.iim", MACRO_INFO_LOGGING);
-    $fightObj = new Fight();
-    $txt = "<a class=\"ajax_request\" href=\"#\" data-params=\"controller=profile&amp;action=view&amp;id=982390345205927\">cashqueen2</a>";
-    echo $fightObj->extractIdFromString($txt) . LINE_BREAK;
+function startFightScript(){
+    LogTest::log(INFO, "MAFIA RELOADED", "Started");
+    LogTest::log(INFO, "==============", "===========================================");
+    printAndFlush("Mafia Reloaded - Started...");
+    $iim = new COM("iMacros");
+    iMacros::$iimHolder = $iim;
+    $s = iMacros::$iimHolder->iimOpen("-runner", true, 90);
+    echo "iimOpen=";
+    echo $s . LINE_BREAK;
 
-    if ($retCode === SUCCESS) {
-        //$bossFight = new BossFight();
-        do  {
-            waitTillEnoughStamina(iMacros::$iimHolder);
-            $status = ATTACKSTATUS_OK;
-/*
-            if ($bossFight->isBossAvailable()) {
-                $status = $bossFight->startFightBoss(iMacros::$iimHolder);
-            }*/
-            if ($status != ATTACKSTATUS_NOSTAMINA){
-                $fightObj->fight($iim);
+    try {
+        $retCode = playMacro(iMacros::$iimHolder, "MR\\Common", "01_Start.iim", MACRO_INFO_LOGGING);
+        $fightObj = new Fight();
+        $txt = "<a class=\"ajax_request\" href=\"#\" data-params=\"controller=profile&amp;action=view&amp;id=982390345205927\">cashqueen2</a>";
+        echo $fightObj->extractIdFromString($txt) . LINE_BREAK;
+
+        if ($retCode === SUCCESS) {
+            $bossFight = new BossFight();
+            do  {
+                waitTillEnoughStamina(iMacros::$iimHolder);
+                $status = ATTACKSTATUS_OK;
+                if ($bossFight->isBossAvailable()) {
+                    $status = $bossFight->startFightBoss(iMacros::$iimHolder);
+                }
+                if ($status != ATTACKSTATUS_NOSTAMINA){
+                    $fightObj->fight($iim);
+                }
             }
+            while (true);
         }
-        while (true);
     }
-}
-catch (UserCancelException $ex){
-    printAndFlush("User Canceled 1");
-}
-LogTest::log(INFO, "SUMMARY", "Total Iced: " . GlobalSettings::$iced);
-LogTest::log(INFO, "SUMMARY", "Money Gained: " . GlobalSettings::$money);
-LogTest::log(INFO, "SUMMARY", "Nr Of Attacks: " . GlobalSettings::$nrOfAttacks);
-LogTest::log(INFO, "SUMMARY", "Stolen Ices: " . GlobalSettings::$stolenIces);
-LogTest::log(INFO, "SUMMARY", "Skipped Health: " . GlobalSettings::$skippedHealth);
-LogTest::log(INFO, "SUMMARY", "Max Healed: " . GlobalSettings::$maxHealed);
-LogTest::log(INFO, "SUMMARY", "Heals: " . GlobalSettings::$heals);
+    catch (UserCancelException $ex){
+        printAndFlush("User Canceled 1");
+    }
+    LogTest::log(INFO, "SUMMARY", "Total Iced: " . GlobalSettings::$iced);
+    LogTest::log(INFO, "SUMMARY", "Money Gained: " . GlobalSettings::$money);
+    LogTest::log(INFO, "SUMMARY", "Nr Of Attacks: " . GlobalSettings::$nrOfAttacks);
+    LogTest::log(INFO, "SUMMARY", "Stolen Ices: " . GlobalSettings::$stolenIces);
+    LogTest::log(INFO, "SUMMARY", "Skipped Health: " . GlobalSettings::$skippedHealth);
+    LogTest::log(INFO, "SUMMARY", "Max Healed: " . GlobalSettings::$maxHealed);
+    LogTest::log(INFO, "SUMMARY", "Heals: " . GlobalSettings::$heals);
+    LogTest::log(INFO, "=======", "=======================================================================================");
 
-iMacros::$iimHolder->iimClose();
+    iMacros::$iimHolder->iimClose();
+}
 
 function waitTillEnoughStamina($iimHolder){
     $maxStamina = 200;
@@ -113,7 +124,7 @@ function waitTillEnoughStamina($iimHolder){
             LogTest::log(INFO, "WAIT", "Stamina: " . $stamina);
             LogTest::log(INFO, "WAIT", "maxStamina: " . $maxStamina);
             // maxStamina = Math.min(maxStamina, staminaNeeded);
-            if ($total >= $staminaNeeded && ($stamina >= $minStamina || $exp < 300)) {
+            if ($total >= $staminaNeeded && $stamina > 10 && ($stamina >= $minStamina || $exp < 300)) {
                 LogTest::log(INFO, "WAIT", "Enough Stamina to level up");
                 break;
             }

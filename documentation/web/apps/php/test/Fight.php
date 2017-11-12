@@ -182,7 +182,7 @@ class Fight
                     case OPPONENT_LOST :
                         $this->getVictimHealth($iimHolder);
                         LogTest::log(INFO, "FIGHT", "Add Stronger Opponent: " . $fighter->id);
-                        addStrongerOpponent(fighter);
+                        $this->addStrongerOpponent($fighter);
                         $fighter->skip = true;
                         $statusObj->status = ATTACKSTATUS_OK;
                         break;
@@ -265,7 +265,7 @@ class Fight
                 if ($health == 0){
                     // check if attack button available (if health is 0, he can still be alive)
                     if ($this->checkForAttackButton($iimHolder)){
-                        logV2(INFO, "ATTACK", "Victim is not dead yet. Continue Attacking...");
+                        LogTest::log(INFO, "ATTACK", "Victim is not dead yet. Continue Attacking...");
                         $victimIsDeath = false;
                         $alive = true;
                     }
@@ -366,21 +366,25 @@ class Fight
 
     function addFriend($fighter)
     {
-        $this->friendObj->fighters[] = $fighter;
-        //writeJSON($this->friendObj, MR_FRIENDS_FILE);
+        if (!$this->findFighter($this->friendObj->fighters, $fighter->id)) {
+            $this->friendObj->fighters[] = $fighter;
+            writeJSON($this->friendObj, MR_FRIENDS_FILE);
+        }
     }
 
     function addStrongerOpponent($fighter)
     {
-        $this->fightersToExclude->fighters[] = $fighter;
-        //writeJSON($this->fightersToExclude, MR_FIGHTERS_EXCLUDE_FILE);
+        if (!$this->findFighter($this->fightersToExclude->fighters, $fighter->id)) {
+            $this->fightersToExclude->fighters[] = $fighter;
+            writeJSON($this->fightersToExclude, MR_FIGHTERS_EXCLUDE_FILE);
+        }
     }
 
     function addFighter($fighter)
     {
         if (!$this->findFighter($this->fighterObj->fighters, $fighter->id)) {
             $this->fighterObj->fighters[] = $fighter;
-            //writeJSON($this->fighterObj, MR_FIGHTERS_FILE);
+            writeJSON($this->fighterObj, MR_FIGHTERS_FILE);
         }
     }
 
@@ -493,7 +497,84 @@ class Fight
             return $matches[count($matches)-1];
         }
         return $text;
+    }
+
+    function addIcing($fighter){
+        $foundFighter = $this->findFighter($this->fighterObj->fighters, $fighter->id);
+        if ($foundFighter != null) {
+            if (isset($foundFighter->iced) && is_int($foundFighter->iced)) {
+                $foundFighter->iced++;
+            }
+            else {
+                $foundFighter->iced = 1;
+            }
+            $date = new DateTime();
+            $formattedDate = $date->format("YmdHis");
+            $foundFighter->lastTimeIced = $formattedDate;
+        }
+        else {
+            LogTest::log(INFO, "ADDICING", "Problem adding Ice for fighter " . $fighter->id);
+        }
+
+    }
+
+    function removeItemFromArray($file, $id){
+        $obj = readJSON(file);
+        $index = -1;
+        for ($i=0; $i < $obj->fighters->length; $i++){
+            $item = $obj->fighters[i];
+            if ($item->id == $id){
+                $index = $i;
+                break;
+            }
+        }
+	if ($index >= 0){
+        array_splice($obj->fighters, $index, 1);
+        writeJSON($obj, $file);
+    }
+	return ($index > -1);
 }
+
+    function startProfileAttack($iimHolder){
+        $refresh = false;
+        $status = CONSTANTS.ATTACKSTATUS.OK;
+        $nr = count($this->fighterObj->fighters);
+        for ($i=0; i < $nr; $i++) {
+            $arrayItem = $this->fighterObj->fighters[i];
+            addMacroSetting($iimHolder,"ID", arrayItem.id);
+            $retCode = playMacro($iimHolder,FIGHT_FOLDER, "80_Profile_Attack_Init.iim", MACRO_INFO_LOGGING);
+            if ($retCode == SUCCESS) {
+                if (!$arrayItem->skip) {
+                    LogTest::log(INFO, "FIGHT", "Profile Fighting Player " + arrayItem.id + " - " + arrayItem.name);
+                    $statusObj = $this->attack($iimHolder,$arrayItem, false, true);
+                    switch ($statusObj->status) {
+                        case ATTACKSTATUS_OK :
+                            // do nothing, continue with next fighter
+                            break;
+                        case ATTACKSTATUS_PROBLEM :
+                            LogTest::log(INFO, "FIGHT", "Problem With Fighter. Skipping...");
+                            break;
+                        case ATTACKSTATUS_NOSTAMINA :
+                            LogTest::log(INFO, "FIGHT", "Out Of Stamina. Exiting Profile Fighters List");
+                            $status = ATTACKSTATUS_NOSTAMINA;
+                            $refresh = true;
+                            break;
+                    }
+                }
+                else {
+                    LogTest::log(INFO, "FIGHT", "Skipping Stronger Opponent: " + arrayItem.id);
+                }
+                if ($refresh) break;
+            }
+            else {
+                LogTest::log(INFO, "FIGHT", "startProfileAttack Return Status: " + status);
+            }
+        }
+    // reload fighters list
+        LogTest::log(INFO, "FIGHT", "Reloading fighters list");
+        $this->fighterObj = readJSON(MR_FIGHTERS_FILE);
+        return $status;
+    }
 
 }
 
@@ -502,6 +583,8 @@ class Fighter {
     public $name;
     public $level;
     public $skip;
+    public $iced;
+    public $lastTimeIced;
 
     function __construct($id, $name, $level)
     {
