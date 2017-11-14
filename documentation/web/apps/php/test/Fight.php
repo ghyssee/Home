@@ -25,6 +25,7 @@ class Fight
         $this->fightersToExclude = readJSON(MR_FIGHTERS_EXCLUDE_FILE);
         $this->friendObj = readJSON(MR_FRIENDS_FILE);
         $this->fighterObj = readJSON(MR_FIGHTERS_FILE);
+        $this->configMRObj = readJSON(MR_CONFIG_FILE);
     }
 
     public function fight($iimHolder)
@@ -38,6 +39,7 @@ class Fight
 
             do {
 
+                $this->configMRObj = readJSON(MR_CONFIG_FILE);
                 $rival = $this->extractRivalMobster($iimHolder);
                 if ($rival > 0) {
                     $fighter = new Fighter("RIVAL", "RIVAL " . $rival, "0");
@@ -55,7 +57,14 @@ class Fight
 
                 $fighters = $this->getFightList($iimHolder);
                 $filteredFightersList = $this->filterFightList($fighters);
-                $status = $this->processList($iimHolder, $filteredFightersList, !RIVAL_MOBSTER);
+                $minFightList = isNullOrBlank($this->configMRObj->fight->minLengthOfFightList) ? 0: $this->configMRObj->fight->minLengthOfFightList;
+                logV2(INFO, "FIGHT", "Min Fighters on Fight List: " + $minFightList);
+                if (count($filteredFightersList) > 2) {
+                    $status = $this->processList($iimHolder, $filteredFightersList, !RIVAL_MOBSTER);
+                }
+                else {
+                    $status = $this->startProfileAttack($iimHolder);
+                }
                 LogTest::log(INFO, "FIGHT", "Status: " . $status);
                 if ($status == ATTACKSTATUS_NOSTAMINA) {
                     LogTest::log(INFO, "FIGHT", "Exit Fight V2...");
@@ -124,18 +133,24 @@ class Fight
         return 0;
     }
 
-    function attack($iimHolder, $fighter, $rivalMobster)
+    function attack($iimHolder, $fighter, $rivalMobster, $profileFighter)
     {
         $statusObj = new FightStatus(ATTACKSTATUS_OK);
+        $retCode = SUCCESS;
         LogTest::log(INFO, "FIGHT", "Attacking " . $fighter->id);
-        $retCode = playMacro($iimHolder, FIGHT_FOLDER, "20_Extract_Start.iim", MACRO_INFO_LOGGING);
+        if (!$profileFighter) {
+            $retCode = playMacro($iimHolder, FIGHT_FOLDER, "20_Extract_Start.iim", MACRO_INFO_LOGGING);
+        }
         if ($retCode != SUCCESS) {
             LogTest::log(INFO, "FIGHT", 'Problem With Extract Start');
             $statusObj->status = ATTACKSTATUS_PROBLEM;
             return $statusObj;
         }
         checkHealth($iimHolder);
-        if ($rivalMobster) {
+        if ($profileFighter){
+            $retCode = playMacro($iimHolder,FIGHT_FOLDER, "81_Profile_Attack_Start.iim", MACRO_INFO_LOGGING);
+        }
+        else if ($rivalMobster) {
             $retCode = playMacro($iimHolder, FIGHT_FOLDER, "32_AttackRivalMobster_start.iim", MACRO_INFO_LOGGING);
         } else {
             addMacroSetting($iimHolder, "ID", $fighter->id);
@@ -154,10 +169,14 @@ class Fight
                         LogTest::log(INFO, "FIGHT", "Add Friend: " . $fighter->id);
                         $fighter->skip = true;
                         $this->addFriend($fighter);
+                        if ($profileFighter){
+                            $this->removeItemFromArray(MR_FIGHTERS_FILE, $fighter->id);
+                            logV2(INFO, "FIGHT", "Remove Fighter + Add Friend: " . $fighter->id);
+                        }
                         $statusObj->status = ATTACKSTATUS_OK;
                         break;
                     case OPPONENT_WON :
-                        if (!$rivalMobster) {
+                        if (!$rivalMobster && !$profileFighter) {
                             $this->addFighter($fighter);
                         }
                         /*
@@ -183,6 +202,10 @@ class Fight
                         $this->getVictimHealth($iimHolder);
                         LogTest::log(INFO, "FIGHT", "Add Stronger Opponent: " . $fighter->id);
                         $this->addStrongerOpponent($fighter);
+                        if ($profileFighter){
+                            removeItemFromArray(MR_FIGHTERS_FILE, $fighter->id);
+                            logV2(INFO, "FIGHT", "Remove Fighter + Add Stronger Opponent: " . $fighter->id);
+                        }
                         $fighter->skip = true;
                         $statusObj->status = ATTACKSTATUS_OK;
                         break;
@@ -536,35 +559,36 @@ class Fight
 }
 
     function startProfileAttack($iimHolder){
-        $refresh = false;
         $status = CONSTANTS.ATTACKSTATUS.OK;
         $nr = count($this->fighterObj->fighters);
-        for ($i=0; i < $nr; $i++) {
+        $start = rand(0, $nr - 100);
+        $end = min($start+100, $nr-1);
+        logV2(INFO, "FIGHT", "Range Max:" . ($nr - 100));
+        logV2(INFO, "FIGHT", "Max:" . $nr);
+        logV2(INFO, "FIGHT", "Random Start Position: " . $start);
+        logV2(INFO, "FIGHT", "Random End Position: " . $end);
+        for ($i=$start; i < $end; $i++) {
             $arrayItem = $this->fighterObj->fighters[i];
             addMacroSetting($iimHolder,"ID", arrayItem.id);
             $retCode = playMacro($iimHolder,FIGHT_FOLDER, "80_Profile_Attack_Init.iim", MACRO_INFO_LOGGING);
             if ($retCode == SUCCESS) {
                 if (!$arrayItem->skip) {
-                    LogTest::log(INFO, "FIGHT", "Profile Fighting Player " + arrayItem.id + " - " + arrayItem.name);
+                    LogTest::log(INFO, "FIGHT", "Profile Fighting Player " + $arrayItem->id + " - " + $arrayItem->name);
                     $statusObj = $this->attack($iimHolder,$arrayItem, false, true);
                     switch ($statusObj->status) {
                         case ATTACKSTATUS_OK :
                             // do nothing, continue with next fighter
-                            break;
                         case ATTACKSTATUS_PROBLEM :
                             LogTest::log(INFO, "FIGHT", "Problem With Fighter. Skipping...");
-                            break;
                         case ATTACKSTATUS_NOSTAMINA :
                             LogTest::log(INFO, "FIGHT", "Out Of Stamina. Exiting Profile Fighters List");
                             $status = ATTACKSTATUS_NOSTAMINA;
-                            $refresh = true;
                             break;
                     }
                 }
                 else {
                     LogTest::log(INFO, "FIGHT", "Skipping Stronger Opponent: " + arrayItem.id);
                 }
-                if ($refresh) break;
             }
             else {
                 LogTest::log(INFO, "FIGHT", "startProfileAttack Return Status: " + status);
