@@ -316,7 +316,7 @@ class Fight
                         GlobalSettings::$maxHealed++;
                         $statusObj->status = ATTACKSTATUS_OK;
                         break;
-                    } else if (!$firstAttack && $deltaHealth > 0 && $deltaHealth < 2 && $health > 20 && $nrOfAttacks > 20) {
+                    } else if (!$firstAttack && $deltaHealth > 0 && $deltaHealth < 2 && $health > 25 && $nrOfAttacks > 20) {
                         LogTest::log(INFO, "ATTACK", "Victim has too much health. Skipping...");
                         LogTest::log(INFO, "ATTACK", "Orignal Health: " . $originalHealth);
                         LogTest::log(INFO, "ATTACK", "Current Health: " . $health);
