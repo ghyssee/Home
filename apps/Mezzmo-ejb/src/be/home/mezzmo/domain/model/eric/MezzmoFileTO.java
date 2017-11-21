@@ -10,6 +10,9 @@ public class MezzmoFileTO {
     private String status;
     private boolean isNew;
     private String ruleId;
+    private String song;
+    private String newSong;
+    private String newArtist;
 
     public long getId() {
         return id;
@@ -57,5 +60,29 @@ public class MezzmoFileTO {
 
     public void setRuleId(String ruleId) {
         this.ruleId = ruleId;
+    }
+
+    public String getSong() {
+        return song;
+    }
+
+    public void setSong(String song) {
+        this.song = song;
+    }
+
+    public String getNewSong() {
+        return newSong;
+    }
+
+    public void setNewSong(String newSong) {
+        this.newSong = newSong;
+    }
+
+    public String getNewArtist() {
+        return newArtist;
+    }
+
+    public void setNewArtist(String newArtist) {
+        this.newArtist = newArtist;
     }
 }

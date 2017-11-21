@@ -23,7 +23,11 @@ public class EricDAOImpl extends EricRowMappers {
                 mezzmoFile.getArtistName(),
                 mezzmoFile.isNew(),
                 mezzmoFile.getStatus(),
-                mezzmoFile.getRuleId()};
+                mezzmoFile.getRuleId(),
+                mezzmoFile.getSong(),
+                mezzmoFile.getNewSong(),
+                mezzmoFile.getNewArtist()
+        };
         getInstance().getJDBCTemplate().update(INSERT_MEZZMOFILE, params);
     }
 

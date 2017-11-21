@@ -22,6 +22,8 @@ class EricSQLiteDatabase extends CustomDatabase {
                 "FILE.ArtistName         AS ARTISTNAME, " .
                 "FILE.IsNew              AS ISNEW, " .
                 "FILE.RuleId             AS RULEID, " .
+                "FILE.NewArtist          AS NEWARTIST, " .
+                "FILE.NewSong            AS NEWSONG, " .
                 "FILE.STATUS             AS STATUS ";
         return $cols;
     }
@@ -35,6 +37,8 @@ class EricSQLiteDatabase extends CustomDatabase {
         $mezzmoFileTO->isNew = getBoolean($result, 'ISNEW');
         $mezzmoFileTO->status = $result['STATUS'];
         $mezzmoFileTO->ruleId = $result['RULEID'];
+        $mezzmoFileTO->newArtist = $result['NEWARTIST'];
+        $mezzmoFileTO->newSong = $result['NEWSONG'];
         return $mezzmoFileTO;
     }
 

@@ -101,6 +101,8 @@ class SongBO
                     $song->status = $mezzmoFileTO->status;
                     $song->isNew = $mezzmoFileTO->isNew;
                     $song->ruleId = $mezzmoFileTO->ruleId;
+                    $song->newArtist = $mezzmoFileTO->newArtist;
+                    $song->newTitle = $mezzmoFileTO->newTitle;
                 }
             }
         }

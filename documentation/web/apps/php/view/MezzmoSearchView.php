@@ -113,6 +113,15 @@ function getNextArtistId($artistArray, $artistId){
             $('#myFormId').submit();
         }
     </script>
+    <style type="text/css">
+        .box {
+            width: 75px;
+            display: inline-block;
+        }
+        .box2 {
+            display: inline-block;
+        }
+    </style>
     <script>
         function editSong(){
             var row = $('#dgSearch').datagrid('getSelected');
@@ -130,8 +139,9 @@ function getNextArtistId($artistArray, $artistId){
         function addRule(){
             var url = "<?php echo webPath(ROOT_PHP_CONFIGURATION_MP3PRETTIFIER, 'ArtistSongRelationshipView.php') ?>";
             var row = $('#dgSearch').datagrid('getSelected');
+            var artist = row.newArtist == null ? row.artist : row.newArtist;
             if (row) {
-                url += "?artist=" + encodeURIComponent(row.artist) + "&song=" + encodeURIComponent(row.title);
+                url += "?artist=" + encodeURIComponent(artist) + "&song=" + encodeURIComponent(row.title);
             }
             openUrl(url);
         }
@@ -169,8 +179,30 @@ function getNextArtistId($artistArray, $artistId){
         }
         function formatArtist(val,row){
             var url = "https://www.google.be/search?q=" + encodeURIComponent(row.artist);
-            return '<a href="'+url+'" target="_blank">'+val+'</a>';
+            //return '<div class="box">Old Artist:</div><div class="box2"><a href="'+url+'" target="_blank">'+val+'</a></div><br><div class="box">New Artist:</div><div class="box2">BlaBla</div>';
+            var cellInfo = '<a href="'+url+'" target="_blank">'+val+'</a>';
+            if (row.newArtist != null && row.artist != row.newArtist){
+                cellInfo = '<div><span class="box">Old Artist:</span><span class="box2">' + cellInfo +
+                    '</span></div><div><span class="box">New Artist:</span><span class="box2">' + row.newArtist + '</span></div>';
+            }
+            return cellInfo;
+            //return '<div><span class="box">Old Artist:</span><span class="box2">' + cellInfo +
+              //     '</span></div><div><span class="box">New Artist:</span><span class="box2">' + row.newArtist + '</span></div>';
+            //return '<div><span class="box">Old Artist:</span><span class="box2"><a href="'+url+'" target="_blank">'+val+'</a></span></div><div><span class="box">New Artist:</span><span class="box2">BlaBla</span></div>';
         }
+        function formatTitle(val,row){
+            var cellInfo = row.title;
+            if (row.newTitle != null && row.title != row.newtitle){
+                cellInfo = '<div><span class="box">Old Title:</span><span class="box2">' + cellInfo +
+                    '</span></div><div><span class="box">New Title:</span><span class="box2">' + row.newTitle + '</span></div>';
+            }
+            return cellInfo;
+            //return '<div><span class="box">Old Artist:</span><span class="box2">' + cellInfo +
+            //     '</span></div><div><span class="box">New Artist:</span><span class="box2">' + row.newArtist + '</span></div>';
+            //return '<div><span class="box">Old Artist:</span><span class="box2"><a href="'+url+'" target="_blank">'+val+'</a></span></div><div><span class="box">New Artist:</span><span class="box2">BlaBla</span></div>';
+        }
+
+
     </script>
 
     <table id="dgSearch" class="easyui-datagrid" style="width:100%;height:300px"
@@ -193,7 +225,7 @@ function getNextArtistId($artistArray, $artistId){
         <tr>
             <th data-options="field:'editLink',width:15, formatter: editLink">Edit</th>
             <th data-options="field:'artistId',width:15">ArtistId</th>
-            <th data-options="field:'artist',width:100, formatter: formatArtist">Artist</th>
+            <th data-options="field:'artist',width:150, formatter: formatArtist">Artist</th>
             <th data-options="field:'title',width:100">Title</th>
             <th data-options="field:'song',width:100, formatter: formatPrice">Song</th>
             <th data-options="field:'album',width:50">Album</th>

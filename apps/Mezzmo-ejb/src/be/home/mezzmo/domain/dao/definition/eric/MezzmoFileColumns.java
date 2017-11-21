@@ -12,7 +12,10 @@ public enum MezzmoFileColumns implements DatabaseColumn{
     ARTISTNAME("ArtistName", FieldType.NORMAL),
     ISNEW("IsNew", FieldType.NORMAL),
     STATUS("Status", FieldType.NORMAL),
-    RULEID("RuleId", FieldType.NORMAL);
+    RULEID("RuleId", FieldType.NORMAL),
+    SONG("Song", FieldType.NORMAL),
+    NEWSONG("NewSong", FieldType.NORMAL),
+    NEWARTIST("NewArtist", FieldType.NORMAL);
 
     public String columnName;
     public FieldType fieldType;
