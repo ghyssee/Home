@@ -194,7 +194,7 @@ class CustomSort{
 			return $a->{$this->field} - $b->{$this->field};
 		}
 		else {
-			return strcmp($a->{$this->field}, $b->{$this->field});
+			return strnatcmp($a->{$this->field}, $b->{$this->field});
 		}
 	}
 
@@ -204,7 +204,7 @@ class CustomSort{
 			return $b->{$this->field} - $a->{$this->field};
 		}
         else {
-			return strcmp($b->{$this->field}, $a->{$this->field});
+            return strnatcmp($b->{$this->field}, $a->{$this->field});
 		}
     }
 

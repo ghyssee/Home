@@ -13,12 +13,19 @@ include_once documentPath (ROOT_PHP_HTML, "config.php");
 include_once documentPath (ROOT_PHP_BO, "SessionBO.php");
 include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
 sessionStart();
+//ini_set('display_errors', 1);
+//ini_set('display_startup_errors', 1);
+//error_reporting(E_ALL);
+//set_error_handler("customError",E_ALL);
 
 $method = htmlspecialchars($_REQUEST['method']);
 try {
     switch ($method) {
         case "list":
             getListScheduledJobs();
+            break;
+        case "getDistricts":
+            getDistricts();
             break;
     }
 }
@@ -32,6 +39,21 @@ catch(ApplicationException $e) {
     echo 'Caught exception: ',  $e->getMessage(), "\n";
 }
 exit(0);
+
+function customError($errno, $errstr) {
+    echo "<b>Error:</b> [$errno] $errstr<br>";
+    echo "Ending Script";
+   die();
+}
+
+function getDistricts(){
+    $activeJobBO = new ActiveJobBO();
+    $list = $activeJobBO->getDistrictsForComboBox();
+    $sort = new CustomSort();
+    $list = $sort->sortObjectArrayByField($list, "description");
+    echo json_encode($list);
+
+}
 
 function getListScheduledJobs()
 {

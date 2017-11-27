@@ -26,16 +26,66 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
 
     <?php
     $activeJobBO = new ActiveJobBO();
-    $list = $activeJobBO->getScheduledJobs();
-    foreach($list as $key => $value) {
-        echo $value->description . "<br>";
-    }
-
+    /*
+    $list = $activeJobBO->getDistricts();
+    foreach($list as $item){
+        echo $item->description . "<br>";
+    }*/
     ?>
+
+
+    <input id="cbArtist" class="easyui-combobox" name="cbArtist"
+           data-options="valueField:'id',
+                     width:200,
+                     limitToList: true,
+                     textField:'description',
+                     label: 'District:',
+                     labelPosition: 'top',
+                     url:'JobManagerAction.php?method=getDistricts'
+                     ">
+    <div><button onclick="getCmbArtist()">Add</button></div>
+    <div style="margin-bottom:20px">
+        <input id="oldSong" class="easyui-textbox" label="Old Song" labelPosition="top" style="width:80%;height:52px">
+    </div>
+    <div><button onclick="setValue()">Set</button></div>
+
+    <script>
+        function setValue(){
+            $("#oldSong").textbox('setValue', 'TTTTTTTTTTEEEEEEEEEESSSSSSTTTTTT');
+        }
+        function getCmbArtist(cmbId) {
+            cmbId = '#cbArtist';
+            var _options = $(cmbId).combobox('options');
+            var _data = $(cmbId).combobox('getData');
+            var _value = $(cmbId).combobox('getValue');
+            var _text = $(cmbId).combobox('getText');
+            var _b = false;
+            var row = {id:null, value:null};
+            for (var i = 0; i < _data.length; i++) {
+                if (_data[i][_options.valueField] == _value) {
+                    _b = true;
+                    row.id = _value;
+                    row.value = _text;
+                    //$(cmbId).combobox('clear');
+                    break;
+                }
+            }
+            if (!_b) {
+                $(cmbId).combobox('setValue', '');
+                row = null;
+            }
+            return row;
+        }
+    </script>
+
+
+
+
+
     <table id="dgGlobalWord" class="easyui-datagrid" style="width:90%;height:300px"
            title="Result"
            idField="jobId"
-            url='../action/JobManagerAction.php?method=list'
+            url='JobManagerAction.php?method=list'
            data-options='fitColumns:true,
                          singleSelect:true,
        toolbar:"#toolbarGlobalWord",
@@ -50,9 +100,14 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
 
         <thead>
         <tr>
-            <th data-options="field:'districtId',width:15">DistrictId</th>
-            <th data-options="field:'jobId',width:15">jobId</th>
-            <th data-options="field:'enabled',width:15,align:'center',formatter:function(value,row,index){return checkboxFormatter(value,row,index);} ">Enabled</th>        </tr>
+            <th data-options="field:'type',width:2">Type</th>
+            <th data-options="field:'districtId',width:2">DistrictId</th>
+            <th data-options="field:'districtName', width:10, formatter:function(value,row){return row.district.description}">District</th>
+            <th data-options="field:'chapter', width:2">Chapter</th>
+            <th data-options="field:'jobId',width:2">jobId</th>
+            <th data-options="field:'jobName', width:10, formatter:function(value,row){return row.job.description}">Jobname</th>
+            <th data-options="field:'enabled',width:2,align:'center',formatter:function(value,row,index){return checkboxFormatter(value,row,index);} ">Enabled</th>
+        </tr>
         </thead>
     </table>
 
@@ -71,11 +126,14 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
         <form id="fmGlobalWord" method="post" novalidate>
 
             <div class="fitem">
-                <label>DistrictId</label>
-                <input name="distrctId"
-                       required="true"                                                           class="easyui-textbox"
-
-                >
+                <label>District</label>
+                <input id="districtId" class="easyui-combobox" name="districtId"
+                       data-options="valueField:'id',
+                     width:200,
+                     limitToList: true,
+                     textField:'description',
+                     url:'JobManagerAction.php?method=getDistricts'
+                     ">
             </div>
             <div class="fitem">
                 <label>JobId</label>
@@ -111,6 +169,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
             if (row){
                 $('#dlgGlobalWord').dialog('open').dialog('setTitle','Edit Global Word');
                 $('#fmGlobalWord').form('load',row);
+                //$('#cbArtist2').combobox('setValue', '1');
                 url = 'MP3PrettifierAction.php?method=update&id='+row['jobId']+'&type=global&category=words';
             }
         }
