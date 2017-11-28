@@ -88,6 +88,37 @@ class ActiveJobBO{
         return $districts;
     }
 
+    function getJobs($districtId, $chapter){
+        $district = $this->findDistrict($districtId);
+        $jobs = Array();
+        if ($district != null) {
+            if ($chapter != null){
+                foreach($district->jobs as $key => $item) {
+                    if ($item->chapter == $chapter){
+                        $jobs[] = $item;
+                    }
+                }
+            }
+            else {
+                return $district->jobs;
+            }
+        }
+        return $jobs;
+    }
+
+    function getChapters($districtId){
+        $district = $this->findDistrict($districtId);
+        $chapters = Array();
+        if ($district != null) {
+            return $district->chapters;
+        }
+        return $chapters;
+    }
+
+    function getJobTypes(){
+        return $this->jobManagerObj->types;
+    }
+
     function convertToDistrictTO($district){
         $districtTO = new DistrictTO();
         $districtTO2 = new DistrictTO();
@@ -98,7 +129,7 @@ class ActiveJobBO{
     }
 
     function findDistrict($districtId){
-        $district = new DistrictTO();
+        $district = null;
         foreach($this->jobManagerObj->districts as $key => $item){
             if ($item->id == $districtId){
                 $district = $item;

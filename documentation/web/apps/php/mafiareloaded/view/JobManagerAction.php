@@ -27,6 +27,15 @@ try {
         case "getDistricts":
             getDistricts();
             break;
+        case "getJobs":
+            getJobs();
+            break;
+        case "getChapters":
+            getChapters();
+            break;
+        case "getJobTypes":
+            getJobTypes();
+            break;
     }
 }
 catch(Error $e) {
@@ -51,6 +60,44 @@ function getDistricts(){
     $list = $activeJobBO->getDistrictsForComboBox();
     $sort = new CustomSort();
     $list = $sort->sortObjectArrayByField($list, "description");
+    echo json_encode($list);
+
+}
+
+function getJobs(){
+    $activeJobBO = new ActiveJobBO();
+    $district = "1";
+    if (isset($_REQUEST["district"])){
+        $district = $_REQUEST["district"];
+    }
+    $chapter = null;
+    if (isset($_REQUEST["chapter"])){
+        $chapter = $_REQUEST["chapter"];
+    }
+    $list = $activeJobBO->getJobs($district, $chapter);
+    $sort = new CustomSort();
+    // TODO: Sort On multiple fields
+    $list = $sort->sortObjectArrayByField($list, "id");
+    echo json_encode($list);
+
+}
+
+function getChapters(){
+    $activeJobBO = new ActiveJobBO();
+    $district = "1";
+    if (isset($_REQUEST["district"])){
+        $district = $_REQUEST["district"];
+    }
+    $list = $activeJobBO->getChapters($district);
+    $sort = new CustomSort();
+    $list = $sort->sortObjectArrayByField($list, "id");
+    echo json_encode($list);
+
+}
+
+function getJobTypes(){
+    $activeJobBO = new ActiveJobBO();
+    $list = $activeJobBO->getJobTypes();
     echo json_encode($list);
 
 }

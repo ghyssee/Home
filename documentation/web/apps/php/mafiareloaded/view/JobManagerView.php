@@ -82,31 +82,34 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
 
 
 
-    <table id="dgGlobalWord" class="easyui-datagrid" style="width:90%;height:300px"
+    <table id="dgGlobalWord" class="easyui-datagrid" style="width:90%;height:350px"
            title="Result"
            idField="jobId"
             url='JobManagerAction.php?method=list'
            data-options='fitColumns:true,
                          singleSelect:true,
        toolbar:"#toolbarGlobalWord",
-       pagination:true,
+       pagination:false,
        nowrap:false,
        remoteFilter:true,
        rownumbers:true,
-       pagePosition:"bottom",
-       pageSize:10,
-       pageList:[5,10,15,20,25,30,40,50],
        singleSelect:true'>
 
         <thead>
         <tr>
+            <th data-options="field:'enabled',width:2,align:'center',formatter:function(value,row,index){return checkboxFormatter(value,row,index);} ">Enabled</th>
             <th data-options="field:'type',width:2">Type</th>
+            <th data-options="field:'description',width:10">Description</th>
             <th data-options="field:'districtId',width:2">DistrictId</th>
             <th data-options="field:'districtName', width:10, formatter:function(value,row){return row.district.description}">District</th>
             <th data-options="field:'chapter', width:2">Chapter</th>
             <th data-options="field:'jobId',width:2">jobId</th>
             <th data-options="field:'jobName', width:10, formatter:function(value,row){return row.job.description}">Jobname</th>
-            <th data-options="field:'enabled',width:2,align:'center',formatter:function(value,row,index){return checkboxFormatter(value,row,index);} ">Enabled</th>
+            <th data-options="field:'consumable', width:2, formatter:function(value,row,index){return checkboxFormatter(row.job.consumable,row,index);}">Consumable</th>
+            <th data-options="field:'money', width:2, formatter:function(value,row,index){return row.job.money;}">Money</th>
+            <th data-options="field:'energy', width:2, formatter:function(value,row,index){return row.job.energy;}">Energy</th>
+            <th data-options="field:'exp', width:2, formatter:function(value,row,index){return row.job.exp;}">Experience</th>
+            <th data-options="field:'total', width:2">Total</th>
         </tr>
         </thead>
     </table>
@@ -126,21 +129,72 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
         <form id="fmGlobalWord" method="post" novalidate>
 
             <div class="fitem">
+                <label>Job Type</label>
+                <input id="type" class="easyui-combobox" name="type"
+                       data-options="valueField:'id',
+                     width:200,
+                     limitToList: true,
+                     textField:'description',
+                     onSelect: function(row){
+                        onchangeType(row);
+                      },
+                      url:'JobManagerAction.php?method=getJobTypes'
+                     ">
+            </div>
+            <div class="fitem">
                 <label>District</label>
                 <input id="districtId" class="easyui-combobox" name="districtId"
                        data-options="valueField:'id',
                      width:200,
                      limitToList: true,
                      textField:'description',
+                     onSelect: function(row){
+                        onDistrictChange(row);
+                      },
                      url:'JobManagerAction.php?method=getDistricts'
                      ">
             </div>
             <div class="fitem">
-                <label>JobId</label>
-                <input name="jobId"
+                <label>Description</label>
+                <input name="description"
                        class="easyui-textbox"
-
+                       style="width:220px"
                 >
+            </div>
+            <div class="fitem">
+                <label>Chapter</label>
+                <input id="chapter" class="easyui-combobox" name="chapter"
+                       data-options="valueField:'id',
+                     width:200,
+                     limitToList: true,
+                     textField:'name',
+                     onLoadSuccess: function(param){
+		                resetComboBox(param, '#chapter');
+	                 },
+                     onSelect: function(row){
+                        onChapterChange(row);
+                      },
+                    formatter:function(row){
+                        return row.id + ' ' + row.name;
+                        },
+                     url:'JobManagerAction.php?method=getChapters'
+                     ">
+            </div>
+            <div class="fitem">
+                <label>Job</label>
+                <input id="jobId" class="easyui-combobox" name="jobId"
+                       data-options="valueField:'id',
+                     width:200,
+                     limitToList: true,
+                     textField:'description',
+                     onLoadSuccess: function(param){
+		                resetComboBox(param, '#jobId');
+	                 },
+	                 formatter:function(row){
+                        return 'Chapter ' + row.chapter + ' - ' + row.id + ' - ' + row.description;
+                     },
+                     url:'JobManagerAction.php?method=getJobs'
+                     ">
             </div>
             <div class="fitem">
                 <label>Enabled</label>
@@ -159,9 +213,54 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
 
     <script type="text/javascript">
         var url;
+
+        function resetComboBox(param, cmbId){
+            var _options = $(cmbId).combobox('options');
+            var _data = $(cmbId).combobox('getData');
+            var _value = $(cmbId).combobox('getValue');
+            var _value1 = '';
+            var _found = false;
+            for (var i = 0; i < _data.length; i++) {
+                if (i==0){
+                    _value1 = _data[i][_options.valueField];
+                }
+                if (_data[i][_options.valueField] == _value) {
+                    _found = true;
+                    break;
+                }
+            }
+            if (!_found){
+                $(cmbId).combobox('setValue', _value1);
+            }
+        }
+
+        function onChapterChange(row){
+            var districtId = $('#districtId').combobox('getValue');
+            var url = 'JobManagerAction.php?method=getJobs&district='+districtId + '&chapter=' + row.id;
+            $('#jobId').combobox('reload', url);
+        }
+
+        function onDistrictChange(row){
+            var url = 'JobManagerAction.php?method=getJobs&district='+row.id;
+            $('#jobId').combobox('reload', url);
+            var url = 'JobManagerAction.php?method=getChapters&district='+row.id;
+            $('#chapter').combobox('reload', url);
+        }
+
+        function onchangeType(row){
+            if (row.id == "CHAPTER"){
+                //$("#jobId").combobox("option", "disabled", true);
+                $( "#jobId" ).combobox({ disabled: true });
+            }
+            else {
+                $( "#jobId" ).combobox({ disabled: false });
+            }
+        }
+
         function newRecordGlobalWord(){
             $('#dlgGlobalWord').dialog('open').dialog('setTitle','New Global Word');
             $('#fmGlobalWord').form('reset');
+            $('#districtId').combobox('setValue', '1');
             url = 'MP3PrettifierAction.php?method=add&type=global&category=words';
         }
         function editRecordGlobalWord(){
@@ -169,8 +268,8 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
             if (row){
                 $('#dlgGlobalWord').dialog('open').dialog('setTitle','Edit Global Word');
                 $('#fmGlobalWord').form('load',row);
-                //$('#cbArtist2').combobox('setValue', '1');
-                url = 'MP3PrettifierAction.php?method=update&id='+row['jobId']+'&type=global&category=words';
+                $('#jobId').combobox('setValue', row.jobId);
+                url = 'MP3PrettifierAction.php?method=update&id='+row['jobId'];
             }
         }
         function saveGlobalWord(){
