@@ -9,7 +9,7 @@ require_once documentPath (ROOT_PHP, "config.php");
 require_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 require_once documentPath (ROOT_PHP_BO, "CacheBO.php");
 
-class ActiveJobTO {
+class ActiveJobTO extends Castable {
     public $districtId;
     public $jobId;
     public $chapter;
@@ -43,7 +43,10 @@ class Castable
     {
         if (is_array($object) || is_object($object)) {
             foreach ($object as $key => $value) {
-                $this->$key = $value;
+                if (property_exists($this, $key)) {
+                    $this->$key = $value;
+                }
+                $var = "blbb";
             }
         }
     }
@@ -69,11 +72,10 @@ class DistrictCompositeTO extends DistrictTO {
 
 class ActiveJobBO{
     public $jobManagerObj;
-    public $file;
+    public $fileCode = JSON_MR_JOBS;
 
     function __construct() {
-        $this->file = getFullPath(JSON_MR_JOBS);
-        $this->jobManagerObj = readJSON( $this->file);
+        $this->jobManagerObj = readJSONWithCode($this->fileCode);
     }
 
     function getDistrictsForComboBox(){
@@ -162,4 +164,11 @@ class ActiveJobBO{
         }
         return $array;
     }
+
+    function saveJobList($activeJobs){
+        $this->jobManagerObj->activeJobs = $activeJobs;
+        writeJSONWithCode($this->jobManagerObj, $this->fileCode);
+    }
+
+
 }

@@ -12,6 +12,7 @@ include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 include_once documentPath (ROOT_PHP_HTML, "config.php");
 include_once documentPath (ROOT_PHP_BO, "SessionBO.php");
 include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
+require_once documentPath (ROOT_PHP_BO, "MyClasses.php");
 sessionStart();
 //ini_set('display_errors', 1);
 //ini_set('display_startup_errors', 1);
@@ -35,6 +36,9 @@ try {
             break;
         case "getJobTypes":
             getJobTypes();
+            break;
+        case "saveJobList":
+            saveJobList();
             break;
     }
 }
@@ -129,4 +133,28 @@ function getListScheduledJobs()
     $result["total"] = count($list);
     $result["rows"] = $list;
     echo json_encode($result);
+}
+
+function saveJobList(){
+    $feedBackTO = new FeedBackTO();
+    if (isset($_POST['config'])) {
+        $config = json_decode($_POST['config']);
+        $jobList = Array();
+        //$multiArtistBO = new MultiArtistBO();
+        //$result = $multiArtistBO->addMultiArtistConfig($config->multiArtistConfig);
+        foreach ($config->jobs as $key => $item){
+            $activeJobTO = new ActiveJobTO($item);
+            $jobList[] = $activeJobTO;
+        }
+        $activeJobBO = new ActiveJobBO();
+        $activeJobBO->saveJobList($jobList);
+        $feedBackTO->success = true;
+        $feedBackTO->message = "Joblist Saved" . PHP_EOL;
+        echo json_encode($feedBackTO);
+    }
+    else {
+        $feedBackTO->success = false;
+        $feedBackTO->message = "Config Object Not Found" . PHP_EOL;
+        echo json_encode($feedBackTO);
+    }
 }
