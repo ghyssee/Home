@@ -40,6 +40,15 @@ try {
         case "saveJobList":
             saveJobList();
             break;
+        case "addActiveJob":
+            addActiveJob();
+            break;
+        case "updateActiveJob":
+            updateActiveJob();
+            break;
+        case "deleteScheduledJob":
+            deleteScheduledJob();
+            break;
     }
 }
 catch(Error $e) {
@@ -157,4 +166,111 @@ function saveJobList(){
         $feedBackTO->message = "Config Object Not Found" . PHP_EOL;
         echo json_encode($feedBackTO);
     }
+}
+
+function addMsg($msg, $msgToAdd){
+    if ($msg == null){
+        $msg = $msgToAdd;
+    }
+    else {
+        $msg = $msg . "<br>" . $msgToAdd;
+    }
+    return $msg;
+}
+
+function validateScheduledJob(ActiveJobTO $activeJobTO ){
+    $feedBackTO = new FeedBackTO();
+    $feedBackTO->success = true;
+    if ($activeJobTO->type == null){
+        $feedBackTO->success = false;
+        $feedBackTO->errorMsg = addMsg ($feedBackTO->errorMsg,"Type must be filled in");
+    }
+    if ($activeJobTO->districtId == null){
+        $feedBackTO->success = false;
+        $feedBackTO->errorMsg = addMsg ($feedBackTO->errorMsg,"District Id must be filled in");
+    }
+    if ($activeJobTO->chapter == null){
+        $feedBackTO->success = false;
+        $feedBackTO->errorMsg = addMsg ($feedBackTO->errorMsg,"Chapter must be filled in");
+    }
+    if ($activeJobTO->jobId == null){
+        if ($activeJobTO->type != "CHAPTER") {
+            $feedBackTO->success = false;
+            $feedBackTO->errorMsg = addMsg($feedBackTO->errorMsg, "Job must be filled in");
+        }
+        else {
+            $activeJobTO->jobId = null;
+        }
+    }
+    return $feedBackTO;
+}
+
+function fillInScheduledJob(){
+    $activeJobTO = new ActiveJobTO();
+    assignCheckbox($activeJobTO->enabled, "enabled", !HTML_SPECIAL_CHAR);
+    assignField($activeJobTO->type, "type", !HTML_SPECIAL_CHAR);
+    assignField($activeJobTO->districtId, "districtId", !HTML_SPECIAL_CHAR);
+    assignField($activeJobTO->chapter, "chapter", !HTML_SPECIAL_CHAR);
+    assignField($activeJobTO->description, "description", !HTML_SPECIAL_CHAR);
+    assignField($activeJobTO->jobId, "jobId", !HTML_SPECIAL_CHAR);
+    assignNumber($activeJobTO->total, "total", !HTML_SPECIAL_CHAR);
+    return $activeJobTO;
+
+}
+
+function addActiveJob(){
+
+    $beforeRowId = null;
+    if (isset($_REQUEST['insertBefore'])){
+        $beforeRowId = $_REQUEST['insertBefore'];
+    }
+    $feedBackTO = new FeedBackTO();
+    $feedBackTO->success = false;
+    $scheduledJob = fillInScheduledJob();
+    $feedBackTO = validateScheduledJob($scheduledJob);
+    if ($feedBackTO->success) {
+        $activeJobBO = new ActiveJobBO();
+        $activeJobBO->addScheduledJob($scheduledJob, $beforeRowId);
+        $feedBackTO->success = true;
+        echo json_encode($activeJobBO->getScheduledJobs());
+    } else {
+        $errors = addErrorMsg("Error adding a scheduled job");
+        echo json_encode($feedBackTO);
+    }
+    exit();
+}
+
+function updateActiveJob(){
+    $feedBackTO = new FeedBackTO();
+    $feedBackTO->success = false;
+    $scheduledJob = fillInScheduledJob();
+    $feedBackTO = validateScheduledJob($scheduledJob);
+    if ($feedBackTO->success) {
+        $activeJobBO = new ActiveJobBO();
+        $activeJobBO->updateScheduledJob($scheduledJob);
+        echo json_encode($activeJobBO->getScheduledJobs());
+    } else {
+        echo json_encode($feedBackTO);
+    }
+    exit();
+
+}
+
+function addErrorMsg($msg){
+    return array('errorMsg'=>$msg);
+}
+
+function deleteScheduledJob()
+{
+    $feedBackTO = new FeedBackTO();
+    $feedBackTO->success = false;
+    if (isset($_REQUEST['id'])){
+        $id = $_REQUEST['id'];
+        $activeJobBO = new ActiveJobBO();
+        $feedBackTO = $activeJobBO->deleteScheduledJob($id);
+    }
+    else {
+        $feedBackTO->errorMsg = "Id of scheduled job not filled in";
+    }
+    echo json_encode($feedBackTO);
 }

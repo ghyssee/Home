@@ -10,6 +10,7 @@ require_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 require_once documentPath (ROOT_PHP_BO, "CacheBO.php");
 
 class ActiveJobTO extends Castable {
+    public $id;
     public $districtId;
     public $jobId;
     public $chapter;
@@ -167,6 +168,71 @@ class ActiveJobBO{
 
     function saveJobList($activeJobs){
         $this->jobManagerObj->activeJobs = $activeJobs;
+        $this->save();
+    }
+
+    function addScheduledJob(ActiveJobTO $activeJobTO, $insertBeforeId){
+        $activeJobTO->id = getUniqueId();
+        $newArray = Array();
+        $found = false;
+        if (!isset($insertBeforeId)){
+            $this->jobManagerObj->activeJobs[] = $activeJobTO;
+        }
+        else {
+            foreach ($this->jobManagerObj->activeJobs as $key => $value) {
+                if (!$found && $value->id == $insertBeforeId){
+                    $newArray[] = $activeJobTO;
+                    $found = true;
+                }
+                $newArray[] = $value;
+            }
+            if (!$found){
+                $newArray[] = $activeJobTO;
+            }
+            $this->jobManagerObj->activeJobs = $newArray;
+        }
+        $this->save();
+    }
+
+    function updateScheduledJob(ActiveJobTO $activeJobTO){
+        $counter = 0;
+        $feedBackTO = new FeedBackTO();
+        $feedBackTO->success = false;
+        foreach ($this->jobManagerObj->activeJobs as $key => $value) {
+            if (strcmp($value->id, $activeJobTO->id) == 0) {
+                $this->jobManagerObj->activeJobs[$counter] = $activeJobTO;
+                //$this->save();
+                $feedBackTO->success = true;
+                break;
+            }
+            $counter++;
+        }
+        if (!$feedBackTO->success){
+            $feedBackTO->errorMsg = "Problem updating the scheduled job with Id " . $activeJobTO->id;
+        }
+        return $feedBackTO;
+    }
+
+    function deleteScheduledJob($id){
+        $feedbackTO = new FeedBackTO();
+        $key = array_search($id, array_column($this->jobManagerObj->activeJobs, "id"));
+        if ($key === false) {
+            $feedbackTO->success = false;
+            $feedbackTO->errorMsg = 'There was a problem finding the scheduled job wiht ID ' . $id;
+            return $feedbackTO;
+
+        } else {
+            unset($this->jobManagerObj->activeJobs[$key]);
+            $array = array_values($this->jobManagerObj->activeJobs);
+            $this->jobManagerObj->activeJobs = $array;
+            $this->save();
+            $feedbackTO->success = true;
+        }
+        return $feedbackTO;
+
+    }
+
+    function save(){
         writeJSONWithCode($this->jobManagerObj, $this->fileCode);
     }
 

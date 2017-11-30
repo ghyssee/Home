@@ -35,17 +35,17 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
     </script>
 
     <div id="cc" class="easyui-layout" style="width:95%;height:90%">
-        <div data-options="region:'north',title:'Actions',split:true" style="height:10%;">
+        <div data-options="region:'north',title:'Actions',split:true" style="height:14%;">
             <div  style="padding:5px">
                 <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok"
                    onclick="saveJobList()" style="width:90px;">Save</a>
             </div>
         </div>
-        <div data-options="region:'south',title:'Jobs',split:true" style="height:90%;padding:5px;">
+        <div data-options="region:'south',title:'Jobs',split:true" style="height:86%;padding:5px;">
 
             <table id="dgGlobalWord" class="easyui-datagrid" style="width:100%;height:95%"
                    title="List"
-                   idField="jobId"
+                   idField="id"
                    url='JobManagerAction.php?method=list'
                    data-options='fitColumns:true,
                          singleSelect:true,
@@ -62,6 +62,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
 
                 <thead>
                 <tr>
+                    <th data-options="field:'id',hidden:true">ID</th>
                     <th data-options="field:'enabled',width:2,align:'center',formatter:function(value,row,index){return checkboxFormatter(value,row,index);} ">Enabled</th>
                     <th data-options="field:'type',width:2">Type</th>
                     <th data-options="field:'description',width:10">Description</th>
@@ -88,7 +89,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
                 </div>
 	        </span>
 
-            <div id="dlgGlobalWord" class="easyui-dialog" style="width:400px;height:280px;padding:10px 20px"
+            <div id="dlgGlobalWord" class="easyui-dialog" style="width:400px;height:400px;padding:10px 20px"
                  closed="true" buttons="#dlg-buttonsGlobalWord">
                 <div class="ftitle">Job Schedule</div>
                 <form id="fmGlobalWord" method="post" novalidate>
@@ -96,6 +97,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
                     <div class="fitem">
                         <label>Job Type</label>
                         <input id="type" class="easyui-combobox" name="type"
+                               required="true"
                                data-options="valueField:'id',
                      width:200,
                      limitToList: true,
@@ -109,6 +111,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
                     <div class="fitem">
                         <label>District</label>
                         <input id="districtId" class="easyui-combobox" name="districtId"
+                               required="true"
                                data-options="valueField:'id',
                      width:200,
                      limitToList: true,
@@ -122,6 +125,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
                     <div class="fitem">
                         <label>Description</label>
                         <input name="description"
+                               required="true"
                                class="easyui-textbox"
                                style="width:220px"
                         >
@@ -129,12 +133,13 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
                     <div class="fitem">
                         <label>Chapter</label>
                         <input id="chapter" class="easyui-combobox" name="chapter"
+                               required="true"
                                data-options="valueField:'id',
                      width:200,
                      limitToList: true,
                      textField:'name',
                      onLoadSuccess: function(param){
-		                resetComboBox(param, '#chapter');
+		                resetComboBox(param, '#chapter', true);
 	                 },
                      onSelect: function(row){
                         onChapterChange(row);
@@ -153,7 +158,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
                      limitToList: true,
                      textField:'description',
                      onLoadSuccess: function(param){
-		                resetComboBox(param, '#jobId');
+		                resetComboBox(param, '#jobId', false);
 	                 },
 	                 formatter:function(row){
                         return 'Chapter ' + row.chapter + ' - ' + row.id + ' - ' + row.description;
@@ -217,7 +222,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
             return false;
         }
 
-        function resetComboBox(param, cmbId){
+        function resetComboBox(param, cmbId, setDefaultToFirstItem){
             var _options = $(cmbId).combobox('options');
             var _data = $(cmbId).combobox('getData');
             var _value = $(cmbId).combobox('getValue');
@@ -232,7 +237,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
                     break;
                 }
             }
-            if (!_found){
+            if (!_found && setDefaultToFirstItem){
                 $(cmbId).combobox('setValue', _value1);
             }
         }
@@ -253,6 +258,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
         function onchangeType(row){
             if (row.id == "CHAPTER"){
                 //$("#jobId").combobox("option", "disabled", true);
+                $("#jobId").combobox('setValue', null);
                 $( "#jobId" ).combobox({ disabled: true });
             }
             else {
@@ -261,18 +267,25 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
         }
 
         function newRecordGlobalWord(){
-            $('#dlgGlobalWord').dialog('open').dialog('setTitle','New Global Word');
+            var row = $('#dgGlobalWord').datagrid('getSelected');
+            var rowIndex = '';
+            if (row){
+                rowIndex='&insertBefore=' + row.id;
+            }
+            $('#dlgGlobalWord').dialog('open').dialog('setTitle','New Active Job');
             $('#fmGlobalWord').form('reset');
             $('#districtId').combobox('setValue', '1');
-            url = 'MP3PrettifierAction.php?method=add&type=global&category=words';
+            url = 'JobManagerAction.php?method=addActiveJob' + rowIndex;
         }
         function editRecordGlobalWord(){
             var row = $('#dgGlobalWord').datagrid('getSelected');
             if (row){
-                $('#dlgGlobalWord').dialog('open').dialog('setTitle','Edit Global Word');
+                $('#dlgGlobalWord').dialog('open').dialog('setTitle','Edit Active Job');
                 $('#fmGlobalWord').form('load',row);
-                $('#jobId').combobox('setValue', row.jobId);
-                url = 'MP3PrettifierAction.php?method=update&id='+row['jobId'];
+                if (row.type != 'CHAPTER') {
+                    $('#jobId').combobox('setValue', row.jobId);
+                }
+                url = 'JobManagerAction.php?method=updateActiveJob&id='+row['id'];
             }
         }
         function saveGlobalWord(){
@@ -304,7 +317,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
                     if (r){
                         $.ajax({
                             type:    "POST",
-                            url:     "MP3PrettifierAction.php?method=delete&type=global&category=words",
+                            url:     "JobManagerAction.php?method=deleteScheduledJob",
                             data:    {id: row.id},
                             success: function(data) {
                                 var dataObj = JSON.parse(data);

@@ -8,8 +8,9 @@ include_once documentPath (ROOT_PHP_BO, "ArtistBO.php");
 session_start();
 
 header( 'Content-type: text/html; charset=utf-8' );
-exportArtistGroup();
-purgeSongCorrections();
+//exportArtistGroup();
+//purgeSongCorrections();
+addIdToScheduledJobs();
 
 function convert()
 {
@@ -101,5 +102,15 @@ function convertExactMath($objects, $exactMatch = false){
     return $array;
 
 }
+
+function addIdToScheduledJobs(){
+    $obj = readJSONWithCode(JSON_MR_JOBS);
+    foreach ($obj->activeJobs as $key => $scheduledJob){
+        $scheduledJob->id = getUniqueId();
+    }
+    writeJSONWithCode($obj, JSON_MR_JOBS);
+    echo "Unique Id added to scheduled jobs";
+}
+
 
 ?>
