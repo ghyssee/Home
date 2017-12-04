@@ -69,7 +69,7 @@ function customError($errno, $errstr) {
 }
 
 function getDistricts(){
-    $activeJobBO = new ActiveJobBO();
+    $activeJobBO = new ActiveJobBO(getProfile());
     $list = $activeJobBO->getDistrictsForComboBox();
     $sort = new CustomSort();
     $list = $sort->sortObjectArrayByField($list, "description");
@@ -77,8 +77,16 @@ function getDistricts(){
 
 }
 
+function getProfile(){
+    $profile = null;
+    if (isset($_REQUEST["profile"])){
+        $profile = $_REQUEST["profile"];
+    }
+    return $profile;
+}
+
 function getJobs(){
-    $activeJobBO = new ActiveJobBO();
+    $activeJobBO = new ActiveJobBO(getProfile());
     $district = "1";
     if (isset($_REQUEST["district"])){
         $district = $_REQUEST["district"];
@@ -96,7 +104,7 @@ function getJobs(){
 }
 
 function getChapters(){
-    $activeJobBO = new ActiveJobBO();
+    $activeJobBO = new ActiveJobBO(getProfile());
     $district = "1";
     if (isset($_REQUEST["district"])){
         $district = $_REQUEST["district"];
@@ -109,7 +117,7 @@ function getChapters(){
 }
 
 function getJobTypes(){
-    $activeJobBO = new ActiveJobBO();
+    $activeJobBO = new ActiveJobBO(getProfile());
     $list = $activeJobBO->getJobTypes();
     echo json_encode($list);
 
@@ -119,7 +127,7 @@ function getListScheduledJobs()
 {
     $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
     $rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
-    $activeJobBO = new ActiveJobBO();
+    $activeJobBO = new ActiveJobBO(getProfile());
     $list = $activeJobBO->getScheduledJobs();
 
     if (isSetFilterRule()){
@@ -155,7 +163,7 @@ function saveJobList(){
             $activeJobTO = new ActiveJobTO($item);
             $jobList[] = $activeJobTO;
         }
-        $activeJobBO = new ActiveJobBO();
+        $activeJobBO = new ActiveJobBO(getProfile());
         $activeJobBO->saveJobList($jobList);
         $feedBackTO->success = true;
         $feedBackTO->message = "Joblist Saved" . PHP_EOL;
@@ -207,6 +215,7 @@ function validateScheduledJob(ActiveJobTO $activeJobTO ){
 
 function fillInScheduledJob(){
     $activeJobTO = new ActiveJobTO();
+    assignField($activeJobTO->id, "id", !HTML_SPECIAL_CHAR);
     assignCheckbox($activeJobTO->enabled, "enabled", !HTML_SPECIAL_CHAR);
     assignField($activeJobTO->type, "type", !HTML_SPECIAL_CHAR);
     assignField($activeJobTO->districtId, "districtId", !HTML_SPECIAL_CHAR);
@@ -229,7 +238,7 @@ function addActiveJob(){
     $scheduledJob = fillInScheduledJob();
     $feedBackTO = validateScheduledJob($scheduledJob);
     if ($feedBackTO->success) {
-        $activeJobBO = new ActiveJobBO();
+        $activeJobBO = new ActiveJobBO(getProfile());
         $activeJobBO->addScheduledJob($scheduledJob, $beforeRowId);
         $feedBackTO->success = true;
         echo json_encode($activeJobBO->getScheduledJobs());
@@ -241,19 +250,32 @@ function addActiveJob(){
 }
 
 function updateActiveJob(){
-    $feedBackTO = new FeedBackTO();
-    $feedBackTO->success = false;
     $scheduledJob = fillInScheduledJob();
-    $feedBackTO = validateScheduledJob($scheduledJob);
-    if ($feedBackTO->success) {
-        $activeJobBO = new ActiveJobBO();
-        $activeJobBO->updateScheduledJob($scheduledJob);
-        echo json_encode($activeJobBO->getScheduledJobs());
-    } else {
+    if (isset($_REQUEST['id'])){
+        $scheduledJob->id = $_REQUEST['id'];
+    }
+    $feedBackTO = new FeedBackTO();
+    if (!isset($scheduledJob->id)){
+        $feedBackTO->success = false;
+        $feedBackTO->errorMsg = 'Scheduled Job Id Not Found!';
         echo json_encode($feedBackTO);
     }
+    else {
+        $feedBackTO->success = false;
+        $feedBackTO = validateScheduledJob($scheduledJob);
+        if ($feedBackTO->success) {
+            $activeJobBO = new ActiveJobBO(getProfile());
+            $feedBackTO = $activeJobBO->updateScheduledJob($scheduledJob);
+            if ($feedBackTO->success) {
+                echo json_encode($activeJobBO->getScheduledJobs());
+            } else {
+                echo json_encode($feedBackTO);
+            }
+        } else {
+            echo json_encode($feedBackTO);
+        }
+    }
     exit();
-
 }
 
 function addErrorMsg($msg){
@@ -266,7 +288,7 @@ function deleteScheduledJob()
     $feedBackTO->success = false;
     if (isset($_REQUEST['id'])){
         $id = $_REQUEST['id'];
-        $activeJobBO = new ActiveJobBO();
+        $activeJobBO = new ActiveJobBO(getProfile());
         $feedBackTO = $activeJobBO->deleteScheduledJob($id);
     }
     else {

@@ -28,6 +28,45 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
     ?>
 
 
+    <style type="text/css">
+        .Table
+        {
+            display: table;
+        }
+        .Title
+        {
+            display: table-caption;
+            text-align: center;
+            font-weight: bold;
+            font-size: larger;
+        }
+        .Heading
+        {
+            display: table-row;
+            font-weight: bold;
+            text-align: center;
+        }
+        .Row
+        {
+            display: table-row;
+        }
+        .Cell
+        {
+            display: table-cell;
+            border: none;
+            border-width: thin;
+            padding-top: 5px;
+            padding-left: 5px;
+            padding-right: 5px;
+            padding-bottom: 5px;
+        }
+        DIV.vertical-center {
+            min-height: 10em;
+            display: table-cell;
+            vertical-align: middle
+        }
+    </style>
+
     <script>
         function setValue(){
             $("#oldSong").textbox('setValue', 'TTTTTTTTTTEEEEEEEEEESSSSSSTTTTTT');
@@ -36,11 +75,32 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
 
     <div id="cc" class="easyui-layout" style="width:95%;height:90%">
         <div data-options="region:'north',title:'Actions',split:true" style="height:14%;">
-            <div  style="padding:5px">
-                <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok"
-                   onclick="saveJobList()" style="width:90px;">Save</a>
+            <div class="Table">
+                <div class="Row">
+                    <div class="Cell vertical-center">
+                        <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok"
+                           onclick="saveJobList()" style="width:90px;">Save</a>
+                    </div>
+                    <div class="Cell vertical-center">
+                        <div style="padding:5px"><label>Job Type</label></div>
+                        <div>
+                            <input id="profile" class="easyui-combobox" name="profile"
+                                   data-options="valueField:'id',
+                         width:200,
+                         limitToList: true,
+                         textField:'name',
+                         onChange: function(row){
+                            onProfileChange(row);
+                          },
+                          url:'ProfileAction.php?method=getProfiles'
+                         ">
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+
+        <input type="profile" name="profile" value="<?php echo getProfile(); ?>">
         <div data-options="region:'south',title:'Jobs',split:true" style="height:86%;padding:5px;">
 
             <table id="dgGlobalWord" class="easyui-datagrid" style="width:100%;height:95%"
@@ -55,6 +115,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
                         toolbar:"#toolbarGlobalWord",
                         pagination:false,
                         nowrap:false,
+                        queryParams:{profile:getProfile()},
                         remoteFilter:true,
                         rownumbers:true,
                         singleSelect:true'
@@ -158,11 +219,12 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
                      limitToList: true,
                      textField:'description',
                      onLoadSuccess: function(param){
-		                resetComboBox(param, '#jobId', false);
+		                resetJob(param, '#jobId', true);
 	                 },
 	                 formatter:function(row){
                         return 'Chapter ' + row.chapter + ' - ' + row.id + ' - ' + row.description;
                      },
+                     queryParams:{productid:getProfile()},
                      url:'JobManagerAction.php?method=getJobs'
                      ">
                     </div>
@@ -187,6 +249,19 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
 
 
     <script type="text/javascript">
+
+        function getProfile(){
+            var _value = $("#profile").combobox('getValue');
+            return _value;
+        }
+
+        function onProfileChange(){
+           var profileId = getProfile();
+           var _value = $("#profile").combobox('getText');
+           var obj = {profile:profileId};
+           $('#dgGlobalWord').datagrid('reload', obj);
+           $('#cc').layout('panel', 'south').panel('setTitle', 'Profile: ' + profileId + " " + _value);
+        }
 
         function saveJobList(){
             var rows = $('#dgGlobalWord').datagrid('getRows');
@@ -222,6 +297,16 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
             return false;
         }
 
+        function resetJob(param, cmbId, setDefaultToFirstItem){
+            var _type = $("#type").combobox('getValue');
+            if (_type != 'CHAPTER'){
+                resetComboBox(param, cmbId, setDefaultToFirstItem);
+            }
+            else {
+                $(cmbId).combobox('setValue', null);
+            }
+        }
+
         function resetComboBox(param, cmbId, setDefaultToFirstItem){
             var _options = $(cmbId).combobox('options');
             var _data = $(cmbId).combobox('getData');
@@ -243,12 +328,31 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
         }
 
         function onChapterChange(row){
+            var obj = {
+                "district": $('#districtId').combobox('getValue'),
+                "profile": getProfile(),
+                "chapter": row.id
+            };
+            $('#jobId').combobox('reload', obj);
+        }
+
+        function onChapterChange2(row){
             var districtId = $('#districtId').combobox('getValue');
-            var url = 'JobManagerAction.php?method=getJobs&district='+districtId + '&chapter=' + row.id;
+            var profile = getProfile();
+            var url = 'JobManagerAction.php?method=getJobs&profile=' + profile + '&district='+districtId + '&chapter=' + row.id;
             $('#jobId').combobox('reload', url);
         }
 
         function onDistrictChange(row){
+            var obj = {
+                "district": row.id,
+                "profile": getProfile()
+            };
+            $('#jobId').combobox('reload', obj);
+            $('#chapter').combobox('reload', obj);
+        }
+
+        function onDistrictChange2(row){
             var url = 'JobManagerAction.php?method=getJobs&district='+row.id;
             $('#jobId').combobox('reload', url);
             var url = 'JobManagerAction.php?method=getChapters&district='+row.id;
@@ -257,7 +361,6 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
 
         function onchangeType(row){
             if (row.id == "CHAPTER"){
-                //$("#jobId").combobox("option", "disabled", true);
                 $("#jobId").combobox('setValue', null);
                 $( "#jobId" ).combobox({ disabled: true });
             }
@@ -275,7 +378,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
             $('#dlgGlobalWord').dialog('open').dialog('setTitle','New Active Job');
             $('#fmGlobalWord').form('reset');
             $('#districtId').combobox('setValue', '1');
-            url = 'JobManagerAction.php?method=addActiveJob' + rowIndex;
+            url = 'JobManagerAction.php?method=addActiveJob' + rowIndex + "&profile=" + getProfile();
         }
         function editRecordGlobalWord(){
             var row = $('#dgGlobalWord').datagrid('getSelected');
@@ -285,7 +388,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
                 if (row.type != 'CHAPTER') {
                     $('#jobId').combobox('setValue', row.jobId);
                 }
-                url = 'JobManagerAction.php?method=updateActiveJob&id='+row['id'];
+                url = 'JobManagerAction.php?method=updateActiveJob&id='+row['id'] + "&profile=" + getProfile();
             }
         }
         function saveGlobalWord(){
@@ -317,7 +420,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
                     if (r){
                         $.ajax({
                             type:    "POST",
-                            url:     "JobManagerAction.php?method=deleteScheduledJob",
+                            url:     "JobManagerAction.php?method=deleteScheduledJob" + "&profile=" + getProfile(),
                             data:    {id: row.id},
                             success: function(data) {
                                 var dataObj = JSON.parse(data);
@@ -382,3 +485,8 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
     </body>
 </html>
 
+<?php
+    function getProfile(){
+        return "01";
+    }
+    ?>

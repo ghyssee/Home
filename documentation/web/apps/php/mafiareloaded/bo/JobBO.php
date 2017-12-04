@@ -16,6 +16,7 @@ class ActiveJobTO extends Castable {
     public $chapter;
     public $type;
     public $total;
+    public $numberOfTimesExecuted;
     public $description;
     public $enabled;
 }
@@ -73,10 +74,20 @@ class DistrictCompositeTO extends DistrictTO {
 
 class ActiveJobBO{
     public $jobManagerObj;
-    public $fileCode = JSON_MR_JOBS;
+    public $file;
 
-    function __construct() {
-        $this->jobManagerObj = readJSONWithCode($this->fileCode);
+    function __construct($profile) {
+        $fileCode = JSON_MR_JOBS;
+        $this->file = getFullPath($fileCode);
+        if (!isset($profile) || $profile == ''){
+            $profile = '';
+        }
+        else {
+            $profile .= "\\";
+        }
+        $this->file = str_replace("%PROFILE%", $profile, $this->file);
+        
+        $this->jobManagerObj = readJSON($this->file);
     }
 
     function getDistrictsForComboBox(){
@@ -201,7 +212,7 @@ class ActiveJobBO{
         foreach ($this->jobManagerObj->activeJobs as $key => $value) {
             if (strcmp($value->id, $activeJobTO->id) == 0) {
                 $this->jobManagerObj->activeJobs[$counter] = $activeJobTO;
-                //$this->save();
+                $this->save();
                 $feedBackTO->success = true;
                 break;
             }
@@ -233,7 +244,7 @@ class ActiveJobBO{
     }
 
     function save(){
-        writeJSONWithCode($this->jobManagerObj, $this->fileCode);
+        writeJSON($this->jobManagerObj, $this->file);
     }
 
 
