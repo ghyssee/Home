@@ -74,7 +74,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
     </script>
 
     <div id="cc" class="easyui-layout" style="width:95%;height:90%">
-        <div data-options="region:'north',title:'Actions',split:true" style="height:14%;">
+        <div data-options="region:'north',title:'Actions',split:true" style="height:20%;">
             <div class="Table">
                 <div class="Row">
                     <div class="Cell vertical-center">
@@ -82,7 +82,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
                            onclick="saveJobList()" style="width:90px;">Save</a>
                     </div>
                     <div class="Cell vertical-center">
-                        <div style="padding:5px"><label>Job Type</label></div>
+                        <div style="padding:5px"><label>Profile</label></div>
                         <div>
                             <input id="profile" class="easyui-combobox" name="profile"
                                    data-options="valueField:'id',
@@ -101,9 +101,9 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
         </div>
 
         <input type="profile" name="profile" value="<?php echo getProfile(); ?>">
-        <div data-options="region:'south',title:'Jobs',split:true" style="height:86%;padding:5px;">
+        <div data-options="region:'south',title:'Jobs',split:true" style="height:80%;padding:5px;">
 
-            <table id="dgGlobalWord" class="easyui-datagrid" style="width:100%;height:95%"
+            <table id="dgScheduledJob" class="easyui-datagrid" style="width:100%;height:95%"
                    title="List"
                    idField="id"
                    url='JobManagerAction.php?method=list'
@@ -112,7 +112,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
                         onLoadSuccess:function(){
                             $(this).datagrid("enableDnd");
                         },
-                        toolbar:"#toolbarGlobalWord",
+                        toolbar:"#toolbarScheduledJob",
                         pagination:false,
                         nowrap:false,
                         queryParams:{profile:getProfile()},
@@ -143,17 +143,17 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
 
 
             <span style="font-size:20px">
-                <div id="toolbarGlobalWord">
-                    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newRecordGlobalWord()">New Job</a>
-                    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editRecordGlobalWord()">Edit Job</a>
-                    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteRecordGlobalWord()">Delete Job</a>
+                <div id="toolbarScheduledJob">
+                    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newRecordScheduledJob()">New Job</a>
+                    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editRecordScheduledJob()">Edit Job</a>
+                    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteRecordScheduledJob()">Delete Job</a>
                 </div>
 	        </span>
 
-            <div id="dlgGlobalWord" class="easyui-dialog" style="width:400px;height:400px;padding:10px 20px"
-                 closed="true" buttons="#dlg-buttonsGlobalWord">
+            <div id="dlgScheduledJob" class="easyui-dialog" style="width:400px;height:400px;padding:10px 20px"
+                 closed="true" buttons="#dlg-buttonsScheduledJob">
                 <div class="ftitle">Job Schedule</div>
-                <form id="fmGlobalWord" method="post" novalidate>
+                <form id="fmScheduledJob" method="post" novalidate>
 
                     <div class="fitem">
                         <label>Job Type</label>
@@ -185,7 +185,8 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
                     </div>
                     <div class="fitem">
                         <label>Description</label>
-                        <input name="description"
+                        <input id="description"
+                                name="description"
                                required="true"
                                class="easyui-textbox"
                                style="width:220px"
@@ -229,6 +230,12 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
                      ">
                     </div>
                     <div class="fitem">
+                        <label>Total</label>
+                        <input name="total" id="total" class="easyui-numberspinner" style="width:150px;"
+                               data-options="min:0"
+                        >
+                    </div>
+                    <div class="fitem">
                         <label>Enabled</label>
                         <input name="enabled"
                                class="easyui-checkbox" type="checkbox" value="true"
@@ -236,10 +243,10 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
                     </div>
                 </form>
             </div>
-            <div id="dlg-buttonsGlobalWord">
+            <div id="dlg-buttonsScheduledJob">
                 <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok"
-                   onclick="saveGlobalWord()" style="width:90px">Save</a>
-                <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlgGlobalWord').dialog('close')" style="width:90px">Cancel</a>
+                   onclick="saveScheduledJob()" style="width:90px">Save</a>
+                <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlgScheduledJob').dialog('close')" style="width:90px">Cancel</a>
             </div>
 
 
@@ -259,12 +266,12 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
            var profileId = getProfile();
            var _value = $("#profile").combobox('getText');
            var obj = {profile:profileId};
-           $('#dgGlobalWord').datagrid('reload', obj);
+           $('#dgScheduledJob').datagrid('reload', obj);
            $('#cc').layout('panel', 'south').panel('setTitle', 'Profile: ' + profileId + " " + _value);
         }
 
         function saveJobList(){
-            var rows = $('#dgGlobalWord').datagrid('getRows');
+            var rows = $('#dgScheduledJob').datagrid('getRows');
             var object = {jobs:rows,
             };
             var tmp = $.post('JobManagerAction.php?method=saveJobList', { config : JSON.stringify(object)}, function(data2){
@@ -360,39 +367,48 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
         }
 
         function onchangeType(row){
-            if (row.id == "CHAPTER"){
+            checkForm(row.id);
+        }
+
+        function checkForm(jobType){
+            if (jobType == "CHAPTER"){
                 $("#jobId").combobox('setValue', null);
                 $( "#jobId" ).combobox({ disabled: true });
+                $("#total").numberspinner({ disabled: true });
             }
             else {
-                $( "#jobId" ).combobox({ disabled: false });
+                $("#jobId").combobox({ disabled: false });
+                $("#total").numberspinner({ disabled: false });
             }
         }
 
-        function newRecordGlobalWord(){
-            var row = $('#dgGlobalWord').datagrid('getSelected');
+        function newRecordScheduledJob(){
+            var row = $('#dgScheduledJob').datagrid('getSelected');
             var rowIndex = '';
             if (row){
                 rowIndex='&insertBefore=' + row.id;
             }
-            $('#dlgGlobalWord').dialog('open').dialog('setTitle','New Active Job');
-            $('#fmGlobalWord').form('reset');
+            $('#dlgScheduledJob').dialog('open').dialog('setTitle','New Scheduled Job');
+            $('#fmScheduledJob').form('reset');
             $('#districtId').combobox('setValue', '1');
             url = 'JobManagerAction.php?method=addActiveJob' + rowIndex + "&profile=" + getProfile();
         }
-        function editRecordGlobalWord(){
-            var row = $('#dgGlobalWord').datagrid('getSelected');
+        function editRecordScheduledJob(){
+            var row = $('#dgScheduledJob').datagrid('getSelected');
             if (row){
-                $('#dlgGlobalWord').dialog('open').dialog('setTitle','Edit Active Job');
-                $('#fmGlobalWord').form('load',row);
+                $('#dlgScheduledJob').dialog('open').dialog('setTitle','Edit Active Job');
+                $('#fmScheduledJob').form('load',row);
+                checkForm(row.type);
+                $('#total').numberspinner('setValue', row.total);
+
                 if (row.type != 'CHAPTER') {
                     $('#jobId').combobox('setValue', row.jobId);
                 }
                 url = 'JobManagerAction.php?method=updateActiveJob&id='+row['id'] + "&profile=" + getProfile();
             }
         }
-        function saveGlobalWord(){
-            $('#fmGlobalWord').form('submit',{
+        function saveScheduledJob(){
+            $('#fmScheduledJob').form('submit',{
                 url: url,
                 onSubmit: function(){
                     return $(this).form('validate');
@@ -406,17 +422,17 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
                             msg: result.errorMsg
                         });
                     } else {
-                        $('#dlgGlobalWord').dialog('close');		// close the dialog
-                        $('#dgGlobalWord').datagrid('reload');	// reload the user data
+                        $('#dlgScheduledJob').dialog('close');		// close the dialog
+                        $('#dgScheduledJob').datagrid('reload');	// reload the user data
                     }
                 }
             });
         }
 
-        function deleteRecordGlobalWord(){
-            var row = $('#dgGlobalWord').datagrid('getSelected');
+        function deleteRecordScheduledJob(){
+            var row = $('#dgScheduledJob').datagrid('getSelected');
             if (row){
-                $.messager.confirm('Confirm','Are you sure you want to delete this Global Word?',function(r){
+                $.messager.confirm('Confirm','Are you sure you want to delete this Scheduled Job?',function(r){
                     if (r){
                         $.ajax({
                             type:    "POST",
@@ -427,7 +443,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
                                 if (!dataObj.success && dataObj.hasOwnProperty('errorMessage')){
                                     alert(dataObj.errorMessage);
                                 }
-                                $('#dgGlobalWord').datagrid('reload');
+                                $('#dgScheduledJob').datagrid('reload');
                             },
                             // vvv---- This is the new bit
                             error:   function(jqXHR, textStatus, errorThrown) {
@@ -477,7 +493,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
     </style>
     <script type="text/javascript">
         $(function(){
-            var dg = $('#dgGlobalWord');
+            var dg = $('#dgScheduledJob');
             dg.datagrid('enableFilter');
         });
     </script>
