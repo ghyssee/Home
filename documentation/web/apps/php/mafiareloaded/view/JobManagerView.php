@@ -137,6 +137,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
                     <th data-options="field:'energy', width:2, formatter:function(value,row,index){return row.job.energy;}">Energy</th>
                     <th data-options="field:'exp', width:2, formatter:function(value,row,index){return row.job.exp;}">Experience</th>
                     <th data-options="field:'total', width:2">Total</th>
+                    <th data-options="field:'numberOfTimesExecuted', width:2">NumberOfTimesExecuted</th>
                 </tr>
                 </thead>
             </table>
