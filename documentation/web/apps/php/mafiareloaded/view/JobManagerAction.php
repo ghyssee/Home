@@ -12,6 +12,7 @@ include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 include_once documentPath (ROOT_PHP_HTML, "config.php");
 include_once documentPath (ROOT_PHP_BO, "SessionBO.php");
 include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
+include_once documentPath (ROOT_PHP_MR_BO, "MafiaReloadedBO.php");
 require_once documentPath (ROOT_PHP_BO, "MyClasses.php");
 sessionStart();
 //ini_set('display_errors', 1);
@@ -75,14 +76,6 @@ function getDistricts(){
     $list = $sort->sortObjectArrayByField($list, "description");
     echo json_encode($list);
 
-}
-
-function getProfile(){
-    $profile = null;
-    if (isset($_REQUEST["profile"])){
-        $profile = $_REQUEST["profile"];
-    }
-    return $profile;
 }
 
 function getJobs(){

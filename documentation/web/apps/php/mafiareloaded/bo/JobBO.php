@@ -62,9 +62,13 @@ class ChapterTO {
 }
 
 class DistrictTO extends Castable {
+    public $uniqueId;
     public $id;
     public $description;
     public $event;
+    public $scan;
+    public $scanChapterStart;
+    public $scanChapterEnd;
 }
 
 class DistrictCompositeTO extends DistrictTO {
@@ -101,6 +105,77 @@ class ActiveJobBO{
         }
         return $districts;
     }
+
+    function getDistricts(){
+        $districts = Array();
+        foreach($this->jobManagerObj->districts as $key => $item){
+            $districtTO = new DistrictTO($item);
+            $districts[] = $districtTO;
+        }
+        return $districts;
+    }
+
+    function addDistrict(DistrictTO $districtTO){
+        $districtTO->uniqueId = getUniqueId();
+        $feedbackTO = new FeedBackTO();
+        $searchDistrict = $this->findDistrict($districtTO->id);
+        if ($searchDistrict == null){
+            $this->jobManagerObj->districts[] = new DistrictCompositeTO($districtTO);
+            $feedbackTO->success = true;
+            $this->save();
+        }
+        else {
+            $feedbackTO->success = false;
+            $feedbackTO->errorMsg = 'District exist already: ' . $districtTO->id;
+        }
+        return $feedbackTO;
+    }
+
+    function updateDistrict(DistrictTO $districtTO){
+        $counter = 0;
+        $feedBackTO = new FeedBackTO();
+        $feedBackTO->success = false;
+        foreach ($this->jobManagerObj->districts as $key => $value) {
+            if (strcmp($value->uniqueId, $districtTO->uniqueId) == 0) {
+                $oldDistrict = $this->jobManagerObj->districts[$counter];
+                foreach ($districtTO as $key => $value) {
+                    if (property_exists($oldDistrict, $key)) {
+                        $oldDistrict->$key = $value;
+                    }
+                }
+                $feedBackTO->success = true;
+                $this->jobManagerObj->districts[$counter] = $oldDistrict;
+                $this->save();
+                break;
+            }
+            $counter++;
+        }
+        if (!$feedBackTO->success){
+            $feedBackTO->errorMsg = "Problem updating the district with Id " . $districtTO->uniqueId;
+        }
+        return $feedBackTO;
+    }
+
+    function deleteDistrict($id){
+        $feedbackTO = new FeedBackTO();
+        $key = array_search($id, array_column($this->jobManagerObj->districts, "uniqueId"));
+        if ($key === false) {
+            $feedbackTO->success = false;
+            $feedbackTO->errorMsg = 'There was a problem finding the district wiht ID ' . $id;
+            return $feedbackTO;
+
+        } else {
+            unset($this->jobManagerObj->districts[$key]);
+            $array = array_values($this->jobManagerObj->districts);
+            $this->jobManagerObj->districts = $array;
+            $this->save();
+            $feedbackTO->success = true;
+        }
+        return $feedbackTO;
+
+    }
+
+
 
     function getJobs($districtId, $chapter){
         $district = $this->findDistrict($districtId);
@@ -146,6 +221,17 @@ class ActiveJobBO{
         $district = null;
         foreach($this->jobManagerObj->districts as $key => $item){
             if ($item->id == $districtId){
+                $district = $item;
+                break;
+            }
+        }
+        return $district;
+    }
+
+    function findDistrictUnique($id){
+        $district = null;
+        foreach($this->jobManagerObj->districts as $key => $item){
+            if ($item->uniqueId == $id){
                 $district = $item;
                 break;
             }
