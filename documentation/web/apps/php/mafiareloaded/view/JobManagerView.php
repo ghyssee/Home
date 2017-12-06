@@ -74,8 +74,8 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
     </script>
     <select class="easyui-combogrid" style="width:100%" data-options="
                     panelWidth: 500,
-                    idField: 'itemid',
-                    textField: 'productname',
+                    idField: 'id',
+                    textField: 'description',
                     url: 'JobManagerAction.php?method=getJobs',
                     method: 'get',
                     columns: [[
@@ -287,7 +287,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
 
         function saveJobList(){
             var rows = $('#dgScheduledJob').datagrid('getRows');
-            var object = {jobs:rows,
+            var object = {jobs:rows,profile:getProfile()
             };
             var tmp = $.post('JobManagerAction.php?method=saveJobList', { config : JSON.stringify(object)}, function(data2){
                 if (data2.success){

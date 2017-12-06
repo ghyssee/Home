@@ -156,7 +156,7 @@ function saveJobList(){
             $activeJobTO = new ActiveJobTO($item);
             $jobList[] = $activeJobTO;
         }
-        $activeJobBO = new ActiveJobBO(getProfile());
+        $activeJobBO = new ActiveJobBO($config->profile);
         $activeJobBO->saveJobList($jobList);
         $feedBackTO->success = true;
         $feedBackTO->message = "Joblist Saved" . PHP_EOL;
