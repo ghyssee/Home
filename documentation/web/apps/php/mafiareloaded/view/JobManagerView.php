@@ -72,6 +72,20 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
             $("#oldSong").textbox('setValue', 'TTTTTTTTTTEEEEEEEEEESSSSSSTTTTTT');
         }
     </script>
+    <select class="easyui-combogrid" style="width:100%" data-options="
+                    panelWidth: 500,
+                    idField: 'itemid',
+                    textField: 'productname',
+                    url: 'JobManagerAction.php?method=getJobs',
+                    method: 'get',
+                    columns: [[
+                        {field:'id',title:'JobId',width:80},
+                        {field:'description',title:'Description',width:120}
+                    ]],
+                    fitColumns: true,
+                    label: 'Select Job:',
+                    labelPosition: 'top'
+                ">
 
     <div id="cc" class="easyui-layout" style="width:95%;height:90%">
         <div data-options="region:'north',title:'Actions',split:true" style="height:20%;">
