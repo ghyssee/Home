@@ -67,58 +67,12 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
         }
     </style>
 
-    <script>
-        function setValue(){
-            $("#oldSong").textbox('setValue', 'TTTTTTTTTTEEEEEEEEEESSSSSSTTTTTT');
-        }
-    </script>
-    <select class="easyui-combogrid" style="width:100%" data-options="
-                    panelWidth: 500,
-                    idField: 'id',
-                    textField: 'description',
-                    url: 'JobManagerAction.php?method=getJobs',
-                    method: 'get',
-                    columns: [[
-                        {field:'id',title:'JobId',width:80},
-                        {field:'description',title:'Description',width:120}
-                    ]],
-                    fitColumns: true,
-                    label: 'Select Job:',
-                    labelPosition: 'top'
-                ">
 
     <div id="cc" class="easyui-layout" style="width:95%;height:90%">
-        <div data-options="region:'north',title:'Actions',split:true" style="height:20%;">
-            <div class="Table">
-                <div class="Row">
-                    <div class="Cell vertical-center">
-                        <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok"
-                           onclick="saveJobList()" style="width:90px;">Save</a>
-                    </div>
-                    <div class="Cell vertical-center">
-                        <div style="padding:5px"><label>Profile</label></div>
-                        <div>
-                            <input id="profile" class="easyui-combobox" name="profile"
-                                   data-options="valueField:'id',
-                         width:200,
-                         limitToList: true,
-                         textField:'name',
-                         onChange: function(row){
-                            onProfileChange(row);
-                          },
-                          url:'ProfileAction.php?method=getProfiles'
-                         ">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <input type="profile" name="profile" value="<?php echo getProfile(); ?>">
-        <div data-options="region:'south',title:'Jobs',split:true" style="height:80%;padding:5px;">
+        <div data-options="region:'south',title:'Jobs',split:true" style="height:100%;padding:5px;">
 
             <table id="dgScheduledJob" class="easyui-datagrid" style="width:100%;height:95%"
-                   title="List"
+                   title="List Of Scheduled Jobs"
                    idField="id"
                    url='JobManagerAction.php?method=list'
                    data-options='fitColumns:true,
@@ -127,10 +81,11 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
                             $(this).datagrid("enableDnd");
                         },
                         toolbar:"#toolbarScheduledJob",
+                        footer:"#footerScheduledJob",
                         pagination:false,
                         nowrap:false,
                         queryParams:{profile:getProfile()},
-                        remoteFilter:true,
+                        remoteFilter:false,
                         rownumbers:true,
                         singleSelect:true'
             >
@@ -139,19 +94,22 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
                 <tr>
                     <th data-options="field:'id',hidden:true">ID</th>
                     <th data-options="field:'enabled',width:2,align:'center',formatter:function(value,row,index){return checkboxFormatter(value,row,index);} ">Enabled</th>
-                    <th data-options="field:'type',width:2">Type</th>
-                    <th data-options="field:'description',width:10">Description</th>
+                    <th data-options="field:'type',width:3">Type</th>
+                    <th data-options="field:'description',width:8">Description</th>
                     <th data-options="field:'districtId',width:2">DistrictId</th>
-                    <th data-options="field:'districtName', width:10, formatter:function(value,row){return row.district.description}">District</th>
+                    <th data-options="field:'districtName', width:5, formatter:function(value,row){return row.district.description}">District</th>
                     <th data-options="field:'chapter', width:2">Chapter</th>
                     <th data-options="field:'jobId',width:2">jobId</th>
                     <th data-options="field:'jobName', width:10, formatter:function(value,row){return row.job.description}">Jobname</th>
-                    <th data-options="field:'consumable', width:2, formatter:function(value,row,index){return checkboxFormatter(row.job.consumable,row,index);}">Consumable</th>
+                    <th data-options="field:'consumable', width:2, formatter:function(value,row,index){return checkboxFormatter(row.job.consumable,row,index);}">Cnsmbl</th>
+                    <th data-options="field:'consumableCost', width:2, formatter:function(value,row,index){return checkboxFormatter(row.job.consumableCost,row,index);}">Use Cnsmbl</th>
+                    <th data-options="field:'loot', width:2, formatter:function(value,row,index){return checkboxFormatter(row.job.loot,row,index);}">Loot</th>
                     <th data-options="field:'money', width:2, formatter:function(value,row,index){return row.job.money;}">Money</th>
                     <th data-options="field:'energy', width:2, formatter:function(value,row,index){return row.job.energy;}">Energy</th>
-                    <th data-options="field:'exp', width:2, formatter:function(value,row,index){return row.job.exp;}">Experience</th>
-                    <th data-options="field:'total', width:2">Total</th>
-                    <th data-options="field:'numberOfTimesExecuted', width:2">NumberOfTimesExecuted</th>
+                    <th data-options="field:'exp', width:2, formatter:function(value,row,index){return row.job.exp;}">Exp</th>
+                    <th data-options="field:'total', width:2,
+                    formatter:function(value,row,index){return (row.numberOfTimesExecuted == null ? '0' : row.numberOfTimesExecuted) + '/' + row.total;}">
+                        Total</th>
                 </tr>
                 </thead>
             </table>
@@ -163,9 +121,22 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
                     <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editRecordScheduledJob()">Edit Job</a>
                     <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteRecordScheduledJob()">Delete Job</a>
                 </div>
+                <div id="footerScheduledJob">
+                    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-save" plain="true" onclick="saveJobList()">Save Job Order</a>
+                    Profile: <input id="profile" class="easyui-combobox" name="profile"
+                                   data-options="valueField:'id',
+                                                width:200,
+                                                limitToList: true,
+                                                textField:'name',
+                                                onChange: function(row){
+                                                    onProfileChange(row);
+                                                },
+                                                url:'ProfileAction.php?method=getProfiles'
+                                    ">
+                </div>
 	        </span>
 
-            <div id="dlgScheduledJob" class="easyui-dialog" style="width:400px;height:400px;padding:10px 20px"
+            <div id="dlgScheduledJob" class="easyui-dialog" style="width:600px;height:400px;padding:10px 20px"
                  closed="true" buttons="#dlg-buttonsScheduledJob">
                 <div class="ftitle">Job Schedule</div>
                 <form id="fmScheduledJob" method="post" novalidate>
@@ -228,21 +199,48 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
                      ">
                     </div>
                     <div class="fitem">
+
+
+
                         <label>Job</label>
-                        <input id="jobId" class="easyui-combobox" name="jobId"
-                               data-options="valueField:'id',
-                     width:200,
-                     limitToList: true,
-                     textField:'description',
-                     onLoadSuccess: function(param){
-		                resetJob(param, '#jobId', true);
-	                 },
-	                 formatter:function(row){
-                        return 'Chapter ' + row.chapter + ' - ' + row.id + ' - ' + row.description;
-                     },
-                     queryParams:{productid:getProfile()},
-                     url:'JobManagerAction.php?method=getJobs'
-                     ">
+                        <input id="ccJobId" name="jobId">
+                        <script>
+                            $('#ccJobId').combogrid({
+                                width: 300,
+                                panelWidth: 800,
+                                idField: 'id',
+                                fitColumns: true,
+                                textField: 'description',
+                                url: 'JobManagerAction.php?method=getJobs',
+                                columns: [[
+                                    {field: 'id', title: 'Id', width: 20},
+                                    {field: 'description', title: 'Description', width: 200},
+                                    {field: 'type', title: 'Type', width: 40},
+                                    {field: 'energy', title: 'En/Sta', width: 50},
+                                    {field: 'exp', title: 'Experience', width: 50},
+                                    {field: 'money', title: 'Cash', width: 40},
+                                    {
+                                        field: 'consumable', title: 'Consumable', width: 50, align: 'center',
+                                        formatter: function (value, row, index) {
+                                            return checkboxFormatter(value, row, index);
+                                        }
+                                    },
+                                    {
+                                        field: 'consumableCost', title: 'Use Cnsmbl', width: 50, align: 'center',
+                                        formatter: function (value, row, index) {
+                                            return checkboxFormatter(value, row, index);
+                                        }
+                                    },
+                                    {
+                                        field: 'loot', title: 'Loot', width: 50, align: 'center',
+                                        formatter: function (value, row, index) {
+                                            return checkboxFormatter(value, row, index);
+                                        }
+                                    }
+                                ]]
+                            });
+                        </script>
+
                     </div>
                     <div class="fitem">
                         <label>Total</label>
@@ -349,20 +347,20 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
             }
         }
 
+        function refreshJobs(obj){
+            //$('#jobId').combobox('reload', obj);
+            var grid = $('#ccJobId').combogrid('grid');
+            grid.datagrid('reload', obj);
+            //$('#ccJobId').combogrid('reload', obj);
+        }
+
         function onChapterChange(row){
             var obj = {
                 "district": $('#districtId').combobox('getValue'),
                 "profile": getProfile(),
                 "chapter": row.id
             };
-            $('#jobId').combobox('reload', obj);
-        }
-
-        function onChapterChange2(row){
-            var districtId = $('#districtId').combobox('getValue');
-            var profile = getProfile();
-            var url = 'JobManagerAction.php?method=getJobs&profile=' + profile + '&district='+districtId + '&chapter=' + row.id;
-            $('#jobId').combobox('reload', url);
+            refreshJobs(obj);
         }
 
         function onDistrictChange(row){
@@ -370,15 +368,9 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
                 "district": row.id,
                 "profile": getProfile()
             };
-            $('#jobId').combobox('reload', obj);
+            refreshJobs(obj);
+            //$('#jobId').combobox('reload', obj);
             $('#chapter').combobox('reload', obj);
-        }
-
-        function onDistrictChange2(row){
-            var url = 'JobManagerAction.php?method=getJobs&district='+row.id;
-            $('#jobId').combobox('reload', url);
-            var url = 'JobManagerAction.php?method=getChapters&district='+row.id;
-            $('#chapter').combobox('reload', url);
         }
 
         function onchangeType(row){
@@ -387,12 +379,15 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
 
         function checkForm(jobType){
             if (jobType == "CHAPTER"){
-                $("#jobId").combobox('setValue', null);
-                $( "#jobId" ).combobox({ disabled: true });
+                //$("#jobId").combobox('setValue', null);
+                //$( "#jobId" ).combobox({ disabled: true });
+                $('#ccJobId').combogrid('setValue', null);
+                $( "#ccJobId" ).combogrid({ disabled: true });
                 $("#total").numberspinner({ disabled: true });
             }
             else {
-                $("#jobId").combobox({ disabled: false });
+                //$("#jobId").combobox({ disabled: false });
+                $("#ccJobId").combogrid({ disabled: false });
                 $("#total").numberspinner({ disabled: false });
             }
         }
@@ -414,10 +409,16 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
                 $('#dlgScheduledJob').dialog('open').dialog('setTitle','Edit Active Job');
                 $('#fmScheduledJob').form('load',row);
                 checkForm(row.type);
+                var obj = {
+                    "district": row.districtId,
+                    "chapter": row.chapter,
+                    "profile": getProfile()
+                };
+                refreshJobs(obj);
                 $('#total').numberspinner('setValue', row.total);
 
                 if (row.type != 'CHAPTER') {
-                    $('#jobId').combobox('setValue', row.jobId);
+                    $('#ccJobId').combogrid('setValue', row.jobId);
                 }
                 url = 'JobManagerAction.php?method=updateActiveJob&id='+row['id'] + "&profile=" + getProfile();
             }
@@ -506,12 +507,6 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
             width:160px;
         }
     </style>
-    <script type="text/javascript">
-        $(function(){
-            var dg = $('#dgScheduledJob');
-            dg.datagrid('enableFilter');
-        });
-    </script>
 
     </body>
 </html>

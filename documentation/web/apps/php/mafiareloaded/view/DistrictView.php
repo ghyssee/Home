@@ -18,8 +18,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
         <link rel="stylesheet" type="text/css" href="../../css/stylesheet.css">
         <link rel="stylesheet" type="text/css" href="../../Themes/easyui/metro-blue/easyui.css">
         <link rel="stylesheet" type="text/css" href="../../Themes/easyui/icon.css">
-        <link rel="stylesheet" type="text/css+
-" href="../../css/form.css">
+        <link rel="stylesheet" type="text/css" href="../../css/form.css">
         <?php include documentRoot ("apps/php/templates/easyui.php");?>
     </head>
     <body>
@@ -67,33 +66,11 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
         }
     </style>
 
-    <div id="cc" class="easyui-layout" style="width:95%;height:90%">
-        <div data-options="region:'north',title:'Actions',split:true" style="height:20%;">
-            <div class="Table">
-                <div class="Row">
-                    <div class="Cell vertical-center">
-                        <div style="padding:5px"><label>Profile</label></div>
-                        <div>
-                            <input id="profile" class="easyui-combobox" name="profile"
-                                   data-options="valueField:'id',
-                         width:200,
-                         limitToList: true,
-                         textField:'name',
-                         onChange: function(row){
-                            onProfileChange(row);
-                          },
-                          url:'ProfileAction.php?method=getProfiles'
-                         ">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div id="cc" class="easyui-layout" style="width:100%;height:90%">
+        <div data-options="region:'south',title:'Jobs',split:true" style="height:100%;padding:5px;">
 
-        <div data-options="region:'south',title:'Jobs',split:true" style="height:80%;padding:5px;">
-
-            <table id="dgScheduledJob" class="easyui-datagrid" style="width:100%;height:95%"
-                   title="List"
+            <table id="dgDistrict" class="easyui-datagrid" style="width:50%;height:50%"
+                   title="List Of Districts"
                    idField="uniqueId"
                    url='DistrictAction.php?method=list'
                    data-options='fitColumns:true,
@@ -101,7 +78,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
                         onLoadSuccess:function(){
                             $(this).datagrid("enableDnd");
                         },
-                        toolbar:"#toolbarScheduledJob",
+                        toolbar:"#toolbarDistrict",
                         pagination:false,
                         nowrap:false,
                         queryParams:{profile:getProfile()},
@@ -124,17 +101,28 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
 
 
             <span style="font-size:20px">
-                <div id="toolbarScheduledJob">
-                    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newRecordScheduledJob()">New Job</a>
-                    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editRecordScheduledJob()">Edit Job</a>
-                    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteRecordScheduledJob()">Delete Job</a>
+                <div id="toolbarDistrict">
+                    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newRecordDistrict()">New Districr</a>
+                    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editRecordDistrict()">Edit District</a>
+                    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteRecordDistrict()">Delete District</a>
+                    Profile: <input id="profile" class="easyui-combobox" name="profile"
+                                    data-options="valueField:'id',
+                                                width:200,
+                                                limitToList: true,
+                                                textField:'name',
+                                                onChange: function(row){
+                                                    onProfileChange(row);
+                                                },
+                                                url:'ProfileAction.php?method=getProfiles'
+                                    ">
+
                 </div>
 	        </span>
 
-            <div id="dlgScheduledJob" class="easyui-dialog" style="width:400px;height:400px;padding:10px 20px"
-                 closed="true" buttons="#dlg-buttonsScheduledJob">
+            <div id="dlgDistrict" class="easyui-dialog" style="width:400px;height:400px;padding:10px 20px"
+                 closed="true" buttons="#dlg-buttonsDistrict">
                 <div class="ftitle">Job Schedule</div>
-                <form id="fmScheduledJob" method="post" novalidate>
+                <form id="fmDistrict" method="post" novalidate>
                     <div class="fitem">
                         <label>District Id</label>
                         <input name="id" class="easyui-numberspinner" style="width:150px;"
@@ -176,10 +164,10 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
                     </div>
                 </form>
             </div>
-            <div id="dlg-buttonsScheduledJob">
+            <div id="dlg-buttonsDistrict">
                 <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok"
-                   onclick="saveScheduledJob()" style="width:90px">Save</a>
-                <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlgScheduledJob').dialog('close')" style="width:90px">Cancel</a>
+                   onclick="saveDistrict()" style="width:90px">Save</a>
+                <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlgDistrict').dialog('close')" style="width:90px">Cancel</a>
             </div>
 
 
@@ -199,51 +187,30 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
             var profileId = getProfile();
             var _value = $("#profile").combobox('getText');
             var obj = {profile:profileId};
-            $('#dgScheduledJob').datagrid('reload', obj);
+            $('#dgDistrict').datagrid('reload', obj);
             $('#cc').layout('panel', 'south').panel('setTitle', 'Profile: ' + profileId + " " + _value);
         }
 
-        function newRecordScheduledJob(){
-            var row = $('#dgScheduledJob').datagrid('getSelected');
+        function newRecordDistrict(){
+            var row = $('#dgDistrict').datagrid('getSelected');
             var rowIndex = '';
-            $('#dlgScheduledJob').dialog('open').dialog('setTitle','New District');
-            $('#fmScheduledJob').form('reset');
+            $('#dlgDistrict').dialog('open').dialog('setTitle','New District');
+            $('#fmDistrict').form('reset');
             url = 'DistrictAction.php?method=addDistrict' + rowIndex + "&profile=" + getProfile();
         }
-        function editRecordScheduledJob(){
-            var row = $('#dgScheduledJob').datagrid('getSelected');
+        function editRecordDistrict(){
+            var row = $('#dgDistrict').datagrid('getSelected');
             if (row){
-                $('#dlgScheduledJob').dialog('open').dialog('setTitle','Edit Active Job');
-                $('#fmScheduledJob').form('load',row);
+                $('#dlgDistrict').dialog('open').dialog('setTitle','Edit Active Job');
+                $('#fmDistrict').form('load',row);
                 $('#scanChapterStart').numberspinner('setValue', row.scanChapterStart);
                 $('#scanChapterEnd').numberspinner('setValue', row.scanChapterEnd);
                 url = 'DistrictAction.php?method=updateDistrict&id='+row['uniqueId'] + "&profile=" + getProfile();
             }
         }
-        function saveScheduledJob(){
-            $('#fmScheduledJob').form('submit',{
-                url: url,
-                onSubmit: function(){
-                    return $(this).form('validate');
-                },
-                success: function(result){
-                    //var result = eval('('+result+')');
-                    var result = JSON.parse(result);
-                    if (result.errorMsg){
-                        $.messager.show({
-                            title: 'Error',
-                            msg: result.errorMsg
-                        });
-                    } else {
-                        $('#dlgScheduledJob').dialog('close');		// close the dialog
-                        $('#dgScheduledJob').datagrid('reload');	// reload the user data
-                    }
-                }
-            });
-        }
 
-        function deleteRecordScheduledJob(){
-            var row = $('#dgScheduledJob').datagrid('getSelected');
+        function deleteRecordDistrict(){
+            var row = $('#dgDistrict').datagrid('getSelected');
             if (row){
                 $.messager.confirm('Confirm','Are you sure you want to delete this district?',function(r){
                     if (r){
@@ -256,7 +223,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
                                 if (!dataObj.success && dataObj.hasOwnProperty('errorMessage')){
                                     alert(dataObj.errorMessage);
                                 }
-                                $('#dgScheduledJob').datagrid('reload');
+                                $('#dgDistrict').datagrid('reload');
                             },
                             // vvv---- This is the new bit
                             error:   function(jqXHR, textStatus, errorThrown) {
