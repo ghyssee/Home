@@ -102,7 +102,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
 
             <span style="font-size:20px">
                 <div id="toolbarDistrict">
-                    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newRecordDistrict()">New Districr</a>
+                    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newRecordDistrict()">New District</a>
                     <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editRecordDistrict()">Edit District</a>
                     <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteRecordDistrict()">Delete District</a>
                     Profile: <input id="profile" class="easyui-combobox" name="profile"
@@ -166,7 +166,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
             </div>
             <div id="dlg-buttonsDistrict">
                 <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok"
-                   onclick="saveDistrict()" style="width:90px">Save</a>
+                   onclick="saveRecordDistrict()" style="width:90px">Save</a>
                 <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlgDistrict').dialog('close')" style="width:90px">Cancel</a>
             </div>
 
@@ -189,6 +189,28 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
             var obj = {profile:profileId};
             $('#dgDistrict').datagrid('reload', obj);
             $('#cc').layout('panel', 'south').panel('setTitle', 'Profile: ' + profileId + " " + _value);
+        }
+
+        function saveRecordDistrict(){
+            $('#fmDistrict').form('submit',{
+                url: url,
+                onSubmit: function(){
+                    return $(this).form('validate');
+                },
+                success: function(result){
+                    //var result = eval('('+result+')');
+                    var result = JSON.parse(result);
+                    if (result.errorMsg){
+                        $.messager.show({
+                            title: 'Error',
+                            msg: result.errorMsg
+                        });
+                    } else {
+                        $('#dlgDistrict').dialog('close');		// close the dialog
+                        $('#dgDistrict').datagrid('reload');	// reload the user data
+                    }
+                }
+            });
         }
 
         function newRecordDistrict(){

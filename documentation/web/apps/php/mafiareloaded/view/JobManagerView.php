@@ -94,13 +94,14 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
                 <tr>
                     <th data-options="field:'id',hidden:true">ID</th>
                     <th data-options="field:'enabled',width:2,align:'center',formatter:function(value,row,index){return checkboxFormatter(value,row,index);} ">Enabled</th>
-                    <th data-options="field:'type',width:3">Type</th>
-                    <th data-options="field:'description',width:8">Description</th>
+                    <th data-options="field:'type',width:5">Type</th>
+                    <th data-options="field:'description',width:15">Description</th>
                     <th data-options="field:'districtId',width:2">DistrictId</th>
                     <th data-options="field:'districtName', width:5, formatter:function(value,row){return row.district.description}">District</th>
                     <th data-options="field:'chapter', width:2">Chapter</th>
                     <th data-options="field:'jobId',width:2">jobId</th>
                     <th data-options="field:'jobName', width:10, formatter:function(value,row){return row.job.description}">Jobname</th>
+                    <th data-options="field:'jobType', width:5, formatter:function(value,row){return row.job.type}">Type</th>
                     <th data-options="field:'consumable', width:2, formatter:function(value,row,index){return checkboxFormatter(row.job.consumable,row,index);}">Cnsmbl</th>
                     <th data-options="field:'consumableCost', width:2, formatter:function(value,row,index){return checkboxFormatter(row.job.consumableCost,row,index);}">Use Cnsmbl</th>
                     <th data-options="field:'loot', width:2, formatter:function(value,row,index){return checkboxFormatter(row.job.loot,row,index);}">Loot</th>
