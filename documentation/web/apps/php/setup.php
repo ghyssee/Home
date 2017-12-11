@@ -23,6 +23,7 @@ const JSON_SONGCORRECTIONS = "songCorrections";
 const JSON_ARTISTSONGTEST = "artistSongTest";
 const JSON_MR_JOBS = "mafiaReloadedJobs";
 const JSON_MR_PROFILE = "mafiaReloadedProfile";
+const JSON_MR_HOMEFEED = "mafiaReloadedHomeFeed";
 const FILE_ERROR_LOG = "errorLog";
 const FILE_INFO_LOG = "infoLog";
 const FILE_ALBUM = "albumInfo";
