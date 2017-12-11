@@ -72,6 +72,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
                                                 },
                                                 url:'ProfileAction.php?method=getProfiles'
                                     ">
+                    <button type="button" onclick="refreshDatagrid()">Refresh</button>
 
                 </div>
 	        </span>
@@ -82,8 +83,13 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
 
 <script type="text/javascript">
 
+    function refreshDatagrid(){
+        var obj = {profile:getProfile()};
+        $('#dgHomeFeed').datagrid('reload', obj);
+    }
+
     function formatDate(strDate){
-        var newDate =  strDate.substr(6,2) + '/' + strDate.substr(4,2) + '/' + strDate.substr(0,4) + ' ' + strDate.substr(8,2) + ':' + strDate.substr(10,2) + ' ' + strDate.substr(12,2);
+        var newDate =  strDate.substr(6,2) + '/' + strDate.substr(4,2) + '/' + strDate.substr(0,4) + ' ' + strDate.substr(8,2) + ':' + strDate.substr(10,2) + ':' + strDate.substr(12,2);
         return newDate;
     }
 
