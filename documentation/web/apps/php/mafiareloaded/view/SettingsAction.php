@@ -13,6 +13,7 @@ include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 include_once documentPath (ROOT_PHP_HTML, "config.php");
 include_once documentPath (ROOT_PHP_BO, "SessionBO.php");
 include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
+include_once documentPath (ROOT_PHP_MR_BO, "SettingsBO.php");
 sessionStart();
 //ini_set('display_errors', 1);
 //ini_set('display_startup_errors', 1);
@@ -22,7 +23,7 @@ sessionStart();
 $method = htmlspecialchars($_REQUEST['method']);
 try {
     switch ($method) {
-        case "getProfiles":
+        case "set1":
             getProfiles();
             break;
     }
@@ -44,7 +45,35 @@ function customError($errno, $errstr) {
     die();
 }
 
+function fillFightSettings(){
+
+}
+
 function getProfiles(){
+    foreach($_POST as $key => $value){
+        $tmp = $key;
+        $tmp2 = $value;
+        $tmp3 = '';
+    }
+    $tmp = new FightSettingsTO();
+    $tmpVar = get_object_vars($tmp);
+    foreach($tmpVar as $key => $value){
+        $bla = '';
+        $bla2 = '';
+        $typeof = gettype($value);
+        if ($typeof == 'boolean'){
+            $tmp->{$key} = isset($_POST[$key]);
+        }
+        elseif ($typeof == 'integer') {
+            if (isset($_POST[$key])) {
+                $tmp->{$key} = intval($_POST[$key]);
+            }
+        }
+        else {
+
+        }
+    }
+
     $profileBO = new ProfileBO();
     $list = $profileBO->getProfiles();
     $sort = new CustomSort();
