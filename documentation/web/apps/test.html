@@ -1,13 +1,21 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>jQuery UI Dialog - Modal message</title>
-  <link rel="stylesheet" href="js/jquery-ui.css">
-  <script src="js/jquery-3.1.1.js"></script>
-  <script src="js/jquery-ui.js"></script>
+  <link rel="stylesheet" type="text/css" href="../../css/stylesheet.css">
+  <link rel="stylesheet" type="text/css" href="../../Themes/easyui/metro-blue/easyui.css">
+  <link rel="stylesheet" type="text/css" href="../../Themes/easyui/icon.css">
+  <link rel="stylesheet" type="text/css" href="../../css/form.css">
+  <link rel="stylesheet" type="text/css" href="/catalog/apps/themes/easyui/metro-blue/easyui.css ">
+  <link rel="stylesheet" type="text/css" href="/catalog/apps/themes/easyui/metro-blue/icon.css">
+    <script type="text/javascript" src="/catalog/apps/js/jquery-3.1.1.js"></script>
+  <script type="text/javascript" src="/catalog/apps/js/easyui/jquery.easyui.min.js"></script>
+  <script type="text/javascript" src="/catalog/apps/js/easyui/datagrid-dnd.js"></script>
+  <script type="text/javascript" src="/catalog/apps/js/easyui/datagrid-filter.js')?>"></script>
+  <script type="text/javascript" src="/catalog/apps/js/easyui/easyUIUtils.js"></script>
+    <script type="text/javascript" src="/catalog/apps/js/require.js"></script>
+    <script type="text/javascript" src="/catalog/apps/js/application.js"></script>
 </head>
+
 <body>
 
 <!-- 
@@ -18,8 +26,71 @@
   Are you sure about this?
 </div>
 
+<span style="font-size:20px">
+        <div id="toolbarArtistWord">
+            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="addRule()">Add Rule</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editRule()">Edit Rule</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="addOrModifyMultiArtist()">MultiArtist</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editSong()">Edit Song</a>
+        </div>
+	</span>
+<div><button type='button' onclick="start1()">Start</button></div>
+<div><button type='button' onclick="test1()">OneDrivePath</button></div>
+
 <script>
+    function test1(){
+        alert("test1");
+        require(['mkdirp'], function (mkdirp) {
+            //foo is now loaded.
+        });
+        alert("test1");
+        var mkdirp = require('mkdirp');
+        mkdirp('/tmp/some/path/foo', function(err) {
+
+            // path exists unless there was an error
+
+        });
+        alert("test2");
+    }
+
+    function start1() {
+        window.location.href = 'imacros://run/?m=00_Fight_v03.js';
+    }
+
+    function getRegistrySetting(branch, key){
+        var wrk = Components.classes["@mozilla.org/windows-registry-key;1"]
+            .createInstance(Components.interfaces.nsIWindowsRegKey);
+        var id = null;
+        try {
+            wrk.open(wrk.ROOT_KEY_CURRENT_USER,
+                branch,
+                wrk.ACCESS_READ);
+            id = wrk.readStringValue(key);
+        }
+        catch (err) {
+        }
+        wrk.close();
+        return id;
+    }
+
+    function getOneDrivePath(){
+        var id = getRegistrySetting("SOFTWARE\\Microsoft\\OneDrive", "UserFolder");
+        alert(id);
+        if (id == null){
+            id = getRegistrySetting("SOFTWARE\\Microsoft\\SkyDrive", "UserFolder");
+        }
+        if (id == null){
+            var errorMsg = "OneDrive Not Installed on this computer. Please Install it to use this script!";
+            alert(errorMsg);
+            throw errorMsg;
+        }
+        return id;
+    }
+</script>
+<script>
+/*
 $(document).ready(function() {
+
 
     $("#dialog").dialog({
         modal: true,
@@ -49,6 +120,7 @@ $(document).ready(function() {
     });
 
 });
+*/
 </script>
 <a class="confirmLink" href="/catalog">Catalog</a>
 

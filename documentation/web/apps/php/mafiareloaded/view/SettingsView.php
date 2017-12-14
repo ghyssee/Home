@@ -47,6 +47,7 @@ session_start();
 
 <?php
 goMenu();
+echo webPath(ROOT_THEMES, 'easyui/metro-blue/easyui.css');
 ?>
 
 <h3>Settings</h3>

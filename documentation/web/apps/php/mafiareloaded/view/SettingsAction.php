@@ -24,7 +24,7 @@ $method = htmlspecialchars($_REQUEST['method']);
 try {
     switch ($method) {
         case "set1":
-            getProfiles();
+            saveSettings1();
             break;
     }
 }
@@ -49,36 +49,27 @@ function fillFightSettings(){
 
 }
 
-function getProfiles(){
-    foreach($_POST as $key => $value){
-        $tmp = $key;
-        $tmp2 = $value;
-        $tmp3 = '';
-    }
-    $tmp = new FightSettingsTO();
-    $tmpVar = get_object_vars($tmp);
-    foreach($tmpVar as $key => $value){
-        $bla = '';
-        $bla2 = '';
+function fillForm($to, $form){
+    $tmpVar = get_object_vars($to);
+    foreach($tmpVar as $key => $value) {
         $typeof = gettype($value);
-        if ($typeof == 'boolean'){
-            $tmp->{$key} = isset($_POST[$key]);
-        }
-        elseif ($typeof == 'integer') {
-            if (isset($_POST[$key])) {
-                $tmp->{$key} = intval($_POST[$key]);
+        if ($typeof == 'boolean') {
+            $to->{$key} = isset($form[$key]);
+        } elseif ($typeof == 'integer') {
+            if (isset($form[$key])) {
+                $to->{$key} = intval($form[$key]);
             }
-        }
-        else {
-
+        } else {
+            $to->{$key} = $form[$key];
         }
     }
+}
 
-    $profileBO = new ProfileBO();
-    $list = $profileBO->getProfiles();
-    $sort = new CustomSort();
-    $list = $sort->sortObjectArrayByField($list, "id");
+function saveSettings1(){
+    $fightSettingsTO = new FightSettingsTO();
+    fillForm($fightSettingsTO, $_POST);
 
-    array_unshift($list, $profileBO->getEmptyProfile());
-    echo json_encode($list);
+    $settingsBO = new SettingsBO();
+    $feedBack = $settingsBO->saveSettings($fightSettingsTO);
+    echo json_encode($feedBack);
 }
