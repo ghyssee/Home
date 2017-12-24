@@ -182,7 +182,6 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
                     <div class="fitem">
                         <label>Chapter</label>
                         <input id="chapter" class="easyui-combobox" name="chapter"
-                               required="true"
                                data-options="valueField:'id',
                      width:200,
                      limitToList: true,

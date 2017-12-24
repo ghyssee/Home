@@ -190,10 +190,11 @@ function validateScheduledJob(ActiveJobTO $activeJobTO ){
         $feedBackTO->success = false;
         $feedBackTO->errorMsg = addMsg ($feedBackTO->errorMsg,"District Id must be filled in");
     }
+    /*
     if ($activeJobTO->chapter == null){
         $feedBackTO->success = false;
         $feedBackTO->errorMsg = addMsg ($feedBackTO->errorMsg,"Chapter must be filled in");
-    }
+    }*/
     if ($activeJobTO->jobId == null){
         if ($activeJobTO->type != "CHAPTER") {
             $feedBackTO->success = false;
