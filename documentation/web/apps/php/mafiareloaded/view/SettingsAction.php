@@ -13,6 +13,7 @@ include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 include_once documentPath (ROOT_PHP_HTML, "config.php");
 include_once documentPath (ROOT_PHP_BO, "SessionBO.php");
 include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
+include_once documentPath (ROOT_PHP_MR_BO, "ProfileSettingsBO.php");
 include_once documentPath (ROOT_PHP_MR_BO, "SettingsBO.php");
 sessionStart();
 //ini_set('display_errors', 1);
@@ -23,6 +24,9 @@ sessionStart();
 $method = htmlspecialchars($_REQUEST['method']);
 try {
     switch ($method) {
+        case "getSettings1":
+            getSettings1();
+            break;
         case "set1":
             saveSettings1();
             break;
@@ -69,7 +73,17 @@ function saveSettings1(){
     $fightSettingsTO = new FightSettingsTO();
     fillForm($fightSettingsTO, $_POST);
 
-    $settingsBO = new SettingsBO();
+    $settingsBO = new ProfileSettingsBO();
     $feedBack = $settingsBO->saveSettings($fightSettingsTO);
     echo json_encode($feedBack);
+}
+
+function getSettings1(){
+    $settingsBO = new ProfileSettingsBO();
+    $fightSettingsTO = $settingsBO->getSettings1();
+    $SettingsBO = new SettingsBO();
+    $dailyLinkTO = $SettingsBO->getDailyLink();
+    echo json_encode($fightSettingsTO);
+
+
 }

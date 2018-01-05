@@ -19,29 +19,28 @@
         <input name="autoHeal"
                class="easyui-checkbox" type="checkbox" value="true"
         >
-        <div class="fitem">
-            <label for="heal">Heal Limit</label>
-            <input name="heal" id="heal" class="easyui-numberspinner" style="width:150px;"
-                   data-options="min:0"
-            >
-            <div>
-                <div class="fitem">
-                    <label for="numberOfHealsLimit">Max. Number of Rival Heals</label>
-                    <input name="numberOfHealsLimit" id="numberOfHealsLimit" class="easyui-numberspinner" style="width:150px;"
-                           data-options="min:0"
-                    >
-                    <div>
     </div>
-        <div id="dlg-buttonsScheduledJob">
-            <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok"
-               onclick="submitSet()" style="width:90px">Save</a>
-            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlgScheduledJob').dialog('close')" style="width:90px">Cancel</a>
-        </div>
+    <div class="fitem">
+        <label for="heal">Heal Limit</label>
+        <input name="heal" id="heal" class="easyui-numberspinner" style="width:150px;"
+               data-options="min:0"
+        >
+    </div>
+    <div class="fitem">
+         <label for="numberOfHealsLimit">Max. Number of Rival Heals</label>
+         <input name="numberOfHealsLimit" id="numberOfHealsLimit" class="easyui-numberspinner" style="width:150px;"
+                data-options="min:0"
+         >
+    </div>
+    <div id="dlg-buttonsScheduledJob">
+        <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok"
+           onclick="submitSet()" style="width:90px">Save</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlgScheduledJob').dialog('close')" style="width:90px">Cancel</a>
+    </div>
 </form>
 
 <script>
     $('#settings').form('load','SettingsAction.php?method=getSettings1');
-
     function submitSet() {
     $('#settings').form('submit', {
         url: "SettingsAction.php?method=set1",

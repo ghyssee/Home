@@ -7,21 +7,17 @@
  */
 require_once documentPath (ROOT_PHP, "config.php");
 require_once documentPath (ROOT_PHP_MODEL, "HTML.php");
-require_once documentPath (ROOT_PHP_BO, "CacheBO.php");
 require_once documentPath (ROOT_PHP_BO, "MyClasses.php");
+include_once documentPath (ROOT_PHP_MR_BO, "MafiaReloadedBO.php");
 
-class ConfigTO {
-    private $base = "fight";
-    public function getBase(){
-        return $this->base;
-}
-}
 
-class FightSettingsTO extends ConfigTO {
-    public $autoHeal = false;
-    public $heal = 0;
-    public $numberOfHealsLimit = 0;
-    public $minLengthOfFightList = 0;
+class DailyLinkTO  {
+    public $date;
+    public $link;
+
+    function getBase(){
+        return "dailyLink";
+}
 
     public function __construct()
     {
@@ -29,26 +25,45 @@ class FightSettingsTO extends ConfigTO {
 }
 
 class SettingsBO{
-    public $mrObj;
-    public $fileCode = JSON_MR_MAFIARELOADED;
+    public $settingsObj;
+    public $fileCode = JSON_MR_SETTINGS;
 
     function __construct() {
-        $this->mrObj = readJSONWithCode($this->fileCode);
+        $this->settingsObj = readJSONWithCode($this->fileCode);
     }
 
-
-    function saveSettings(FightSettingsTO $fightSettingsTO){
-        $feedBack = new FeedBackTO();
-        $tmpVar = get_object_vars($fightSettingsTO);
-    //    $props = getProperties($fightSettingsTO);
+    function getDailyLink(){
+        $dailyLinkTO = new DailyLinkTO();
+        $tmpVar = get_object_vars($dailyLinkTO);
+        //$tmpVar = getProperties($dailyLinkTO);
         foreach($tmpVar as $key => $value) {
-            if ($fightSettingsTO->getBase() == null){
-                $this->mrObj->{$key} = $value;
+            $dailyLinkTO->{$key} = $this->getSetting($dailyLinkTO, $key);
+        }
+        return $dailyLinkTO;
+    }
+
+    function getSetting($to, $key){
+        $value = null;
+        if ($to->getBase() == null){
+            $value = $this->settingsObj->{$key};
+        }
+        else {
+            $value = $this->settingsObj->{$to->getBase()}->{$key};
+        }
+        return $value;
+    }
+
+    function saveDailyLink(DailyLinkTO $dailyLinkTO){
+        $feedBack = new FeedBackTO();
+        $tmpVar = get_object_vars($dailyLinkTO);
+        //$tmpVar = getProperties($dailyLinkTO);
+        foreach($tmpVar as $key => $value) {
+            if ($dailyLinkTO->getBase() == null){
+                $this->settingsObj->{$key} = $value;
             }
             else {
-                $this->mrObj->{$fightSettingsTO->getBase()}->{$key} = $value;
+                $this->settingsObj->{$dailyLinkTO->getBase()}->{$key} = $value;
             }
-
         }
         $feedBack->success = true;
         $feedBack->message = 'Configuration saved successfully';
