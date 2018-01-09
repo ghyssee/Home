@@ -130,7 +130,15 @@ class SongBO
         writeJSONWithCode($songsObj, JSON_SONGCORRECTIONS);
     }
 
+    function testSong($id)
+    {
+        $result = $this->db->testSong($id);
+        $songObj = $this->db->convertToMGOFileObj($result);
+        $songObj->source = "DB";
+        return $songObj;
+    }
 }
+
 
 
 ?>

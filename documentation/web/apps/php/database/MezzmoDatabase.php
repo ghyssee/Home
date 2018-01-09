@@ -55,6 +55,14 @@ class MezzmoSQLiteDatabase extends CustomDatabase {
         return $songObj;
     }
 
+    public function convertToMGOFileObj($result){
+        $songObj = new SongCorrection();
+        $songObj->fileId = $result['ID'];
+        $songObj->title = $result['TITLE'];
+        $songObj->track = $result['TRACK'];
+        return $songObj;
+    }
+
     public function convertToSongObj($result){
         $songObj = new SongCorrection();
         $songObj->fileId = $result['ID'];
@@ -160,6 +168,32 @@ class MezzmoSQLiteDatabase extends CustomDatabase {
         $sth->execute($array);
         $result = $sth->fetchAll();
         return $result;
+    }
+
+    public function testSong($id){
+
+        $query = "SELECT " .
+            $this->getFileColumns() .
+            "FROM MGOFile AS FILE " .
+            "WHERE FILE.id = :id ";
+//        $result = $this->query($query);
+        $sth = $this->prepare($query, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+        $sth->execute(array(':id' => $id));
+        $result = $sth->fetchAll();
+        $nr = count($result);
+        $songRec = null;
+        switch ($nr) {
+            case 0 :
+                throw new ApplicationException("No result found for id " .$id);
+                break;
+            case 1:
+                $songRec = $result[0];
+                break;
+            default:
+                throw new ApplicationException("Multiple results found for id " . $id);
+                break;
+        }
+        return $songRec;
     }
 
 
