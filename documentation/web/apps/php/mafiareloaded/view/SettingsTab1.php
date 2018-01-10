@@ -13,7 +13,7 @@
         <input name="minLengthOfFightList" id="minLengthOfFightList" class="easyui-numberspinner" style="width:150px;"
                data-options="min:1"
         >
-    <div>
+    </div>
     <div class="fitem">
         <label>AutoHeal</label>
         <input name="autoHeal"
@@ -35,12 +35,17 @@
     <div id="dlg-buttonsScheduledJob">
         <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok"
            onclick="submitSet()" style="width:90px">Save</a>
-        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlgScheduledJob').dialog('close')" style="width:90px">Cancel</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="loadSettings1();" style="width:90px">Undo</a>
     </div>
 </form>
 
 <script>
-    $('#settings').form('load','SettingsAction.php?method=getSettings1');
+    function loadSettings1(){
+        $('#settings').form('load','SettingsAction.php?method=getSettings1');
+    }
+
+    loadSettings1();
+
     function submitSet() {
     $('#settings').form('submit', {
         url: "SettingsAction.php?method=set1",
@@ -52,5 +57,6 @@
             alert(data)
         }
     });
+
 }
 </script>

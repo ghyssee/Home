@@ -52,12 +52,12 @@ echo webPath(ROOT_THEMES, 'easyui/metro-blue/easyui.css');
 
 <h3>Settings</h3>
 
-<div id="tt" class="easyui-tabs" data-options="selected:0" style="width:1400px;height:700px;">
+<div id="settingsTab" class="easyui-tabs" data-options="selected:0" style="width:1400px;height:700px;">
     <div title="Settings" style="padding:20px;display:none;">
            <?php include "SettingsTab1.php"; ?>
     </div>
-    <div title="Settings2" style="overflow:auto;padding:20px;display:none;" >
-        Settings 2
+    <div title="Daily Link" style="overflow:auto;padding:20px;display:none;" >
+        <?php include "SettingsTab2.php"; ?>
     </div>
 </div>
 

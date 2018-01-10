@@ -66,12 +66,13 @@ class SettingsBO{
             }
         }
         $feedBack->success = true;
-        $feedBack->message = 'Configuration saved successfully';
+        $feedBack->message = 'Daily Link saved successfully';
+        $this->save();
         return $feedBack;
     }
 
     function save(){
-        writeJSONWithCode($this->mrObj, $this->fileCode);
+        writeJSONWithCode($this->settingsObj, $this->fileCode);
     }
 }
 

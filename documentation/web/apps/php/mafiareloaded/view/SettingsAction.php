@@ -24,6 +24,12 @@ sessionStart();
 $method = htmlspecialchars($_REQUEST['method']);
 try {
     switch ($method) {
+        case "getDailyLink":
+            getDailyLink();
+            break;
+        case "saveDailyLink":
+            saveDailyLink();
+            break;
         case "getSettings1":
             getSettings1();
             break;
@@ -84,6 +90,21 @@ function getSettings1(){
     $SettingsBO = new SettingsBO();
     $dailyLinkTO = $SettingsBO->getDailyLink();
     echo json_encode($fightSettingsTO);
-
-
 }
+
+function getDailyLink()
+{
+    $SettingsBO = new SettingsBO();
+    $dailyLinkTO = $SettingsBO->getDailyLink();
+    echo json_encode($dailyLinkTO);
+}
+
+function saveDailyLink(){
+    $dailyLinkTO = new DailyLinkTO();
+    fillForm($dailyLinkTO, $_POST);
+
+    $settingsBO = new SettingsBO();
+    $feedBack = $settingsBO->saveDailyLink($dailyLinkTO);
+    echo json_encode($feedBack);
+}
+
