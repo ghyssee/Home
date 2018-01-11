@@ -5,9 +5,10 @@
  * Date: 12/12/2017
  * Time: 15:32
  */
+const FORM_ID = "settings";
 ?>
 
-<form id="settings" method="post">
+<form id="<?php echo FORM_ID;?>" method="post">
     <div class="fitem">
         <label for="minLengthOfFightList">Min. Length Of Fight List</label>
         <input name="minLengthOfFightList" id="minLengthOfFightList" class="easyui-numberspinner" style="width:150px;"
@@ -34,29 +35,14 @@
     </div>
     <div id="dlg-buttonsScheduledJob">
         <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok"
-           onclick="submitSet()" style="width:90px">Save</a>
-        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="loadSettings1();" style="width:90px">Undo</a>
+           onclick="submitForm('<?php echo FORM_ID;?>', 'SettingsAction.php?method=saveSettingsFighting')" style="width:90px">Save</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="loadSettingsFighting();" style="width:90px">Undo</a>
     </div>
 </form>
 
 <script>
-    function loadSettings1(){
-        $('#settings').form('load','SettingsAction.php?method=getSettings1');
+    function loadSettingsFighting(){
+        $('#<?php echo FORM_ID;?>').form('load','SettingsAction.php?method=getSettingsFighting');
     }
-
-    loadSettings1();
-
-    function submitSet() {
-    $('#settings').form('submit', {
-        url: "SettingsAction.php?method=set1",
-        onSubmit: function () {
-// do some check
-// return false to prevent submit;
-        },
-        success: function (data) {
-            alert(data)
-        }
-    });
-
-}
+    loadSettingsFighting();
 </script>

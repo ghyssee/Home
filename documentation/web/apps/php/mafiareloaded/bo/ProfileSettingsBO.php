@@ -11,18 +11,29 @@ require_once documentPath (ROOT_PHP_BO, "CacheBO.php");
 require_once documentPath (ROOT_PHP_BO, "MyClasses.php");
 include_once documentPath (ROOT_PHP_MR_BO, "MafiaReloadedBO.php");
 
-class ConfigTO {
-    private $base = "fight";
+class BossSettingsTO  {
+    public $active = false;
+    public $stopWhenHealth = 0;
+    public $name = "";
+
     public function getBase(){
-        return $this->base;
+        return "boss";
+    }
+
+    public function __construct()
+    {
     }
 }
 
-class FightSettingsTO extends ConfigTO {
+class FightSettingsTO  {
     public $autoHeal = false;
     public $heal = 0;
     public $numberOfHealsLimit = 0;
     public $minLengthOfFightList = 0;
+
+    public function getBase(){
+        return "fight";
+    }
 
     public function __construct()
     {
@@ -31,19 +42,20 @@ class FightSettingsTO extends ConfigTO {
 
 class ProfileSettingsBO{
     public $mrObj;
-    public $fileCode = JSON_MR_MAFIARELOADED;
+    public $file;
 
     function __construct() {
-        $this->mrObj = readJSON(getMRFile($this->fileCode));
+        $fileCode = JSON_MR_MAFIARELOADED;
+        $this->file = getMRFile($fileCode);
+        $this->mrObj = readJSON($this->file);
     }
 
-    function getSettings1(){
-        $fightSettingsTO = new FightSettingsTO();
-        $tmpVar = get_object_vars($fightSettingsTO);
+    function getSettings1($settingsTO){
+        $tmpVar = get_object_vars($settingsTO);
         foreach($tmpVar as $key => $value) {
-           $fightSettingsTO->{$key} = $this->getSetting($fightSettingsTO, $key);
+            $settingsTO->{$key} = $this->getSetting($settingsTO, $key);
         }
-        return $fightSettingsTO;
+        return $settingsTO;
     }
 
     function getSetting($fightSettingsTO, $key){
@@ -70,13 +82,14 @@ class ProfileSettingsBO{
             }
 
         }
+        $this->save();
         $feedBack->success = true;
         $feedBack->message = 'Configuration saved successfully';
         return $feedBack;
     }
 
     function save(){
-        writeJSONWithCode($this->mrObj, $this->fileCode);
+        writeJSON($this->mrObj, $this->file);
     }
 
     function getProperties($obj)

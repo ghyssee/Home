@@ -12,6 +12,7 @@ include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 include_once documentPath (ROOT_PHP_HTML, "config.php");
 session_start();
 ?>
+<script type="text/javascript" src="<?php echo webPath(ROOT_JS_UTILS, 'MyUtils.js')?>"></script>
 
 <style type="text/css">
     #fm{
@@ -47,14 +48,16 @@ session_start();
 
 <?php
 goMenu();
-echo webPath(ROOT_THEMES, 'easyui/metro-blue/easyui.css');
 ?>
 
 <h3>Settings</h3>
 
-<div id="settingsTab" class="easyui-tabs" data-options="selected:0" style="width:1400px;height:700px;">
+<div id="settingsTab" class="easyui-tabs" data-options="selected:0" style="width:700px;height:400px;">
     <div title="Settings" style="padding:20px;display:none;">
            <?php include "SettingsTab1.php"; ?>
+    </div>
+    <div title="Boss" style="padding:20px;display:none;">
+        <?php include "SettingsBoss.php"; ?>
     </div>
     <div title="Daily Link" style="overflow:auto;padding:20px;display:none;" >
         <?php include "SettingsTab2.php"; ?>

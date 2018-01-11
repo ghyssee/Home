@@ -61,4 +61,17 @@ function openUrl(url) {
     win.focus();
 }
 
+function submitForm(formId, url) {
+    $('#' + formId).form('submit', {
+        url: url,
+        onSubmit: function () {
+// do some check
+// return false to prevent submit;
+        },
+        success: function (data) {
+            var obj = JSON.parse(data);
+            alert(obj.message);
+        }
+    });
+}
 

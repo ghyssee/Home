@@ -30,11 +30,17 @@ try {
         case "saveDailyLink":
             saveDailyLink();
             break;
-        case "getSettings1":
-            getSettings1();
+        case "getSettingsFighting":
+            getSettingsFighting();
             break;
-        case "set1":
-            saveSettings1();
+        case "saveSettingsFighting":
+            saveSettingsFighting();
+            break;
+        case "saveSettingsBoss":
+            saveSettingsBoss();
+            break;
+        case "getSettingsBoss":
+            getSettingsBoss();
             break;
     }
 }
@@ -75,7 +81,7 @@ function fillForm($to, $form){
     }
 }
 
-function saveSettings1(){
+function saveSettingsFighting(){
     $fightSettingsTO = new FightSettingsTO();
     fillForm($fightSettingsTO, $_POST);
 
@@ -84,12 +90,25 @@ function saveSettings1(){
     echo json_encode($feedBack);
 }
 
-function getSettings1(){
+function saveSettingsBoss(){
+    $bossSettingsTO = new BossSettingsTO();
+    fillForm($bossSettingsTO, $_POST);
+
     $settingsBO = new ProfileSettingsBO();
-    $fightSettingsTO = $settingsBO->getSettings1();
-    $SettingsBO = new SettingsBO();
-    $dailyLinkTO = $SettingsBO->getDailyLink();
-    echo json_encode($fightSettingsTO);
+    $feedBack = $settingsBO->saveSettings($bossSettingsTO);
+    echo json_encode($feedBack);
+}
+
+function getSettingsFighting(){
+    $settingsBO = new ProfileSettingsBO();
+    $settingsTO = $settingsBO->getSettings1(new FightSettingsTO());
+    echo json_encode($settingsTO);
+}
+
+function getSettingsBoss(){
+    $settingsBO = new ProfileSettingsBO();
+    $settingsTO = $settingsBO->getSettings1(new BossSettingsTO());
+    echo json_encode($settingsTO);
 }
 
 function getDailyLink()
@@ -102,7 +121,6 @@ function getDailyLink()
 function saveDailyLink(){
     $dailyLinkTO = new DailyLinkTO();
     fillForm($dailyLinkTO, $_POST);
-
     $settingsBO = new SettingsBO();
     $feedBack = $settingsBO->saveDailyLink($dailyLinkTO);
     echo json_encode($feedBack);
