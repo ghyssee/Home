@@ -42,6 +42,18 @@ try {
         case "getSettingsBoss":
             getSettingsBoss();
             break;
+        case "getSettingsJob":
+            getSettingsJob();
+            break;
+        case "saveSettingsJob":
+            saveSettingsJob();
+            break;
+        case "getSettingsHomefeed":
+            getSettingsHomefeed();
+            break;
+        case "saveSettingsHomefeed":
+            saveSettingsHomefeed();
+            break;
     }
 }
 catch(Error $e) {
@@ -81,6 +93,12 @@ function fillForm($to, $form){
     }
 }
 
+function getSettingsFighting(){
+    $settingsBO = new ProfileSettingsBO();
+    $settingsTO = $settingsBO->getSettings1(new FightSettingsTO());
+    echo json_encode($settingsTO);
+}
+
 function saveSettingsFighting(){
     $fightSettingsTO = new FightSettingsTO();
     fillForm($fightSettingsTO, $_POST);
@@ -88,6 +106,12 @@ function saveSettingsFighting(){
     $settingsBO = new ProfileSettingsBO();
     $feedBack = $settingsBO->saveSettings($fightSettingsTO);
     echo json_encode($feedBack);
+}
+
+function getSettingsBoss(){
+    $settingsBO = new ProfileSettingsBO();
+    $settingsTO = $settingsBO->getSettings1(new BossSettingsTO());
+    echo json_encode($settingsTO);
 }
 
 function saveSettingsBoss(){
@@ -99,16 +123,34 @@ function saveSettingsBoss(){
     echo json_encode($feedBack);
 }
 
-function getSettingsFighting(){
+function getSettingsJob(){
     $settingsBO = new ProfileSettingsBO();
-    $settingsTO = $settingsBO->getSettings1(new FightSettingsTO());
+    $settingsTO = $settingsBO->getSettings1(new JobSettingsTO());
     echo json_encode($settingsTO);
 }
 
-function getSettingsBoss(){
+function saveSettingsJob(){
+    $jobSettingsTO = new JobSettingsTO();
+    fillForm($jobSettingsTO, $_POST);
+
     $settingsBO = new ProfileSettingsBO();
-    $settingsTO = $settingsBO->getSettings1(new BossSettingsTO());
+    $feedBack = $settingsBO->saveSettings($jobSettingsTO);
+    echo json_encode($feedBack);
+}
+
+function getSettingsHomefeed(){
+    $settingsBO = new ProfileSettingsBO();
+    $settingsTO = $settingsBO->getSettings1(new HomefeedSettingsTO());
     echo json_encode($settingsTO);
+}
+
+function saveSettingsHomefeed(){
+    $homefeedSettingsTO = new HomefeedSettingsTO();
+    fillForm($homefeedSettingsTO, $_POST);
+
+    $settingsBO = new ProfileSettingsBO();
+    $feedBack = $settingsBO->saveSettings($homefeedSettingsTO);
+    echo json_encode($feedBack);
 }
 
 function getDailyLink()

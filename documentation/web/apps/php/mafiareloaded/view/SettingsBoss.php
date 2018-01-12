@@ -10,19 +10,19 @@ $FORM_ID = "settingsBoss";
 
 <form id="<?php echo $FORM_ID;?>" method="post">
     <div class="fitem">
-        <label>Boss</label>
+        <label>Bossfight</label>
         <input name="active"
                class="easyui-checkbox" type="checkbox" value="true"
         >
     </div>
-    <div class="fitem">
+    <div title="Stop fighting boss when boss health is below this value" class="fitem">
         <label>Stop When Health Below</label>
         <input name="stopWhenHealthBelow" id="stopWhenHealthBelow" class="easyui-numberspinner" style="width:150px;"
                data-options="min:0"
         >
     </div>
     <div class="fitem">
-        <label>Name</label>
+        <label>Boss Name</label>
         <input name="name" id="name" class="easyui-textbox" style="width:150px;"
         >
     </div>
@@ -34,7 +34,15 @@ $FORM_ID = "settingsBoss";
 </form>
 
 <script>
+    $('#<?php echo $FORM_ID;?>').form({
+        onLoadSuccess:function(data){
+        },
+        onLoadError:function(){
+            alert("Error Loading Form <?php echo $FORM_ID;?>");
+        }
+    });
     function loadSettingsBoss(){
+
         $('#<?php echo $FORM_ID;?>').form('load','SettingsAction.php?method=getSettingsBoss');
     }
     loadSettingsBoss();

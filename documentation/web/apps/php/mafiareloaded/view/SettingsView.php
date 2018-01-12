@@ -59,6 +59,12 @@ goMenu();
     <div title="Boss" style="padding:20px;display:none;">
         <?php include "SettingsBoss.php"; ?>
     </div>
+    <div title="Job Settings" style="padding:20px;display:none;">
+        <?php include "SettingsJob.php"; ?>
+    </div>
+    <div title="Homefeed Settings" style="padding:20px;display:none;">
+        <?php include "SettingsHomefeed.php"; ?>
+    </div>
     <div title="Daily Link" style="overflow:auto;padding:20px;display:none;" >
         <?php include "SettingsTab2.php"; ?>
     </div>

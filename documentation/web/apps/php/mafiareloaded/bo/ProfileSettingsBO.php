@@ -11,9 +11,38 @@ require_once documentPath (ROOT_PHP_BO, "CacheBO.php");
 require_once documentPath (ROOT_PHP_BO, "MyClasses.php");
 include_once documentPath (ROOT_PHP_MR_BO, "MafiaReloadedBO.php");
 
+class JobSettingsTO  {
+    public $money = false;
+    public $levelUpExp = 0;
+    public $levelUpMinEnergy = 0;
+
+    public function getBase(){
+        return "jobs";
+    }
+
+    public function __construct()
+    {
+    }
+}
+
+class HomefeedSettingsTO  {
+    public $processLines = false;
+    public $attack = false;
+    public $attackSize = 0;
+    public $checkMini = false;
+
+    public function getBase(){
+        return "homefeed";
+    }
+
+    public function __construct()
+    {
+    }
+}
+
 class BossSettingsTO  {
     public $active = false;
-    public $stopWhenHealth = 0;
+    public $stopWhenHealthBelow = 0;
     public $name = "";
 
     public function getBase(){
@@ -69,16 +98,16 @@ class ProfileSettingsBO{
         return $value;
     }
 
-    function saveSettings(FightSettingsTO $fightSettingsTO){
+    function saveSettings($settingsTO){
         $feedBack = new FeedBackTO();
-        $tmpVar = get_object_vars($fightSettingsTO);
+        $tmpVar = get_object_vars($settingsTO);
     //    $props = getProperties($fightSettingsTO);
         foreach($tmpVar as $key => $value) {
-            if ($fightSettingsTO->getBase() == null){
+            if ($settingsTO->getBase() == null){
                 $this->mrObj->{$key} = $value;
             }
             else {
-                $this->mrObj->{$fightSettingsTO->getBase()}->{$key} = $value;
+                $this->mrObj->{$settingsTO->getBase()}->{$key} = $value;
             }
 
         }
