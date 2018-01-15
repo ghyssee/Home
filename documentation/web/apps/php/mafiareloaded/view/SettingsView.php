@@ -52,24 +52,40 @@ goMenu();
 
 <h3>Settings</h3>
 
-<div id="settingsTab" class="easyui-tabs" data-options="selected:0" style="width:700px;height:400px;">
-    <div title="Settings" style="padding:20px;display:none;">
-           <?php include "SettingsTab1.php"; ?>
-    </div>
-    <div title="Boss" style="padding:20px;display:none;">
-        <?php include "SettingsBoss.php"; ?>
-    </div>
-    <div title="Job Settings" style="padding:20px;display:none;">
-        <?php include "SettingsJob.php"; ?>
-    </div>
-    <div title="Homefeed Settings" style="padding:20px;display:none;">
-        <?php include "SettingsHomefeed.php"; ?>
-    </div>
-    <div title="Daily Link" style="overflow:auto;padding:20px;display:none;" >
-        <?php include "SettingsTab2.php"; ?>
-    </div>
-</div>
+<div id="cc" class="easyui-layout" style="width:900px;height:400px;">
+    <div data-options="region:'north',title:'North Title',split:true" style="height:100px;padding:5px">
+        Profile: <input id="profile" class="easyui-combobox" name="profile"
+                        data-options="valueField:'id',
+                                                width:200,
+                                                limitToList: true,
+                                                textField:'name',
+                                                onChange: function(row){
+                                                    onProfileChange(row);
+                                                },
+                                                url:'ProfileAction.php?method=getProfiles'
+                                    ">
 
+    </div>
+    <div data-options="region:'center',title:'center title'" style="padding:5px;background:#eee;">
+
+        <div id="settingsTab" class="easyui-tabs" data-options="selected:0" style="width:100%;height:100%;">
+            <div title="Settings" style="padding:20px;display:none;">
+                   <?php include "SettingsTab1.php"; ?>
+            </div>
+            <div title="Boss" style="padding:20px;display:none;">
+                <?php include "SettingsBoss.php"; ?>
+            </div>
+            <div title="Job Settings" style="padding:20px;display:none;">
+                <?php include "SettingsJob.php"; ?>
+            </div>
+            <div title="Homefeed Settings" style="padding:20px;display:none;">
+                <?php include "SettingsHomefeed.php"; ?>
+            </div>
+            <div title="Daily Link" style="overflow:auto;padding:20px;display:none;" >
+                <?php include "SettingsTab2.php"; ?>
+            </div>
+        </div>
+    </div>
 <script src="<?php echo webPath(ROOT_JS_EASYUI, 'EasyUITabsMouseHover.js')?>"></script>
 
 </body>

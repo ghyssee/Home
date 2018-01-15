@@ -13,6 +13,10 @@ class SongBO
         $this->db = new MezzmoSQLiteDatabase(MEZZMOV2);
     }
 
+    function setDB($id){
+        $this->db = new MezzmoSQLiteDatabase($id);
+    }
+
 
     function loadArtistIdsFile() : array {
         $file = getFullPath(PATH_CONFIG) . '/ArtistIds.txt';

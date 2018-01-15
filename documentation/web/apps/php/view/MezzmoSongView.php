@@ -44,6 +44,7 @@ if (isset($_SESSION["SONG"])) {
 }
 else {
     $songBO = new SongBO();
+    $songBO->setDB(MEZZMO);
     try {
         $songObj = $songBO->lookupSong($id);
     }
