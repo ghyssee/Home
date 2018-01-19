@@ -16,7 +16,7 @@ const FORM_ID = "settings";
         >
     </div>
     <div class="fitem">
-        <label>AutoHeal</label>
+        <label for="autoHeal">AutoHeal</label>
         <input name="autoHeal"
                class="easyui-checkbox" type="checkbox" value="true"
         >
@@ -32,6 +32,12 @@ const FORM_ID = "settings";
          <input name="numberOfHealsLimit" id="numberOfHealsLimit" class="easyui-numberspinner" style="width:150px;"
                 data-options="min:0"
          >
+    </div>
+    <div class="fitem">
+        <label for="stopWhenStaminaBelow">Stop When Stamina Below</label>
+        <input name="stopWhenStaminaBelow" id="stopWhenStaminaBelow" class="easyui-numberspinner" style="width:150px;"
+               data-options="min:0"
+        >
     </div>
     <div id="dlg-buttonsScheduledJob">
         <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok"

@@ -59,6 +59,7 @@ class FightSettingsTO  {
     public $heal = 0;
     public $numberOfHealsLimit = 0;
     public $minLengthOfFightList = 0;
+    public $stopWhenStaminaBelow = 0;
 
     public function getBase(){
         return "fight";
