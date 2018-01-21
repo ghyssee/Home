@@ -10,10 +10,22 @@ include_once("../../setup.php");
 include_once documentPath (ROOT_PHP, "config.php");
 include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 include_once documentPath (ROOT_PHP_HTML, "config.php");
+include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
 session_start();
 ?>
 <script type="text/javascript" src="<?php echo webPath(ROOT_JS_UTILS, 'MyUtils.js')?>"></script>
+<script>
+function getProfile(){
+    var _value = '<?php echo DEFAULT_PROFILE?>';
+    try {
+    _value = $("#profile").combobox('getValue');
+    }
+    catch (err){
+    }
+    return _value;
+}
 
+</script>
 <style type="text/css">
     #fm{
         margin:0;
@@ -90,4 +102,3 @@ goMenu();
 
 </body>
 </html>
-

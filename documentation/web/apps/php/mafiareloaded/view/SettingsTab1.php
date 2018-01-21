@@ -41,14 +41,14 @@ const FORM_ID = "settings";
     </div>
     <div id="dlg-buttonsScheduledJob">
         <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok"
-           onclick="submitForm('<?php echo FORM_ID;?>', 'SettingsAction.php?method=saveSettingsFighting')" style="width:90px">Save</a>
+           onclick="submitForm('<?php echo FORM_ID;?>', 'SettingsAction.php?method=saveSettingsFighting&profile=' + getProfile())" style="width:90px">Save</a>
         <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="loadSettingsFighting();" style="width:90px">Undo</a>
     </div>
 </form>
 
 <script>
     function loadSettingsFighting(){
-        $('#<?php echo FORM_ID;?>').form('load','SettingsAction.php?method=getSettingsFighting');
+        $('#<?php echo FORM_ID;?>').form('load','SettingsAction.php?method=getSettingsFighting&profile=' + getProfile());
     }
     loadSettingsFighting();
 </script>

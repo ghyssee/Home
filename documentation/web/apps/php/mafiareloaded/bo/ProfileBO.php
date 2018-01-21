@@ -9,13 +9,15 @@ require_once documentPath (ROOT_PHP, "config.php");
 require_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 require_once documentPath (ROOT_PHP_BO, "CacheBO.php");
 
-class ProfileTO extends Castable
+const DEFAULT_PROFILE = "01";
+
+class ProfileTO extends Castable2
 {
     public $id;
     public $name;
 }
 
-class Castable
+class Castable2
 {
     public function __construct($object = null)
     {
@@ -51,6 +53,15 @@ class ProfileBO{
     }
 
     function getProfiles(){
+        return $this->profileObj->list;
+    }
+
+    function getProfilesAndSetDefault($id){
+        foreach($this->profileObj->list as $key => $value){
+            if ($value->id == $id){
+                $value->selected = true;
+            }
+        }
         return $this->profileObj->list;
     }
 

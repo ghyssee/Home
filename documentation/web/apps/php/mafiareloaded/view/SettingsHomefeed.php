@@ -5,6 +5,7 @@
  * Date: 12/12/2017
  * Time: 15:32
  */
+include_once documentPath (ROOT_PHP_MR_BO, "MafiaReloadedBO.php");
 $FORM_ID = "settingsHomeFeed";
 ?>
 
@@ -37,7 +38,7 @@ $FORM_ID = "settingsHomeFeed";
     </div>
     <div id="dlg-buttonsScheduledJob">
         <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok"
-           onclick="submitForm('<?php echo $FORM_ID;?>', 'SettingsAction.php?method=saveSettingsHomefeed')" style="width:90px">Save</a>
+           onclick="submitForm('<?php echo $FORM_ID;?>', 'SettingsAction.php?method=saveSettingsHomefeed&profile=' + getProfile())" style="width:90px">Save</a>
         <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="loadSettingsHomefeed();" style="width:90px">Undo</a>
     </div>
 </form>
@@ -52,7 +53,9 @@ $FORM_ID = "settingsHomeFeed";
     });
     function loadSettingsHomefeed(){
 
-        $('#<?php echo $FORM_ID;?>').form('load','SettingsAction.php?method=getSettingsHomefeed');
+        //alert(getProfile());
+        $('#<?php echo $FORM_ID;?>').form('load','SettingsAction.php?method=getSettingsHomefeed&profile=' + getProfile());
     }
     loadSettingsHomefeed();
+
 </script>

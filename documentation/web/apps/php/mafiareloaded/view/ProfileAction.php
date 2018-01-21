@@ -45,10 +45,10 @@ function customError($errno, $errstr) {
 
 function getProfiles(){
     $profileBO = new ProfileBO();
-    $list = $profileBO->getProfiles();
+    $list = $profileBO->getProfilesAndSetDefault("01");
     $sort = new CustomSort();
     $list = $sort->sortObjectArrayByField($list, "id");
 
-    array_unshift($list, $profileBO->getEmptyProfile());
+    //array_unshift($list, $profileBO->getEmptyProfile());
     echo json_encode($list);
 }

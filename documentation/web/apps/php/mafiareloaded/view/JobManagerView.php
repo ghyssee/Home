@@ -11,6 +11,7 @@ include_once documentPath (ROOT_PHP, "config.php");
 include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 include_once documentPath (ROOT_PHP_HTML, "config.php");
 include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
+include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
 ?>
 
 <html>
@@ -153,7 +154,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
                      onSelect: function(row){
                         onchangeType(row);
                       },
-                      url:'JobManagerAction.php?method=getJobTypes'
+                      url:'JobManagerAction.php?method=getJobTypes&profile=<?=getDefaultProfile() ?>'
                      ">
                     </div>
                     <div class="fitem">
@@ -167,7 +168,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
                      onSelect: function(row){
                         onDistrictChange(row);
                       },
-                     url:'JobManagerAction.php?method=getDistricts'
+                     url:'JobManagerAction.php?method=getDistricts&profile=<?=getDefaultProfile() ?>'
                      ">
                     </div>
                     <div class="fitem">
@@ -195,7 +196,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
                     formatter:function(row){
                         return row.id + ' ' + row.name;
                         },
-                     url:'JobManagerAction.php?method=getChapters'
+                     url:'JobManagerAction.php?method=getChapters&profile=<?=getDefaultProfile() ?>'
                      ">
                     </div>
                     <div class="fitem">
@@ -512,7 +513,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
 </html>
 
 <?php
-    function getProfile(){
-        return "01";
+    function getDefaultProfile(){
+        return DEFAULT_PROFILE;
     }
     ?>

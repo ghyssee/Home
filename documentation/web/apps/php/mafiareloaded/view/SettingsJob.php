@@ -30,7 +30,7 @@ $FORM_ID = "settingsJob";
     </div>
     <div id="dlg-buttonsScheduledJob">
         <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok"
-           onclick="submitForm('<?php echo $FORM_ID;?>', 'SettingsAction.php?method=saveSettingsJob')" style="width:90px">Save</a>
+           onclick="submitForm('<?php echo $FORM_ID;?>', 'SettingsAction.php?method=saveSettingsJob&profile=' + getProfile())" style="width:90px">Save</a>
         <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="loadSettingsJob();" style="width:90px">Undo</a>
     </div>
 </form>
@@ -45,7 +45,7 @@ $FORM_ID = "settingsJob";
     });
     function loadSettingsJob(){
 
-        $('#<?php echo $FORM_ID;?>').form('load','SettingsAction.php?method=getSettingsJob');
+        $('#<?php echo $FORM_ID;?>').form('load','SettingsAction.php?method=getSettingsJob&profile=' + getProfile());
     }
     loadSettingsJob();
 </script>
