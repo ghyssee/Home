@@ -25,6 +25,19 @@ class JobSettingsTO  {
     }
 }
 
+class globalSettingsTO {
+    public $stopWhenExpBelow = 0;
+    public $stopWhenStaminaBelow = 0;
+
+    public function getBase(){
+        return "global";
+    }
+
+    public function __construct()
+    {
+    }
+}
+
 class HomefeedSettingsTO  {
     public $processLines = false;
     public $attack = false;

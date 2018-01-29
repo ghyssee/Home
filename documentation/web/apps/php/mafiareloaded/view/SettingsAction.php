@@ -54,6 +54,12 @@ try {
         case "saveSettingsHomefeed":
             saveSettingsHomefeed();
             break;
+        case "getSettingsGlobal":
+            getSettingsGlobal();
+            break;
+        case "saveSettingsGlobal":
+            saveSettingsGlobal();
+            break;
     }
 }
 catch(Error $e) {
@@ -150,6 +156,21 @@ function saveSettingsHomefeed(){
 
     $settingsBO = new ProfileSettingsBO();
     $feedBack = $settingsBO->saveSettings($homefeedSettingsTO);
+    echo json_encode($feedBack);
+}
+
+function getSettingsGlobal(){
+    $settingsBO = new ProfileSettingsBO();
+    $settingsTO = $settingsBO->getSettings1(new GlobalSettingsTO());
+    echo json_encode($settingsTO);
+}
+
+function saveSettingsGlobal(){
+    $globalSettingsTO = new GlobalSettingsTO();
+    fillForm($globalSettingsTO, $_POST);
+
+    $settingsBO = new ProfileSettingsBO();
+    $feedBack = $settingsBO->saveSettings($globalSettingsTO);
     echo json_encode($feedBack);
 }
 

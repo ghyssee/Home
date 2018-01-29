@@ -93,6 +93,9 @@ goMenu();
             <div title="Homefeed Settings" style="padding:20px;display:none;">
                 <?php include "SettingsHomefeed.php"; ?>
             </div>
+            <div title="Global Settings" style="padding:20px;display:none;">
+                <?php include "SettingsGlobal.php"; ?>
+            </div>
             <div title="Daily Link" style="overflow:auto;padding:20px;display:none;" >
                 <?php include "SettingsTab2.php"; ?>
             </div>

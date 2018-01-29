@@ -41,22 +41,16 @@ class Castable
     }
 }
 
-
 class HomeFeedBO{
     public $homeFeedObj;
     public $file;
+    public $profile;
 
     function __construct($profile) {
         $fileCode = JSON_MR_HOMEFEED;
-        $this->file = getFullPath($fileCode);
-        if (!isset($profile) || $profile == ''){
-            $profile = '';
-        }
-        else {
-            $profile .= "\\";
-        }
-        $this->file = str_replace("%PROFILE%", $profile, $this->file);
+        $this->file = getProfileFile($fileCode, $profile);
         $this->homeFeedObj = readJSON($this->file);
+        $this->profile = $profile;
     }
 
     function getHomeFeed(){
@@ -67,4 +61,27 @@ class HomeFeedBO{
         }
         return $homeFeedLines;
     }
+
+    function cleanupHomefeed() {
+        $hisFile = getProfileFile(JSON_MR_HOMEFEED_HISTORY, $this->profile);
+        //$homeFeedHistoryObj = readJSON($hisFile);
+        foreach($this->homeFeedObj->kills as $key => $item){
+            $date = DateUtils::convertStringToDate($item->timeStamp);
+            //$homeFeedHistoryObj->kills[] = $item;
+            println($date->format('Y-m-d H:i:s'));
+        }
+    }
+
+}
+
+function getProfileFile($filecode, $profile){
+    $file = getFullPath($filecode);
+    if (!isset($profile) || $profile == ''){
+        $profile = '';
+    }
+    else {
+        $profile .= "\\";
+    }
+    $file = str_replace("%PROFILE%", $profile, $file);
+    return $file;
 }
