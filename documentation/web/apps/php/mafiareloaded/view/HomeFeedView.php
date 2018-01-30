@@ -31,7 +31,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
 
         <table id="dgHomeFeed" class="easyui-datagrid" style="width:50%;height:100%"
                title="List Of Homefeed Attackers"
-               idField="fighterId"
+               idField="id"
                url='HomeFeedAction.php?method=list'
                data-options='fitColumns:true,
                          singleSelect:true,
@@ -50,6 +50,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
 
             <thead>
             <tr>
+                <th data-options="field:'id', width:10, hidden:true">Id</th>
                 <th data-options="field:'fighterId', width:10, formatter: formatFighterId">Fighter Id</th>
                 <th data-options="field:'name',width:20">Name</th>
                 <th data-options="field:'gangId',width:5">GangId</th>
@@ -62,7 +63,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
 
         <span style="font-size:20px">
                 <div id="toolbarHomeFeed">
-                    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteRecord()">Delete Line</a>
+                    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteLine()">Delete Line</a>
                     Profile: <input id="profile" class="easyui-combobox" name="profile"
                                     data-options="valueField:'id',
                                                 width:200,
@@ -101,7 +102,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
         return false;
     }
 
-    function deleteRecord(){
+    function deleteRecord1(){
         var row = $('#dgHomeFeed').datagrid('getSelected');
         if (row){
             $.messager.confirm('Confirm','Are you sure you want to delete this line?',function(r){
@@ -109,7 +110,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
                     $.ajax({
                         type:    "POST",
                         url:     "HomeFeedAction.php?method=delete" + "&profile=" + getProfile(),
-                        data:    {id: 0},
+                        data:    {id: row.id},
                         success: function(data) {
                             var dataObj = JSON.parse(data);
                             if (!dataObj.success && dataObj.hasOwnProperty('errorMessage')){
@@ -127,6 +128,10 @@ include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
                 }
             });
         }
+    }
+
+    function deleteLine(){
+        deleteRecord("line", "dgHomeFeed",  "HomeFeedAction.php?method=delete" + "&profile=" + getProfile(), "id");
     }
 
 

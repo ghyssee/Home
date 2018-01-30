@@ -11,6 +11,7 @@ require_once documentPath (ROOT_PHP_BO, "CacheBO.php");
 require_once documentPath (ROOT_PHP_COMMON, "DateUtils.php");
 
 class HomeFeedTO extends Castable {
+    public $id;
     public $timeMsg;
     public $feedMsg;
     public $fighterId;
@@ -82,6 +83,29 @@ class HomeFeedBO{
         return $feedbackTO;
     }
 
+    function deleteHomefeedLine($id){
+        $feedbackTO = new FeedBackTO();
+        $key = array_search($id, array_column($this->homeFeedObj->kills, "id"));
+        if ($key === false) {
+            $feedbackTO->success = false;
+            $feedbackTO->errorMsg = 'There was a problem finding the line with ID ' . $id;
+            return $feedbackTO;
+
+        } else {
+            unset($this->homeFeedObj->kills[$key]);
+            $array = array_values($this->homeFeedObj->kills);
+            $this->homeFeedObj->kills = $array;
+            $this->save();
+            $feedbackTO->success = true;
+        }
+        return $feedbackTO;
+
+    }
+
+    function save(){
+        writeJSON($this->homeFeedObj, $this->file);
+    }
+
 }
 
 function getProfileFile($filecode, $profile){
@@ -95,23 +119,3 @@ function getProfileFile($filecode, $profile){
     $file = str_replace("%PROFILE%", $profile, $file);
     return $file;
 }
-
-function deleteDistrict($id){
-    $feedbackTO = new FeedBackTO();
-    $key = array_search($id, array_column($this->homeFeedObj->kills, "id"));
-    if ($key === false) {
-        $feedbackTO->success = false;
-        $feedbackTO->errorMsg = 'There was a problem finding the line with ID ' . $id;
-        return $feedbackTO;
-
-    } else {
-        unset($this->homeFeedObj->kills[$key]);
-        $array = array_values($this->homeFeedObj->kills);
-        $this->homeFeedObj->kills = $array;
-        //$this->save();
-        $feedbackTO->success = true;
-    }
-    return $feedbackTO;
-
-}
-

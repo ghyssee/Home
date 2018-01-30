@@ -86,14 +86,14 @@ function cleanupHomefeed(){
     echo json_encode($feedbackTO);
 }
 
-function delete()
+function deleteHomeFeedLine()
 {
     $feedBackTO = new FeedBackTO();
     $feedBackTO->success = false;
     if (isset($_REQUEST['id'])){
         $id = $_REQUEST['id'];
         $homefeedBO = new HomeFeedBO(getProfile());
-        $feedBackTO = $homefeedBO->delete($id);
+        $feedBackTO = $homefeedBO->deleteHomefeedLine($id);
     }
     else {
         $feedBackTO->errorMsg = "Id of Homefeed Line not filled in";
