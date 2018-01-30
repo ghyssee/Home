@@ -26,6 +26,12 @@ try {
         case "list":
             getListHomeFeed();
             break;
+        case "delete":
+            deleteHomeFeedLine();
+            break;
+        case "cleanup":
+            cleanupHomefeed();
+            break;
     }
 }
 catch(Error $e) {
@@ -70,4 +76,27 @@ function addMsg($msg, $msgToAdd){
 
 function addErrorMsg($msg){
     return array('errorMsg'=>$msg);
+}
+
+function cleanupHomefeed(){
+    $date = DateTime::createFromFormat('YmdHis', '20171122201621');
+    $date = $date->sub(new DateInterval("P31D"));
+    $homeFeedBO = new HomeFeedBO(getProfile());
+    $feedbackTO = $homeFeedBO->cleanupHomefeed();
+    echo json_encode($feedbackTO);
+}
+
+function delete()
+{
+    $feedBackTO = new FeedBackTO();
+    $feedBackTO->success = false;
+    if (isset($_REQUEST['id'])){
+        $id = $_REQUEST['id'];
+        $homefeedBO = new HomeFeedBO(getProfile());
+        $feedBackTO = $homefeedBO->delete($id);
+    }
+    else {
+        $feedBackTO->errorMsg = "Id of Homefeed Line not filled in";
+    }
+    echo json_encode($feedBackTO);
 }

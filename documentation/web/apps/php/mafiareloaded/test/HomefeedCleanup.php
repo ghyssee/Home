@@ -37,11 +37,36 @@ session_start();
 
 <?php
 $date = DateTime::createFromFormat('YmdHis', '20171122201621');
-print_r($date->format('Y-m-d H:i:s'));
+println($date->format('Y-m-d H:i:s'));
 $date = $date->sub(new DateInterval("P31D"));
-print_r($date->format('Y-m-d H:i:s'));
-$homefeedBO = new HomeFeedBO("01");
-$homefeedBO->cleanupHomefeed();
+println($date->format('Y-m-d H:i:s'));
+$currentDate = new DateTime();
+println($currentDate->format('Y-m-d H:i:s'));
+//$homefeedBO = new HomeFeedBO("01");
+//$homefeedBO->cleanupHomefeed();
+
+//$homefeedObj = init
+addIdToHomefeedForAllProfiles();
+
+function addIdToHomefeedForAllProfiles()
+{
+    $profileObj = readJSONWithCode(JSON_MR_PROFILE);
+    foreach ($profileObj->list as $key => $item) {
+        addIdToHomeFeed($item->id);
+    }
+}
+
+function addIdToHomeFeed($profile){
+    $file = getProfileFile(JSON_MR_HOMEFEED, $profile);
+    $homeFeedObj = readJSON($file);
+    foreach($homeFeedObj->kills as $key => $item){
+        $item->id = getUniqueId();
+    }
+    foreach($homeFeedObj->lines as $key => $item){
+        $item->id = getUniqueId();
+    }
+    writeJSON($homeFeedObj, $file . ".NEW");
+}
 
 ?>
 

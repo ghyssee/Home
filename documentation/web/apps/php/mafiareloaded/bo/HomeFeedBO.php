@@ -8,6 +8,7 @@
 require_once documentPath (ROOT_PHP, "config.php");
 require_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 require_once documentPath (ROOT_PHP_BO, "CacheBO.php");
+require_once documentPath (ROOT_PHP_COMMON, "DateUtils.php");
 
 class HomeFeedTO extends Castable {
     public $timeMsg;
@@ -65,11 +66,20 @@ class HomeFeedBO{
     function cleanupHomefeed() {
         $hisFile = getProfileFile(JSON_MR_HOMEFEED_HISTORY, $this->profile);
         //$homeFeedHistoryObj = readJSON($hisFile);
+        $cnt = 0;
+        $minDate = new DateTime();
+        $minDate->sub(new DateInterval("P31D"));
         foreach($this->homeFeedObj->kills as $key => $item){
             $date = DateUtils::convertStringToDate($item->timeStamp);
+            if ($date < $minDate){
+                $cnt++;
+            }
             //$homeFeedHistoryObj->kills[] = $item;
-            println($date->format('Y-m-d H:i:s'));
         }
+        $feedbackTO = new FeedBackTO();
+        $feedbackTO->success = true;
+        $feedbackTO->message = "Cleanup executed. " . $cnt . " lines were removed";
+        return $feedbackTO;
     }
 
 }
@@ -85,3 +95,23 @@ function getProfileFile($filecode, $profile){
     $file = str_replace("%PROFILE%", $profile, $file);
     return $file;
 }
+
+function deleteDistrict($id){
+    $feedbackTO = new FeedBackTO();
+    $key = array_search($id, array_column($this->homeFeedObj->kills, "id"));
+    if ($key === false) {
+        $feedbackTO->success = false;
+        $feedbackTO->errorMsg = 'There was a problem finding the line with ID ' . $id;
+        return $feedbackTO;
+
+    } else {
+        unset($this->homeFeedObj->kills[$key]);
+        $array = array_values($this->homeFeedObj->kills);
+        $this->homeFeedObj->kills = $array;
+        //$this->save();
+        $feedbackTO->success = true;
+    }
+    return $feedbackTO;
+
+}
+

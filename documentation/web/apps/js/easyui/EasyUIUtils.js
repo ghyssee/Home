@@ -75,3 +75,33 @@ function submitForm(formId, url) {
     });
 }
 
+function deleteRecord(name, dg, url, idField){
+    dg = '#' + dg;
+    var row = $(dg).datagrid('getSelected');
+    if (row){
+        $.messager.confirm('Confirm','Are you sure you want to delete this ' + name + '?',function(r){
+            if (r){
+                $.ajax({
+                    type:    "POST",
+                    url:     url,
+                    data:    {id: row[idField]},
+                    success: function(data) {
+                        var dataObj = JSON.parse(data);
+                        if (!dataObj.success && dataObj.hasOwnProperty('errorMessage')){
+                            alert(dataObj.errorMessage);
+                        }
+                        $(dg).datagrid('reload');
+                    },
+                    // vvv---- This is the new bit
+                    error:   function(jqXHR, textStatus, errorThrown) {
+                        alert("Error, status = " + textStatus + ", " +
+                            "error thrown: " + errorThrown
+                        );
+                    }
+                });
+            }
+        });
+    }
+}
+
+
