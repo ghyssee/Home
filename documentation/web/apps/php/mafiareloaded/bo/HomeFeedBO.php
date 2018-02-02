@@ -64,18 +64,44 @@ class HomeFeedBO{
         return $homeFeedLines;
     }
 
-    function cleanupHomefeed() {
+    function cleanupHomefeed($nrOfDays) {
+        //$nrOfDays =
         $hisFile = getProfileFile(JSON_MR_HOMEFEED_HISTORY, $this->profile);
+        $hisObj = readJSON($hisFile);
         //$homeFeedHistoryObj = readJSON($hisFile);
         $cnt = 0;
         $minDate = new DateTime();
-        $minDate->sub(new DateInterval("P31D"));
+        $minDate->sub(new DateInterval("P" . $nrOfDays . "D"));
+        $save = false;
+        $newListKills = Array();
         foreach($this->homeFeedObj->kills as $key => $item){
             $date = DateUtils::convertStringToDate($item->timeStamp);
             if ($date < $minDate){
                 $cnt++;
+                $hisObj->kills[] = $item;
+                $save = true;
             }
-            //$homeFeedHistoryObj->kills[] = $item;
+            else {
+                $newListKills[] = $item;
+            }
+        }
+        $this->homeFeedObj->kills = $newListKills;
+        $newListLines = Array();
+        foreach($this->homeFeedObj->lines as $key => $item){
+            $date = DateUtils::convertStringToDate($item->timeStamp);
+            if ($date < $minDate){
+                $cnt++;
+                $hisObj->lines[] = $item;
+                $save = true;
+            }
+            else {
+                $newListLines[] = $item;
+            }
+        }
+        $this->homeFeedObj->lines = $newListLines;
+        if ($save){
+            writeJSON($hisObj, $hisFile);
+            $this->save();
         }
         $feedbackTO = new FeedBackTO();
         $feedbackTO->success = true;

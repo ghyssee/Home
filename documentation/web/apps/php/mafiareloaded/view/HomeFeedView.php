@@ -85,16 +85,21 @@ include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
             <div class="fitem">
                 <label title="The number of days to keep. The older lines will be moved to the history table." for="daysToKeep" style="width:120px;">Number of days to keep</label>
                 <input name="daysToKeep" id="daysToKeep" class="easyui-numberspinner" style="width:80px;"
-                       data-options="min:1"
+                       data-options="min:7, required:true"
                 >
                 <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok"
-                   onclick="submitForm('homefeed', 'HomeFeedAction.php?method=cleanup&profile=' + getProfile())" style="width:90px">Cleanup</a>
+                   onclick="cleanUp()" style="width:90px">Cleanup</a>
             </div>
         </form>
 </div>
 
 
 <script type="text/javascript">
+
+    function cleanUp(){
+        submitForm('homefeed', 'HomeFeedAction.php?method=cleanup&profile=' + getProfile());
+        refreshDatagrid();
+    }
 
     function refreshDatagrid(){
         var obj = {profile:getProfile()};

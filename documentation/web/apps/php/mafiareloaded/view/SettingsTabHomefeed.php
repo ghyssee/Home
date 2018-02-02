@@ -51,10 +51,15 @@ $FORM_ID = "settingsHomeFeed";
             alert("Error Loading Form <?php echo $FORM_ID;?>");
         }
     });
-    function loadSettingsHomefeed(){
+    function loadSettingsHomefeed(profile){
 
-        //alert(getProfile());
-        $('#<?php echo $FORM_ID;?>').form('load','SettingsAction.php?method=getSettingsHomefeed&profile=' + getProfile());
+        if (profile){
+            // do nothing
+        }
+        else {
+            profile = getProfile();
+        }
+        $('#<?php echo $FORM_ID;?>').form('load','SettingsAction.php?method=getSettingsHomefeed&profile=' + profile);
     }
     loadSettingsHomefeed();
 

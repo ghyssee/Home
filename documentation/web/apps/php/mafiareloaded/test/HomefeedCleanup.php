@@ -47,6 +47,7 @@ println($currentDate->format('Y-m-d H:i:s'));
 
 //$homefeedObj = init
 addIdToHomefeedForAllProfiles();
+println("HomeFeed Ids added");
 
 function addIdToHomefeedForAllProfiles()
 {

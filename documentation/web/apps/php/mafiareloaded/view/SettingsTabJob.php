@@ -43,9 +43,14 @@ $FORM_ID = "settingsJob";
             alert("Error Loading Form <?php echo $FORM_ID;?>");
         }
     });
-    function loadSettingsJob(){
-
-        $('#<?php echo $FORM_ID;?>').form('load','SettingsAction.php?method=getSettingsJob&profile=' + getProfile());
+    function loadSettingsJob(profile){
+        if (profile){
+            // do nothing
+        }
+        else {
+            profile = getProfile();
+        }
+        $('#<?php echo $FORM_ID;?>').form('load','SettingsAction.php?method=getSettingsJob&profile=' + profile);
     }
     loadSettingsJob();
 </script>

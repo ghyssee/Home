@@ -41,9 +41,14 @@ $FORM_ID = "settingsBoss";
             alert("Error Loading Form <?php echo $FORM_ID;?>");
         }
     });
-    function loadSettingsBoss(){
-
-        $('#<?php echo $FORM_ID;?>').form('load','SettingsAction.php?method=getSettingsBoss&profile=' + getProfile());
+    function loadSettingsBoss(profile){
+        if (profile){
+            // do nothing
+        }
+        else {
+            profile = getProfile();
+        }
+        $('#<?php echo $FORM_ID;?>').form('load','SettingsAction.php?method=getSettingsBoss&profile=' + profile);
     }
     loadSettingsBoss();
 </script>

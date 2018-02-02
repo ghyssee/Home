@@ -24,7 +24,7 @@ $FORM_ID = "settingsGlobal";
     <div id="dlg-buttonsScheduledJob">
         <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok"
            onclick="submitForm('<?php echo $FORM_ID;?>', 'SettingsAction.php?method=saveSettingsGlobal&profile=' + getProfile())" style="width:90px">Save</a>
-        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="loadSettingsGlobal();" style="width:90px">Undo</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="loadSettingsProfileGlobal();" style="width:90px">Undo</a>
     </div>
 </form>
 
@@ -36,9 +36,15 @@ $FORM_ID = "settingsGlobal";
             alert("Error Loading Form <?php echo $FORM_ID;?>");
         }
     });
-    function loadSettingsGlobal(){
+    function loadSettingsProfileGlobal(profile){
 
-        $('#<?php echo $FORM_ID;?>').form('load','SettingsAction.php?method=getSettingsGlobal&profile=' + getProfile());
+        if (profile){
+            // do nothing
+        }
+        else {
+            profile = getProfile();
+        }
+        $('#<?php echo $FORM_ID;?>').form('load','SettingsAction.php?method=getSettingsGlobal&profile=' + profile);
     }
-    loadSettingsGlobal();
+    loadSettingsProfileGlobal();
 </script>

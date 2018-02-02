@@ -47,8 +47,14 @@ const FORM_ID = "settings";
 </form>
 
 <script>
-    function loadSettingsFighting(){
-        $('#<?php echo FORM_ID;?>').form('load','SettingsAction.php?method=getSettingsFighting&profile=' + getProfile());
+    function loadSettingsFighting(profile){
+        if (profile){
+            // do nothing
+        }
+        else {
+            profile = getProfile();
+        }
+        $('#<?php echo FORM_ID;?>').form('load','SettingsAction.php?method=getSettingsFighting&profile=' + profile);
     }
     loadSettingsFighting();
 </script>

@@ -41,11 +41,15 @@ catch(Error $e) {
 catch(ApplicationException $e) {
 //    echo $e->getMessage();
     logError($e->getFile(), $e->getLine(), $e->getMessage());
-    echo 'Caught exception: ',  $e->getMessage(), "\n";
+    $feedBackTO = new FeedBackTO();
+    $feedBackTO->success = false;
+    $feedBackTO->message = 'Caught exception: ' . $e->getMessage();
+    echo json_encode($feedBackTO);
 }
 exit(0);
 
 function customError($errno, $errstr) {
+
     echo "<b>Error:</b> [$errno] $errstr<br>";
     echo "Ending Script";
     die();
@@ -79,10 +83,9 @@ function addErrorMsg($msg){
 }
 
 function cleanupHomefeed(){
-    $date = DateTime::createFromFormat('YmdHis', '20171122201621');
-    $date = $date->sub(new DateInterval("P31D"));
+    assignNumber($daysToKeep, "daysToKeep");
     $homeFeedBO = new HomeFeedBO(getProfile());
-    $feedbackTO = $homeFeedBO->cleanupHomefeed();
+    $feedbackTO = $homeFeedBO->cleanupHomefeed($daysToKeep);
     echo json_encode($feedbackTO);
 }
 

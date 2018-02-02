@@ -14,11 +14,14 @@ include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
 session_start();
 ?>
 <script type="text/javascript" src="<?php echo webPath(ROOT_JS_UTILS, 'MyUtils.js')?>"></script>
+<script type="text/javascript" src="<?php echo webPath(ROOT_JS_UTILS, 'MafiaReloaded.js')?>"></script>
 <script>
+var INITIAL_LOAD = true;
+
 function getProfile(){
     var _value = '<?php echo DEFAULT_PROFILE?>';
     try {
-    _value = $("#profile").combobox('getValue');
+        _value = $("#profile").combobox('getValue');
     }
     catch (err){
     }
@@ -72,7 +75,7 @@ goMenu();
                                                 limitToList: true,
                                                 textField:'name',
                                                 onChange: function(row){
-                                                    onProfileChange(row);
+                                                    onProfileChangeForm(row);
                                                 },
                                                 url:'ProfileAction.php?method=getProfiles'
                                     ">
@@ -81,27 +84,41 @@ goMenu();
     <div data-options="region:'center',title:'center title'" style="padding:5px;background:#eee;">
 
         <div id="settingsTab" class="easyui-tabs" data-options="selected:0" style="width:100%;height:100%;">
-            <div title="Settings" style="padding:20px;display:none;">
-                   <?php include "SettingsTab1.php"; ?>
+            <div title="Fighting" style="padding:20px;display:none;">
+                   <?php include "SettingsTabFighting.php"; ?>
             </div>
             <div title="Boss" style="padding:20px;display:none;">
-                <?php include "SettingsBoss.php"; ?>
+                <?php include "SettingsTabBoss.php"; ?>
             </div>
             <div title="Job Settings" style="padding:20px;display:none;">
-                <?php include "SettingsJob.php"; ?>
+                <?php include "SettingsTabJob.php"; ?>
             </div>
             <div title="Homefeed Settings" style="padding:20px;display:none;">
-                <?php include "SettingsHomefeed.php"; ?>
+                <?php include "SettingsTabHomefeed.php"; ?>
             </div>
-            <div title="Global Settings" style="padding:20px;display:none;">
-                <?php include "SettingsGlobal.php"; ?>
+            <div title="Profile Settings" style="padding:20px;display:none;">
+                <?php include "SettingsTabProfileGlobal.php"; ?>
             </div>
             <div title="Daily Link" style="overflow:auto;padding:20px;display:none;" >
-                <?php include "SettingsTab2.php"; ?>
+                <?php include "SettingsTabGlobalDaily.php"; ?>
             </div>
         </div>
     </div>
 <script src="<?php echo webPath(ROOT_JS_EASYUI, 'EasyUITabsMouseHover.js')?>"></script>
+<script>
+    function onProfileChangeForm(row){
+        if (INITIAL_LOAD){
+            INITIAL_LOAD = false;
+        }
+        else {
+            loadSettingsFighting(row);
+            loadSettingsBoss(row);
+            loadSettingsJob(row);
+            loadSettingsHomefeed(row);
+            loadSettingsProfileGlobal(row);
+        }
+    }
+</script>
 
 </body>
 </html>
