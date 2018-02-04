@@ -79,10 +79,6 @@ function customError($errno, $errstr) {
     die();
 }
 
-function fillFightSettings(){
-
-}
-
 function fillForm($to, $form){
     $tmpVar = get_object_vars($to);
     foreach($tmpVar as $key => $value) {

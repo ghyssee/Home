@@ -50,7 +50,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
 
             <thead>
             <tr>
-                <th data-options="field:'id', width:10, hidden:true">Id</th>
+                <th data-options="field:'id', width:10">Id</th>
                 <th data-options="field:'fighterId', width:10, formatter: formatFighterId">Fighter Id</th>
                 <th data-options="field:'name',width:20">Name</th>
                 <th data-options="field:'gangId',width:5">GangId</th>

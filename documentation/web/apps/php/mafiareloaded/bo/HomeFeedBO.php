@@ -115,8 +115,6 @@ class HomeFeedBO{
         if ($key === false) {
             $feedbackTO->success = false;
             $feedbackTO->errorMsg = 'There was a problem finding the line with ID ' . $id;
-            return $feedbackTO;
-
         } else {
             unset($this->homeFeedObj->kills[$key]);
             $array = array_values($this->homeFeedObj->kills);
@@ -125,7 +123,6 @@ class HomeFeedBO{
             $feedbackTO->success = true;
         }
         return $feedbackTO;
-
     }
 
     function save(){

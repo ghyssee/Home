@@ -164,6 +164,7 @@ public class UltratopM3UMaker extends BatchJobV2 {
         song = prettifyM3uSong(song);
         song = song.toUpperCase();
         song = song.replace("CATCH & RELEASE (DEEPEND REMIX)", "CATCH & RELEASE");
+        song = song.replace("FINESSE (REMIX)", "FINESSE");
         return song;
     }
 
