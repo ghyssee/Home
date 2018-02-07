@@ -40,10 +40,10 @@ include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
                         toolbar:"#toolbarHomeFeed",
                         pagination:true,
                        pagePosition:"both",
-                       pageSize:20,
+                       pageSize:10,
                        pageList:[5,10,15,20,25,30,40,50],
                         nowrap:false,
-                        queryParams:{profile:getProfile()},
+                        queryParams:{profile:getProfile(),history:true},
                         rownumbers:true,
                         singleSelect:true'
         >
@@ -75,7 +75,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
                                                 url:'ProfileAction.php?method=getProfiles'
                                     ">
                     <button type="button" onclick="refreshDatagrid()">Refresh</button>
-
+                     <label>History </label><input id="history" class="easyui-switchbutton">
                 </div>
 	        </span>
 
@@ -85,7 +85,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
             <div class="fitem">
                 <label title="The number of days to keep. The older lines will be moved to the history table." for="daysToKeep" style="width:120px;">Number of days to keep</label>
                 <input name="daysToKeep" id="daysToKeep" class="easyui-numberspinner" style="width:80px;"
-                       data-options="min:7, required:true"
+                       data-options="min:7, required:true, value:30"
                 >
                 <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok"
                    onclick="cleanUp()" style="width:90px">Cleanup</a>
@@ -95,6 +95,14 @@ include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
 
 
 <script type="text/javascript">
+        $(function(){
+            $('#history').switchbutton({
+                checked: false,
+                onChange: function(checked){
+                    refreshDatagrid();
+                }
+            })
+        });
 
     function cleanUp(){
         submitForm('homefeed', 'HomeFeedAction.php?method=cleanup&profile=' + getProfile());
@@ -102,41 +110,13 @@ include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
     }
 
     function refreshDatagrid(){
-        var obj = {profile:getProfile()};
+        var obj = {profile:getProfile(),history:getSwitchValue("history")};
         $('#dgHomeFeed').datagrid('reload', obj);
         return false;
     }
 
-    function deleteRecord1(){
-        var row = $('#dgHomeFeed').datagrid('getSelected');
-        if (row){
-            $.messager.confirm('Confirm','Are you sure you want to delete this line?',function(r){
-                if (r){
-                    $.ajax({
-                        type:    "POST",
-                        url:     "HomeFeedAction.php?method=delete" + "&profile=" + getProfile(),
-                        data:    {id: row.id},
-                        success: function(data) {
-                            var dataObj = JSON.parse(data);
-                            if (!dataObj.success && dataObj.hasOwnProperty('errorMessage')){
-                                alert(dataObj.errorMessage);
-                            }
-                            $('#dgHomeFeed').datagrid('reload');
-                        },
-                        // vvv---- This is the new bit
-                        error:   function(jqXHR, textStatus, errorThrown) {
-                            alert("Error, status = " + textStatus + ", " +
-                                "error thrown: " + errorThrown
-                            );
-                        }
-                    });
-                }
-            });
-        }
-    }
-
     function deleteLine(){
-        deleteRecord("line", "dgHomeFeed",  "HomeFeedAction.php?method=delete" + "&profile=" + getProfile(), "id");
+        deleteRecord("line", "dgHomeFeed",  "HomeFeedAction.php?method=delete" + "&profile=" + getProfile() + "&history=" + getSwitchValue("history"), "id");
     }
 
 
@@ -164,9 +144,8 @@ include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
 
     function onProfileChange(){
         var profileId = getProfile();
+        refreshDatagrid();
         var _value = $("#profile").combobox('getText');
-        var obj = {profile:profileId};
-        $('#dgHomeFeed').datagrid('reload', obj);
         $('#cc').layout('panel', 'center').panel('setTitle', 'Profile: ' + profileId + " " + _value);
     }
 

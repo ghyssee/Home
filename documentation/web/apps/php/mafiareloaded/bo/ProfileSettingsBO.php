@@ -25,6 +25,21 @@ class JobSettingsTO  {
     }
 }
 
+class CrimeSettingsTO  {
+    public $enabled = false;
+    public $startNewCrime = false;
+    public $help = false;
+    public $position = 0;
+
+    public function getBase(){
+        return "crimeEvent";
+    }
+
+    public function __construct()
+    {
+    }
+}
+
 class globalSettingsTO {
     public $stopWhenExpBelow = 0;
     public $stopWhenStaminaBelow = 0;

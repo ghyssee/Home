@@ -104,4 +104,10 @@ function deleteRecord(name, dg, url, idField){
     }
 }
 
+function getSwitchValue(id){
+    id = '#' + id;
+    var checked = $(id).switchbutton('options').checked;
+    return checked;
+}
+
 

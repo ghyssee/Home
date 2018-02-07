@@ -47,10 +47,16 @@ class HomeFeedBO{
     public $homeFeedObj;
     public $file;
     public $profile;
+    public $history = false;
 
-    function __construct($profile) {
-        $fileCode = JSON_MR_HOMEFEED;
-        $this->file = getProfileFile($fileCode, $profile);
+    function __construct($profile, $history) {
+        $this->history = $history;
+        if ($history) {
+            $this->file = getProfileFile(JSON_MR_HOMEFEED_HISTORY, $profile);
+        }
+        else {
+            $this->file = getProfileFile(JSON_MR_HOMEFEED, $profile);
+        }
         $this->homeFeedObj = readJSON($this->file);
         $this->profile = $profile;
     }
@@ -65,10 +71,8 @@ class HomeFeedBO{
     }
 
     function cleanupHomefeed($nrOfDays) {
-        //$nrOfDays =
         $hisFile = getProfileFile(JSON_MR_HOMEFEED_HISTORY, $this->profile);
         $hisObj = readJSON($hisFile);
-        //$homeFeedHistoryObj = readJSON($hisFile);
         $cnt = 0;
         $minDate = new DateTime();
         $minDate->sub(new DateInterval("P" . $nrOfDays . "D"));

@@ -60,6 +60,12 @@ try {
         case "saveSettingsGlobal":
             saveSettingsGlobal();
             break;
+        case "saveSettingsCrime":
+            saveSettingsCrime();
+            break;
+        case "getSettingsCrime":
+            getSettingsCrime();
+            break;
     }
 }
 catch(Error $e) {
@@ -167,6 +173,21 @@ function saveSettingsGlobal(){
 
     $settingsBO = new ProfileSettingsBO();
     $feedBack = $settingsBO->saveSettings($globalSettingsTO);
+    echo json_encode($feedBack);
+}
+
+function getSettingsCrime(){
+    $settingsBO = new ProfileSettingsBO();
+    $settingsTO = $settingsBO->getSettings1(new CrimeSettingsTO());
+    echo json_encode($settingsTO);
+}
+
+function saveSettingsCrime(){
+    $crimeSettingsTO = new CrimeSettingsTO();
+    fillForm($crimeSettingsTO, $_POST);
+
+    $settingsBO = new ProfileSettingsBO();
+    $feedBack = $settingsBO->saveSettings($crimeSettingsTO);
     echo json_encode($feedBack);
 }
 

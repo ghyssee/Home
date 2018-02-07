@@ -93,6 +93,9 @@ goMenu();
             <div title="Job Settings" style="padding:20px;display:none;">
                 <?php include "SettingsTabJob.php"; ?>
             </div>
+            <div title="Crime Job Settings" style="padding:20px;display:none;">
+                <?php include "SettingsTabCrime.php"; ?>
+            </div>
             <div title="Homefeed Settings" style="padding:20px;display:none;">
                 <?php include "SettingsTabHomefeed.php"; ?>
             </div>

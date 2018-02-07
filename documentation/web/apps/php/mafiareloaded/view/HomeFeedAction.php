@@ -55,10 +55,16 @@ function customError($errno, $errstr) {
     die();
 }
 
+function getBooleanRequestParameter($id){
+    $value = isset($_REQUEST[$id]) ? ($_REQUEST[$id] === 'true') : false;
+    return $value;
+}
+
 function getListHomeFeed(){
     $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
     $rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
-    $homeFeedBO = new HomeFeedBO(getProfile());
+    $history = getBooleanRequestParameter("history");
+    $homeFeedBO = new HomeFeedBO(getProfile(), $history);
     $list = $homeFeedBO->getHomeFeed();
     $sort = new CustomSort();
     $list = $sort->sortObjectArrayByField($list, "timeStamp", "desc");
@@ -84,18 +90,19 @@ function addErrorMsg($msg){
 
 function cleanupHomefeed(){
     assignNumber($daysToKeep, "daysToKeep");
-    $homeFeedBO = new HomeFeedBO(getProfile());
+    $homeFeedBO = new HomeFeedBO(getProfile(), false);
     $feedbackTO = $homeFeedBO->cleanupHomefeed($daysToKeep);
     echo json_encode($feedbackTO);
 }
 
 function deleteHomeFeedLine()
 {
+    $history = getBooleanRequestParameter("history");
     $feedBackTO = new FeedBackTO();
     $feedBackTO->success = false;
     if (isset($_REQUEST['id'])){
         $id = $_REQUEST['id'];
-        $homefeedBO = new HomeFeedBO(getProfile());
+        $homefeedBO = new HomeFeedBO(getProfile(), $history);
         $feedBackTO = $homefeedBO->deleteHomefeedLine($id);
     }
     else {
