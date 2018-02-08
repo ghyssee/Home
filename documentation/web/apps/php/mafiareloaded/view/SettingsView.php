@@ -119,6 +119,7 @@ goMenu();
             loadSettingsJob(row);
             loadSettingsHomefeed(row);
             loadSettingsProfileGlobal(row);
+            loadSettingsCrime(row);
         }
     }
 </script>
