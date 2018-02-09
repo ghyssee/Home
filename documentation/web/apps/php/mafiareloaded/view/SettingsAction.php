@@ -66,6 +66,12 @@ try {
         case "getSettingsCrime":
             getSettingsCrime();
             break;
+        case "getGlobalSettings":
+            getGlobalSettings();
+            break;
+        case "saveGlobalSettings":
+            saveGlobalSettings();
+            break;
     }
 }
 catch(Error $e) {
@@ -163,12 +169,12 @@ function saveSettingsHomefeed(){
 
 function getSettingsGlobal(){
     $settingsBO = new ProfileSettingsBO();
-    $settingsTO = $settingsBO->getSettings1(new GlobalSettingsTO());
+    $settingsTO = $settingsBO->getSettings1(new globalProfileSettingsTO());
     echo json_encode($settingsTO);
 }
 
 function saveSettingsGlobal(){
-    $globalSettingsTO = new GlobalSettingsTO();
+    $globalSettingsTO = new globalProfileSettingsTO();
     fillForm($globalSettingsTO, $_POST);
 
     $settingsBO = new ProfileSettingsBO();
@@ -206,3 +212,18 @@ function saveDailyLink(){
     echo json_encode($feedBack);
 }
 
+
+function getGlobalSettings()
+{
+    $SettingsBO = new SettingsBO();
+    $globalTO = $SettingsBO->getGlobalSettings();
+    echo json_encode($globalTO);
+}
+
+function saveGlobalSettings(){
+    $globalTO = new GlobalSettingsTO();
+    fillForm($globalTO, $_POST);
+    $settingsBO = new SettingsBO();
+    $feedBack = $settingsBO->saveGlobalSettings($globalTO);
+    echo json_encode($feedBack);
+}

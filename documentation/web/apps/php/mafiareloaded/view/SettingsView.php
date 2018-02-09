@@ -67,8 +67,8 @@ goMenu();
 
 <h3>Settings</h3>
 
-<div id="cc" class="easyui-layout" style="width:900px;height:400px;">
-    <div data-options="region:'north',title:'North Title',split:true" style="height:100px;padding:5px">
+<div id="cc" class="easyui-layout" style="width:900px;height:500px;">
+    <div data-options="region:'north',title:'Profile',split:true" style="height:100px;padding:5px">
         Profile: <input id="profile" class="easyui-combobox" name="profile"
                         data-options="valueField:'id',
                                                 width:200,
@@ -81,7 +81,7 @@ goMenu();
                                     ">
 
     </div>
-    <div data-options="region:'center',title:'center title'" style="padding:5px;background:#eee;">
+    <div data-options="region:'center',title:'Settings'" style="padding:5px;background:#eee;">
 
         <div id="settingsTab" class="easyui-tabs" data-options="selected:0" style="width:100%;height:100%;">
             <div title="Fighting" style="padding:20px;display:none;">
@@ -102,7 +102,7 @@ goMenu();
             <div title="Profile Settings" style="padding:20px;display:none;">
                 <?php include "SettingsTabProfileGlobal.php"; ?>
             </div>
-            <div title="Daily Link" style="overflow:auto;padding:20px;display:none;" >
+            <div title="Global Settings" style="overflow:auto;padding:20px;display:none;" >
                 <?php include "SettingsTabGlobalDaily.php"; ?>
             </div>
         </div>

@@ -40,7 +40,7 @@ class CrimeSettingsTO  {
     }
 }
 
-class globalSettingsTO {
+class globalProfileSettingsTO {
     public $stopWhenExpBelow = 0;
     public $stopWhenStaminaBelow = 0;
 

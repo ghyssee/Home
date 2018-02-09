@@ -16,7 +16,8 @@
         return date;
     };
 </script>
-
+<fieldset>
+    <legend>Daily Link</legend>
 <form id="globalSettingsDaily" method="post">
     <div class="fitem">
         <label for="date">Date</label>
@@ -34,6 +35,23 @@
         <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="loadGlobalSettingsDaily();" style="width:90px">Undo</a>
     </div>
 </form>
+    </fieldset>
+<fieldset>
+    <legend>Global</legend>
+<form id="globalSettings" method="post">
+    <div title="Secret District is on/off" class="fitem">
+        <label>Event</label>
+        <input name="eventEnabled"
+               class="easyui-checkbox" type="checkbox" value="true"
+        >
+    </div>
+    <div>
+        <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok"
+           onclick="submitForm('globalSettings', 'SettingsAction.php?method=saveGlobalSettings')" style="width:90px">Save</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="loadGlobalSettings();" style="width:90px">Undo</a>
+    </div>
+</form>
+</fieldset>
 
 <script>
     function loadGlobalSettingsDaily(){
@@ -41,5 +59,11 @@
     }
 
     loadGlobalSettingsDaily();
+
+    function loadGlobalSettings(){
+        $('#globalSettings').form('load','SettingsAction.php?method=getGlobalSettings');
+    }
+    loadGlobalSettings();
+
 
 </script>
