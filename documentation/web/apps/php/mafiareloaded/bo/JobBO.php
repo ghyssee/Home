@@ -19,6 +19,8 @@ class ActiveJobTO extends Castable {
     public $numberOfTimesExecuted;
     public $description;
     public $enabled;
+    public $minRange = 0;
+    public $maxRange = 0;
 }
 
 class JobTO {

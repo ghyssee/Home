@@ -36,18 +36,8 @@ session_start();
 <h3>Cleanup Homefeed</h3>
 
 <?php
-$date = DateTime::createFromFormat('YmdHis', '20171122201621');
-println($date->format('Y-m-d H:i:s'));
-$date = $date->sub(new DateInterval("P31D"));
-println($date->format('Y-m-d H:i:s'));
-$currentDate = new DateTime();
-println($currentDate->format('Y-m-d H:i:s'));
-//$homefeedBO = new HomeFeedBO("01");
-//$homefeedBO->cleanupHomefeed();
-
-//$homefeedObj = init
-addIdToHomefeedForAllProfiles();
-println("HomeFeed Ids added");
+addPropertiesToJobsForAllProfiles();
+println("addPropertiesToJobsForAllProfiles executed");
 
 function addIdToHomefeedForAllProfiles()
 {
@@ -68,6 +58,27 @@ function addIdToHomeFeed($profile){
     }
     writeJSON($homeFeedObj, $file . ".NEW");
 }
+
+function addPropertiesToJobsForAllProfiles()
+{
+    $profileObj = readJSONWithCode(JSON_MR_PROFILE);
+    foreach ($profileObj->list as $key => $item) {
+        addJobProperty($item->id);
+    }
+}
+
+function addJobProperty($profile){
+    $file = getProfileFile(JSON_MR_JOBS, $profile);
+    $jobObj = readJSON($file);
+    foreach($jobObj->activeJobs as $key => $item){
+        if (!isset($item->minResource)) {
+            $item->minRange = 0;
+            $item->maxRange = 0;
+        }
+    }
+    writeJSON($jobObj, $file . ".NEW");
+}
+
 
 ?>
 

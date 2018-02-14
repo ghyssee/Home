@@ -13,6 +13,7 @@ include_once documentPath (ROOT_PHP_HTML, "config.php");
 include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
 session_start();
 ?>
+<link rel="stylesheet" type="text/css" href="../../css/form.css">
 <script type="text/javascript" src="<?php echo webPath(ROOT_JS_UTILS, 'MyUtils.js')?>"></script>
 <script type="text/javascript" src="<?php echo webPath(ROOT_JS_UTILS, 'MafiaReloaded.js')?>"></script>
 <script>

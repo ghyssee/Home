@@ -240,3 +240,14 @@ tr.spaceUnder > td
  	-moz-border-radius: 15px;
  	border-radius: 15px;
 }
+
+fieldset {
+	-webkit-border-radius: 8px;
+	-moz-border-radius: 8px;
+	border-radius: 8px;
+}
+
+#centered {
+    display: table;
+    margin: 0 auto;
+}
