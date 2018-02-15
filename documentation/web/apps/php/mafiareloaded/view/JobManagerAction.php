@@ -207,9 +207,10 @@ function validateScheduledJob(ActiveJobTO $activeJobTO ){
     return $feedBackTO;
 }
 
-function fillInScheduledJob(){
-    $activeJobTO = new ActiveJobTO();
-    assignField($activeJobTO->id, "id", !HTML_SPECIAL_CHAR);
+function fillInScheduledJob($activeJobTO){
+    if (!isset($activeJobTO)) {
+        $activeJobTO = new ActiveJobTO();
+    }
     assignCheckbox($activeJobTO->enabled, "enabled", !HTML_SPECIAL_CHAR);
     assignField($activeJobTO->type, "type", !HTML_SPECIAL_CHAR);
     assignField($activeJobTO->districtId, "districtId", !HTML_SPECIAL_CHAR);
@@ -217,6 +218,9 @@ function fillInScheduledJob(){
     assignField($activeJobTO->description, "description", !HTML_SPECIAL_CHAR);
     assignField($activeJobTO->jobId, "jobId", !HTML_SPECIAL_CHAR);
     assignNumber($activeJobTO->total, "total", !HTML_SPECIAL_CHAR);
+    assignNumber($activeJobTO->numberOfTimesExecuted, "numberOfTimesExecuted", !HTML_SPECIAL_CHAR);
+    assignNumber($activeJobTO->minRange, "minRange", !HTML_SPECIAL_CHAR);
+    assignNumber($activeJobTO->maxRange, "maxRange", !HTML_SPECIAL_CHAR);
     return $activeJobTO;
 
 }
@@ -237,17 +241,19 @@ function addActiveJob(){
         $feedBackTO->success = true;
         echo json_encode($activeJobBO->getScheduledJobs());
     } else {
-        $errors = addErrorMsg("Error adding a scheduled job");
         echo json_encode($feedBackTO);
     }
     exit();
 }
 
 function updateActiveJob(){
-    $scheduledJob = fillInScheduledJob();
+    $activeJobBO = new ActiveJobBO(getProfile());
+    $scheduledJob = null;
     if (isset($_REQUEST['id'])){
-        $scheduledJob->id = $_REQUEST['id'];
+        $id = $_REQUEST['id'];
+        $scheduledJob = $activeJobBO->findScheduledJob($id);
     }
+    $scheduledJob = fillInScheduledJob($scheduledJob);
     $feedBackTO = new FeedBackTO();
     if (!isset($scheduledJob->id)){
         $feedBackTO->success = false;
@@ -258,7 +264,6 @@ function updateActiveJob(){
         $feedBackTO->success = false;
         $feedBackTO = validateScheduledJob($scheduledJob);
         if ($feedBackTO->success) {
-            $activeJobBO = new ActiveJobBO(getProfile());
             $feedBackTO = $activeJobBO->updateScheduledJob($scheduledJob);
             if ($feedBackTO->success) {
                 echo json_encode($activeJobBO->getScheduledJobs());

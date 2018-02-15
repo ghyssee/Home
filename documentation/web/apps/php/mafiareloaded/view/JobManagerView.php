@@ -109,6 +109,8 @@ include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
                     <th data-options="field:'money', width:2, formatter:function(value,row,index){return row.job.money;}">Money</th>
                     <th data-options="field:'energy', width:2, formatter:function(value,row,index){return row.job.energy;}">Energy</th>
                     <th data-options="field:'exp', width:2, formatter:function(value,row,index){return row.job.exp;}">Exp</th>
+                    <th data-options="field:'minRange',width:2">Min Range</th>
+                    <th data-options="field:'maxRange',width:2">Max Range</th>
                     <th data-options="field:'total', width:2,
                     formatter:function(value,row,index){return (row.numberOfTimesExecuted == null ? '0' : row.numberOfTimesExecuted) + '/' + row.total;}">
                         Total</th>
@@ -138,7 +140,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
                 </div>
 	        </span>
 
-            <div id="dlgScheduledJob" class="easyui-dialog" style="width:600px;height:400px;padding:10px 20px"
+            <div id="dlgScheduledJob" class="easyui-dialog" style="width:600px;height:500px;padding:10px 20px"
                  closed="true" buttons="#dlg-buttonsScheduledJob">
                 <div class="ftitle">Job Schedule</div>
                 <form id="fmScheduledJob" method="post" novalidate>
@@ -200,9 +202,6 @@ include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
                      ">
                     </div>
                     <div class="fitem">
-
-
-
                         <label>Job</label>
                         <input id="ccJobId" name="jobId">
                         <script>
@@ -241,7 +240,6 @@ include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
                                 ]]
                             });
                         </script>
-
                     </div>
                     <div class="fitem">
                         <label>Total</label>
@@ -250,9 +248,27 @@ include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
                         >
                     </div>
                     <div class="fitem">
+                        <label>Number Of Times Executed</label>
+                        <input name="numberOfTimesExecuted" id="numberOfTimesExecuted" class="easyui-numberspinner" style="width:150px;"
+                               data-options="min:0"
+                        >
+                    </div>
+                    <div class="fitem">
                         <label>Enabled</label>
                         <input name="enabled"
                                class="easyui-checkbox" type="checkbox" value="true"
+                        >
+                    </div>
+                    <div class="fitem">
+                        <label>Min Range</label>
+                        <input name="minRange" id="minRange" class="easyui-numberspinner" style="width:150px;"
+                               data-options="min:0"
+                        >
+                    </div>
+                    <div class="fitem">
+                        <label>Max Range</label>
+                        <input name="maxRange" id="maxRange" class="easyui-numberspinner" style="width:150px;"
+                               data-options="min:0"
                         >
                     </div>
                 </form>

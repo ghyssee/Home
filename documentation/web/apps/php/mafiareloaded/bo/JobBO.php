@@ -270,6 +270,16 @@ class ActiveJobBO{
         $this->save();
     }
 
+    function findScheduledJob($id){
+        $activeJobTO = new ActiveJobTO();
+        foreach($this->jobManagerObj->activeJobs as $key => $value){
+            if ($value->id == $id) {
+                return new ActiveJobTO($value);
+            }
+        }
+        return $activeJobTO;
+    }
+
     function addScheduledJob(ActiveJobTO $activeJobTO, $insertBeforeId){
         $activeJobTO->id = getUniqueId();
         $newArray = Array();
