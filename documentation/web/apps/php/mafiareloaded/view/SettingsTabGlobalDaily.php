@@ -53,6 +53,18 @@
 </form>
 </fieldset>
 
+<fieldset>
+    <legend>Boss</legend>
+    <form id="globalBossSettings" method="post">
+        <div title="Boss Name" class="fitem">
+            <label>Boss Name</label>
+            <input name="bossName" id="bossName" class="easyui-textbox" data-options="required:true" style="width:350px;">
+        </div>
+        <div>
+        </div>
+    </form>
+</fieldset>
+
 <script>
     function loadGlobalSettingsDaily(){
         $('#globalSettingsDaily').form('load','SettingsAction.php?method=getDailyLink');
