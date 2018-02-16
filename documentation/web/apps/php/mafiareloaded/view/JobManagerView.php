@@ -19,8 +19,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
         <link rel="stylesheet" type="text/css" href="../../css/stylesheet.css">
         <link rel="stylesheet" type="text/css" href="../../Themes/easyui/metro-blue/easyui.css">
         <link rel="stylesheet" type="text/css" href="../../Themes/easyui/icon.css">
-        <link rel="stylesheet" type="text/css+
-" href="../../css/form.css">
+        <link rel="stylesheet" type="text/css" href="../../css/form.css">
         <?php include documentRoot ("apps/php/templates/easyui.php");?>
     </head>
     <body>

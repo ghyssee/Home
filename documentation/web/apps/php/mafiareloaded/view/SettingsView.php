@@ -68,7 +68,7 @@ goMenu();
 
 <h3>Settings</h3>
 
-<div id="cc" class="easyui-layout" style="width:900px;height:500px;">
+<div id="cc" class="easyui-layout" style="width:900px;height:550px;">
     <div data-options="region:'north',title:'Profile',split:true" style="height:100px;padding:5px">
         Profile: <input id="profile" class="easyui-combobox" name="profile"
                         data-options="valueField:'id',

@@ -72,7 +72,12 @@ try {
         case "saveGlobalSettings":
             saveGlobalSettings();
             break;
-    }
+        case "getGlobalSettingsBoss":
+            getGlobalSettingsBoss();
+            break;
+        case "saveGlobalSettingsBoss":
+            saveGlobalSettingsBoss();
+            break;    }
 }
 catch(Error $e) {
 //    echo $e->getMessage();
@@ -109,7 +114,7 @@ function fillForm($to, $form){
 
 function getSettingsFighting(){
     $settingsBO = new ProfileSettingsBO();
-    $settingsTO = $settingsBO->getSettings1(new FightSettingsTO());
+    $settingsTO = $settingsBO->getSettings(new FightSettingsTO());
     echo json_encode($settingsTO);
 }
 
@@ -119,12 +124,13 @@ function saveSettingsFighting(){
 
     $settingsBO = new ProfileSettingsBO();
     $feedBack = $settingsBO->saveSettings($fightSettingsTO);
+    fillSaveMessage($feedBack, "Profile Specific Fight Settings");
     echo json_encode($feedBack);
 }
 
 function getSettingsBoss(){
     $settingsBO = new ProfileSettingsBO();
-    $settingsTO = $settingsBO->getSettings1(new BossSettingsTO());
+    $settingsTO = $settingsBO->getSettings(new BossSettingsTO());
     echo json_encode($settingsTO);
 }
 
@@ -134,12 +140,13 @@ function saveSettingsBoss(){
 
     $settingsBO = new ProfileSettingsBO();
     $feedBack = $settingsBO->saveSettings($bossSettingsTO);
+    fillSaveMessage($feedBack, "Profile Specific Boss Settings");
     echo json_encode($feedBack);
 }
 
 function getSettingsJob(){
     $settingsBO = new ProfileSettingsBO();
-    $settingsTO = $settingsBO->getSettings1(new JobSettingsTO());
+    $settingsTO = $settingsBO->getSettings(new JobSettingsTO());
     echo json_encode($settingsTO);
 }
 
@@ -149,12 +156,13 @@ function saveSettingsJob(){
 
     $settingsBO = new ProfileSettingsBO();
     $feedBack = $settingsBO->saveSettings($jobSettingsTO);
+    fillSaveMessage($feedBack, "Profile Specific Job Settings");
     echo json_encode($feedBack);
 }
 
 function getSettingsHomefeed(){
     $settingsBO = new ProfileSettingsBO();
-    $settingsTO = $settingsBO->getSettings1(new HomefeedSettingsTO());
+    $settingsTO = $settingsBO->getSettings(new HomefeedSettingsTO());
     echo json_encode($settingsTO);
 }
 
@@ -164,12 +172,13 @@ function saveSettingsHomefeed(){
 
     $settingsBO = new ProfileSettingsBO();
     $feedBack = $settingsBO->saveSettings($homefeedSettingsTO);
+    fillSaveMessage($feedBack, "Profile Specific Homefeed Settings");
     echo json_encode($feedBack);
 }
 
 function getSettingsGlobal(){
     $settingsBO = new ProfileSettingsBO();
-    $settingsTO = $settingsBO->getSettings1(new globalProfileSettingsTO());
+    $settingsTO = $settingsBO->getSettings(new globalProfileSettingsTO());
     echo json_encode($settingsTO);
 }
 
@@ -179,12 +188,13 @@ function saveSettingsGlobal(){
 
     $settingsBO = new ProfileSettingsBO();
     $feedBack = $settingsBO->saveSettings($globalSettingsTO);
+    fillSaveMessage($feedBack, "Profile Specific Global Settings");
     echo json_encode($feedBack);
 }
 
 function getSettingsCrime(){
     $settingsBO = new ProfileSettingsBO();
-    $settingsTO = $settingsBO->getSettings1(new CrimeSettingsTO());
+    $settingsTO = $settingsBO->getSettings(new CrimeSettingsTO());
     echo json_encode($settingsTO);
 }
 
@@ -194,6 +204,7 @@ function saveSettingsCrime(){
 
     $settingsBO = new ProfileSettingsBO();
     $feedBack = $settingsBO->saveSettings($crimeSettingsTO);
+    fillSaveMessage($feedBack, "Profile Specific Crime Settings");
     echo json_encode($feedBack);
 }
 
@@ -209,6 +220,7 @@ function saveDailyLink(){
     fillForm($dailyLinkTO, $_POST);
     $settingsBO = new SettingsBO();
     $feedBack = $settingsBO->saveDailyLink($dailyLinkTO);
+    fillSaveMessage($feedBack, "Daily Link Settings");
     echo json_encode($feedBack);
 }
 
@@ -216,14 +228,43 @@ function saveDailyLink(){
 function getGlobalSettings()
 {
     $SettingsBO = new SettingsBO();
-    $globalTO = $SettingsBO->getGlobalSettings();
-    echo json_encode($globalTO);
+    $to = $SettingsBO->getGlobalSettings(new GlobalSettingsTO());
+    echo json_encode($to);
 }
 
 function saveGlobalSettings(){
-    $globalTO = new GlobalSettingsTO();
-    fillForm($globalTO, $_POST);
+    $to = new GlobalSettingsTO();
+    fillForm($to, $_POST);
     $settingsBO = new SettingsBO();
-    $feedBack = $settingsBO->saveGlobalSettings($globalTO);
+    $feedBack = $settingsBO->saveGlobalSettings($to);
+    fillSaveMessage($feedBack, "Global Settings");
+
     echo json_encode($feedBack);
+}
+
+
+function getGlobalSettingsBoss()
+{
+    $SettingsBO = new SettingsBO();
+    $to = $SettingsBO->getGlobalSettings(new GlobalSettingsBossTO());
+    echo json_encode($to);
+}
+
+function saveGlobalSettingsBoss(){
+    $to = new GlobalSettingsBossTO();
+    fillForm($to, $_POST);
+    $settingsBO = new SettingsBO();
+    $feedBack = $settingsBO->saveGlobalSettings($to);
+    fillSaveMessage($feedBack, "Global Settings Boss");
+    echo json_encode($feedBack);
+}
+
+function fillSaveMessage(FeedBackTO $feedBackTO, $message){
+    if ($feedBackTO->success){
+        $feedBackTO->message = $message . " saved successfully";
+    }
+    else {
+        $feedBackTO->errorMsg = $message . "There was a problem saving " . $message;
+    }
+
 }

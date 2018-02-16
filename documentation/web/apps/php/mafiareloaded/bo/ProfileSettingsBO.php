@@ -71,7 +71,6 @@ class HomefeedSettingsTO  {
 class BossSettingsTO  {
     public $active = false;
     public $stopWhenHealthBelow = 0;
-    public $name = "";
 
     public function getBase(){
         return "boss";
@@ -108,7 +107,7 @@ class ProfileSettingsBO{
         $this->mrObj = readJSON($this->file);
     }
 
-    function getSettings1($settingsTO){
+    function getSettings($settingsTO){
         $tmpVar = get_object_vars($settingsTO);
         foreach($tmpVar as $key => $value) {
             $settingsTO->{$key} = $this->getSetting($settingsTO, $key);
@@ -116,13 +115,13 @@ class ProfileSettingsBO{
         return $settingsTO;
     }
 
-    function getSetting($fightSettingsTO, $key){
+    private function getSetting($settingsTO, $key){
         $value = null;
-        if ($fightSettingsTO->getBase() == null){
+        if ($settingsTO->getBase() == null){
             $value = $this->mrObj->{$key};
         }
         else {
-            $value = $this->mrObj->{$fightSettingsTO->getBase()}->{$key};
+            $value = $this->mrObj->{$settingsTO->getBase()}->{$key};
         }
         return $value;
     }
@@ -142,7 +141,6 @@ class ProfileSettingsBO{
         }
         $this->save();
         $feedBack->success = true;
-        $feedBack->message = 'Configuration saved successfully';
         return $feedBack;
     }
 
@@ -150,7 +148,7 @@ class ProfileSettingsBO{
         writeJSON($this->mrObj, $this->file);
     }
 
-    function getProperties($obj)
+    private function getProperties($obj)
     {
         $reflect = new ReflectionClass($obj);
         $props = $reflect->getProperties(ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED);

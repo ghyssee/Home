@@ -36,6 +36,18 @@ class GlobalSettingsTO  {
     }
 }
 
+class GlobalSettingsBossTO  {
+    public $bossName;
+
+    function getBase(){
+        return "boss";
+    }
+
+    public function __construct()
+    {
+    }
+}
+
 class SettingsBO{
     public $settingsObj;
     public $fileCode = JSON_MR_SETTINGS;
@@ -54,29 +66,27 @@ class SettingsBO{
         return $dailyLinkTO;
     }
 
-    function getGlobalSettings(){
-        $globalTO = new GlobalSettingsTO();
-        $tmpVar = get_object_vars($globalTO);
+    function getGlobalSettings($to){
+        $tmpVar = get_object_vars($to);
         //$tmpVar = getProperties($dailyLinkTO);
         foreach($tmpVar as $key => $value) {
-            $globalTO->{$key} = $this->getSetting($globalTO, $key);
+            $to->{$key} = $this->getSetting($to, $key);
         }
-        return $globalTO;
+        return $to;
     }
 
-    function saveGlobalSettings(GlobalSettingsTO $globalTO){
+    function saveGlobalSettings($to){
         $feedBack = new FeedBackTO();
-        $tmpVar = get_object_vars($globalTO);
+        $tmpVar = get_object_vars($to);
         foreach($tmpVar as $key => $value) {
-            if ($globalTO->getBase() == null){
+            if ($to->getBase() == null){
                 $this->settingsObj->{$key} = $value;
             }
             else {
-                $this->settingsObj->{$globalTO->getBase()}->{$key} = $value;
+                $this->settingsObj->{$to->getBase()}->{$key} = $value;
             }
         }
         $feedBack->success = true;
-        $feedBack->message = 'Global Settings saved successfully';
         $this->save();
         return $feedBack;
     }

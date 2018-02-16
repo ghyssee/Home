@@ -21,11 +21,6 @@ $FORM_ID = "settingsBoss";
                data-options="min:0"
         >
     </div>
-    <div class="fitem">
-        <label>Boss Name</label>
-        <input name="name" id="name" class="easyui-textbox" style="width:150px;"
-        >
-    </div>
     <div id="dlg-buttonsScheduledJob">
         <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok"
            onclick="submitForm('<?php echo $FORM_ID;?>', 'SettingsAction.php?method=saveSettingsBoss&profile=' + getProfile())" style="width:90px">Save</a>
