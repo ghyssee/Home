@@ -233,7 +233,7 @@ function addActiveJob(){
     }
     $feedBackTO = new FeedBackTO();
     $feedBackTO->success = false;
-    $scheduledJob = fillInScheduledJob();
+    $scheduledJob = fillInScheduledJob( new ActiveJobTO() );
     $feedBackTO = validateScheduledJob($scheduledJob);
     if ($feedBackTO->success) {
         $activeJobBO = new ActiveJobBO(getProfile());
