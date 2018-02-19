@@ -97,44 +97,47 @@ class FightSettingsTO  {
     }
 }
 
-class ProfileSettingsBO{
+class ProfileSettingsBO
+{
     public $mrObj;
     public $file;
 
-    function __construct() {
+    function __construct()
+    {
         $fileCode = JSON_MR_MAFIARELOADED;
         $this->file = getMRFile($fileCode);
         $this->mrObj = readJSON($this->file);
     }
 
-    function getSettings($settingsTO){
+    function getSettings($settingsTO)
+    {
         $tmpVar = get_object_vars($settingsTO);
-        foreach($tmpVar as $key => $value) {
+        foreach ($tmpVar as $key => $value) {
             $settingsTO->{$key} = $this->getSetting($settingsTO, $key);
         }
         return $settingsTO;
     }
 
-    private function getSetting($settingsTO, $key){
+    private function getSetting($settingsTO, $key)
+    {
         $value = null;
-        if ($settingsTO->getBase() == null){
+        if ($settingsTO->getBase() == null) {
             $value = $this->mrObj->{$key};
-        }
-        else {
+        } else {
             $value = $this->mrObj->{$settingsTO->getBase()}->{$key};
         }
         return $value;
     }
 
-    function saveSettings($settingsTO){
+    function saveSettings($settingsTO)
+    {
         $feedBack = new FeedBackTO();
         $tmpVar = get_object_vars($settingsTO);
-    //    $props = getProperties($fightSettingsTO);
-        foreach($tmpVar as $key => $value) {
-            if ($settingsTO->getBase() == null){
+        //    $props = getProperties($fightSettingsTO);
+        foreach ($tmpVar as $key => $value) {
+            if ($settingsTO->getBase() == null) {
                 $this->mrObj->{$key} = $value;
-            }
-            else {
+            } else {
                 $this->mrObj->{$settingsTO->getBase()}->{$key} = $value;
             }
 
@@ -144,8 +147,34 @@ class ProfileSettingsBO{
         return $feedBack;
     }
 
-    function save(){
+    function save()
+    {
         writeJSON($this->mrObj, $this->file);
+    }
+}
+
+class AssassinTO {
+    public $id;
+    public $name;
+    public $active;
+}
+
+class AssassinSettingsBO{
+    public $assassinObj;
+    public $file;
+
+    function __construct() {
+        $fileCode = JSON_MR_ASSASSIN;
+        $this->file = getMRFile($fileCode);
+        $this->assassinObj = readJSON($this->file);
+    }
+
+    function getListAssassin(){
+        return $this->assassinObj->players;
+    }
+
+    function save(){
+        writeJSON($this->assassinObj, $this->file);
     }
 
     private function getProperties($obj)

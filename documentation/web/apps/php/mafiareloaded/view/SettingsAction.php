@@ -77,7 +77,10 @@ try {
             break;
         case "saveGlobalSettingsBoss":
             saveGlobalSettingsBoss();
-            break;    }
+            break;
+        case "getListAssassin":
+            getListAssassin();
+    }
 }
 catch(Error $e) {
 //    echo $e->getMessage();
@@ -268,3 +271,17 @@ function fillSaveMessage(FeedBackTO $feedBackTO, $message){
     }
 
 }
+
+function getListAssassin(){
+    $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
+    $rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
+    $assassinBO = new AssassinSettingsBO();
+    $list = $assassinBO->getListAssassin();
+    $sort = new CustomSort();
+    $list = $sort->sortObjectArrayByField($list, "name", "asc");
+    $array = array_slice($list, ($page-1)*$rows, $rows);
+    $result["total"] = count($list);
+    $result["rows"] = $array;
+    echo json_encode($result);
+}
+

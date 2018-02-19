@@ -106,6 +106,9 @@ goMenu();
             <div title="Global Settings" style="overflow:auto;padding:20px;display:none;" >
                 <?php include "SettingsTabGlobalDaily.php"; ?>
             </div>
+            <div title="Assassin-a-nator" style="overflow:auto;padding:20px;display:none;" >
+                <?php include "SettingsTabAssassin.php"; ?>
+            </div>
         </div>
     </div>
 <script src="<?php echo webPath(ROOT_JS_EASYUI, 'EasyUITabsMouseHover.js')?>"></script>
