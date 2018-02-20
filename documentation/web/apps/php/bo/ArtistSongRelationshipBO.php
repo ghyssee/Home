@@ -10,7 +10,7 @@ require_once documentPath (ROOT_PHP_BO, "ArtistBO.php");
  * Date: 28/04/2017
  * Time: 15:02
  */
-class Castable
+class Castable2
 {
     public function __construct($object = null)
     {
@@ -35,7 +35,7 @@ abstract class ArtistType
 }
 
 
-class ArtistSongRelationshipTO extends Castable {
+class ArtistSongRelationshipTO extends Castable2 {
     public $id;
     public $oldArtistList;
     public $oldMultiArtistId;
