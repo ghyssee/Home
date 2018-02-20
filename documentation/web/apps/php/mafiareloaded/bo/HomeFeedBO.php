@@ -8,6 +8,7 @@
 require_once documentPath (ROOT_PHP, "config.php");
 require_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 require_once documentPath (ROOT_PHP_BO, "CacheBO.php");
+require_once documentPath (ROOT_PHP_BO, "MyClasses.php");
 require_once documentPath (ROOT_PHP_COMMON, "DateUtils.php");
 
 class HomeFeedTO extends Castable {
@@ -21,26 +22,6 @@ class HomeFeedTO extends Castable {
     public $timeStamp;
     public $currentTime;
     public $processed;
-}
-
-class Castable
-{
-    public function __construct($object = null)
-    {
-        $this->cast($object);
-    }
-
-    public function cast($object)
-    {
-        if (is_array($object) || is_object($object)) {
-            foreach ($object as $key => $value) {
-                if (property_exists($this, $key)) {
-                    $this->$key = $value;
-                }
-                $var = "blbb";
-            }
-        }
-    }
 }
 
 class HomeFeedBO{

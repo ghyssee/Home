@@ -1,4 +1,23 @@
 <?php
+class Castable
+{
+    public function __construct($object = null)
+    {
+        $this->cast($object);
+    }
+
+    public function cast($object)
+    {
+        if (is_array($object) || is_object($object)) {
+            foreach ($object as $key => $value) {
+                if (property_exists($this, $key)) {
+                    $this->$key = $value;
+                }
+            }
+        }
+    }
+}
+
 class SongTO {
     public $artistId;
     public $artist;

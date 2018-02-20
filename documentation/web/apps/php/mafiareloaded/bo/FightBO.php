@@ -5,23 +5,27 @@
  * Date: 16/02/2018
  * Time: 10:30
  */
+require_once documentPath (ROOT_PHP_BO, "MyClasses.php");
 
-class FightTO {
+class GangTO extends Castable {
+    public $gangId;
+    public $gangName;
+}
+
+class FightTO extends GangTO {
     public $id;
     public $name;
     public $level;
-    public $gangId;
-    public $gangName;
     public $bigHealth;
     public $lastAttacked;
     public $lastIced;
     public $iced;
     public $alive;
     public $dead;
-    public $active;
 }
 
 class AssassinTO extends FightTO {
+    public $fighterId;
     public $active;
 }
 

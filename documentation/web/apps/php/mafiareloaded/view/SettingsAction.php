@@ -80,6 +80,16 @@ try {
             break;
         case "getListAssassin":
             getListAssassin();
+            break;
+        case "addAssassin":
+            addAssassin();
+            break;
+        case "updateAssassin":
+            updateAssassin();
+            break;
+        case "deleteAssassin":
+            deleteAssassin();
+            break;
     }
 }
 catch(Error $e) {
@@ -283,5 +293,67 @@ function getListAssassin(){
     $result["total"] = count($list);
     $result["rows"] = $array;
     echo json_encode($result);
+}
+
+
+function fillInassassin($assassinTO){
+    if (!isset($assassinTO)) {
+        $assassinTO = new AssassinTO();
+    }
+    assignCheckbox($assassinTO->active, "active", !HTML_SPECIAL_CHAR);
+    assignField($assassinTO->fighterId, "fighterId", !HTML_SPECIAL_CHAR);
+    assignField($assassinTO->name, "name", !HTML_SPECIAL_CHAR);
+    return $assassinTO;
+
+}
+
+function addAssassin(){
+    $assassinTO = fillInassassin( new AssassinTO() );
+    $assassinBO = new AssassinSettingsBO(getProfile());
+    $feedBackTO = $assassinBO->addAssassin($assassinTO);
+    if ($feedBackTO->success){
+        echo json_encode($assassinBO->getListAssassin());
+    }
+    else {
+        echo json_encode($feedBackTO);
+    }
+    exit();
+}
+
+function updateAssassin(){
+    $feedBackTO = new FeedBackTO();
+    if (!isset($_GET['id'])){
+        $feedBackTO->success = false;
+        $feedBackTO->errorMsg = 'Assassin Id Not Found!';
+        echo json_encode($feedBackTO);
+    }
+    else {
+        $id = $_GET['id'];
+        $assassinBO = new AssassinSettingsBO(getProfile());
+        $assassinTO = $assassinBO->getAssassin($id);
+        fillInassassin($assassinTO);
+        $feedBackTO = $assassinBO->updateAssassin($assassinTO);
+        if ($feedBackTO->success) {
+            echo json_encode($assassinBO->getListAssassin());
+        } else {
+            echo json_encode($feedBackTO);
+        }
+    }
+    exit();
+}
+
+function deleteAssassin()
+{
+    $feedBackTO = new FeedBackTO();
+    $feedBackTO->success = false;
+    if (isset($_REQUEST['id'])){
+        $id = $_REQUEST['id'];
+        $assassinBO = new AssassinSettingsBO(getProfile());
+        $feedBackTO = $assassinBO->deleteAssassin($id);
+    }
+    else {
+        $feedBackTO->errorMsg = "Id of assassin not filled in";
+    }
+    echo json_encode($feedBackTO);
 }
 

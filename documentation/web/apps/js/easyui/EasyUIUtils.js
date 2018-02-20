@@ -110,4 +110,15 @@ function getSwitchValue(id){
     return checked;
 }
 
+function checkboxFormatter(val,row,index){
+
+    if (val== 1) {
+        return "√";
+    }
+    else {
+        return "";
+    }
+}
+
+
 

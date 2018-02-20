@@ -148,17 +148,6 @@ include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
         var _value = $("#profile").combobox('getText');
         $('#cc').layout('panel', 'center').panel('setTitle', 'Profile: ' + profileId + " " + _value);
     }
-
-    function checkboxFormatter(val,row,index){
-
-        if (val== 1) {
-            return "√";
-        }
-        else {
-            return "";
-        }
-    }
-
 </script>
 
 <style type="text/css">

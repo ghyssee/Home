@@ -10,7 +10,6 @@ require_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 require_once documentPath (ROOT_PHP_BO, "MyClasses.php");
 include_once documentPath (ROOT_PHP_MR_BO, "MafiaReloadedBO.php");
 
-
 class DailyLinkTO  {
     public $date;
     public $link;
@@ -125,10 +124,3 @@ class SettingsBO{
     }
 }
 
-
-function getProperties($obj)
-{
-    $reflect = new ReflectionClass($obj);
-    $props = $reflect->getProperties(ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED);
-    return $props;
-}

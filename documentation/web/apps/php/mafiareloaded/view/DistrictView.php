@@ -258,16 +258,6 @@ include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
                 });
             }
         }
-        function checkboxFormatter(val,row,index){
-
-            if (val== 1) {
-                return "√";
-            }
-            else {
-                return "";
-            }
-        }
-
     </script>
 
     <style type="text/css">

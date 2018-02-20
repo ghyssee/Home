@@ -20,9 +20,13 @@ session_start();
 var INITIAL_LOAD = true;
 
 function getProfile(){
-    var _value = '<?php echo DEFAULT_PROFILE?>';
+    var _def_value = '<?php echo DEFAULT_PROFILE?>';
+    var _value = _def_value;
     try {
         _value = $("#profile").combobox('getValue');
+        if (_value === "") {
+            _value = _def_value;
+        }
     }
     catch (err){
     }
@@ -74,6 +78,7 @@ goMenu();
                         data-options="valueField:'id',
                                                 width:200,
                                                 limitToList: true,
+                                                valueField: 'id',
                                                 textField:'name',
                                                 onChange: function(row){
                                                     onProfileChangeForm(row);
