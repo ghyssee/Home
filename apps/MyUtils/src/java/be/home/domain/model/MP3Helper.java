@@ -92,6 +92,9 @@ public class MP3Helper {
         text = text.replaceAll("&amp;? ?", "& ");
         text = text.replaceAll("''", "\"");
         text = text.replaceAll("…", "...");
+        text = text.replaceAll("\\u0435", "e");
+        text = text.replaceAll("\\u0430", "a");
+
 
         return text;
     }

@@ -6,12 +6,10 @@ import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.main.BatchJobV2;
 import be.home.common.mp3.MP3Utils;
 import be.home.common.utils.FileUtils;
-import be.home.common.utils.JSONUtils;
 import be.home.common.utils.MyFileWriter;
 import be.home.domain.model.ArtistSongItem;
 import be.home.domain.model.MP3Helper;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
-import be.home.mezzmo.domain.model.json.ArtistSongTest;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.Mp3File;
@@ -126,6 +124,8 @@ private static void testAlbumArtist(){
         */
         System.out.println(mp3Helper.prettifyArtist("Axwell ^ Ingrosso"));
         System.out.println("Axwell ^ Ingrosso".replaceAll("Axwell \\^ Ingrosso", "test"));
+        System.out.println(getTitleArtistException("Siа", "Frее Mе (Cdq)"));
+        System.out.println("Free Me (CDQ)".replaceAll("Free Me \\(CDQ\\)", "Free Me"));
 
         //System.out.println(getArtistTitleException("Fifth Harmony Feat. Ty Dolla Sign", "Work From Home"));
         //System.out.println(getArtistTitleException("The Ramblers", "Dag Schatteboutje"));
