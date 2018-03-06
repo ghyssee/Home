@@ -27,6 +27,7 @@ const JSON_MR_HOMEFEED = "mafiaReloadedHomeFeed";
 const JSON_MR_HOMEFEED_HISTORY = "mafiaReloadedHomeFeedHistory";
 const JSON_MR_MAFIARELOADED = "mafiaReloadedConfig";
 const JSON_MR_ASSASSIN = "mafiaReloadedAssassin";
+const JSON_MR_FRIEND = "mafiaReloadedFriend";
 const JSON_MR_SETTINGS = "mafiaReloadedSettings";
 const FILE_ERROR_LOG = "errorLog";
 const FILE_INFO_LOG = "infoLog";

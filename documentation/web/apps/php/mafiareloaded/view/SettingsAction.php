@@ -15,6 +15,8 @@ include_once documentPath (ROOT_PHP_BO, "SessionBO.php");
 include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
 include_once documentPath (ROOT_PHP_MR_BO, "ProfileSettingsBO.php");
 include_once documentPath (ROOT_PHP_MR_BO, "SettingsBO.php");
+include_once documentPath (ROOT_PHP_MR_BO, "AssassinBO.php");
+include_once documentPath (ROOT_PHP_MR_BO, "FriendBO.php");
 sessionStart();
 //ini_set('display_errors', 1);
 //ini_set('display_startup_errors', 1);
@@ -89,6 +91,18 @@ try {
             break;
         case "deleteAssassin":
             deleteAssassin();
+            break;
+        case "getListAllies":
+            getListAllies();
+            break;
+        case "addAlly":
+            addAlly();
+            break;
+        case "updateAlly":
+            updateAlly();
+            break;
+        case "deleteAlly":
+            deleteAlly();
             break;
     }
 }
@@ -285,7 +299,7 @@ function fillSaveMessage(FeedBackTO $feedBackTO, $message){
 function getListAssassin(){
     $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
     $rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
-    $assassinBO = new AssassinSettingsBO();
+    $assassinBO = new AssassinBO();
     $list = $assassinBO->getListAssassin();
     $sort = new CustomSort();
     $list = $sort->sortObjectArrayByField($list, "name", "asc");
@@ -309,7 +323,7 @@ function fillInassassin($assassinTO){
 
 function addAssassin(){
     $assassinTO = fillInassassin( new AssassinTO() );
-    $assassinBO = new AssassinSettingsBO(getProfile());
+    $assassinBO = new AssassinBO(getProfile());
     $feedBackTO = $assassinBO->addAssassin($assassinTO);
     if ($feedBackTO->success){
         echo json_encode($assassinBO->getListAssassin());
@@ -329,7 +343,7 @@ function updateAssassin(){
     }
     else {
         $id = $_GET['id'];
-        $assassinBO = new AssassinSettingsBO(getProfile());
+        $assassinBO = new AssassinBO(getProfile());
         $assassinTO = $assassinBO->getAssassin($id);
         fillInassassin($assassinTO);
         $feedBackTO = $assassinBO->updateAssassin($assassinTO);
@@ -348,11 +362,86 @@ function deleteAssassin()
     $feedBackTO->success = false;
     if (isset($_REQUEST['id'])){
         $id = $_REQUEST['id'];
-        $assassinBO = new AssassinSettingsBO(getProfile());
+        $assassinBO = new AssassinBO(getProfile());
         $feedBackTO = $assassinBO->deleteAssassin($id);
     }
     else {
         $feedBackTO->errorMsg = "Id of assassin not filled in";
+    }
+    echo json_encode($feedBackTO);
+}
+
+function getListAllies(){
+    $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
+    $rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
+    $friendBO = new FriendBO();
+    $list = $friendBO->getListAllies();
+    $sort = new CustomSort();
+    $list = $sort->sortObjectArrayByField($list, "name", "asc");
+    $array = array_slice($list, ($page-1)*$rows, $rows);
+    $result["total"] = count($list);
+    $result["rows"] = $array;
+    echo json_encode($result);
+}
+
+
+function fillInAlly($allyTO){
+    if (!isset($allyTO)) {
+        $allyTO = new AllyTO();
+    }
+    assignCheckbox($allyTO->active, "active", !HTML_SPECIAL_CHAR);
+    assignField($allyTO->id, "id", !HTML_SPECIAL_CHAR);
+    assignField($allyTO->name, "name", !HTML_SPECIAL_CHAR);
+    return $allyTO;
+
+}
+
+function addAlly(){
+    $allyTO = fillInAlly( new AllyTO() );
+    $friendBO = new FriendBO(getProfile());
+    $feedBackTO = $friendBO->addAlly($allyTO);
+    if ($feedBackTO->success){
+        echo json_encode($friendBO->getListAllies());
+    }
+    else {
+        echo json_encode($feedBackTO);
+    }
+    exit();
+}
+
+function updateAlly(){
+    $feedBackTO = new FeedBackTO();
+    if (!isset($_GET['id'])){
+        $feedBackTO->success = false;
+        $feedBackTO->errorMsg = 'Ally Id Not Found!';
+        echo json_encode($feedBackTO);
+    }
+    else {
+        $id = $_GET['id'];
+        $friendBO = new FriendBO(getProfile());
+        $allyTO = $friendBO->getAlly($id);
+        fillInAlly($allyTO);
+        $feedBackTO = $friendBO->updateAlly($allyTO);
+        if ($feedBackTO->success) {
+            echo json_encode($friendBO->getListAllies());
+        } else {
+            echo json_encode($feedBackTO);
+        }
+    }
+    exit();
+}
+
+function deleteAlly()
+{
+    $feedBackTO = new FeedBackTO();
+    $feedBackTO->success = false;
+    if (isset($_REQUEST['id'])){
+        $id = $_REQUEST['id'];
+        $friendBO = new FriendBO(getProfile());
+        $feedBackTO = $friendBO->deleteAlly($id);
+    }
+    else {
+        $feedBackTO->errorMsg = "Id of ally not filled in";
     }
     echo json_encode($feedBackTO);
 }

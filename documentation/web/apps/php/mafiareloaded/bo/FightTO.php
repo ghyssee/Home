@@ -29,7 +29,8 @@ class AssassinTO extends FightTO {
     public $active;
 }
 
-class FightBO
-{
-
+class AllyTO {
+    public $id;
+    public $name;
+    public $active;
 }

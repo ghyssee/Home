@@ -114,6 +114,9 @@ goMenu();
             <div title="Assassin-a-nator" style="overflow:auto;padding:20px;display:none;" >
                 <?php include "SettingsTabAssassin.php"; ?>
             </div>
+            <div title="Allies" style="overflow:auto;padding:20px;display:none;" >
+                <?php include "SettingsTabAllies.php"; ?>
+            </div>
         </div>
     </div>
 <script src="<?php echo webPath(ROOT_JS_EASYUI, 'EasyUITabsMouseHover.js')?>"></script>
@@ -129,6 +132,7 @@ goMenu();
             loadSettingsHomefeed(row);
             loadSettingsProfileGlobal(row);
             loadSettingsCrime(row);
+            refreshAllies();
         }
     }
 </script>
