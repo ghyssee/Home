@@ -104,6 +104,15 @@ try {
         case "deleteAlly":
             deleteAlly();
             break;
+        case "getAssassinProfiles":
+            getAssassinProfiles();
+            break;
+        case "getSettingsAssassin":
+            getSetttingsAssassin();
+            break;
+        case "saveAssassinActiveProfile":
+            saveAssassinActiveProfile();
+            break;
     }
 }
 catch(Error $e) {
@@ -300,7 +309,7 @@ function getListAssassin(){
     $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
     $rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
     $assassinBO = new AssassinBO();
-    $list = $assassinBO->getListAssassin();
+    $list = $assassinBO->getListAssassin($assassinBO->getRequestProfile());
     $sort = new CustomSort();
     $list = $sort->sortObjectArrayByField($list, "name", "asc");
     $array = array_slice($list, ($page-1)*$rows, $rows);
@@ -446,3 +455,23 @@ function deleteAlly()
     echo json_encode($feedBackTO);
 }
 
+function getAssassinProfiles(){
+    $assassinBO = new AssassinBO(getProfile());
+    $list = $assassinBO->getAssassinProfiles();
+    echo json_encode($list);
+}
+
+function saveAssassinActiveProfile(){
+    $assassinSettingsTO = new AssassinSettingsTO();
+    fillForm($assassinSettingsTO, $_POST);
+    $assassinBO = new AssassinBO(getProfile());
+    $feedBackTO = $assassinBO->saveAssassinActiveProfile($assassinSettingsTO);
+    fillSaveMessage($feedBackTO, "Assassin Active Profile");
+    echo json_encode($feedBackTO);
+}
+
+function getSetttingsAssassin(){
+    $assassinBO = new AssassinBO(getProfile());
+    $assassinTO = $assassinBO->getAssassinSettings();
+    echo json_encode($assassinTO);
+}

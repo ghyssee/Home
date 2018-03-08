@@ -74,20 +74,20 @@ $DIALOG_ID = "dlgAlly";
     <div id="dlg-buttonsAlly">
         <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok"
            onclick="saveAlly()" style="width:90px">Save</a>
-        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#<?php echo DIALOG_ID;?>').dialog('close')" style="width:90px">Cancel</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#<?php echo $DIALOG_ID;?>').dialog('close')" style="width:90px">Cancel</a>
     </div>
 </div>
 
 <script>
     function newAlly(){
-        $('#<?php echo DIALOG_ID;?>').dialog('open').dialog('setTitle','New Ally');
+        $('#<?php echo $DIALOG_ID;?>').dialog('open').dialog('setTitle','New Ally');
         $('#<?php echo $FORM_ID;?>').form('reset');
         url = 'SettingsAction.php?method=addAlly' + "&profile=" + getProfile();
     }
     function editAlly(){
         var row = $('#<?php echo $DATAGRID_ID;?>').datagrid('getSelected');
         if (row){
-            $('#<?php echo DIALOG_ID;?>').dialog('open').dialog('setTitle','Edit Ally');
+            $('#<?php echo $DIALOG_ID;?>').dialog('open').dialog('setTitle','Edit Ally');
             $('#<?php echo $FORM_ID;?>').form('load',row);
             url = 'SettingsAction.php?method=updateAlly&id='+row['id'] + "&profile=" + getProfile();
         }
@@ -106,7 +106,7 @@ $DIALOG_ID = "dlgAlly";
                         msg: result.errorMsg
                     });
                 } else {
-                    $('#<?php echo DIALOG_ID;?>').dialog('close');		// close the dialog
+                    $('#<?php echo $DIALOG_ID;?>').dialog('close');		// close the dialog
                     $('#<?php echo $DATAGRID_ID;?>').datagrid('reload');	// reload the user data
                 }
             }

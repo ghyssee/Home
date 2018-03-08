@@ -1,12 +1,32 @@
 <?php
+    include_once documentPath (ROOT_PHP_MR_BO, "AssassinBO.php");
     $DATAGRID_ID = "dgAssassin";
     $FORM_ID = "fmAssassin";
 ?>
-<table id="<?php echo $DATAGRID_ID;?>" class="easyui-datagrid" style="width:95%;height:100%"
-               title="List Of Assassin-a-nator Players"
-               idField="id"
-               url='SettingsAction.php?method=getListAssassin'
-               data-options='fitColumns:true,
+<form id="<?php echo $FORM_ID;?>" method="post">
+    Active Assassin Profile: <input id="activeProfile" class="easyui-combobox" name="activeProfile"
+                                  data-options="width:200,
+                                                limitToList: true,
+                                                valueField: 'id',
+                                                textField:'name',
+                                                queryParams:{profile:getProfile()},
+                                                onLoadError:function(){
+                                                    alert('An error occured');
+                                                },
+                                                onChange: function(newValue, oldValue){
+                                                    onAssassinProfileChange(newValue, oldValue);
+                                                },
+                                                url:'SettingsAction.php?method=getAssassinProfiles'
+                                    ">
+    <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok"
+       onclick="submitForm('<?php echo $FORM_ID;?>', 'SettingsAction.php?method=saveAssassinActiveProfile&profile=' + getProfile())" style="width:90px">Save</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="loadSettingsAssassin();" style="width:90px">Undo</a>
+</form>
+<table id="<?php echo $DATAGRID_ID;?>" class="easyui-datagrid" style="width:95%;height:95%"
+       title="List Of Assassin-a-nator Players"
+       idField="id"
+       url='SettingsAction.php?method=getListAssassin'
+       data-options='fitColumns:true,
                         singleSelect:true,
                         onLoadSuccess:function(){
                         },
@@ -15,19 +35,20 @@
                         pageSize:10,
                         pageList:[5,10,15,20,25,30,40,50],
                         nowrap:false,
-                        queryParams:{profile:getProfile()},
+                        queryParams:{profile:getProfile(),assassinProfile:getAssassinProfile()},
                         rownumbers:true,
                         singleSelect:true'
-                   >
+>
 
-            <thead>
-            <tr>
-                <th data-options="field:'id', width:10, hidden:true">Id</th>
-                <th data-options="field:'fighterId', width:10">Fighter Id</th>
-                <th data-options="field:'name',width:20">Name</th>
-                <th data-options="field:'active',width:2,align:'center',formatter:function(value,row,index){return checkboxFormatter(value,row,index);} ">Active</th>
-            </tr>
-            </thead>
+    <thead>
+    <tr>
+        <th data-options="field:'id', width:10, hidden:true">Id</th>
+        <th data-options="field:'fighterId', width:8">Fighter Id</th>
+        <th data-options="field:'name',width:20">Name</th>
+        <th data-options="field:'status',width:8">Status</th>
+        <th data-options="field:'active',width:2,align:'center',formatter:function(value,row,index){return checkboxFormatter(value,row,index);} ">Active</th>
+    </tr>
+    </thead>
 </table>
 
 <span style="font-size:20px">
@@ -35,7 +56,7 @@
                     <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newAssassin()">New Job</a>
                     <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editAssassin()">Edit Job</a>
                     <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteAssassin()">Delete</a>
-                    <button type="button" onclick="refreshDatagrid()">Refresh</button>
+                    <button type="button" onclick="refreshAssassinDg()">Refresh</button>
                 </div>
 </span>
 
@@ -69,24 +90,77 @@
         </div>
     </form>
     <div id="dlg-buttonsAssassin">
-        <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok"
-           onclick="saveAssassin()" style="width:90px">Save</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="saveAssassin()" style="width:90px">Save</a>
         <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlgAssassin').dialog('close')" style="width:90px">Cancel</a>
     </div>
 </div>
 
 <script>
+    $('#<?php echo $FORM_ID;?>').form({
+        onLoadSuccess:function(data){
+            //alert("loaded ok");
+        },
+        onLoadError:function(){
+            alert("Error Loading Form <?php echo $FORM_ID;?>");
+        }
+    });
+
+    function refreshAssassinDg(){
+        var obj = {profile:getProfile(),assassinProfile:getAssassinProfile()};
+        $('#<?php echo $DATAGRID_ID;?>').datagrid('reload', obj);
+        return false;
+    }
+
+    function loadSettingsAssassin(profile){
+        if (profile){
+            // do nothing
+        }
+        else {
+            profile = getProfile();
+        }
+        $('#<?php echo $FORM_ID;?>').form('load','SettingsAction.php?method=getSettingsAssassin&profile=' + profile);
+    }
+    loadSettingsAssassin();
+
+    function onAssassinProfileChange(newValue, oldValue){
+        //alert("NewValue: " + newValue + " / OldValue: " + oldValue);
+        //if (oldValue != ''){
+            refreshAssassinDg();
+        //}
+    }
+
+    function getAssassinProfile(){
+        var _def_value = '<?php echo ASSASSIN_DEFAULT_PROFILE?>';
+        var _value = _def_value;
+        try {
+            //alert("1: " + _value);
+            _value = $("#activeProfile").combobox('getValue');
+            if (_value === "") {
+                //alert("2: " + _value);
+                _value = _def_value;
+            }
+        }
+        catch (err){
+        }
+        return _value;
+    }
+
+    function getUrlAssassinParameters(){
+        var param = "&profile=" + getProfile() + "&assassinProfile=" + getAssassinProfile();
+        return param;
+    }
+
     function newAssassin(){
         $('#dlgAssassin').dialog('open').dialog('setTitle','New Assassin');
         $('#<?php echo $FORM_ID;?>').form('reset');
-        url = 'SettingsAction.php?method=addAssassin' + "&profile=" + getProfile();
+        url = 'SettingsAction.php?method=addAssassin' + getUrlAssassinParameters();
     }
     function editAssassin(){
         var row = $('#<?php echo $DATAGRID_ID;?>').datagrid('getSelected');
         if (row){
             $('#dlgAssassin').dialog('open').dialog('setTitle','Edit Assassin');
             $('#<?php echo $FORM_ID;?>').form('load',row);
-            url = 'SettingsAction.php?method=updateAssassin&id='+row['id'] + "&profile=" + getProfile();
+            url = 'SettingsAction.php?method=updateAssassin&id='+row['id'] + getUrlAssassinParameters();
         }
     }
     function saveAssassin(){
@@ -117,7 +191,7 @@
                 if (r){
                     $.ajax({
                         type:    "POST",
-                        url:     "SettingsAction.php?method=deleteAssassin" + "&profile=" + getProfile(),
+                        url:     "SettingsAction.php?method=deleteAssassin" +  + getUrlAssassinParameters(),
                         data:    {id: row.id},
                         success: function(data) {
                             var dataObj = JSON.parse(data);

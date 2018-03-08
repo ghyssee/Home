@@ -11,6 +11,29 @@ require_once documentPath (ROOT_PHP_BO, "CacheBO.php");
 include_once documentPath (ROOT_PHP_MR_BO, "MafiaReloadedBO.php");
 include_once documentPath (ROOT_PHP_MR_BO, "FightTO.php");
 
+const ASSASSIN_DEFAULT_PROFILE = "malin";
+
+const ASSASSIN_PROFILE_STATUS_UNKNOWN = "UNKNOWN";
+
+class AssassinProfileTO {
+    public $id;
+    public $name;
+    public $status;
+    function __construct($id, $name) {
+        $this->id = $id;
+        $this->name = $name;
+        $this->status = ASSASSIN_PROFILE_STATUS_UNKNOWN;
+    }
+}
+
+class AssassinSettingsTO {
+    public $activeProfile;
+
+    function getBase(){
+        return null;
+    }
+}
+
 class AssassinBO
 {
     public $assassinObj;
@@ -22,8 +45,59 @@ class AssassinBO
         $this->assassinObj = readJSON($this->file);
     }
 
-    function getListAssassin(){
-        return $this->assassinObj->players;
+    function getRequestProfile(){
+        $profile = null;
+        if (isset($_REQUEST["assassinProfile"])){
+            $profile = $_REQUEST["assassinProfile"];
+        }
+        return $profile;
+    }
+
+    function getAssassinProfile($id){
+        foreach($this->assassinObj->profiles as $key => $item){
+            if ($item->id == $id){
+                return $item;
+            }
+        }
+        return null;
+    }
+
+
+    function getAssassinProfiles(){
+        $list = Array();
+        foreach($this->assassinObj->profiles as $key => $item){
+            $assassinTO = new AssassinProfileTO($item->id, $item->name);
+            if ($item->id == $this->assassinObj->activeProfile){
+                $assassinTO->selected = true;
+            }
+            $list[] = $assassinTO;
+        }
+        return $list;
+    }
+
+    function saveAssassinActiveProfile(AssassinSettingsTO $assassinSettingsTO){
+        $feedBack = new FeedBackTO();
+        $tmpVar = get_object_vars($assassinSettingsTO);
+        //    $props = getProperties($fightSettingsTO);
+        foreach ($tmpVar as $key => $value) {
+            if ($assassinSettingsTO->getBase() == null) {
+                $this->assassinObj->{$key} = $value;
+            } else {
+                $this->assassinObj->{$assassinSettingsTO->getBase()}->{$key} = $value;
+            }
+
+        }
+        $this->save();
+        $feedBack->success = true;
+        return $feedBack;
+    }
+
+    function getListAssassin($id){
+        $assassinProfile = $this->getAssassinProfile($id);
+        if ($assassinProfile != null){
+            return $assassinProfile->players;
+        }
+        return null;
     }
 
     function addAssassin(AssassinTO $assassinTO){
@@ -81,8 +155,29 @@ class AssassinBO
         return $feedbackTO;
     }
 
-
     function save(){
         writeJSON($this->assassinObj, $this->file);
+    }
+
+    function getAssassinSettings(){
+        $assassinSettingsTO = new AssassinSettingsTO();
+        $tmpVar = get_object_vars($assassinSettingsTO);
+        //$tmpVar = getProperties($dailyLinkTO);
+        foreach($tmpVar as $key => $value) {
+            $assassinSettingsTO->{$key} = $this->getSetting($assassinSettingsTO, $key);
+        }
+        return $assassinSettingsTO;
+
+    }
+
+    function getSetting($to, $key){
+        $value = null;
+        if ($to->getBase() == null){
+            $value = $this->assassinObj->{$key};
+        }
+        else {
+            $value = $this->assassinObj->{$to->getBase()}->{$key};
+        }
+        return $value;
     }
 }
