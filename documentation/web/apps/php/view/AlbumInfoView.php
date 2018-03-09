@@ -1,21 +1,23 @@
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+include_once "../setup.php";
+include_once documentPath (ROOT_PHP, "config.php");
+include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
+include_once documentPath (ROOT_PHP_HTML, "config.php");
+include_once documentPath (ROOT_PHP_BO, "SessionBO.php");
+?>
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="../../css/stylesheet.css">
-    <link rel="stylesheet" type="text/css" href="../../Themes/easyui/metro-blue/easyui.css">
-    <link rel="stylesheet" type="text/css" href="../../Themes/easyui/icon.css">
-    <link rel="stylesheet" type="text/css" href="../../css/form.css">
-    <script type="text/javascript" src="../../js/jquery-3.1.1.js"></script>
-    <script type="text/javascript" src="../../js/jquery.easyui.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="<?php echo webPath(ROOT_CSS, 'stylesheet.css')?>">
+    <link rel="stylesheet" type="text/css" href="<?php echo webPath(ROOT_CSS, 'form.css')?>">
+    <?php include documentRoot ("apps/php/templates/easyui.php");?>
+    <script type="text/javascript" src="<?php echo webPath(ROOT_JS_EASYUI, 'jquery.edatagrid.js')?>"></script>
 </head>
 <body>
 
 <?php
-session_start();
-include("../setup.php");
-include("../config.php");
-include("../model/HTML.php");
-include("../html/config.php");
-
+sessionStart();
 $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
 if (isset($_SESSION["mp3Preprocessor"])) {
     $mp3PreprocessorObj = $_SESSION["mp3Preprocessor"];
