@@ -15,6 +15,12 @@ $FORM_ID = "settingsBoss";
                class="easyui-checkbox" type="checkbox" value="true"
         >
     </div>
+    <div class="fitem">
+        <label>Pummel Attack</label>
+        <input name="pummel"
+               class="easyui-checkbox" type="checkbox" value="true"
+        >
+    </div>
     <div title="Stop fighting boss when boss health is below this value" class="fitem">
         <label>Stop When Health Below</label>
         <input name="stopWhenHealthBelow" id="stopWhenHealthBelow" class="easyui-numberspinner" style="width:150px;"

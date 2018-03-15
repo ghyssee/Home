@@ -34,6 +34,30 @@ const FORM_ID = "settings";
          >
     </div>
     <div class="fitem">
+        <label for="profileAttackSize">Profile Attack Size</label>
+        <input name="profileAttackSize" id="profileAttackSize" class="easyui-numberspinner" style="width:150px;"
+               data-options="min:0"
+        >
+    </div>
+    <div class="fitem">
+        <label for="maxNumberOfAttacks">Max. Number of attacks</label>
+        <input name="maxNumberOfAttacks" id="maxNumberOfAttacks" class="easyui-numberspinner" style="width:150px;"
+               data-options="min:0"
+        >
+    </div>
+    <div class="fitem">
+        <label for="minStaminaToFight">Min. Stamina to start fighting</label>
+        <input name="minStaminaToFight" id="minStaminaToFight" class="easyui-numberspinner" style="width:150px;"
+               data-options="min:0"
+        >
+    </div>
+    <div class="fitem">
+        <label for="maxKillsDay">Max. Daily Kills for a fighter</label>
+        <input name="maxKillsDay" id="maxKillsDay" class="easyui-numberspinner" style="width:150px;"
+               data-options="min:0"
+        >
+    </div>
+    <div class="fitem">
         <label for="stopWhenStaminaBelow">Stop When Stamina Below</label>
         <input name="stopWhenStaminaBelow" id="stopWhenStaminaBelow" class="easyui-numberspinner" style="width:150px;"
                data-options="min:0"

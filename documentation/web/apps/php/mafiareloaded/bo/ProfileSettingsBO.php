@@ -72,6 +72,7 @@ class HomefeedSettingsTO  {
 class BossSettingsTO  {
     public $active = false;
     public $stopWhenHealthBelow = 0;
+    public $pummel = false;
 
     public function getBase(){
         return "boss";
@@ -88,6 +89,10 @@ class FightSettingsTO  {
     public $numberOfHealsLimit = 0;
     public $minLengthOfFightList = 0;
     public $stopWhenStaminaBelow = 0;
+    public $profileAttackSize = 0;
+    public $maxNumberOfAttacks = 0;
+    public $maxKillsDay = 0;
+    public $minStaminaToFight = 0;
 
     public function getBase(){
         return "fight";
