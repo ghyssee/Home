@@ -51,6 +51,17 @@ class HomeFeedBO{
         return $homeFeedLines;
     }
 
+    function getKills($gangId){
+        $homeFeedLines = Array();
+        foreach($this->homeFeedObj->kills as $key => $item){
+            $homeFeedTO = new HomeFeedTO($item);
+            if ($homeFeedTO->gangId == $gangId) {
+                $homeFeedLines[] = $homeFeedTO;
+            }
+        }
+        return $homeFeedLines;
+    }
+
     function cleanupHomefeed($nrOfDays) {
         $hisFile = getProfileFile(JSON_MR_HOMEFEED_HISTORY, $this->profile);
         $hisObj = readJSON($hisFile);

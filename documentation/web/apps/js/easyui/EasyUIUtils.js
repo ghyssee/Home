@@ -70,11 +70,34 @@ function submitForm(formId, url) {
         },
         success: function (data) {
             var obj = JSON.parse(data);
-            alert(obj.message);
+            if (obj.message) {
+                alert(obj.message);
+            }
+            else {
+                alert(data);
+            }
         }
     });
 }
 
+function submitFormMessage(formId, url, messageId) {
+    $('#' + formId).form('submit', {
+        url: url,
+        onSubmit: function () {
+            // do some check
+            // return false to prevent submit;
+        },
+        success: function (data) {
+            var obj = JSON.parse(data);
+            if (obj) {
+                $('#' + messageId).html(obj.message);
+            }
+            else {
+                alert("Problem with the submit of this form: " + data);
+            }
+        }
+    });
+}
 function deleteRecord(name, dg, url, idField){
     dg = '#' + dg;
     var row = $(dg).datagrid('getSelected');

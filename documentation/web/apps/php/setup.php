@@ -247,6 +247,17 @@ function getYYYYMMDD(){
     return date("Ymd");
 }
 
+function convertStringYYYYMMDDHHMMSSToDate($strDate){
+    try {
+        $obj_date = DateTime::createFromFormat('YmdHis', $strDate);
+        return $obj_date;
+    } catch (Exception $e) {
+        echo $e->getMessage();
+        exit(1);
+    }
+    return null;
+}
+
 function read ($file){
     return file_get_contents($file);
 }
