@@ -124,8 +124,7 @@ private static void testAlbumArtist(){
         */
         System.out.println(mp3Helper.prettifyArtist("Axwell ^ Ingrosso"));
         System.out.println("Axwell ^ Ingrosso".replaceAll("Axwell \\^ Ingrosso", "test"));
-        System.out.println(getTitleArtistException("Siа", "Frее Mе (Cdq)"));
-        System.out.println("Free Me (CDQ)".replaceAll("Free Me \\(CDQ\\)", "Free Me"));
+        System.out.println(getTitleArtistException("Kontra K", "Zwischen Himmel Hlle"));
 
         //System.out.println(getArtistTitleException("Fifth Harmony Feat. Ty Dolla Sign", "Work From Home"));
         //System.out.println(getArtistTitleException("The Ramblers", "Dag Schatteboutje"));

@@ -13,6 +13,8 @@ include_once documentPath (ROOT_PHP_MR_BO, "HomeFeedBO.php");
 
 class ReportTO {
     public $gangId;
+    public $fighterId;
+    public $history;
     public $profile;
     public $message;
     function __construct() {
@@ -23,10 +25,12 @@ class ReportTO {
 if (isset($_REQUEST['report'])) {
     $reportTO = new ReportTO();
     assignField($reportTO->gangId, "gangId");
+    assignField($reportTO->fighterId, "fighterId");
     assignField($reportTO->profile, "profile");
+    assignCheckbox($reportTO->history, "history");
     $reportTO->message = "";
     $homefeedBO = new HomeFeedBO($reportTO->profile, false);
-    $kills = $homefeedBO->getKills($reportTO->gangId);
+    $kills = $homefeedBO->getKills($reportTO);
     foreach($kills as $item){
         $test = convertStringYYYYMMDDHHMMSSToDate($item->timeStamp);
         if (!$test){

@@ -51,12 +51,35 @@ class HomeFeedBO{
         return $homeFeedLines;
     }
 
-    function getKills($gangId){
+    function getKills($reportTO){
+        $homeFeedLines = $this->getListOfKills($reportTO, $this->homeFeedObj->kills);
+        if ($reportTO->history){
+            $histFile = getProfileFile(JSON_MR_HOMEFEED_HISTORY, $this->profile);
+            $histObj = readJSON($histFile);
+            $histLines = $this->getListOfKills($reportTO, $histObj->kills);
+            $homeFeedLines = array_merge($histLines, $homeFeedLines);
+
+        }
+        return $homeFeedLines;
+    }
+
+    function issetAndNotEmpty($value){
+        return (isset($value) && $value != "") ;
+    }
+
+    function getListOfKills($reportTO, $list){
         $homeFeedLines = Array();
-        foreach($this->homeFeedObj->kills as $key => $item){
+        foreach($list as $key => $item){
             $homeFeedTO = new HomeFeedTO($item);
-            if ($homeFeedTO->gangId == $gangId) {
-                $homeFeedLines[] = $homeFeedTO;
+            if ($this->issetAndNotEmpty($reportTO->fighterId)){
+                if ($homeFeedTO->fighterId == $reportTO->fighterId) {
+                    $homeFeedLines[] = $homeFeedTO;
+                }
+            }
+            else if($this->issetAndNotEmpty($reportTO->gangId)) {
+                if ($homeFeedTO->gangId == $reportTO->gangId) {
+                    $homeFeedLines[] = $homeFeedTO;
+                }
             }
         }
         return $homeFeedLines;

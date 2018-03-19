@@ -36,8 +36,19 @@ include_once('Smarty.class.php');
                 ?>
             </div>
             <div class="fitem">
-                <label title="Gzng Id">Gang Id</label>
+                <label title="Gang Id">Gang Id</label>
                 <input name="gangId" id="gangId" class="easyui-textbox" style="width:150px;"
+                >
+            </div>
+            <div class="fitem">
+                <label title="Fighter Id">Fighter Id</label>
+                <input name="fighterId" id="fighterId" class="easyui-textbox" style="width:150px;"
+                >
+            </div>
+            <div class="fitem">
+                <label>Include History</label>
+                <input name="history"
+                       class="easyui-checkbox" type="checkbox" value="true"
                 >
             </div>
             <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok"
