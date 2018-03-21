@@ -103,6 +103,12 @@ class FightSettingsTO  {
     }
 }
 
+class BullyTO extends Castable {
+    public $id;
+    public $name;
+    public $active;
+}
+
 class ProfileSettingsBO
 {
     public $mrObj;
@@ -151,6 +157,64 @@ class ProfileSettingsBO
         $this->save();
         $feedBack->success = true;
         return $feedBack;
+    }
+
+    function getListBullies(){
+        return $this->mrObj->fight->underAttackList;
+    }
+
+    function addBully(BullyTO $bullyTO){
+        $feedbackTO = new FeedBackTO();
+        $this->mrObj->fight->underAttackList[] = $bullyTO;
+        $feedbackTO->success = true;
+        $this->save();
+        return $feedbackTO;
+    }
+
+    function getBully($id){
+        $bully = null;
+        foreach($this->mrObj->fight->underAttackList as $key => $item){
+            if ($item->id == $id){
+                $bully = new BullyTO($item);
+                break;
+            }
+        }
+        return $bully;
+    }
+
+    function updateBully(BullyTO $bullyTO){
+        $counter = 0;
+        $feedBackTO = new FeedBackTO();
+        $feedBackTO->success = false;
+        foreach ($this->mrObj->fight->underAttackList as $key => $value) {
+            if (strcmp($value->id, $bullyTO->id) == 0) {
+                $this->mrObj->fight->underAttackList[$counter] = $bullyTO;
+                $this->save();
+                $feedBackTO->success = true;
+                break;
+            }
+            $counter++;
+        }
+        if (!$feedBackTO->success){
+            $feedBackTO->errorMsg = "Problem updating Bully with Id " . $bullyTO->id;
+        }
+        return $feedBackTO;
+    }
+
+    function deleteBully($id){
+        $feedbackTO = new FeedBackTO();
+        $key = array_search($id, array_column($this->mrObj->fight->underAttackList, "id"));
+        if ($key === false) {
+            $feedbackTO->success = false;
+            $feedbackTO->errorMsg = 'There was a problem finding the bully with ID ' . $id;
+        } else {
+            unset($this->mrObj->fight->underAttackList[$key]);
+            $array = array_values($this->mrObj->fight->underAttackList);
+            $this->mrObj->fight->underAttackList = $array;
+            $this->save();
+            $feedbackTO->success = true;
+        }
+        return $feedbackTO;
     }
 
     function save()

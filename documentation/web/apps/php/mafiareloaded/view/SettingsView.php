@@ -66,9 +66,7 @@ function getProfile(){
 </head>
 <body style="background">
 
-<?php
-goMenu();
-?>
+<?php include "../../menu/Menu.php"; ?>
 
 <h3>Settings</h3>
 
@@ -116,6 +114,9 @@ goMenu();
             </div>
             <div title="Allies" style="overflow:auto;padding:20px;display:none;" >
                 <?php include "SettingsTabAllies.php"; ?>
+            </div>
+            <div title="Bullies" style="overflow:auto;padding:20px;display:none;" >
+                <?php include "SettingsTabBullies.php"; ?>
             </div>
         </div>
     </div>

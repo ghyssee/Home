@@ -98,34 +98,6 @@ function submitFormMessage(formId, url, messageId) {
         }
     });
 }
-function deleteRecord(name, dg, url, idField){
-    dg = '#' + dg;
-    var row = $(dg).datagrid('getSelected');
-    if (row){
-        $.messager.confirm('Confirm','Are you sure you want to delete this ' + name + '?',function(r){
-            if (r){
-                $.ajax({
-                    type:    "POST",
-                    url:     url,
-                    data:    {id: row[idField]},
-                    success: function(data) {
-                        var dataObj = JSON.parse(data);
-                        if (!dataObj.success && dataObj.hasOwnProperty('errorMessage')){
-                            alert(dataObj.errorMessage);
-                        }
-                        $(dg).datagrid('reload');
-                    },
-                    // vvv---- This is the new bit
-                    error:   function(jqXHR, textStatus, errorThrown) {
-                        alert("Error, status = " + textStatus + ", " +
-                            "error thrown: " + errorThrown
-                        );
-                    }
-                });
-            }
-        });
-    }
-}
 
 function getSwitchValue(id){
     id = '#' + id;
@@ -143,5 +115,71 @@ function checkboxFormatter(val,row,index){
     }
 }
 
+function newRecord($dialogId, $formId, $title, $url){
+    $('#' + $dialogId).dialog('open').dialog('setTitle', $title);
+    $('#' + $formId).form('reset');
+    url = $url;
+}
 
+function saveRecord(formId, dialogId, datagridId){
+    $('#' + formId).form('submit',{
+        url: url,
+        onSubmit: function(){
+            return $(this).form('validate');
+        },
+        success: function(result){
+            var result = JSON.parse(result);
+            if (result.errorMsg){
+                $.messager.show({
+                    title: 'Error',
+                    msg: result.errorMsg
+                });
+            } else {
+                $('#' + dialogId).dialog('close');		// close the dialog
+                $('#' + datagridId).datagrid('reload');	// reload the user data
+            }
+        }
+    });
+}
 
+function editRecord(datagridId, dialogId, formId, idField, title, editUrl){
+    var row = $('#' + datagridId).datagrid('getSelected');
+    if (row){
+        $('#' + dialogId).dialog('open').dialog('setTitle',title);
+        $('#' + formId).form('load',row);
+        url = editUrl + '&id=' + row[idField];
+    }
+}
+
+function deleteRecordV2(datagridId, title, idField, deleteUrl){
+    var row = $('#' + datagridId).datagrid('getSelected');
+    if (row){
+        $.messager.confirm('Confirm','Are you sure you want to delete this ' + title + '?',function(r){
+            if (r){
+                $.ajax({
+                    type:    "POST",
+                    url:     deleteUrl,
+                    data:    {id: row[idField]},
+                    success: function(data) {
+                        try {
+                            var dataObj = JSON.parse(data);
+                            if (!dataObj.success && dataObj.hasOwnProperty('errorMessage')) {
+                                alert(dataObj.errorMessage);
+                            }
+                            $('#' + datagridId).datagrid('reload');
+                        }
+                        catch (ex){
+                            alert(data);
+                        }
+                    },
+                    // vvv---- This is the new bit
+                    error:   function(jqXHR, textStatus, errorThrown) {
+                        alert("Error, status = " + textStatus + ", " +
+                            "error thrown: " + errorThrown
+                        );
+                    }
+                });
+            }
+        });
+    }
+}

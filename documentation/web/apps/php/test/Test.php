@@ -25,24 +25,7 @@ session_start();
 <body style="background">
 <h3>Test</h3>
 
-<?php
-    if (isset($_REQUEST["id"])) {
-        $id = htmlspecialchars($_REQUEST['id']);
-    }
-    else {
-        $id = 175435;
-        $id = 186695;
-    }
-    $songBO = new SongBO();
-    try {
-        $songObj = $songBO->testSong($id);
-    }
-    catch (Exception $e){
-        echo $e->getMessage();
-        exit(0);
-    }
-    print_r($songObj);
-?>
+<?php include "../menu/Menu.php"; ?>
 
 </body>
 </html>

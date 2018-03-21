@@ -116,7 +116,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
     }
 
     function deleteLine(){
-        deleteRecord("line", "dgHomeFeed",  "HomeFeedAction.php?method=delete" + "&profile=" + getProfile() + "&history=" + getSwitchValue("history"), "id");
+        deleteRecordV2("dgHomeFeed",  "Line", "id", "HomeFeedAction.php?method=delete" + "&profile=" + getProfile() + "&history=" + getSwitchValue("history"));
     }
 
 

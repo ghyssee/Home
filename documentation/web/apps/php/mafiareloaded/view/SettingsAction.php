@@ -113,6 +113,18 @@ try {
         case "saveAssassinActiveProfile":
             saveAssassinActiveProfile();
             break;
+        case "getListBullies":
+            getListBullies();
+            break;
+        case "addBully":
+            addBully();
+            break;
+        case "updateBully":
+            updateBully();
+            break;
+        case "deleteBully":
+            deleteBully();
+            break;
     }
 }
 catch(Error $e) {
@@ -393,7 +405,6 @@ function getListAllies(){
     echo json_encode($result);
 }
 
-
 function fillInAlly($allyTO){
     if (!isset($allyTO)) {
         $allyTO = new AllyTO();
@@ -474,4 +485,78 @@ function getSetttingsAssassin(){
     $assassinBO = new AssassinBO(getProfile());
     $assassinTO = $assassinBO->getAssassinSettings();
     echo json_encode($assassinTO);
+}
+
+function getListBullies(){
+    $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
+    $rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
+    $bo = new ProfileSettingsBO(getProfile());
+    $list = $bo->getListBullies();
+    $sort = new CustomSort();
+    $list = $sort->sortObjectArrayByField($list, "name", "asc");
+    $array = array_slice($list, ($page-1)*$rows, $rows);
+    $result["total"] = count($list);
+    $result["rows"] = $array;
+    echo json_encode($result);
+}
+
+function fillInBully(BullyTO $bullyTO){
+    if (!isset($bullyTO)) {
+        $bullyTO = new $bullyTO();
+    }
+    assignCheckbox($bullyTO->active, "active", !HTML_SPECIAL_CHAR);
+    assignField($bullyTO->id, "id", !HTML_SPECIAL_CHAR);
+    assignField($bullyTO->name, "name", !HTML_SPECIAL_CHAR);
+    return $bullyTO;
+
+}
+
+function addBully(){
+    $bullyTO = fillInBully( new BullyTO() );
+    $bo = new ProfileSettingsBO(getProfile());
+    $feedBackTO = $bo->addBully($bullyTO);
+    if ($feedBackTO->success){
+        echo json_encode($bo->getListBullies());
+    }
+    else {
+        echo json_encode($feedBackTO);
+    }
+    exit();
+}
+
+function updateBully(){
+    $feedBackTO = new FeedBackTO();
+    if (!isset($_GET['id'])){
+        $feedBackTO->success = false;
+        $feedBackTO->errorMsg = 'Bully Id Not Found!';
+        echo json_encode($feedBackTO);
+    }
+    else {
+        $id = $_GET['id'];
+        $bo = new ProfileSettingsBO(getProfile());
+        $bullyTO = $bo->getBully($id);
+        fillInBully($bullyTO);
+        $feedBackTO = $bo->updateBully($bullyTO);
+        if ($feedBackTO->success) {
+            echo json_encode($bo->getListBullies());
+        } else {
+            echo json_encode($feedBackTO);
+        }
+    }
+    exit();
+}
+
+function deleteBully()
+{
+    $feedBackTO = new FeedBackTO();
+    $feedBackTO->success = false;
+    if (isset($_REQUEST['id'])){
+        $id = $_REQUEST['id'];
+        $bo = new ProfileSettingsBO(getProfile());
+        $feedBackTO = $bo->deleteBully($id);
+    }
+    else {
+        $feedBackTO->errorMsg = "Id of bully not filled in";
+    }
+    echo json_encode($feedBackTO);
 }
