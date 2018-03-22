@@ -20,10 +20,11 @@ include_once documentPath (ROOT_PHP_BO, "ArtistSongRelationshipBO.php");
 </head>
 
 <body>
-
 <?php
 sessionStart();
-goMenu();
+?>
+<?php include documentPath (ROOT_PHP_MENU, "Menu.php"); ?>
+<?php
 if (isset($_REQUEST["id"])) {
     $artistSongId = htmlspecialchars($_REQUEST['id']);
     $artistSongRelationShipBO = new ArtistSongRelationShipBO();

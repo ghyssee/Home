@@ -62,11 +62,11 @@ function getProfile(){
 <head>
     <link rel="stylesheet" type="text/css" href="<?php echo webPath(ROOT_CSS, 'stylesheet.css')?>">
     <link rel="stylesheet" type="text/css" href="<?php echo webPath(ROOT_CSS, 'form.css')?>">
-    <?php include documentRoot ("apps/php/templates/easyui.php");?>
+    <?php include documentPath (ROOT_PHP_TEMPLATES, "easyui.php");?>
 </head>
 <body style="background">
 
-<?php include "../../menu/Menu.php"; ?>
+<?php include documentPath (ROOT_PHP_MENU, "Menu.php"); ?>
 
 <h3>Settings</h3>
 

@@ -11,6 +11,9 @@ include_once("../setup.php");
 
 <?php
 session_start();
+?>
+<?php include documentPath (ROOT_PHP_MENU, "Menu.php"); ?>
+<?php
 $albumSave = "AlbumAction.php";
 include_once documentPath (ROOT_PHP, "config.php");
 include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
@@ -43,9 +46,6 @@ if (isset($_SESSION["mp3Preprocessor"])) {
     }
 
 </style>
-<?php
-goMenu();
-?>
 <h3 class="centered">Settings</h3>
 <div id="tt" class="easyui-tabs centered" data-options="selected:0" style="width:900px;height:500px;margin:0 auto;">
     <div title="Album" style="padding:20px;display:none;">

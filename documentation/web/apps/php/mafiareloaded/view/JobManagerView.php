@@ -12,66 +12,29 @@ include_once documentPath (ROOT_PHP_MODEL, "HTML.php");
 include_once documentPath (ROOT_PHP_HTML, "config.php");
 include_once documentPath (ROOT_PHP_MR_BO, "JobBO.php");
 include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
+
+$DATAGRID_ID = "dgScheduledJob";
+$FORM_ID = "fmScheduledJob";
+$DIALOG_ID = "dlgScheduledJob";
+$TOOLBAR_ID = "toolbarScheduledJob";
+$DIALOG_BUTTONS_ID = "dlg-buttonsScheduledJob";
 ?>
 
 <html>
     <head>
-        <link rel="stylesheet" type="text/css" href="../../css/stylesheet.css">
-        <link rel="stylesheet" type="text/css" href="../../Themes/easyui/metro-blue/easyui.css">
-        <link rel="stylesheet" type="text/css" href="../../Themes/easyui/icon.css">
-        <link rel="stylesheet" type="text/css" href="../../css/form.css">
-        <?php include documentRoot ("apps/php/templates/easyui.php");?>
+        <?php include documentPath (ROOT_PHP_TEMPLATES, "Stylesheet.php");?>
+        <?php include documentPath (ROOT_PHP_TEMPLATES, "easyui.php");?>
     </head>
     <body>
 
-    <?php
-    ?>
-
-
-    <style type="text/css">
-        .Table
-        {
-            display: table;
-        }
-        .Title
-        {
-            display: table-caption;
-            text-align: center;
-            font-weight: bold;
-            font-size: larger;
-        }
-        .Heading
-        {
-            display: table-row;
-            font-weight: bold;
-            text-align: center;
-        }
-        .Row
-        {
-            display: table-row;
-        }
-        .Cell
-        {
-            display: table-cell;
-            border: none;
-            border-width: thin;
-            padding-top: 5px;
-            padding-left: 5px;
-            padding-right: 5px;
-            padding-bottom: 5px;
-        }
-        DIV.vertical-center {
-            min-height: 10em;
-            display: table-cell;
-            vertical-align: middle
-        }
-    </style>
+    <?php include documentPath (ROOT_PHP_MENU, "Menu.php"); ?>
+    <h3>Job Manager</h3>
 
 
     <div id="cc" class="easyui-layout" style="width:95%;height:90%">
         <div data-options="region:'south',title:'Jobs',split:true" style="height:100%;padding:5px;">
 
-            <table id="dgScheduledJob" class="easyui-datagrid" style="width:100%;height:95%"
+            <table id="<?php echo $DATAGRID_ID;?>" class="easyui-datagrid" style="width:100%;height:95%"
                    title="List Of Scheduled Jobs"
                    idField="id"
                    url='JobManagerAction.php?method=list'
@@ -80,7 +43,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
                         onLoadSuccess:function(){
                             $(this).datagrid("enableDnd");
                         },
-                        toolbar:"#toolbarScheduledJob",
+                        toolbar:"#<?php echo $TOOLBAR_ID;?>",
                         footer:"#footerScheduledJob",
                         pagination:false,
                         nowrap:false,
@@ -119,30 +82,26 @@ include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
 
 
             <span style="font-size:20px">
-                <div id="toolbarScheduledJob">
+                <div id="<?php echo $TOOLBAR_ID;?>">
                     <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newRecordScheduledJob()">New Job</a>
                     <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editRecordScheduledJob()">Edit Job</a>
                     <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteRecordScheduledJob()">Delete Job</a>
                 </div>
                 <div id="footerScheduledJob">
                     <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-save" plain="true" onclick="saveJobList()">Save Job Order</a>
-                    Profile: <input id="profile" class="easyui-combobox" name="profile"
-                                   data-options="valueField:'id',
-                                                width:200,
-                                                limitToList: true,
-                                                textField:'name',
-                                                onChange: function(row){
-                                                    onProfileChange(row);
-                                                },
-                                                url:'ProfileAction.php?method=getProfiles'
-                                    ">
+                    <?php
+                    $smarty = initializeSmarty();
+                    $smarty->assign('datagrid',$DATAGRID_ID);
+                    $smarty->assign('layout','cc');
+                    $smarty->display('MafiaReloadedProfile.tpl');
+                    ?>
                 </div>
 	        </span>
 
-            <div id="dlgScheduledJob" class="easyui-dialog" style="width:600px;height:500px;padding:10px 20px"
-                 closed="true" buttons="#dlg-buttonsScheduledJob">
+            <div id="<?php echo $DIALOG_ID;?>" class="easyui-dialog" style="width:600px;height:500px;padding:10px 20px"
+                 closed="true" buttons="#<?php echo $DIALOG_BUTTONS_ID;?>">
                 <div class="ftitle">Job Schedule</div>
-                <form id="fmScheduledJob" method="post" novalidate>
+                <form id="<?php echo $FORM_ID;?>" method="post" novalidate>
 
                     <div class="fitem">
                         <label>Job Type</label>
@@ -272,10 +231,10 @@ include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
                     </div>
                 </form>
             </div>
-            <div id="dlg-buttonsScheduledJob">
+            <div id="<?php echo $DIALOG_BUTTONS_ID;?>">
                 <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok"
                    onclick="saveScheduledJob()" style="width:90px">Save</a>
-                <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlgScheduledJob').dialog('close')" style="width:90px">Cancel</a>
+                <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#<?php echo $DIALOG_ID;?>').dialog('close')" style="width:90px">Cancel</a>
             </div>
 
 
@@ -283,21 +242,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
         </div>
     </div>
 
-
     <script type="text/javascript">
-
-        function getProfile(){
-            var _value = $("#profile").combobox('getValue');
-            return _value;
-        }
-
-        function onProfileChange(){
-           var profileId = getProfile();
-           var _value = $("#profile").combobox('getText');
-           var obj = {profile:profileId};
-           $('#dgScheduledJob').datagrid('reload', obj);
-           $('#cc').layout('panel', 'south').panel('setTitle', 'Profile: ' + profileId + " " + _value);
-        }
 
         function saveJobList(){
             var rows = $('#dgScheduledJob').datagrid('getRows');
@@ -364,10 +309,8 @@ include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
         }
 
         function refreshJobs(obj){
-            //$('#jobId').combobox('reload', obj);
             var grid = $('#ccJobId').combogrid('grid');
             grid.datagrid('reload', obj);
-            //$('#ccJobId').combogrid('reload', obj);
         }
 
         function onChapterChange(row){
@@ -398,32 +341,33 @@ include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
                 //$("#jobId").combobox('setValue', null);
                 //$( "#jobId" ).combobox({ disabled: true });
                 $('#ccJobId').combogrid('setValue', null);
-                $( "#ccJobId" ).combogrid({ disabled: true });
-                $("#total").numberspinner({ disabled: true });
+                $( "#ccJobId" ).combogrid('disable');
+                //$( "#ccJobId" ).combogrid({ disabled: true });
+                $("#total").numberspinner('disable');
+                $("#total").numberspinner('setValue', 0);
             }
             else {
                 //$("#jobId").combobox({ disabled: false });
-                $("#ccJobId").combogrid({ disabled: false });
-                $("#total").numberspinner({ disabled: false });
+                //$("#ccJobId").combogrid({ disabled: false });
+                $( "#ccJobId" ).combogrid('enable');
+                $("#total").numberspinner('enable');
             }
         }
 
         function newRecordScheduledJob(){
-            var row = $('#dgScheduledJob').datagrid('getSelected');
+            var row = $('#<?php echo $DATAGRID_ID;?>').datagrid('getSelected');
             var rowIndex = '';
             if (row){
-                rowIndex='&insertBefore=' + row.id;
+              rowIndex='&insertBefore=' + row.id;
             }
-            $('#dlgScheduledJob').dialog('open').dialog('setTitle','New Scheduled Job');
-            $('#fmScheduledJob').form('reset');
+            newRecord('<?php echo $DIALOG_ID;?>', '<?php echo $FORM_ID;?>', 'Scheduled Job', 'JobManagerAction.php?method=addActiveJob' + rowIndex + "&profile=" + getProfile());
             $('#districtId').combobox('setValue', '1');
-            url = 'JobManagerAction.php?method=addActiveJob' + rowIndex + "&profile=" + getProfile();
         }
+
         function editRecordScheduledJob(){
+            editRecord('<?php echo $DATAGRID_ID;?>', '<?php echo $DIALOG_ID;?>', '<?php echo $FORM_ID;?>', 'id', 'Scheduled Job', 'JobManagerAction.php?method=updateActiveJob' + "&profile=" + getProfile());
             var row = $('#dgScheduledJob').datagrid('getSelected');
             if (row){
-                $('#dlgScheduledJob').dialog('open').dialog('setTitle','Edit Active Job');
-                $('#fmScheduledJob').form('load',row);
                 checkForm(row.type);
                 var obj = {
                     "district": row.districtId,
@@ -431,88 +375,19 @@ include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
                     "profile": getProfile()
                 };
                 refreshJobs(obj);
-                $('#total').numberspinner('setValue', row.total);
-
-                if (row.type != 'CHAPTER') {
-                    $('#ccJobId').combogrid('setValue', row.jobId);
-                }
-                url = 'JobManagerAction.php?method=updateActiveJob&id='+row['id'] + "&profile=" + getProfile();
+                //if (row.type != 'CHAPTER') {
+                    //$('#ccJobId').combogrid('setValue', row.jobId);
+                //}
             }
         }
         function saveScheduledJob(){
-            $('#fmScheduledJob').form('submit',{
-                url: url,
-                onSubmit: function(){
-                    return $(this).form('validate');
-                },
-                success: function(result){
-                    //var result = eval('('+result+')');
-                    var result = JSON.parse(result);
-                    if (result.errorMsg){
-                        $.messager.show({
-                            title: 'Error',
-                            msg: result.errorMsg
-                        });
-                    } else {
-                        $('#dlgScheduledJob').dialog('close');		// close the dialog
-                        $('#dgScheduledJob').datagrid('reload');	// reload the user data
-                    }
-                }
-            });
+            saveRecord('<?php echo $FORM_ID;?>', '<?php echo $DIALOG_ID;?>', '<?php echo $DATAGRID_ID;?>');
         }
 
         function deleteRecordScheduledJob(){
-            var row = $('#dgScheduledJob').datagrid('getSelected');
-            if (row){
-                $.messager.confirm('Confirm','Are you sure you want to delete this Scheduled Job?',function(r){
-                    if (r){
-                        $.ajax({
-                            type:    "POST",
-                            url:     "JobManagerAction.php?method=deleteScheduledJob" + "&profile=" + getProfile(),
-                            data:    {id: row.id},
-                            success: function(data) {
-                                var dataObj = JSON.parse(data);
-                                if (!dataObj.success && dataObj.hasOwnProperty('errorMessage')){
-                                    alert(dataObj.errorMessage);
-                                }
-                                $('#dgScheduledJob').datagrid('reload');
-                            },
-                            // vvv---- This is the new bit
-                            error:   function(jqXHR, textStatus, errorThrown) {
-                                alert("Error, status = " + textStatus + ", " +
-                                    "error thrown: " + errorThrown
-                                );
-                            }
-                        });
-                    }
-                });
-            }
+            deleteRecordV2('<?php echo $DATAGRID_ID;?>', 'Scheduled Job', 'id', "JobManagerAction.php?method=deleteScheduledJob" + "&profile=" + getProfile());
         }
     </script>
-
-    <style type="text/css">
-        #fm{
-            margin:0;
-            padding:10px 30px;
-        }
-        .ftitle{
-            font-size:14px;
-            font-weight:bold;
-            padding:5px 0;
-            margin-bottom:10px;
-            border-bottom:1px solid #ccc;
-        }
-        .fitem{
-            margin-bottom:5px;
-        }
-        .fitem label{
-            display:inline-block;
-            width:80px;
-        }
-        .fitem input{
-            width:160px;
-        }
-    </style>
 
     </body>
 </html>

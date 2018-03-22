@@ -1,5 +1,12 @@
-<!-- SmartMenus jQuery plugin -->
-<script type="text/javascript" src="/catalog/apps/js/jquery.smartmenus.js"></script>
+<?php
+include_once documentPath (ROOT_PHP, "setup.php");
+include_once documentPath (ROOT_PHP, "config.php");
+$menuPath = getFullPath(PATH_CONFIG);
+$menuObj = readJSON($menuPath . "/" . "menu.json");
+$mp3SettingsObj = readJSONWithCode(JSON_MP3SETTINGS);
+?>
+    <!-- SmartMenus jQuery plugin -->
+<script type="text/javascript" src="<?php echo webPath(ROOT_JS, 'jquery.smartmenus.js')?>"></script>
 
 <!-- SmartMenus jQuery init -->
 <script type="text/javascript">
@@ -12,29 +19,22 @@
 </script>
 
 <!-- SmartMenus core CSS (required) -->
-<link href="/catalog/apps/themes/sm/sm-core-css.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="<?php echo webPath(ROOT_THEMES_SMARTMENU, 'sm-core-css.css')?>">
 
 <!-- "sm-blue" menu theme (optional, you can use your own CSS, too) -->
-<link href="/catalog/apps/themes/sm/sm-blue/sm-blue.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="<?php echo webPath(ROOT_THEMES_SMARTMENU, 'sm-blue/sm-blue.css')?>">
 
 <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
-<?php
-include_once documentPath (ROOT_PHP, "setup.php");
-include_once documentPath (ROOT_PHP, "config.php");
-$menuPath = getFullPath(PATH_CONFIG);
-$menuObj = readJSON($menuPath . "/" . "menu.json");
-$mp3SettingsObj = readJSONWithCode(JSON_MP3SETTINGS);
-?>
 
 <nav id="main-nav" role="navigation">
     <!-- Sample menu definition -->
     <ul id="main-menu" class="sm sm-blue">
         <?php
-        $user = $_SESSION['user'];
+        $user = isset($_SESSION['user']) ? $_SESSION['user']: '';
         foreach($menuObj->menu->menuItems as $key => $menuItem) {
             showMainMenutem($user, $menuItem);
         }

@@ -23,9 +23,9 @@ include_once documentPath (ROOT_PHP_MR_BO, "ProfileBO.php");
 </head>
 <body>
 
-<?php
-?>
-<h3>Homefeed</h3>
+<?php include documentPath (ROOT_PHP_MENU, "Menu.php"); ?>
+<h3>Homefeed History</h3>
+
 <div id="cc" class="easyui-layout" style="width:100%;height:90%">
     <div data-options="region:'center',title:'Homefeed',split:true" style="height:80%;padding:5px;">
 

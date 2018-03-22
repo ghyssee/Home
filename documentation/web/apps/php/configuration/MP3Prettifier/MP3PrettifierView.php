@@ -21,8 +21,8 @@
 <?php
 sessionStart();
 $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
-goMenu();
 ?>
+<?php include documentPath (ROOT_PHP_MENU, "Menu.php"); ?>
 <h1>MP3 Pretttifier</h1>
 <div class="horizontalLine">.</div>
 <br>

@@ -21,8 +21,8 @@ include_once documentPath (ROOT_PHP_BO, "SessionBO.php");
 
 <?php
 sessionStart();
-goMenu();
 ?>
+<?php include documentPath (ROOT_PHP_MENU, "Menu.php"); ?>
 <h1>Artist / Song Relationship</h1>
 <div class="horizontalLine">.</div>
 <br>

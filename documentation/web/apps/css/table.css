@@ -1,0 +1,36 @@
+.Table
+{
+  display: table;
+}
+.Title
+{
+    display: table-caption;
+    text-align: center;
+    font-weight: bold;
+    font-size: larger;
+}
+.Heading
+{
+    display: table-row;
+    font-weight: bold;
+    text-align: center;
+}
+.Row
+{
+    display: table-row;
+}
+.Cell
+{
+    display: table-cell;
+    border: none;
+    border-width: thin;
+    padding-top: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-bottom: 5px;
+}
+DIV.vertical-center {
+    min-height: 10em;
+    display: table-cell;
+    vertical-align: middle
+}

@@ -25,6 +25,8 @@ include_once('Smarty.class.php');
     <?php include documentRoot ("apps/php/templates/easyui.php");?>
 </head>
 <body>
+<?php include documentPath (ROOT_PHP_MENU, "Menu.php"); ?>
+<h3>Report Of Deaths</h3>
 
 <div id="cc" class="easyui-layout" style="width:100%;height:90%">
     <div data-options="region:'north',title:'Report For Being Killed',split:true" style="height:50%;padding:5px;">
