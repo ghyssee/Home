@@ -44,7 +44,7 @@ define ('ROOT_APPS', DOCUMENT_ROOT . "/apps");
 define ('ROOT_PHP', ROOT_APPS . "/php");
 define ('ROOT_PHP_BO', ROOT_PHP . "/bo");
 define ('ROOT_PHP_MENU', ROOT_PHP . "/menu");
-define ('ROOT_PHP_COMMON', ROOT_PHP . "/templates");
+define ('ROOT_PHP_COMMON', ROOT_PHP . "/common");
 define ('ROOT_PHP_DATABASE', ROOT_PHP . "/database");
 define ('ROOT_PHP_CONFIGURATION', ROOT_PHP . "/configuration");
 define ('ROOT_PHP_CONFIGURATION_MP3PRETTIFIER', ROOT_PHP_CONFIGURATION . "/MP3Prettifier");
