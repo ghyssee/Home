@@ -107,21 +107,9 @@ class MezzmoSQLiteDatabase extends CustomDatabase {
 
     public function getMezzmoSong($id){
 
-        $query = "SELECT " .
-                  $this->getFileColumns() . "," .
-                  $this->getAlbumColumns() . "," .
-                  $this->getArtistColumns() .
-                 "FROM MGOFile AS FILE " .
-                  $this->joinAlbum() .
-                  $this->joinArtist() .
-                  $this->joinAlbumArtist() .
-                  $this->joinFileExtension() .
-                 "WHERE  FILEEXTENSION.data = 'mp3' " .
-                 "AND FILE.id = :id ";
-//        $result = $this->query($query);
-        $sth = $this->prepare($query, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-        $sth->execute(array(':id' => $id));
-        $result = $sth->fetchAll();
+        $song = new SongTO();
+        $song->fileId = $id;
+        $result = $this->searchSong($song);
         $songRec = null;
         $nr = count($result);
         switch ($nr) {
