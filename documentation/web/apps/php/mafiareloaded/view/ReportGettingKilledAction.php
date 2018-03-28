@@ -21,7 +21,6 @@ class ReportTO {
     }
 }
 
-
 if (isset($_REQUEST['report'])) {
     $reportTO = new ReportTO();
     assignField($reportTO->gangId, "gangId");
@@ -33,14 +32,15 @@ if (isset($_REQUEST['report'])) {
     $kills = $homefeedBO->getKills($reportTO);
     foreach($kills as $item){
         $test = convertStringYYYYMMDDHHMMSSToDate($item->timeStamp);
+        $newline = "<br>";
         if (!$test){
-            $reportTO->message .= 'Error in timestamp: ' . $item->feedMsg . "<BR>";
+            $reportTO->message .= 'Error in timestamp: ' . htmlentities($item->feedMsg) . $newline;
         }
         else {
             $currDate = new DateTime();
             $interval = date_diff($currDate, $test);
             $tst = convertIntervalToString($interval);
-            $reportTO->message .= $tst . ' ago: ' . $item->feedMsg . "<BR>";
+            $reportTO->message .= $tst . ' ago: ' . htmlentities($item->feedMsg) . $newline;
         }
     }
     echo json_encode($reportTO);
