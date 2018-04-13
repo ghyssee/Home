@@ -1,16 +1,21 @@
 package be.home.selenium;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.*;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.FluentWait;
+import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 public class SeleniumTest {
@@ -24,6 +29,16 @@ public class SeleniumTest {
         //driver = new FirefoxDriver(capabilities);
         //driver.manage().window().maximize();
 
+        UltratopList(driver);
+
+        //FacebookLogin(driver);
+
+        //Close the browser
+        //driver.close();
+        driver.quit();
+    }
+
+    public static void test(WebDriver driver){
         // And now use this to visit Google
         driver.get("http://www.google.com");
         // Alternatively the same thing can be done like this
@@ -53,12 +68,6 @@ public class SeleniumTest {
 
         // Should see: "cheese! - Google Search"
         System.out.println("Page title is: " + driver.getTitle());
-
-        //FacebookLogin(driver);
-
-        //Close the browser
-        //driver.close();
-        //driver.quit();
     }
 
     public static WebDriver makeWebDriver(){
@@ -106,6 +115,7 @@ public class SeleniumTest {
         //WebDriver driver = new FirefoxDriver(options);
         WebDriver driver = null;
         DesiredCapabilities capabilities =  DesiredCapabilities.firefox();
+        capabilities.setCapability(FirefoxOptions.FIREFOX_OPTIONS, options);
         /*
         capabilities.setPlatform(Platform.WIN10);
         capabilities.setAcceptInsecureCerts(true);
@@ -139,8 +149,32 @@ public class SeleniumTest {
     }
 
     public static void UltratopList(WebDriver driver) {
-
+        driver.manage().timeouts().pageLoadTimeout(5, TimeUnit.SECONDS);
+        try {
+            driver.get("http://www.ultratop.be/nl/ultratop50");
+        } catch (org.openqa.selenium.TimeoutException ex) {
+            System.out.println("Timeout occured");
+        }
+        System.out.println("Successfully opened the website");
+        //List<WebElement> elements = driver.findElements(By.xpath("//span[@class='CR_artist']"));
+        List<WebElement> elements = driver.findElements(By.xpath("//div[@class='chartRow']"));
+        System.out.println(elements.size());
+        for (WebElement element : elements) {
+            //String txt = element.getAttribute("innerHTML");
+            //String txt2 = StringEscapeUtils.unescapeHtml4(txt);
+            WebElement newEle = element.findElement(By.className("CR_artist"));
+            System.out.println("Artist: " + getSeleniumText(newEle));
+            newEle = element.findElement(By.className("CR_title"));
+            System.out.println("Title: " + getSeleniumText(newEle));
+        }
     }
+
+        private static String getSeleniumText(WebElement element){
+        String txt = element.getAttribute("textContext");
+        txt = StringEscapeUtils.unescapeHtml4(txt);
+        return txt;
+    }
+
 
 
 }
