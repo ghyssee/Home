@@ -1,5 +1,6 @@
 package be.home.selenium;
 
+import com.gargoylesoftware.htmlunit.javascript.background.JavaScriptExecutor;
 import org.apache.commons.text.StringEscapeUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.*;
@@ -15,6 +16,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
@@ -25,10 +27,12 @@ public class SeleniumTest {
         // not the implementation.
 
 
-        WebDriver driver = makeWebDriver2();
+        WebDriver driver = makeWebDriver();
         //driver = new FirefoxDriver(capabilities);
         //driver.manage().window().maximize();
 
+        //UltratopList(driver);
+        test(driver);
         UltratopList(driver);
 
         //FacebookLogin(driver);
@@ -157,7 +161,7 @@ public class SeleniumTest {
         }
         System.out.println("Successfully opened the website");
         //List<WebElement> elements = driver.findElements(By.xpath("//span[@class='CR_artist']"));
-        List<WebElement> elements = driver.findElements(By.xpath("//div[@class='chartRow']"));
+        List<WebElement> elements= driver.findElements(By.xpath("//div" + matchClass("chartRow")));
         System.out.println(elements.size());
         for (WebElement element : elements) {
             //String txt = element.getAttribute("innerHTML");
@@ -165,16 +169,35 @@ public class SeleniumTest {
             WebElement newEle = element.findElement(By.className("CR_artist"));
             System.out.println("Artist: " + getSeleniumText(newEle));
             newEle = element.findElement(By.className("CR_title"));
-            System.out.println("Title: " + getSeleniumText(newEle));
+            System.out.println("Title: " + getTitle(newEle));
+            newEle = element.findElement(By.className("CR_position"));
+            System.out.println("Position: " + getTitle(newEle));
         }
     }
 
         private static String getSeleniumText(WebElement element){
-        String txt = element.getAttribute("textContext");
+        String txt = element.getAttribute("textContent");
+            txt = txt.replaceAll("\\r|\\n|\\t", "");
         txt = StringEscapeUtils.unescapeHtml4(txt);
         return txt;
     }
 
+    private static String getTitle(WebElement element){
+        String title = getSeleniumText(element);
+        try {
+            WebElement newEle = element.findElement(By.className("CR_version"));
+            String tmp = getSeleniumText(newEle);
+            title = title.replace(tmp, "").trim();
+        }
+        catch (org.openqa.selenium.NoSuchElementException ex){
+
+        }
+        return title;
+    }
+
+    private static String matchClass(String className) {
+        return "[contains(concat(' ', normalize-space(@class), ' ')," + "' " + className + " ')]";
+    }
 
 
 }
