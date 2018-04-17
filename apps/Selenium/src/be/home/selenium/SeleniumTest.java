@@ -4,7 +4,6 @@ import com.gargoylesoftware.htmlunit.javascript.background.JavaScriptExecutor;
 import org.apache.commons.text.StringEscapeUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.*;
-import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
@@ -16,7 +15,6 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
@@ -32,7 +30,7 @@ public class SeleniumTest {
         //driver.manage().window().maximize();
 
         //UltratopList(driver);
-        test(driver);
+        //test(driver);
         UltratopList(driver);
 
         //FacebookLogin(driver);
@@ -161,7 +159,8 @@ public class SeleniumTest {
         }
         System.out.println("Successfully opened the website");
         //List<WebElement> elements = driver.findElements(By.xpath("//span[@class='CR_artist']"));
-        List<WebElement> elements= driver.findElements(By.xpath("//div" + matchClass("chartRow")));
+        //List<WebElement> elements= driver.findElements(By.xpath("//div" + matchClass("chartRow")));
+        List<WebElement> elements= driver.findElements(By.cssSelector("div.chartRow"));
         System.out.println(elements.size());
         for (WebElement element : elements) {
             //String txt = element.getAttribute("innerHTML");
