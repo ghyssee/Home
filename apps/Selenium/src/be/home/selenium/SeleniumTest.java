@@ -1,46 +1,52 @@
 package be.home.selenium;
 
-import com.gargoylesoftware.htmlunit.javascript.background.JavaScriptExecutor;
 import org.apache.commons.text.StringEscapeUtils;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.*;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.remote.*;
+import org.openqa.selenium.remote.http.W3CHttpCommandCodec;
+import org.openqa.selenium.remote.http.W3CHttpResponseCodec;
 import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.FluentWait;
-import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.seleniumhq.jetty9.util.Fields;
 
 import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 public class SeleniumTest {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws MalformedURLException {
         // Create a new instance of the Firefox driver
         // Notice that the remainder of the code relies on the interface,
         // not the implementation.
+        SeleniumTest instance = new SeleniumTest();
 
-
-        WebDriver driver = makeWebDriver();
+        RemoteWebDriver driver = instance.makeWebDriver3();
+        SessionId session = driver.getSessionId();
+        System.out.println("Session id: " + session.toString());
         //driver = new FirefoxDriver(capabilities);
         //driver.manage().window().maximize();
 
         //UltratopList(driver);
         //test(driver);
-        UltratopList(driver);
+        instance.UltratopList(driver);
 
         //FacebookLogin(driver);
 
         //Close the browser
         //driver.close();
-        driver.quit();
+        //driver.quit();
     }
 
-    public static void test(WebDriver driver){
+    public void test(WebDriver driver){
         // And now use this to visit Google
         driver.get("http://www.google.com");
         // Alternatively the same thing can be done like this
@@ -72,7 +78,7 @@ public class SeleniumTest {
         System.out.println("Page title is: " + driver.getTitle());
     }
 
-    public static WebDriver makeWebDriver(){
+    public WebDriver makeWebDriver(){
         File pathToBinary = new File("C:\\My Programs\\Firefox\\Test\\App\\Firefox\\Firefox.exe");
         FirefoxBinary ffBinary = new FirefoxBinary(pathToBinary);
         //FirefoxProfile firefoxProfile = new FirefoxProfile(new File("C:\\My Programs\\Firefox\\FirefoxPortableV49.Node1\\Data\\profile"));
@@ -95,7 +101,7 @@ public class SeleniumTest {
         return driver;
     }
 
-    public static WebDriver makeWebDriver2(){
+    public WebDriver makeWebDriver2(){
         File pathToBinary = new File("C:\\My Programs\\Firefox\\Test\\App\\Firefox\\Firefox.exe");
         FirefoxBinary ffBinary = new FirefoxBinary(pathToBinary);
         //FirefoxProfile firefoxProfile = new FirefoxProfile(new File("C:\\My Programs\\Firefox\\FirefoxPortableV49.Node1\\Data\\profile"));
@@ -134,7 +140,42 @@ public class SeleniumTest {
         }
         return driver;
     }
-    public static void FacebookLogin(WebDriver driver) {
+
+    public RemoteWebDriver makeWebDriver3() throws MalformedURLException {
+        //FirefoxProfile firefoxProfile = new FirefoxProfile(new File("C:\\My Programs\\Firefox\\FirefoxPortableV49.Node1\\Data\\profile"));
+        FirefoxProfile firefoxProfile = new FirefoxProfile(new File("C:\\My Programs\\Firefox\\Test\\Data\\profile"));
+        //FirefoxProfile firefoxProfile = new FirefoxProfile();
+        System.setProperty("webdriver.gecko.driver", "C:\\My Programs\\Firefox\\geckodriver.exe");
+        FirefoxOptions options = new FirefoxOptions();
+        options.setProfile(firefoxProfile);
+        //options.setCapability(CapabilityType.BROWSER_NAME, "Firefox");
+
+        //DesiredCapabilities capabilities = DesiredCapabilities.firefox();
+        //capabilities.setCapability(FirefoxDriver.BINARY, ffBinary);
+        //capabilities.setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, UnexpectedAlertBehaviour.IGNORE);
+        System.setProperty("webdriver.gecko.driver", "C:\\My Programs\\Firefox\\geckodriver.exe");
+        System.setProperty(FirefoxDriver.SystemProperty.BROWSER_LOGFILE,"/php/test.logs");
+        java.util.logging.Logger.getLogger("org.openqa.selenium").setLevel(Level.OFF);
+        options.setLogLevel(FirefoxDriverLogLevel.INFO);
+        //WebDriver driver = new FirefoxDriver(options);
+        DesiredCapabilities capabilities =  DesiredCapabilities.firefox();
+        capabilities.setCapability(FirefoxOptions.FIREFOX_OPTIONS, options);
+        /*
+        capabilities.setPlatform(Platform.WIN10);
+        capabilities.setAcceptInsecureCerts(true);
+        capabilities.setJavascriptEnabled(true);
+        capabilities.setVersion("10.0");
+        */
+        //capabilities.setCapability("marionette", true);
+        //capabilities.setCapability("networkConnectionEnabled", true);
+        //capabilities.setCapability("browserConnectionEnabled", true);        //capability.setCapability("marionette", true);
+        SessionId session_id = new SessionId("05c68e07-736a-478e-9014-1d24edb7f171");
+        RemoteWebDriver driver = createDriverFromSession(session_id, new URL("http://127.0.0.1:43451"));
+
+        return driver;
+    }
+
+    public void FacebookLogin(WebDriver driver) {
 
         driver.get("https://www.facebook.com");
         System.out.println("Successfully opened the website");
@@ -150,7 +191,7 @@ public class SeleniumTest {
         //System.out.println("Successfully logged out");
     }
 
-    public static void UltratopList(WebDriver driver) {
+    public void UltratopList(RemoteWebDriver driver) {
         driver.manage().timeouts().pageLoadTimeout(5, TimeUnit.SECONDS);
         try {
             driver.get("http://www.ultratop.be/nl/ultratop50");
@@ -174,14 +215,14 @@ public class SeleniumTest {
         }
     }
 
-        private static String getSeleniumText(WebElement element){
+        private String getSeleniumText(WebElement element){
         String txt = element.getAttribute("textContent");
             txt = txt.replaceAll("\\r|\\n|\\t", "");
         txt = StringEscapeUtils.unescapeHtml4(txt);
         return txt;
     }
 
-    private static String getTitle(WebElement element){
+    private String getTitle(WebElement element){
         String title = getSeleniumText(element);
         try {
             WebElement newEle = element.findElement(By.className("CR_version"));
@@ -194,9 +235,46 @@ public class SeleniumTest {
         return title;
     }
 
-    private static String matchClass(String className) {
+    private String matchClass(String className) {
         return "[contains(concat(' ', normalize-space(@class), ' ')," + "' " + className + " ')]";
     }
 
+    public RemoteWebDriver createDriverFromSession(final SessionId sessionId, URL command_executor){
+        CommandExecutor executor = new HttpCommandExecutor(command_executor) {
+
+            @Override
+            public Response execute(Command command) throws IOException {
+                Response response = null;
+                if (command.getName() == "newSession") {
+                    response = new Response();
+                    response.setSessionId(sessionId.toString());
+                    response.setStatus(0);
+                    response.setValue(Collections.<String, String>emptyMap());
+
+                    try {
+                        Field commandCodec = null;
+                        commandCodec = this.getClass().getSuperclass().getDeclaredField("commandCodec");
+                        commandCodec.setAccessible(true);
+                        commandCodec.set(this, new W3CHttpCommandCodec());
+
+                        Field responseCodec = null;
+                        responseCodec = this.getClass().getSuperclass().getDeclaredField("responseCodec");
+                        responseCodec.setAccessible(true);
+                        responseCodec.set(this, new W3CHttpResponseCodec());
+                    } catch (NoSuchFieldException e) {
+                        e.printStackTrace();
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+
+                } else {
+                    response = super.execute(command);
+                }
+                return response;
+            }
+        };
+
+        return new RemoteWebDriver(executor, new DesiredCapabilities());
+    }
 
 }
