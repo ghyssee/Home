@@ -73,6 +73,7 @@ public interface Constants {
         String MULTIARTISTCONFiG = "multiArtistConfig";
         String ARTISTSONGTEST = "artistSongTest";
         String ARTISTSONGRELATIONSHIP = "artistSongRelationship";
+        String FIREFOXPROFILES = "firefoxProfiles";
     }
     interface FILE {
         String ALBUM = "albumInfo";

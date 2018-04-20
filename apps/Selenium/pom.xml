@@ -146,6 +146,11 @@
 				<groupId>dom4j</groupId>
 				<artifactId>dom4j</artifactId>
 			</dependency>
+		<dependency>
+			<groupId>be.home</groupId>
+			<artifactId>Home-Common</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
 		</dependencies>
 
     

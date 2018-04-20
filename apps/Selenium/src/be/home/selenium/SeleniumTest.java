@@ -1,5 +1,10 @@
 package be.home.selenium;
 
+import be.home.common.constants.Constants;
+import be.home.common.model.FirefoxProfiles;
+import be.home.common.model.FirefoxProfilesBO;
+import be.home.common.utils.JSONUtils;
+import be.home.selenium.common.FirefoxDriverSetup;
 import org.apache.commons.text.StringEscapeUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -10,7 +15,6 @@ import org.openqa.selenium.remote.http.W3CHttpCommandCodec;
 import org.openqa.selenium.remote.http.W3CHttpResponseCodec;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.seleniumhq.jetty9.util.Fields;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,22 +32,43 @@ public class SeleniumTest {
         // Notice that the remainder of the code relies on the interface,
         // not the implementation.
         SeleniumTest instance = new SeleniumTest();
+        instance.start();
 
-        RemoteWebDriver driver = instance.makeWebDriver3();
-        SessionId session = driver.getSessionId();
-        System.out.println("Session id: " + session.toString());
+        //RemoteWebDriver driver = instance.makeWebDriver3();
+        //SessionId session = driver.getSessionId();
+        //System.out.println("Session id: " + session.toString());
         //driver = new FirefoxDriver(capabilities);
         //driver.manage().window().maximize();
 
         //UltratopList(driver);
         //test(driver);
-        instance.UltratopList(driver);
+        //instance.UltratopList(driver);
 
         //FacebookLogin(driver);
 
         //Close the browser
         //driver.close();
         //driver.quit();
+    }
+
+    public void start(){
+        String computerName = be.home.common.utils.NetUtils.getHostName();
+        System.out.println("Computer Name: " + computerName);
+        String instanceId = "1";
+        FirefoxProfiles.Computer computer = FirefoxProfilesBO.getInstance().findComputer(computerName);
+        FirefoxProfiles.FirefoxInstance firefoxInstance = FirefoxProfilesBO.getInstance().findInstance(computerName, instanceId);
+        if (firefoxInstance == null){
+            System.out.println("Instance Not Found: " + instanceId);
+        }
+        FirefoxDriverSetup setup = new FirefoxDriverSetup();
+        FirefoxDriver driver = setup.getWebDriver();
+        driver.manage().window().maximize();
+        SessionId session = driver.getSessionId();
+        System.out.println("Session id: " + session.toString());
+        HttpCommandExecutor ce = (HttpCommandExecutor) driver.getCommandExecutor();
+        System.out.println(ce.getAddressOfRemoteServer().getPort());
+
+        driver.quit();
     }
 
     public void test(WebDriver driver){
@@ -142,9 +167,7 @@ public class SeleniumTest {
     }
 
     public RemoteWebDriver makeWebDriver3() throws MalformedURLException {
-        //FirefoxProfile firefoxProfile = new FirefoxProfile(new File("C:\\My Programs\\Firefox\\FirefoxPortableV49.Node1\\Data\\profile"));
         FirefoxProfile firefoxProfile = new FirefoxProfile(new File("C:\\My Programs\\Firefox\\Test\\Data\\profile"));
-        //FirefoxProfile firefoxProfile = new FirefoxProfile();
         System.setProperty("webdriver.gecko.driver", "C:\\My Programs\\Firefox\\geckodriver.exe");
         FirefoxOptions options = new FirefoxOptions();
         options.setProfile(firefoxProfile);
@@ -166,9 +189,6 @@ public class SeleniumTest {
         capabilities.setJavascriptEnabled(true);
         capabilities.setVersion("10.0");
         */
-        //capabilities.setCapability("marionette", true);
-        //capabilities.setCapability("networkConnectionEnabled", true);
-        //capabilities.setCapability("browserConnectionEnabled", true);        //capability.setCapability("marionette", true);
         SessionId session_id = new SessionId("05c68e07-736a-478e-9014-1d24edb7f171");
         RemoteWebDriver driver = createDriverFromSession(session_id, new URL("http://127.0.0.1:43451"));
 

@@ -23,6 +23,7 @@
 		<module>Mezzmo-ejb</module>
 		<module>Home-Common</module>
 		<module>Home-Music</module>
+		<module>Selenium</module>
 	</modules>
 </project>
 
