@@ -1,11 +1,17 @@
 package be.home.selenium;
 
 import be.home.common.constants.Constants;
+import be.home.common.main.BatchJobV2;
 import be.home.common.model.FirefoxProfiles;
 import be.home.common.model.FirefoxProfilesBO;
 import be.home.common.utils.JSONUtils;
 import be.home.selenium.common.FirefoxDriverSetup;
+import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import org.apache.commons.text.StringEscapeUtils;
+import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -26,13 +32,21 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
-public class SeleniumTest {
+public class SeleniumTest extends BatchJobV2 {
+
+    private static final Logger log = getMainLog(BatchJobV2.class);
+
     public static void main(String[] args) throws MalformedURLException {
         // Create a new instance of the Firefox driver
         // Notice that the remainder of the code relies on the interface,
         // not the implementation.
+        log.info("test");
         SeleniumTest instance = new SeleniumTest();
-        instance.start();
+        try {
+            instance.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         //RemoteWebDriver driver = instance.makeWebDriver3();
         //SessionId session = driver.getSessionId();
@@ -51,24 +65,19 @@ public class SeleniumTest {
         //driver.quit();
     }
 
-    public void start(){
-        String computerName = be.home.common.utils.NetUtils.getHostName();
-        System.out.println("Computer Name: " + computerName);
-        String instanceId = "1";
-        FirefoxProfiles.Computer computer = FirefoxProfilesBO.getInstance().findComputer(computerName);
-        FirefoxProfiles.FirefoxInstance firefoxInstance = FirefoxProfilesBO.getInstance().findInstance(computerName, instanceId);
-        if (firefoxInstance == null){
-            System.out.println("Instance Not Found: " + instanceId);
-        }
-        FirefoxDriverSetup setup = new FirefoxDriverSetup();
-        FirefoxDriver driver = setup.getWebDriver();
-        driver.manage().window().maximize();
-        SessionId session = driver.getSessionId();
-        System.out.println("Session id: " + session.toString());
-        HttpCommandExecutor ce = (HttpCommandExecutor) driver.getCommandExecutor();
-        System.out.println(ce.getAddressOfRemoteServer().getPort());
+    public void run(){
 
-        driver.quit();
+    }
+
+    public void start() throws IOException {
+        String computerName = be.home.common.utils.NetUtils.getHostName();
+        log.info("Computer Name: " + computerName);
+        String instanceId = "1";
+        FirefoxDriverSetup setup = new FirefoxDriverSetup(computerName, instanceId);
+        FirefoxDriver driver = setup.setupWebDriver();
+        driver.manage().window().maximize();
+
+        setup.closeWebDriver(driver);
     }
 
     public void test(WebDriver driver){

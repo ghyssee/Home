@@ -19,7 +19,18 @@ public class FirefoxProfiles {
         public String description;
         public String path;
         public List<FirefoxSetting> firefoxSettings;
+        public Session session;
+    }
+
+    public class Session {
+        public String id;
         public String port;
+
+        public Session(String id, String port){
+            this.id = id;
+            this.port = port;
+        }
+
     }
 
     public class FirefoxSetting {

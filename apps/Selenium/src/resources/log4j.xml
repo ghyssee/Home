@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+   <appender name="stderr" class="org.apache.log4j.ConsoleAppender">
+        <param name="threshold" value="warn" />
+        <param name="target" value="System.err"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%-5p %d [%t][%F:%L] : %m%n" />
+        </layout>
+    </appender>
+    <appender name="stdout" class="org.apache.log4j.ConsoleAppender">
+        <param name="threshold" value="debug" />
+        <param name="target" value="System.out"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%-5p %d [%t][%F:%L] : %m%n" />
+        </layout>
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+            <param name="LevelMin" value="debug" />
+            <param name="LevelMax" value="info" />
+        </filter>
+    </appender>
+
+<!--
+  <appender name="R" class="org.apache.log4j.rolling.RollingFileAppender"> 
+	<param name="file" value="${logfile.name}" />
+	<param name="append" value="true" />
+	<param name="encoding" value="UTF-8" />
+	<rollingPolicy class="org.apache.log4j.rolling.TimeBasedRollingPolicy">
+			 The file to roll to, this is a fairly intelligent parameter, if the file
+			ends in .gz, it gzips it, based on the date stamp it rolls at that time, 
+			default is yyyy-MM-dd, (rolls at midnight)
+			See: http://logging.apache.org/log4j/companions/extras/apidocs/org/apache/log4j/rolling/TimeBasedRollingPolicy.html
+			<param name="FileNamePattern" value="${logfile.name}.%d{yyyy-MM-dd-HH-mm}.gz" />
+			 <param name="ActiveFileName" value="${logfile.name}" />
+	</rollingPolicy>
+				
+	<layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss,SSS} %5p [%t] %C %M %c{1}:%L - %m%n"/> 
+    </layout> 
+  </appender> -->
+  
+
+  <appender name="R" class="org.apache.log4j.DailyRollingFileAppender"> 
+	<param name="file" value="${logfile.name}" />
+	<param name="Append" value="true" />
+	<param name="Encoding" value="UTF-8" />
+	<param name="DatePattern" value="'.'yyyy-MM-dd" />
+				
+	<layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss,SSS} %5p [%t] %C %M %c{1}:%L - %m%n"/> 
+    </layout> 
+  </appender>
+  
+  <logger name="com.foo">
+    <!-- Print only messages of level warn or above in the package com.foo -->
+    <level value="warn"/> 
+  </logger>
+ <logger name="org.springframework">
+    <level value="warn"/> 
+  </logger>
+ <logger name="net.sf.jasperreports">
+    <level value="warn"/> 
+  </logger>
+ <logger name="log4j.category.velocity">
+    <level value="warn"/> 
+  </logger>
+ <root> 
+    <priority value ="debug" /> 
+        <appender-ref ref="stderr" />
+        <appender-ref ref="stdout" />
+		<appender-ref ref="R" /> 
+  </root>
+</log4j:configuration>

@@ -28,6 +28,20 @@ public class FirefoxProfilesBO {
         return firefoxProfilesBO;
     }
 
+    public void saveSession(String computerId, String firefoxInstance, FirefoxProfiles.Session session) throws IOException {
+        firefoxProfiles = (FirefoxProfiles) JSONUtils.openJSONWithCode(fileCode, FirefoxProfiles.class);
+        FirefoxProfiles.FirefoxInstance instance = findInstance(computerId, firefoxInstance);
+        if (instance != null){
+            log.info("Session saved successfully");
+            instance.session.id = session.id;
+            instance.session.port = session.port;
+            save();
+        }
+        else {
+            log.error("Could not save session. ComputerId: " + computerId + " / FirefoxInstance: " + firefoxInstance);
+        }
+    }
+
     public FirefoxProfiles.Computer findComputer(String computerId){
         for (FirefoxProfiles.Computer item : this.firefoxProfiles.computers) {
             if (item.name.equals(computerId)){
