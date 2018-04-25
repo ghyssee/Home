@@ -1,11 +1,14 @@
 package be.home.selenium;
 
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
@@ -13,7 +16,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-public class HelloWorld extends Application {
+public class HelloWorldOld extends Application {
 
     public static void main(String[] args) {
         launch(args);
@@ -21,6 +24,14 @@ public class HelloWorld extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        ObservableList<String> options =
+                FXCollections.observableArrayList(
+                        "Option 1",
+                        "Option 2",
+                        "Option 3"
+                );
+        final ComboBox comboBox = new ComboBox(options);
+
         VBox vb = new VBox();
         vb.setPadding(new Insets(10, 50, 50, 50));
         vb.setSpacing(10);
