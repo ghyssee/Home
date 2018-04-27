@@ -1,6 +1,7 @@
 package be.home.common.model;
 
 import be.home.common.constants.Constants;
+import be.home.common.model.json.FirefoxProfiles;
 import be.home.common.utils.JSONUtils;
 import org.apache.log4j.Logger;
 

@@ -1,4 +1,4 @@
-package be.home.common.model;
+package be.home.common.model.json;
 
 import java.util.List;
 

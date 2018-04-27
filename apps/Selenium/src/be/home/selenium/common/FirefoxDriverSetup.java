@@ -1,7 +1,7 @@
 package be.home.selenium.common;
 
 import be.home.common.exceptions.ApplicationException;
-import be.home.common.model.FirefoxProfiles;
+import be.home.common.model.json.FirefoxProfiles;
 import be.home.common.model.FirefoxProfilesBO;
 import org.openqa.selenium.firefox.*;
 import org.openqa.selenium.remote.*;

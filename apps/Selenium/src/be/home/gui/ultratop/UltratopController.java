@@ -1,24 +1,26 @@
-package be.home.selenium.common;
+package be.home.gui.ultratop;
 
 import be.home.common.utils.DateUtils;
 import be.home.selenium.SeleniumTest;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import be.home.selenium.ultratop.UltratopList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.DateCell;
+import javafx.scene.control.DatePicker;
 import javafx.util.Callback;
 
 import java.io.IOException;
 import java.net.URL;
-import java.time.*;
+import java.time.DayOfWeek;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.ResourceBundle;
 
-public class Controller  implements Initializable {
-
+public class UltratopController implements Initializable {
     @FXML
     private DatePicker datePicker;
 
@@ -67,7 +69,7 @@ public class Controller  implements Initializable {
         Instant instant = Instant.from(localDate.atStartOfDay(ZoneId.systemDefault()));
         Date date = Date.from(instant);
         System.out.println(localDate + "\n" + instant + "\n" + date);
-        SeleniumTest ultratop = new SeleniumTest();
+        UltratopList ultratop = new UltratopList();
         /*
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Delete  ?", ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
         alert.showAndWait();
@@ -80,32 +82,6 @@ public class Controller  implements Initializable {
             ultratop.start(date);
         } catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-
-    private ObjectProperty<Person> person = new SimpleObjectProperty<Person>(this, "person");
-    public final Person getPerson() { return person.get(); }
-    public final void setPerson(Person value) { person.set(value); }
-    public final ObjectProperty<Person> personProperty() { return person; }
-
-    public class Person {
-        String person;
-        int year;
-
-        public String getPerson() {
-            return person;
-        }
-
-        public void setPerson(String person) {
-            this.person = person;
-        }
-
-        public int getYear() {
-            return year;
-        }
-
-        public void setYear(int year) {
-            this.year = year;
         }
     }
 }

@@ -1,15 +1,10 @@
 package be.home.selenium;
 
-import be.home.common.constants.Constants;
 import be.home.common.main.BatchJobV2;
-import be.home.common.model.FirefoxProfiles;
-import be.home.common.model.FirefoxProfilesBO;
-import be.home.common.utils.JSONUtils;
+import be.home.common.model.UltratopConfigBO;
+import be.home.common.utils.DateUtils;
+import be.home.model.M3uTO;
 import be.home.selenium.common.FirefoxDriverSetup;
-import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
@@ -20,6 +15,7 @@ import org.openqa.selenium.remote.*;
 import org.openqa.selenium.remote.http.W3CHttpCommandCodec;
 import org.openqa.selenium.remote.http.W3CHttpResponseCodec;
 import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.File;
@@ -27,8 +23,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
@@ -43,7 +38,7 @@ public class SeleniumTest extends BatchJobV2 {
         log.info("test");
         SeleniumTest instance = new SeleniumTest();
         try {
-            instance.start();
+            instance.start(null);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -69,13 +64,14 @@ public class SeleniumTest extends BatchJobV2 {
 
     }
 
-    public void start() throws IOException {
+    public void start(Date strDate) throws IOException {
         String computerName = be.home.common.utils.NetUtils.getHostName();
         log.info("Computer Name: " + computerName);
         String instanceId = "1";
         FirefoxDriverSetup setup = new FirefoxDriverSetup(computerName, instanceId);
         FirefoxDriver driver = setup.setupWebDriver();
         driver.manage().window().maximize();
+        UltratopList(driver, strDate);
 
         setup.closeWebDriver(driver);
     }
@@ -220,27 +216,56 @@ public class SeleniumTest extends BatchJobV2 {
         //System.out.println("Successfully logged out");
     }
 
-    public void UltratopList(RemoteWebDriver driver) {
-        driver.manage().timeouts().pageLoadTimeout(5, TimeUnit.SECONDS);
+    public void UltratopList(RemoteWebDriver driver, Date date) {
+        driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
+        String url = "";
+        String strDate = "";
+        if (date == null){
+            url = "http://www.ultratop.be/nl/ultratop50";
+            strDate = DateUtils.formatDate(new Date(), DateUtils.YYYYMMDD);
+        }
+        else {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(date);
+            strDate = DateUtils.formatDate(date, DateUtils.YYYYMMDD);
+            url = "http://www.ultratop.be/nl/weekchart.asp?cat=s&year=" + cal.get(Calendar.YEAR) +
+                    "&date=" + strDate;
+        }
+        System.out.println("url = " + url);
         try {
-            driver.get("http://www.ultratop.be/nl/ultratop50");
+            driver.get(url);
         } catch (org.openqa.selenium.TimeoutException ex) {
             System.out.println("Timeout occured");
         }
         System.out.println("Successfully opened the website");
+        WebDriverWait wait = new WebDriverWait(driver, 40);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.chartRow")));
         //List<WebElement> elements = driver.findElements(By.xpath("//span[@class='CR_artist']"));
         //List<WebElement> elements= driver.findElements(By.xpath("//div" + matchClass("chartRow")));
         List<WebElement> elements= driver.findElements(By.cssSelector("div.chartRow"));
         System.out.println(elements.size());
+        List<M3uTO> list = new ArrayList<>();
         for (WebElement element : elements) {
             //String txt = element.getAttribute("innerHTML");
             //String txt2 = StringEscapeUtils.unescapeHtml4(txt);
+            M3uTO m3uTO = new M3uTO();
             WebElement newEle = element.findElement(By.className("CR_artist"));
-            System.out.println("Artist: " + getSeleniumText(newEle));
+            m3uTO.setArtist(getSeleniumText(newEle));
             newEle = element.findElement(By.className("CR_title"));
-            System.out.println("Title: " + getTitle(newEle));
+            m3uTO.setSong(getTitle(newEle));
             newEle = element.findElement(By.className("CR_position"));
-            System.out.println("Position: " + getTitle(newEle));
+            m3uTO.setTrack(getTitle(newEle));
+            list.add(m3uTO);
+        }
+        for (M3uTO m3uTO : list){
+            System.out.println("Artist: " + m3uTO.getArtist());
+            System.out.println("Title: " + m3uTO.getSong());
+            System.out.println("Position: " + m3uTO.getTrack());
+        }
+        try {
+            UltratopConfigBO.getInstance().saveUltratopList(strDate, list);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

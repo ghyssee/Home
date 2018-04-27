@@ -1,7 +1,9 @@
 package be.home.common.utils;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -69,5 +71,27 @@ public class DateUtils  {
 		return (d1.after(d2)) ? d1 : d2;
 	}
 
+	public static LocalDate convertCalendarToLocalDate(Calendar cal){
+		LocalDate localDate = cal.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		return localDate;
+	}
+
+	public static Calendar getFirstSaturdayOfMonth() {
+		Calendar cal = Calendar.getInstance();
+		return getFirstSaturdayOfMonth(cal);
+	}
+
+	public static Calendar getFirstSaturdayOfMonth(Calendar cal) {
+		if (cal == null){
+			cal = Calendar.getInstance();
+		}
+		cal.set(Calendar.DAY_OF_MONTH, 1);
+		int day = cal.get(Calendar.DAY_OF_WEEK);
+		while (day != Calendar.SATURDAY) {
+			cal.add(Calendar.DAY_OF_MONTH, 1);
+			day = cal.get(Calendar.DAY_OF_WEEK);
+		}
+		return cal;
+	}
 
 }

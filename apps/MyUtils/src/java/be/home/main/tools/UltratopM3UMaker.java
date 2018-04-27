@@ -1,6 +1,5 @@
 package be.home.main.tools;
 
-import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
 import be.home.common.exceptions.ApplicationException;
 import be.home.common.main.BatchJobV2;
@@ -9,10 +8,9 @@ import be.home.common.utils.JSONUtils;
 import be.home.domain.model.ArtistSongItem;
 import be.home.domain.model.MP3Helper;
 import be.home.mezzmo.domain.bo.MP3SettingsBO;
-import be.home.model.ConfigTO;
 import be.home.model.M3uTO;
 import be.home.model.json.MP3Settings;
-import be.home.model.json.UltratopConfig;
+import be.home.common.model.json.UltratopConfig;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -21,12 +19,8 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
-
-import static java.nio.file.FileVisitOption.FOLLOW_LINKS;
 
 /**
  * Created by ghyssee on 20/02/2015.

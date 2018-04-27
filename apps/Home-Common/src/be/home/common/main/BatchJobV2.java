@@ -4,6 +4,7 @@ import java.io.*;
 
 import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
+import be.home.common.logging.LoggingConfiguration;
 import be.home.common.utils.JSONUtils;
 import be.home.model.ConfigTO;
 import be.home.model.ParamTO;
@@ -15,33 +16,9 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-public abstract class BatchJobV2 {
+public abstract class BatchJobV2 extends LoggingConfiguration {
 
     public static String workingDir = System.getProperty("user.dir");
-    public static Logger log = null;
-
-    public static Logger getMainLog(Class className){
-        setLogFile(className.getSimpleName() + ".log");
-        Logger log = Logger.getLogger(className);
-        return log;
-    }
-
-    public static Logger getLogger(Class className){
-        if (log == null) {
-            log = Logger.getLogger(className);
-        }
-        return log;
-    }
-
-    private static Logger setLogFile(String name){
-        String logFile = Setup.getInstance().getFullPath(Constants.Path.LOG) + File.separator + name;
-        System.setProperty("logfile.name", logFile);
-        System.setProperty("p6spy.config.logfile", Setup.getInstance().getFullPath(Constants.Path.LOG) + File.separator + "P6Spy." + name);
-        java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.OFF);
-        Logger log = Logger.getLogger(BatchJobV2.class);
-        log.info("Setting Log4J Log file to:" + logFile);
-        return log;
-    }
 
     public Map <String,String> validateParams(String[] args, ParamTO paramArray []) {
         Map <String,String> params = initParams(args, paramArray);

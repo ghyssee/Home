@@ -56,6 +56,7 @@ public interface Constants {
         String IPOD = "iPod";
         String MUSIC_LISTS = "musicList";
         String MP3PRETTIFIER = "mp3PrettifierConfigPath";
+        String OUTPUT = "configOutput";
     }
 
     interface JSON {
@@ -82,7 +83,6 @@ public interface Constants {
         String ALBUMS_TO_EXCLUDE = "albumsToExclude";
         String ALBUMS_WITHOUT_ERRORS = "albumsWithoutErrors";
         String MUSIC_INDEX = "musicIndex";
-
     }
 
 }
