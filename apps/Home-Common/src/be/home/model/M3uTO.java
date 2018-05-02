@@ -24,6 +24,13 @@ public class M3uTO {
         this.line = line;
     }
 
+    public M3uTO (String line, String track, String song, String artist){
+        this.song = song;
+        this.artist = artist;
+        this.line = line;
+        this.track = track;
+    }
+
     public String getArtist() {
         return artist;
     }

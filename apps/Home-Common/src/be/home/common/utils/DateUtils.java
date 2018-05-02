@@ -11,6 +11,7 @@ import java.util.Locale;
 public class DateUtils  {
 
 	public static final String YYYYMMDD = "yyyyMMdd";
+	public static final String DD_MM_YYYYY = "dd/MM/yyyy";
 	private static final Locale CURRENT_LOCALE = new Locale("nl", "BE");
 	public static final String YYYYMMDDHHMMSS = "yyyyMMdd.HHmmss";
     public static final String DD_MM_YYYY_HH_MM_SS = "dd/MM/yyyy HH:mm:ss";

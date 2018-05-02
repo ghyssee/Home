@@ -3,3 +3,8 @@
 	-fx-font-weight: bold;
 }
 
+.testRight {
+	-fx-font-weight: bold;
+	-fx-alignment: center-right;
+	-fx-text-alignment: right;
+}

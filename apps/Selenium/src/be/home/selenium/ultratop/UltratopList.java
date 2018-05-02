@@ -21,19 +21,19 @@ public class UltratopList {
 
     private static final Logger log = Logger.getLogger(UltratopList.class);
 
-    public void start(Date strDate) throws IOException {
+    public List<M3uTO> start(Date strDate) throws IOException {
         String computerName = be.home.common.utils.NetUtils.getHostName();
         log.info("Computer Name: " + computerName);
         String instanceId = "1";
         FirefoxDriverSetup setup = new FirefoxDriverSetup(computerName, instanceId);
         FirefoxDriver driver = setup.setupWebDriver();
         driver.manage().window().maximize();
-        UltratopList(driver, strDate);
-
+        List<M3uTO> list = UltratopList(driver, strDate);
         setup.closeWebDriver(driver);
+        return list;
     }
 
-    public void UltratopList(RemoteWebDriver driver, Date date) {
+    public List<M3uTO> UltratopList(RemoteWebDriver driver, Date date) {
         driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
         String url = "";
         String strDate = "";
@@ -84,6 +84,7 @@ public class UltratopList {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return list;
     }
 
     private String getSeleniumText(WebElement element){
