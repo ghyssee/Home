@@ -77,7 +77,8 @@ public class UltratopController implements Initializable {
         UltratopList ultratop = new UltratopList();
         showResultBox(new Date(), new ArrayList<>());
 
-        /*try {
+        /*
+        try {
             List<M3uTO> list = ultratop.start(date);
             showResultBox(date, list);
         } catch (IOException e) {
@@ -89,7 +90,6 @@ public class UltratopController implements Initializable {
     private void showResultBox( Date date, List<M3uTO> list){
 
         TableView<Object> table = new TableView<>();
-        List<M3uTO> list2 = new ArrayList<>();
         list.add( new M3uTO(null, "1", "Smith", "jacob.smith@example.com"));
         list.add( new M3uTO(null, "200", "Johnson", "isabella.johnson@example.com"));
 
@@ -105,67 +105,14 @@ public class UltratopController implements Initializable {
         alert.setResizable(true);
         alert.getDialogPane().setMinSize(100, 100);
         alert.setHeaderText("Date: " + DateUtils.formatDate(date, DateUtils.DD_MM_YYYYY) + "\n" + list.size() + " Songs found");
-        alert.getDialogPane().setExpandableContent(new ScrollPane(dataList.getTableView()));
+        alert.getDialogPane().setContent(dataList.getTableView());
+        ButtonType buttonTypeImport = new ButtonType("Import");
+        ButtonType buttonTypeClose = new ButtonType("Close", ButtonBar.ButtonData.CANCEL_CLOSE);
+        alert.getButtonTypes().setAll(buttonTypeImport, buttonTypeClose);
+        //alert.getDialogPane().setExpandableContent(new ScrollPane(dataList.getTableView()));
         alert.showAndWait();
-        if (alert.getResult() == ButtonType.YES) {
-            System.out.println("Yes pressed");
+        if (alert.getResult() == buttonTypeImport) {
+            System.out.println("Import Ultratop List");
         }
     }
-
-    private void showResultBox3(){
-
-        TableView<M3uTO> table = new TableView<>();
-        List<M3uTO> list = new ArrayList<>();
-        list.add( new M3uTO(null, "1", "Smith", "jacob.smith@example.com"));
-        list.add( new M3uTO(null, "2", "Johnson", "isabella.johnson@example.com"));
-        ObservableList<M3uTO> data2 = FXCollections.observableArrayList(list);
-
-        TableColumn firstNameCol = new TableColumn("Track");
-        firstNameCol.setMinWidth(10);
-        firstNameCol.setCellValueFactory(
-                new PropertyValueFactory<M3uTO, String>("track"));
-        firstNameCol.setCellFactory(TextFieldTableCell.forTableColumn());
-
-        TableColumn lastNameCol = new TableColumn("Song");
-        lastNameCol.setMinWidth(50);
-        lastNameCol.setCellValueFactory(
-                new PropertyValueFactory<M3uTO, String>("song"));
-        lastNameCol.setCellFactory(TextFieldTableCell.forTableColumn());
-
-        TableColumn emailCol = new TableColumn("Artist");
-        emailCol.setMinWidth(100);
-        emailCol.setCellValueFactory(
-                new PropertyValueFactory<M3uTO, String>("artist"));
-        emailCol.setCellFactory(TextFieldTableCell.forTableColumn());
-        table.setItems(data2);
-        table.getColumns().addAll(firstNameCol, lastNameCol, emailCol);
-        table.setMinWidth(400L);
-
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Ultratop");
-        alert.setHeaderText("Songs found");
-        String tmp = "line1;\nline2;\n";
-        ScrollPane scrollPane = new ScrollPane(table);
-        scrollPane.setFitToHeight(true);
-        scrollPane.setFitToWidth(true);
-        alert.getDialogPane().setExpandableContent(table);
-        alert.showAndWait();
-        if (alert.getResult() == ButtonType.YES) {
-            System.out.println("Yes pressed");
-        }
-    }
-
-    private void showResultBox2(){
-
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Ultratop");
-        alert.setHeaderText("Songs found");
-        String tmp = "line1;\nline2;\n";
-        alert.getDialogPane().setExpandableContent(new ScrollPane(new TextArea(tmp)));
-        alert.showAndWait();
-        if (alert.getResult() == ButtonType.YES) {
-            System.out.println("Yes pressed");
-        }
-    }
-
 }

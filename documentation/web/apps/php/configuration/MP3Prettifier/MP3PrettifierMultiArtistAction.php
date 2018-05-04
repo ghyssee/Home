@@ -92,7 +92,7 @@ function saveMulti(){
     else {
         $success = false;
     }
-    echo json_encode(array('success'=>$success,'message'=>$msg));
+    echo json_encode(array('success'=>$success,'errorMsg'=>$msg));
 
 }
 
