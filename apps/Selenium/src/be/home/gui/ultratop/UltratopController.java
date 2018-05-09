@@ -75,15 +75,15 @@ public class UltratopController implements Initializable {
         Date date = Date.from(instant);
         System.out.println(localDate + "\n" + instant + "\n" + date);
         UltratopList ultratop = new UltratopList();
-        showResultBox(new Date(), new ArrayList<>());
+        //showResultBox(new Date(), new ArrayList<>());
 
-        /*
+
         try {
             List<M3uTO> list = ultratop.start(date);
             showResultBox(date, list);
         } catch (IOException e) {
             e.printStackTrace();
-        }*/
+        }
     }
 
 
@@ -115,4 +115,5 @@ public class UltratopController implements Initializable {
             System.out.println("Import Ultratop List");
         }
     }
+
 }
