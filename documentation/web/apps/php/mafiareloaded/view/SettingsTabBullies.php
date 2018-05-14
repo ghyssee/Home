@@ -97,14 +97,8 @@ $DIALOG_BUTTONS_ID = "dlgButtonsBully";
     }
 
     function refreshBullies(profile){
-        if (profile){
-            // do nothing
-        }
-        else {
-            profile = getProfile();
-        }
-        var obj = {profile:profile};
-        $('#<?php echo $DATAGRID_ID;?>').datagrid('reload', obj);
+        refreshDataGridProfile('<?php echo $DATAGRID_ID;?>', profile);
         return false;
     }
+
 </script>

@@ -142,14 +142,7 @@ $DIALOG_ID = "dlgAlly";
     }
 
     function refreshAllies(profile){
-        if (profile){
-            // do nothing
-        }
-        else {
-            profile = getProfile();
-        }
-        var obj = {profile:profile};
-        $('#<?php echo $DATAGRID_ID;?>').datagrid('reload', obj);
+        refreshDataGridProfile('<?php echo $DATAGRID_ID;?>', profile);
         return false;
     }
 </script>

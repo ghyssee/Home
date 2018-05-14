@@ -134,6 +134,7 @@ function getProfile(){
             loadSettingsProfileGlobal(row);
             loadSettingsCrime(row);
             refreshAllies();
+            refreshBullies(row);
         }
     }
 </script>
