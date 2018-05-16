@@ -4,23 +4,41 @@
     $FORM_ID = "fmAssassin";
 ?>
 <form id="<?php echo $FORM_ID;?>" method="post">
-    Active Assassin Profile: <input id="activeProfile" class="easyui-combobox" name="activeProfile"
-                                  data-options="width:200,
-                                                limitToList: true,
-                                                valueField: 'id',
-                                                textField:'name',
-                                                queryParams:{profile:getProfile()},
-                                                onLoadError:function(){
-                                                    alert('An error occured');
-                                                },
-                                                onChange: function(newValue, oldValue){
-                                                    onAssassinProfileChange(newValue, oldValue);
-                                                },
-                                                url:'SettingsAction.php?method=getAssassinProfiles'
-                                    ">
-    <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok"
-       onclick="submitForm('<?php echo $FORM_ID;?>', 'SettingsAction.php?method=saveAssassinActiveProfile&profile=' + getProfile())" style="width:90px">Save</a>
-    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="loadSettingsAssassin();" style="width:90px">Undo</a>
+    <div id="ccAssassin" class="easyui-layout" style="width:100%;height:90px;">
+        <div data-options="region:'east',border:'none'" style="width:50%;padding:5px; display: table">
+            <div style="display: table-cell; vertical-align: middle">
+            <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok"
+               onclick="submitForm('<?php echo $FORM_ID;?>', 'SettingsAction.php?method=saveAssassinActiveProfile&profile=' + getProfile())" style="width:90px">Save</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="loadSettingsAssassin();" style="width:90px">Undo</a>
+            </div>
+        </div>
+        <div data-options="region:'center',border:'none'" style="padding:5px">
+            <div class="fitem">
+                <label title="Attack the player until he's deatg, even if you loose" style="width:150px">Red Ice</label>
+                <input name="redIce"
+                       class="easyui-checkbox" type="checkbox" value="true"
+                >
+            </div>
+            <div class="fitem">
+                <label title="Select the Active Assassin Profile" style="width:150px">Active Assassin Profile:</label>
+                    <input id="activeProfile" class="easyui-combobox" name="activeProfile"
+                            data-options="width:200,
+                                limitToList: true,
+                                valueField: 'id',
+                                textField:'name',
+                                queryParams:{profile:getProfile()},
+                                onLoadError:function(){
+                                    alert('An error occured');
+                                },
+                                onChange: function(newValue, oldValue){
+                                    onAssassinProfileChange(newValue, oldValue);
+                                },
+                                url:'SettingsAction.php?method=getAssassinProfiles'
+                    ">
+            </div>
+        </div>
+    </div>
+
 </form>
 <table id="<?php echo $DATAGRID_ID;?>" class="easyui-datagrid" style="width:95%;height:95%"
        title="List Of Assassin-a-nator Players"
@@ -119,6 +137,8 @@
             profile = getProfile();
         }
         $('#<?php echo $FORM_ID;?>').form('load','SettingsAction.php?method=getSettingsAssassin&profile=' + profile);
+        refreshAssassinDg();
+        //$('#activeProfile').combobox('reload', 'SettingsAction.php?method=getAssassinProfiles&profile=' + profile);
     }
     loadSettingsAssassin();
 

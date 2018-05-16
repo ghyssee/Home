@@ -28,6 +28,7 @@ class AssassinProfileTO {
 
 class AssassinSettingsTO {
     public $activeProfile;
+    public $redIce;
 
     function getBase(){
         return null;
@@ -97,7 +98,7 @@ class AssassinBO
         if ($assassinProfile != null){
             return $assassinProfile->players;
         }
-        return null;
+        return Array();
     }
 
     function addAssassin(AssassinTO $assassinTO){

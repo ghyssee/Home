@@ -133,6 +133,7 @@ function getProfile(){
             loadSettingsHomefeed(row);
             loadSettingsProfileGlobal(row);
             loadSettingsCrime(row);
+            loadSettingsAssassin(row);
             refreshAllies();
             refreshBullies(row);
         }

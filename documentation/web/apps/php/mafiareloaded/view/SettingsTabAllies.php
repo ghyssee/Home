@@ -80,17 +80,11 @@ $DIALOG_ID = "dlgAlly";
 
 <script>
     function newAlly(){
-        $('#<?php echo $DIALOG_ID;?>').dialog('open').dialog('setTitle','New Ally');
-        $('#<?php echo $FORM_ID;?>').form('reset');
-        url = 'SettingsAction.php?method=addAlly' + "&profile=" + getProfile();
+        newRecord("<?php echo $DIALOG_ID;?>", "<?php echo $FORM_ID;?>", "New Ally", 'SettingsAction.php?method=addAlly' + "&profile=" + getProfile());
     }
     function editAlly(){
-        var row = $('#<?php echo $DATAGRID_ID;?>').datagrid('getSelected');
-        if (row){
-            $('#<?php echo $DIALOG_ID;?>').dialog('open').dialog('setTitle','Edit Ally');
-            $('#<?php echo $FORM_ID;?>').form('load',row);
-            url = 'SettingsAction.php?method=updateAlly&id='+row['id'] + "&profile=" + getProfile();
-        }
+        editRecord('<?php echo $DATAGRID_ID;?>', '<?php echo $DIALOG_ID;?>', '<?php echo $FORM_ID;?>', 'id', 'Edit Ally',
+            'SettingsAction.php?method=updateAlly&id=\'+row[\'id\'] + "&profile=' + getProfile());
     }
     function saveAlly(){
         $('#<?php echo $FORM_ID;?>').form('submit',{
