@@ -65,6 +65,10 @@ public class SeleniumTest extends BatchJobV2 {
     }
 
     public void start(Date strDate) throws IOException {
+        String tst = UltratopConfigBO.getInstance().getDirName(new Date());
+        System.out.println(tst);
+
+        /*
         String computerName = be.home.common.utils.NetUtils.getHostName();
         log.info("Computer Name: " + computerName);
         String instanceId = "1";
@@ -74,6 +78,7 @@ public class SeleniumTest extends BatchJobV2 {
         UltratopList(driver, strDate);
 
         setup.closeWebDriver(driver);
+        */
     }
 
     public void test(WebDriver driver){
@@ -222,7 +227,8 @@ public class SeleniumTest extends BatchJobV2 {
         String strDate = "";
         if (date == null){
             url = "http://www.ultratop.be/nl/ultratop50";
-            strDate = DateUtils.formatDate(new Date(), DateUtils.YYYYMMDD);
+            date = new Date();
+            strDate = DateUtils.formatDate(date, DateUtils.YYYYMMDD);
         }
         else {
             Calendar cal = Calendar.getInstance();

@@ -39,12 +39,13 @@ public class UltratopList {
         String strDate = "";
         if (date == null){
             url = "http://www.ultratop.be/nl/ultratop50";
-            strDate = DateUtils.formatDate(new Date(), DateUtils.YYYYMMDD);
+            date = new Date();
+            strDate = UltratopConfigBO.getFormattedDate(date);
         }
         else {
             Calendar cal = Calendar.getInstance();
             cal.setTime(date);
-            strDate = DateUtils.formatDate(date, DateUtils.YYYYMMDD);
+            strDate = UltratopConfigBO.getFormattedDate(date);
             url = "http://www.ultratop.be/nl/weekchart.asp?cat=s&year=" + cal.get(Calendar.YEAR) +
                     "&date=" + strDate;
         }

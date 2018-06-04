@@ -95,4 +95,49 @@ public class DateUtils  {
 		return cal;
 	}
 
+	public static String getMonthName(Calendar cal){
+		String name = "Unknown";
+		int month = cal.get(Calendar.MONTH);
+		switch (month){
+			case Calendar.JANUARY:
+				name = "Januari";
+				break;
+			case Calendar.FEBRUARY:
+				name = "Februari";
+				break;
+			case Calendar.MARCH:
+				name = "Maart";
+				break;
+			case Calendar.APRIL:
+				name = "April";
+				break;
+			case Calendar.MAY:
+				name = "Mei";
+				break;
+			case Calendar.JUNE:
+				name = "Juni";
+				break;
+			case Calendar.JULY:
+				name = "Juli";
+				break;
+			case Calendar.AUGUST:
+				name = "Augustus";
+				break;
+			case Calendar.SEPTEMBER:
+				name = "September";
+				break;
+			case Calendar.OCTOBER:
+				name = "Oktober";
+				break;
+			case Calendar.NOVEMBER:
+				name = "November";
+				break;
+			case Calendar.DECEMBER:
+				name = "DECEMBER";
+				break;
+
+		}
+		return name;
+	}
+
 }

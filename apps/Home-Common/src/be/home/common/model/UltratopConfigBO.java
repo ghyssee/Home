@@ -4,6 +4,7 @@ import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
 import be.home.common.model.json.FirefoxProfiles;
 import be.home.common.model.json.UltratopConfig;
+import be.home.common.utils.DateUtils;
 import be.home.common.utils.JSONUtils;
 import be.home.common.utils.MyFileWriter;
 import be.home.model.M3uTO;
@@ -12,6 +13,8 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class UltratopConfigBO {
@@ -44,6 +47,24 @@ public class UltratopConfigBO {
             writer.append(line);
         }
         writer.close();
+    }
+
+    public void updateUltratop(){
+
+    }
+
+    public static String getFormattedDate(Date date){
+        String strDate = DateUtils.formatDate(date, DateUtils.YYYYMMDD);
+        return strDate;
+    }
+
+    public String getDirName(Date date){
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        String frmDate = getFormattedDate(date);
+        String path = "Ultratop 50 " + frmDate + " " + cal.get(Calendar.DAY_OF_MONTH) +  " " + DateUtils.getMonthName(cal) +
+                " " + cal.get(Calendar.YEAR);
+        return path;
     }
 
 }

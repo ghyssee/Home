@@ -90,8 +90,8 @@ public class UltratopController implements Initializable {
     private void showResultBox( Date date, List<M3uTO> list){
 
         TableView<Object> table = new TableView<>();
-        list.add( new M3uTO(null, "1", "Smith", "jacob.smith@example.com"));
-        list.add( new M3uTO(null, "200", "Johnson", "isabella.johnson@example.com"));
+        //list.add( new M3uTO(null, "1", "Smith", "jacob.smith@example.com"));
+        //list.add( new M3uTO(null, "200", "Johnson", "isabella.johnson@example.com"));
 
         DataList dataList = new DataList();
         dataList.add("track", "Track", 10, DataList.TEXT_ALIGN_RIGHT);
