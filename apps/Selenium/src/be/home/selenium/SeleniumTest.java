@@ -2,6 +2,7 @@ package be.home.selenium;
 
 import be.home.common.main.BatchJobV2;
 import be.home.common.model.UltratopConfigBO;
+import be.home.common.model.json.UltratopConfig;
 import be.home.common.utils.DateUtils;
 import be.home.model.M3uTO;
 import be.home.selenium.common.FirefoxDriverSetup;
@@ -35,7 +36,6 @@ public class SeleniumTest extends BatchJobV2 {
         // Create a new instance of the Firefox driver
         // Notice that the remainder of the code relies on the interface,
         // not the implementation.
-        log.info("test");
         SeleniumTest instance = new SeleniumTest();
         try {
             instance.start(null);
@@ -65,8 +65,12 @@ public class SeleniumTest extends BatchJobV2 {
     }
 
     public void start(Date strDate) throws IOException {
-        String tst = UltratopConfigBO.getInstance().getDirName(new Date());
-        System.out.println(tst);
+        UltratopConfig.Month month = UltratopConfigBO.getInstance().getNewMonth(new Date());
+        System.out.println("Base:" + month.baseDir);
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.MONTH, Calendar.APRIL);
+        cal.set(Calendar.DAY_OF_MONTH, 07);
+        UltratopConfigBO.getInstance().addUltratopConfigItem(cal.getTime());
 
         /*
         String computerName = be.home.common.utils.NetUtils.getHostName();

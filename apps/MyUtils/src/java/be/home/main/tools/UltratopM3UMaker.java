@@ -27,7 +27,7 @@ import java.util.List;
  */
 public class UltratopM3UMaker extends BatchJobV2 {
 
-    public static UltratopConfig.Config ultratopConfig;
+    public static UltratopConfig ultratopConfig;
     private static String SPLIT_SONG = " - ";
     private static final Logger log = getMainLog(UltratopM3UMaker.class);
 
@@ -35,7 +35,7 @@ public class UltratopM3UMaker extends BatchJobV2 {
     public static void main(String args[])  {
         UltratopM3UMaker instance = new UltratopM3UMaker();
             //config = instance.init();
-            ultratopConfig = (UltratopConfig.Config) JSONUtils.openJSONWithCode(Constants.JSON.ULTRATOP, UltratopConfig.Config.class );
+            ultratopConfig = (UltratopConfig) JSONUtils.openJSONWithCode(Constants.JSON.ULTRATOP, UltratopConfig.class );
         try {
             instance.processUltratopConfigurationFile(ultratopConfig);
         } catch (IOException e) {
@@ -48,7 +48,7 @@ public class UltratopM3UMaker extends BatchJobV2 {
 
     }
 
-    public void processUltratopConfigurationFile(UltratopConfig.Config config) throws IOException {
+    public void processUltratopConfigurationFile(UltratopConfig config) throws IOException {
 
         for (UltratopConfig.Year year : config.years){
             if (year.enabled) {

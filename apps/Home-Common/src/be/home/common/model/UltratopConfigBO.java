@@ -29,9 +29,9 @@ public class UltratopConfigBO {
     }
 
     public void save() throws IOException {
-        //String file = Setup.getFullPath(Constants.JSON.MP3PRETTIFIER) + ".NEW";
-        //JSONUtils.writeJsonFile(mp3Prettifier, file);
-        JSONUtils.writeJsonFileWithCode(ultratopConfig, fileCode);
+        String file = Setup.getFullPath(fileCode) + ".NEW";
+        JSONUtils.writeJsonFile(ultratopConfig, file);
+        //JSONUtils.writeJsonFileWithCode(ultratopConfig, fileCode);
     }
 
     public static UltratopConfigBO getInstance() {
@@ -39,8 +39,7 @@ public class UltratopConfigBO {
     }
 
     public void saveUltratopList(String strDate, List<M3uTO> list) throws IOException {
-        String filename = Setup.getFullPath(Constants.Path.OUTPUT) + File.separator +
-                "Ultratop" + strDate + ".txt";
+        String filename = Setup.getFullPath(Constants.Path.OUTPUT) + File.separator + getDataFilename(strDate);
         MyFileWriter writer = new MyFileWriter(filename, MyFileWriter.NO_APPEND);
         for (M3uTO song : list){
             String line = StringUtils.leftPad(song.getTrack(), 2, "0") + " " + song.getArtist() + " - " + song.getSong();
@@ -49,8 +48,9 @@ public class UltratopConfigBO {
         writer.close();
     }
 
-    public void updateUltratop(){
-
+    public String getDataFilename(String strDate){
+        String filename = "Ultratop" + strDate + ".txt";
+        return filename;
     }
 
     public static String getFormattedDate(Date date){
@@ -67,4 +67,53 @@ public class UltratopConfigBO {
         return path;
     }
 
+    public UltratopConfig.Month getNewMonth(Date date){
+        UltratopConfig.Month monthTO = new UltratopConfig().new Month();
+        monthTO.baseDir = getDirName(date);
+        monthTO.enabled = true;
+        monthTO.id = getFormattedDate(date);
+        monthTO.inputFile = "data/" + getDataFilename(getFormattedDate(date));
+        return monthTO;
+    }
+
+    public UltratopConfig.Year findYear(String year){
+        for (UltratopConfig.Year yearTO : ultratopConfig.years){
+            if (yearTO.year.equals(year)){
+                return yearTO;
+            }
+        }
+        return null;
+    }
+
+    public UltratopConfig.Month findUltratop(List <UltratopConfig.Month> list, String id){
+        for (UltratopConfig.Month monthTO : list){
+            if (monthTO.id.equals(id)){
+                return monthTO;
+            }
+        }
+        return null;
+    }
+
+    public boolean addUltratopConfigItem(Date date) throws IOException {
+        boolean added = false;
+        UltratopConfig.Month monthTO = getNewMonth(date);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        UltratopConfig.Year year = findYear(String.valueOf(cal.get(Calendar.YEAR)));
+        if (year != null){
+            UltratopConfig.Month month = findUltratop(year.m3uMonth, getFormattedDate(date));
+            if (month == null){
+                added = true;
+                year.m3uMonth.add(getNewMonth(date));
+                save();
+            }
+            else {
+
+            }log.info("Ultratop config item already added: " + getFormattedDate(date));
+        }
+        else {
+            log.warn("Year not found in config file: " + cal.get(Calendar.YEAR));
+        }
+        return added;
+    }
 }
