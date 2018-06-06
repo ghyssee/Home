@@ -64,6 +64,11 @@ public class UltratopController implements Initializable {
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
         datePicker.setDayCellFactory(dayCellFactory);
         Calendar cal = DateUtils.getFirstSaturdayOfMonth();
+        Calendar currCal = Calendar.getInstance();
+        if (cal.after(currCal)){
+            cal.add(Calendar.MONTH, -1);
+            cal = DateUtils.getFirstSaturdayOfMonth(cal);
+        }
         LocalDate date = DateUtils.convertCalendarToLocalDate(cal);
         datePicker.setValue(date);
     }
