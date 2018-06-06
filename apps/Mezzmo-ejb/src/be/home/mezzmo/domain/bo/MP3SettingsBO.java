@@ -28,6 +28,15 @@ public class MP3SettingsBO {
         return null;
     }
 
+    public MP3Settings.Mezzmo.Mp3Checker.RelativePath getDefaultPath(){
+        for (MP3Settings.Mezzmo.Mp3Checker.RelativePath relativePath : mp3Settings.mezzmo.mp3Checker.relativePaths){
+            if (relativePath.defaultiPod){
+                return relativePath;
+            }
+        }
+        return null;
+    }
+
     public void save() throws IOException {
         //String file = Setup.getFullPath(Constants.JSON.MP3PRETTIFIER) + ".NEW";
         //JSONUtils.writeJsonFile(mp3Prettifier, file);

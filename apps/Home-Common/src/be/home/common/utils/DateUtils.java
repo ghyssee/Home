@@ -140,4 +140,9 @@ public class DateUtils  {
 		return name;
 	}
 
+	public static String formattedDay(Calendar cal){
+		String day = String.format("%02d", cal.get(Calendar.DAY_OF_MONTH));
+		return day;
+
+	}
 }

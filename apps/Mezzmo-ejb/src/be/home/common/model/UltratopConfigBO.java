@@ -7,7 +7,9 @@ import be.home.common.model.json.UltratopConfig;
 import be.home.common.utils.DateUtils;
 import be.home.common.utils.JSONUtils;
 import be.home.common.utils.MyFileWriter;
+import be.home.mezzmo.domain.bo.MP3SettingsBO;
 import be.home.model.M3uTO;
+import be.home.model.json.MP3Settings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -62,7 +64,7 @@ public class UltratopConfigBO {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         String frmDate = getFormattedDate(date);
-        String path = "Ultratop 50 " + frmDate + " " + cal.get(Calendar.DAY_OF_MONTH) +  " " + DateUtils.getMonthName(cal) +
+        String path = "Ultratop 50 " + frmDate + " " + DateUtils.formattedDay(cal) +  " " + DateUtils.getMonthName(cal) +
                 " " + cal.get(Calendar.YEAR);
         return path;
     }
@@ -99,20 +101,28 @@ public class UltratopConfigBO {
         UltratopConfig.Month monthTO = getNewMonth(date);
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
-        UltratopConfig.Year year = findYear(String.valueOf(cal.get(Calendar.YEAR)));
-        if (year != null){
-            UltratopConfig.Month month = findUltratop(year.m3uMonth, getFormattedDate(date));
-            if (month == null){
-                added = true;
-                year.m3uMonth.add(getNewMonth(date));
-                save();
+        String year = String.valueOf(cal.get(Calendar.YEAR));
+        UltratopConfig.Year yearTO = findYear(year);
+        if (yearTO == null){
+            yearTO = new UltratopConfig().new Year();
+            yearTO.year = year;
+            yearTO.enabled = true;
+            MP3Settings.Mezzmo.Mp3Checker.RelativePath relativePath = MP3SettingsBO.getInstance().getDefaultPath();
+            if (relativePath != null) {
+                yearTO.relativePathId = relativePath.id;
             }
-            else {
-
-            }log.info("Ultratop config item already added: " + getFormattedDate(date));
+            yearTO.filter = "Ultratop 50 " + year;
+            ultratopConfig.years.add(yearTO);
+        }
+        UltratopConfig.Month month = findUltratop(yearTO.m3uMonth, getFormattedDate(date));
+        if (month == null){
+            added = true;
+            yearTO.m3uMonth.add(getNewMonth(date));
+            log.info("Ultratop config item added: " + getFormattedDate(date));
+            save();
         }
         else {
-            log.warn("Year not found in config file: " + cal.get(Calendar.YEAR));
+            log.warn("Ultratop config item already added: " + getFormattedDate(date));
         }
         return added;
     }

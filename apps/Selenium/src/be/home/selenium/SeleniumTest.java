@@ -4,6 +4,7 @@ import be.home.common.main.BatchJobV2;
 import be.home.common.model.UltratopConfigBO;
 import be.home.common.model.json.UltratopConfig;
 import be.home.common.utils.DateUtils;
+import be.home.gui.common.GUIUtils;
 import be.home.model.M3uTO;
 import be.home.selenium.common.FirefoxDriverSetup;
 import org.apache.commons.text.StringEscapeUtils;
@@ -65,11 +66,10 @@ public class SeleniumTest extends BatchJobV2 {
     }
 
     public void start(Date strDate) throws IOException {
-        UltratopConfig.Month month = UltratopConfigBO.getInstance().getNewMonth(new Date());
-        System.out.println("Base:" + month.baseDir);
         Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.MONTH, Calendar.APRIL);
-        cal.set(Calendar.DAY_OF_MONTH, 07);
+        cal.set(Calendar.MONTH, Calendar.JUNE);
+        cal.set(Calendar.DAY_OF_MONTH, 02);
+        cal.set(Calendar.YEAR, 2019);
         UltratopConfigBO.getInstance().addUltratopConfigItem(cal.getTime());
 
         /*

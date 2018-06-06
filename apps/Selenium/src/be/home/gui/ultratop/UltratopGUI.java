@@ -1,6 +1,7 @@
 package be.home.gui.ultratop;
 
 import be.home.gui.common.GUIApplication;
+import be.home.gui.common.GUIUtils;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;

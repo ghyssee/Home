@@ -1,7 +1,9 @@
 package be.home.gui.ultratop;
 
+import be.home.common.model.UltratopConfigBO;
 import be.home.common.utils.DateUtils;
 import be.home.gui.common.DataList;
+import be.home.gui.common.GUIUtils;
 import be.home.model.M3uTO;
 import be.home.selenium.SeleniumTest;
 import be.home.selenium.ultratop.UltratopList;
@@ -87,7 +89,7 @@ public class UltratopController implements Initializable {
     }
 
 
-    private void showResultBox( Date date, List<M3uTO> list){
+    private void showResultBox( Date date, List<M3uTO> list) {
 
         TableView<Object> table = new TableView<>();
         //list.add( new M3uTO(null, "1", "Smith", "jacob.smith@example.com"));
@@ -113,6 +115,11 @@ public class UltratopController implements Initializable {
         alert.showAndWait();
         if (alert.getResult() == buttonTypeImport) {
             System.out.println("Import Ultratop List");
+            try {
+                UltratopConfigBO.getInstance().addUltratopConfigItem(date);
+            } catch (IOException e) {
+                GUIUtils.errorAlert("Error", "There was a problem adding the ultratop to the configuration");
+            }
         }
     }
 

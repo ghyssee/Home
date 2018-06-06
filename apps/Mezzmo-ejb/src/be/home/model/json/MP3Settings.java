@@ -92,6 +92,7 @@ public class MP3Settings {
                 public String original;
                 public String substitute;
                 public String description;
+                public boolean defaultiPod;
             }
         }
     }
