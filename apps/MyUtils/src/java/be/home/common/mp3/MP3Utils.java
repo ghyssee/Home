@@ -2,6 +2,7 @@ package be.home.common.mp3;
 
 import com.mpatric.mp3agic.*;
 import com.mpatric.mp3agic.AbstractID3v2Tag;
+import com.mpatric.mp3agic.ID3v23Tag;
 import com.mpatric.mp3agic.ID3v24Tag;
 import org.apache.commons.lang3.StringUtils;
 import org.jaudiotagger.tag.id3.*;
@@ -71,8 +72,6 @@ public class MP3Utils {
             return id3v2;
         }
         ID3v2 id3v2Tag = new ID3v24Tag();
-
-
 
         /*
         Map<String, ID3v2FrameSet> map = mp3File.getId3v2Tag().getFrameSets();
@@ -224,7 +223,7 @@ public class MP3Utils {
         id3v2Tag.setYear(id3v2.getYear());
         */
 
-        return id3v2Tag;
+        return id3v2;
     }
 
     public static boolean checkId3v2Tag(ID3v2 id3v2Tag){

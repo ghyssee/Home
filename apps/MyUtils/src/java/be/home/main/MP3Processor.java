@@ -199,7 +199,7 @@ public class MP3Processor extends BatchJobV2 {
     }
 
     private void readMP3FileOld(AlbumInfo.Config album, AlbumInfo.Track track, String fileName, String prefixFileName) throws InvalidDataException, IOException, UnsupportedTagException, NotSupportedException {
-        Mp3FileExt mp3file = new Mp3FileExt(fileName);
+        Mp3File mp3file = new Mp3File(fileName);
         File f = new File(fileName);
         AudioFile af = null;
         try {

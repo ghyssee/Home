@@ -11,6 +11,7 @@ import be.home.domain.model.ArtistSongItem;
 import be.home.domain.model.MP3Helper;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
+import com.mpatric.mp3agic.EncodedText;
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.Mp3File;
 import org.apache.commons.lang.StringUtils;
@@ -47,9 +48,9 @@ public class HelloWorld extends BatchJobV2 {
         //testMP3Prettifier();
         //System.out.println(MP3Helper.getInstance().test("A\\$2AP$2Test$2Test$3Test$4", "\\$2", "\\$3", 2));
         //System.out.println(MP3Helper.getInstance().checkRegExpDollar("$1Text$1", 1));
-        //updateMP3();
+        updateMP3();
         //batchProcess();
-        testMP3Prettifier();
+        //testMP3Prettifier();
         //testAlbumArtist();
 
     }
@@ -146,7 +147,7 @@ private static void testAlbumArtist(){
 
     private static void updateMP3(){
         Mp3File mp3file = null;
-        String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\New\\10 Sylver - Hungry Heart.mp3";
+        String file = "C:\\My Data\\tmp\\Java\\MP3Processor\\Test\\1\\113 Axwell & Ingrosso Feat. Trevor Guthrie - Dreamer.mp3";
         //String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\test.mp3";
         //String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\108 Di-Rect - Hungry For Love.mp3";
         try {
@@ -154,8 +155,12 @@ private static void testAlbumArtist(){
             ID3v2 id3v2Tag = MP3Utils.getId3v2Tag(mp3file);
             //id3v2Tag.setTitle("test2");
             //id3v2Tag.setArtist("Axwell Λ Ingrosso");
-                mp3file.setId3v2Tag(id3v2Tag);
-                String newFile = file + ".MP3";
+                //mp3file.setId3v2Tag(id3v2Tag);
+            String myString = "Axwell Λ Ingrosso Feat. Trevor Guthrie";
+            //byte ptext[] = myString.getBytes();
+           //String value = new String(ptext, "ISO-8859-1");
+            id3v2Tag.setArtist(myString);
+            String newFile = file + ".MP3";
                 mp3file.save(newFile);
         } catch (Exception e) {
             e.printStackTrace();
