@@ -11,7 +11,8 @@ public class PlaylistSetup {
         public String name;
         public String parent;
         public String type;
-        public Integer limitBy;
+        public int[] limitBy;
+        public int startId;
         public String combineAnd;
         public String mediaType;
         public String orderByColumn;

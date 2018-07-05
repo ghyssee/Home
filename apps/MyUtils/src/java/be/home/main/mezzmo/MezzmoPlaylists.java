@@ -50,6 +50,8 @@ public class MezzmoPlaylists extends BatchJobV2{
         final String batchJob = "Export PlayCount";
 
         PlaylistSetup playlistSetup = (PlaylistSetup) JSONUtils.openJSONWithCode(Constants.JSON.PLAYLISTSETUP, PlaylistSetup.class);
+        System.out.println("test");
+
 
         try {
             makePlaylists(playlistSetup);
@@ -82,11 +84,32 @@ public class MezzmoPlaylists extends BatchJobV2{
         return null;
     }
 
-    public MGOPlaylistTO validateAndFillPlaylist(List<String> errors, PlaylistSetup.PlaylistRecord pr, int parentID){
+    public String constructPlaylistName(int limitBy, int index, PlaylistSetup.PlaylistRecord pr){
+        PlaylistType type = PlaylistType.get(pr.type);
+        String name = pr.name;
+        if (type == PlaylistType.SMART){
+            PlaylistSetup.Condition pcCondition= findPlaycountCondition(pr.conditions);
+            name = (pr.startId + index) + " " + pr.name + " (" + limitBy + "/" + (pcCondition == null ? "Alles": ("Playcount < " + (Integer.parseInt(pcCondition.valueTwo)+1))) + ")";
+        }
+        System.out.println("Playlist name: " + name);
+        return name;
+    }
+
+    public PlaylistSetup.Condition findPlaycountCondition (List <PlaylistSetup.Condition> conditions){
+        for (PlaylistSetup.Condition condition : conditions){
+            if ("PlayCount".equals(condition.field)){
+                return condition;
+            }
+        }
+        return null;
+    }
+
+
+    public MGOPlaylistTO validateAndFillPlaylist(List<String> errors, String name, int limitBy, PlaylistSetup.PlaylistRecord pr, int parentID){
         PlaylistBO playlistBO = new PlaylistBO();
         PlaylistType playlistType = PlaylistType.get(pr.type);
         MGOPlaylistTO playlist = new MGOPlaylistTO();
-        playlist.setName(pr.name);
+        playlist.setName(name);
         playlist.setType(playlistType.getValue());
         playlist.setParentID(parentID);
         playlist.setThumbnailID(-1);
@@ -108,7 +131,7 @@ public class MezzmoPlaylists extends BatchJobV2{
                 break;
             case SMART:
                 playlist.setDynamicTreeToken("");
-                playlist.setLimitBy(pr.limitBy);
+                playlist.setLimitBy(limitBy);
                 // default limit time is not implemented, so always items
                 playlist.setLimitType(LimitType.Items.getValue());
                 playlist.setMediaType(playlistBO.validateMediaType(errors, pr.mediaType));
@@ -119,12 +142,13 @@ public class MezzmoPlaylists extends BatchJobV2{
         return playlist;
     }
 
-    public void createPlaylist(PlaylistSetup.PlaylistRecord playlistRec, List <String> errors){
+    public void createPlaylist(PlaylistSetup.PlaylistRecord playlistRec, String playlistName, int limitBy, List <String> errors){
         MGOPlaylistTO parentTO = findParent(playlistRec.parent);
         if (parentTO != null) {
             log.info("Parent Found: " + parentTO.getID() + " / " + parentTO.getName());
             // insert the playlist
-            MGOPlaylistTO playlistTO = validateAndFillPlaylist(errors, playlistRec, parentTO.getID());
+            PlaylistType type = PlaylistType.get(playlistRec.type);
+            MGOPlaylistTO playlistTO = validateAndFillPlaylist(errors, playlistName, limitBy, playlistRec, parentTO.getID());
             if (errors.size() == 0) {
                 int nr = getMezzmoService().insertPlaylist(playlistTO);
                 log.info("Nr Of Records created: " + nr);
@@ -154,41 +178,45 @@ public class MezzmoPlaylists extends BatchJobV2{
                 case NORMAL:
                     playlistTO = checkIfPlaylistExist(playlist, playlistRec, errors);
                     if (playlistTO == null && errors.size() == 0){
-                        createPlaylist(playlistRec, errors);
+                        createPlaylist(playlistRec, playlistRec.name, 0, errors);
                     }
                     break;
                 case SMART:
-                    playlistTO = checkIfPlaylistExist(playlist, playlistRec, errors);
-                    if (playlistTO == null && errors.size() == 0) {
-                        createPlaylist(playlistRec, errors);
-                        // look it up again to get the playlist ID
-                        if (errors.size() == 0) {
-                            playlistTO = checkIfPlaylistExist(playlist, playlistRec, errors);
+                    int index = 0;
+                    for (int limitBy : playlistRec.limitBy){
+                        playlist.setName(constructPlaylistName(limitBy, index++, playlistRec));
+                        playlistTO = checkIfPlaylistExist(playlist, playlistRec, errors);
+                        if (playlistTO == null && errors.size() == 0) {
+                            createPlaylist(playlistRec, playlist.getName(), limitBy, errors);
+                            // look it up again to get the playlist ID
                             if (errors.size() == 0) {
+                                playlistTO = checkIfPlaylistExist(playlist, playlistRec, errors);
+                                if (errors.size() == 0) {
 
-                                for (PlaylistSetup.Condition c : playlistRec.conditions) {
-                                    errors = getMezzmoService().validateAndInsertCondition(c, playlistTO.getID());
-                                    if (errors.size() > 0) {
-                                        log.info("The following errors found");
-                                        for (String message : errors) {
-                                            log.info("ERROR Found: " + message);
+                                    for (PlaylistSetup.Condition c : playlistRec.conditions) {
+                                        errors = getMezzmoService().validateAndInsertCondition(c, playlistTO.getID());
+                                        if (errors.size() > 0) {
+                                            log.info("The following errors found");
+                                            for (String message : errors) {
+                                                log.info("ERROR Found: " + message);
+                                            }
                                         }
                                     }
+                                } else {
+                                    logErrors(errors);
+                                    log.error("Playlist not found after it was created: " + playlistRec.name);
                                 }
                             } else {
                                 logErrors(errors);
-                                log.error("Playlist not found after it was created: " + playlistRec.name);
-                            }
-                        } else {
-                            logErrors(errors);
-                            log.error("Playlist not created: " + playlistRec.name);
-                            for (String msg : errors) {
-                                log.error(msg);
+                                log.error("Playlist not created: " + playlistRec.name);
+                                for (String msg : errors) {
+                                    log.error(msg);
+                                }
                             }
                         }
-                    }
-                    else {
-                        logErrors(errors);
+                        else {
+                            logErrors(errors);
+                        }
                     }
                     break;
                 default:
