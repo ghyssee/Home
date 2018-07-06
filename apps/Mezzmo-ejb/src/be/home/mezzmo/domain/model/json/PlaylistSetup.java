@@ -29,5 +29,6 @@ public class PlaylistSetup {
     }
 
     public List<PlaylistRecord> records;
+    public int playlistTitleIndexLength;
 
 }

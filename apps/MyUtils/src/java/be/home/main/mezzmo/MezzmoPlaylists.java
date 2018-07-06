@@ -84,12 +84,20 @@ public class MezzmoPlaylists extends BatchJobV2{
         return null;
     }
 
+    private String getFormattedPlaylistTitleIndex(int index){
+        String strIndex = String.format("%02d", index);
+        return strIndex;
+    }
+
     public String constructPlaylistName(int limitBy, int index, PlaylistSetup.PlaylistRecord pr){
         PlaylistType type = PlaylistType.get(pr.type);
         String name = pr.name;
         if (type == PlaylistType.SMART){
             PlaylistSetup.Condition pcCondition= findPlaycountCondition(pr.conditions);
-            name = (pr.startId + index) + " " + pr.name + " (" + limitBy + "/" + (pcCondition == null ? "Alles": ("Playcount < " + (Integer.parseInt(pcCondition.valueTwo)+1))) + ")";
+            name = getFormattedPlaylistTitleIndex(pr.startId + index) + " " +
+                    pr.name + " (" + limitBy + "/" +
+                    (pcCondition == null ? "Alles": ("Playcount < " + (Integer.parseInt(pcCondition.valueTwo)+1))) +
+                            ")";
         }
         System.out.println("Playlist name: " + name);
         return name;
