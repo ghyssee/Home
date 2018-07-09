@@ -147,7 +147,7 @@ private static void testAlbumArtist(){
 
     private static void updateMP3(){
         Mp3File mp3file = null;
-        String file = "C:\\My Data\\tmp\\Java\\MP3Processor\\Test\\1\\113 Axwell & Ingrosso Feat. Trevor Guthrie - Dreamer.mp3";
+        String file = "C:\\My Data\\tmp\\Java\\MP3Processor\\Test\\123. Axwell  Ingrosso - Dreamer (Matisse & Sadko Remix).mp3";
         //String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\test.mp3";
         //String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\108 Di-Rect - Hungry For Love.mp3";
         try {

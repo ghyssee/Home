@@ -222,8 +222,9 @@ public class MP3Utils {
         id3v2Tag.setUrl(id3v2.getUrl());
         id3v2Tag.setYear(id3v2.getYear());
         */
+        mp3File.setId3v2Tag(id3v2Tag);
 
-        return id3v2;
+        return id3v2Tag;
     }
 
     public static boolean checkId3v2Tag(ID3v2 id3v2Tag){
