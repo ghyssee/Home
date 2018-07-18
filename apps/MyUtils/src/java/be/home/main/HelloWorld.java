@@ -48,9 +48,9 @@ public class HelloWorld extends BatchJobV2 {
         //testMP3Prettifier();
         //System.out.println(MP3Helper.getInstance().test("A\\$2AP$2Test$2Test$3Test$4", "\\$2", "\\$3", 2));
         //System.out.println(MP3Helper.getInstance().checkRegExpDollar("$1Text$1", 1));
-        updateMP3();
+        //updateMP3();
         //batchProcess();
-        //testMP3Prettifier();
+        testMP3Prettifier();
         //testAlbumArtist();
 
     }
@@ -126,6 +126,7 @@ private static void testAlbumArtist(){
         System.out.println(mp3Helper.prettifyArtist("Axwell ^ Ingrosso"));
         System.out.println("Axwell ^ Ingrosso".replaceAll("Axwell \\^ Ingrosso", "test"));
         System.out.println(getTitleArtistException("Kontra K", "Zwischen Himmel Hlle"));
+        System.out.println(mp3Helper.prettifyAlbum("MNM Big Hits 2018 Vol. 3", null));
 
         //System.out.println(getArtistTitleException("Fifth Harmony Feat. Ty Dolla Sign", "Work From Home"));
         //System.out.println(getArtistTitleException("The Ramblers", "Dag Schatteboutje"));
