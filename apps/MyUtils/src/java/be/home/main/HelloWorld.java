@@ -123,10 +123,12 @@ private static void testAlbumArtist(){
         System.out.println(mp3Helper.prettifyArtist("M.A.R.R.S"));
         System.out.println(getTitleArtistException("Tina Turner", "Teach Me Again"));
         */
-        System.out.println(mp3Helper.prettifyArtist("Axwell ^ Ingrosso"));
-        System.out.println("Axwell ^ Ingrosso".replaceAll("Axwell \\^ Ingrosso", "test"));
-        System.out.println(getTitleArtistException("Kontra K", "Zwischen Himmel Hlle"));
-        System.out.println(mp3Helper.prettifyAlbum("MNM Big Hits 2018 Vol. 3", null));
+        //System.out.println(mp3Helper.prettifyArtist("Dorothee Vegas & Like Maarten Feat. Sam Gooris"));
+        //System.out.println("Axwell ^ Ingrosso".replaceAll("Axwell \\^ Ingrosso", "test"));
+        //System.out.println(getTitleArtistException("Kontra K", "Zwischen Himmel Hlle"));
+        //System.out.println(mp3Helper.prettifyAlbum("MNM Big Hits 2018 Vol. 3", null));
+        System.out.println(getTitleArtistException("Dna", "blabla"));
+        System.out.println(getArtistTitleException("Dna", "blabla"));
 
         //System.out.println(getArtistTitleException("Fifth Harmony Feat. Ty Dolla Sign", "Work From Home"));
         //System.out.println(getArtistTitleException("The Ramblers", "Dag Schatteboutje"));

@@ -77,11 +77,17 @@ public class AboMulChecker extends BatchJobV2 {
         try {
             List<String> lines = FileUtils.getContents(file, StandardCharsets.UTF_8);
             for (String line : lines){
-                if (line.substring(0,6).equals("110903")){
+                if (line.substring(0,6).startsWith("1")){ // 110903
                     //System.out.println("TPPN: " + line.substring(1470,1473));
-                    Integer tppn = new Integer(line.substring(1470,1474));
-                    if (!tppns.contains(tppn)){
-                        tppns.add(tppn);
+                    try {
+                        Integer tppn = new Integer(line.substring(1470, 1474));
+                        if (!tppns.contains(tppn)) {
+                            tppns.add(tppn);
+                        }
+                        findId(line);
+                    }
+                    catch (NumberFormatException ex){
+
                     }
                 }
 
@@ -91,19 +97,35 @@ public class AboMulChecker extends BatchJobV2 {
         }
     }
 
+    private void findId(String line){
+        if (line.substring(1364, 1378).startsWith("ATM01464")){
+            //System.out.println("TTW FOUND : " + line);
+            if (line.substring(489, 495).equals("004109")){
+                System.out.println("Transaction number FOUND : " + line);
+                if (line.substring(410, 424).equals("20180810002942")){
+                    System.out.println("Transaction date FOUND : " + line.substring(410, 424));
+                }
+            }
+        }
+    }
+
     private void processAwl(File file){
         System.out.println("Processing file: " + file.getAbsolutePath());
         try {
             List<String> lines = FileUtils.getContents(file, StandardCharsets.UTF_8);
             for (String line : lines){
-                if (line.substring(0,6).equals("112803")){
+                if (line.substring(0,6).startsWith("1")){ // 112803
                     //System.out.println("TPPN: " + line.substring(1470,1473));
-                    Integer tppn = new Integer(line.substring(129,133));
-                    if (!line.substring(143,145).equals("01")){
-                        System.out.println("Lines with Code 01: " + line);
+                    try {
+                        Integer tppn = new Integer(line.substring(129, 133));
+                        if (!line.substring(143, 145).equals("01")) {
+                            //System.out.println("Lines with Code 01: " + line);
+                        } else if (!tppns.contains(tppn)) {
+                            tppns.add(tppn);
+                        }
                     }
-                    else if (!tppns.contains(tppn)){
-                        tppns.add(tppn);
+                    catch (NumberFormatException ex) {
+
                     }
                 }
 
