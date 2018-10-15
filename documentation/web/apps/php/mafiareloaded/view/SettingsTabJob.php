@@ -16,6 +16,13 @@ $FORM_ID = "settingsJob";
         >
     </div>
     <div class="fitem">
+        <label title="Do Stamina Jobs">
+            Stamina Jobs</label>
+        <input name="stamina"
+               class="easyui-checkbox" type="checkbox" value="true"
+        >
+    </div>
+    <div class="fitem">
         <label title="Do Money Jobs for leveling up when Experience points smaller than this amount. Remark: Scheduled jobs will first be executed.">
             Max Experience For Level Up</label>
         <input name="levelUpExp" id="levelUpExp" class="easyui-numberspinner" style="width:150px;"

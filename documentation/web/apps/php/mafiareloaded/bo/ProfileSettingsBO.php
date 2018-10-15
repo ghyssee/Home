@@ -14,6 +14,7 @@ include_once documentPath (ROOT_PHP_MR_BO, "FightTO.php");
 
 class JobSettingsTO  {
     public $money = false;
+    public $stamina = false;
     public $levelUpExp = 0;
     public $levelUpMinEnergy = 0;
 
