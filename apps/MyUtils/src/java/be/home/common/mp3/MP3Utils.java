@@ -1,13 +1,9 @@
 package be.home.common.mp3;
 
 import com.mpatric.mp3agic.*;
-import com.mpatric.mp3agic.AbstractID3v2Tag;
-import com.mpatric.mp3agic.ID3v23Tag;
 import com.mpatric.mp3agic.ID3v24Tag;
 import org.apache.commons.lang3.StringUtils;
-import org.jaudiotagger.tag.id3.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -94,21 +90,35 @@ public class MP3Utils {
             else if (set.getId().equals("NCON")) {
                 // remove NCON TAG from the MP3
             }
-            else if (set.getId().equals("TALB")) {
-                // remove Private TAG from the MP3
+            else if (set.getId().equals("TPIC") || set.getId().equals("PIC")) {
+                id3v2Tag.setAlbumImage(id3v2.getAlbumImage(), id3v2.getAlbumImageMimeType());
+            }
+            else if (set.getId().equals("TALB") || set.getId().equals("TAL")) {
                 id3v2Tag.setAlbum(id3v2.getAlbum());
             }
-            else if (set.getId().equals("TYER")) {
+            else if (set.getId().equals("TENC") || set.getId().equals("TEN")) {
+                id3v2Tag.setEncoder(id3v2.getEncoder());
+            }
+            else if (set.getId().equals("TYER") || set.getId().equals("TYE")) {
                 id3v2Tag.setYear(id3v2.getYear());
             }
-            else if (set.getId().equals("TCOP")) {
+            else if (set.getId().equals("TCOP") || set.getId().equals("TCO")) {
                 id3v2Tag.setCopyright(id3v2.getCopyright());
             }
-            else if (set.getId().equals("TIT2")) {
+            else if (set.getId().equals("TIT2") || set.getId().equals("TT2")) {
                 id3v2Tag.setTitle(id3v2.getTitle());
             }
-            else if (set.getId().equals("TPE1")) {
+            else if (set.getId().equals("TPOS") || set.getId().equals("TPA")) {
+                id3v2Tag.setPartOfSet(id3v2.getPartOfSet());
+            }
+            else if (set.getId().equals("TPE1") || set.getId().equals("TP1")) {
                 id3v2Tag.setArtist(id3v2.getArtist());
+            }
+            else if (set.getId().equals("TPE2") || set.getId().equals("TP2")) {
+                id3v2Tag.setAlbumArtist(id3v2.getAlbumArtist());
+            }
+            else if (set.getId().equals("TRCK") || set.getId().equals("TRK")) {
+                id3v2Tag.setTrack(id3v2.getTrack());
             }
             else if (set.getId().equals("GEOB")) {
                 /* In this frame any type of file can be encapsulated. After the header,
@@ -123,7 +133,7 @@ public class MP3Utils {
                  */
             }
 
-            else if (set.getId().equals("COMM")) {
+            else if (set.getId().equals("COMM") || set.getId().equals("COM")) {
                 // remove Comment Tag if value equals "0"
                 // causes problem with this api
                 String comment = id3v2.getComment().trim();
@@ -135,20 +145,16 @@ public class MP3Utils {
                     id3v2Tag.setComment(comment);
                 }
             }
-            else if (set.getId().equals("TCOM")) {
+            else if (set.getId().equals("TCOM") || set.getId().equals("TCO")) {
                 id3v2Tag.setComposer(id3v2.getComposer());
             }
-            /* remove TAG from the MP3
-             This frame is intended for music that comes from a CD, so that the CD
-            can be identified in databases such as the CDDB
-            */
             else if (set.getId().equals("MCDI")) {
                 /* remove TAG from the MP3
                  This frame is intended for music that comes from a CD, so that the CD
                 can be identified in databases such as the CDDB
                 */
             }
-            else if (set.getId().equals("TXXX")) {
+            else if (set.getId().equals("TXXX") || set.getId().equals("TXX")) {
                 /*
                The text information frames are often the most important frames,
                containing information like artist, album and more. There may only be

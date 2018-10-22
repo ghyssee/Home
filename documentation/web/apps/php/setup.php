@@ -260,6 +260,11 @@ function convertStringYYYYMMDDHHMMSSToDate($strDate){
     return null;
 }
 
+function convertDateToString($date){
+    return $date->format("d/m/Y H:i:s");
+}
+
+
 function read ($file){
     return file_get_contents($file);
 }

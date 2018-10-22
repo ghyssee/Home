@@ -127,8 +127,10 @@ private static void testAlbumArtist(){
         //System.out.println("Axwell ^ Ingrosso".replaceAll("Axwell \\^ Ingrosso", "test"));
         //System.out.println(getTitleArtistException("Kontra K", "Zwischen Himmel Hlle"));
         //System.out.println(mp3Helper.prettifyAlbum("MNM Big Hits 2018 Vol. 3", null));
-        System.out.println(getTitleArtistException("Dna", "blabla"));
-        System.out.println(getArtistTitleException("Dna", "blabla"));
+        //System.out.println(getTitleArtistException("Dna", "blabla"));
+        //System.out.println(getArtistTitleException("Dna", "blabla"));
+
+        updateMP3();
 
         //System.out.println(getArtistTitleException("Fifth Harmony Feat. Ty Dolla Sign", "Work From Home"));
         //System.out.println(getArtistTitleException("The Ramblers", "Dag Schatteboutje"));
@@ -150,7 +152,7 @@ private static void testAlbumArtist(){
 
     private static void updateMP3(){
         Mp3File mp3file = null;
-        String file = "C:\\My Data\\tmp\\Java\\MP3Processor\\Test\\123. Axwell  Ingrosso - Dreamer (Matisse & Sadko Remix).mp3";
+        String file = "C:\\My Data\\tmp\\Java\\MP3Processor\\Test\\test.mp3";
         //String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\test.mp3";
         //String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\108 Di-Rect - Hungry For Love.mp3";
         try {
@@ -159,10 +161,10 @@ private static void testAlbumArtist(){
             //id3v2Tag.setTitle("test2");
             //id3v2Tag.setArtist("Axwell Λ Ingrosso");
                 //mp3file.setId3v2Tag(id3v2Tag);
-            String myString = "Axwell Λ Ingrosso Feat. Trevor Guthrie";
+            String myString = "Test";
             //byte ptext[] = myString.getBytes();
            //String value = new String(ptext, "ISO-8859-1");
-            id3v2Tag.setArtist(myString);
+            id3v2Tag.setWmpRating(5);
             String newFile = file + ".MP3";
                 mp3file.save(newFile);
         } catch (Exception e) {

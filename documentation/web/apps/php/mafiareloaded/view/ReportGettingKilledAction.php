@@ -37,10 +37,14 @@ if (isset($_REQUEST['report'])) {
             $reportTO->message .= 'Error in timestamp: ' . htmlentities($item->feedMsg) . $newline;
         }
         else {
+            /*
             $currDate = new DateTime();
             $interval = date_diff($currDate, $test);
             $tst = convertIntervalToString($interval);
             $reportTO->message .= $tst . ' ago: ' . htmlentities($item->feedMsg) . $newline;
+            */
+            $reportTO->message .= convertDateToString(convertStringYYYYMMDDHHMMSSToDate($item->currentTime)) . ': ';
+            $reportTO->message .= $item->timeMsg . " " . $item->feedMsg  . $newline;
         }
     }
     echo json_encode($reportTO);
