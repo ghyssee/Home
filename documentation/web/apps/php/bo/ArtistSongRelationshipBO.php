@@ -103,8 +103,10 @@ class ArtistSongRelationshipCompositeTO extends ArtistSongRelationshipExtendedTO
             return $artistBO->lookupArtist($artistItemTO->id);
         }
         else {
+            // free field for Artist
             $artist = new ArtistTO();
             $artist->name = $artistItemTO->text;
+            $artist->stageName = $artistItemTO->text;
             return $artist;
         }
 

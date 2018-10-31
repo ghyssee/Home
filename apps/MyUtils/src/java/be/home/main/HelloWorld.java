@@ -130,9 +130,11 @@ private static void testAlbumArtist(){
         //System.out.println(getTitleArtistException("Dna", "blabla"));
         //System.out.println(getArtistTitleException("Dna", "blabla"));
 
-        updateMP3();
+        //updateMP3();
 
-        //System.out.println(getArtistTitleException("Fifth Harmony Feat. Ty Dolla Sign", "Work From Home"));
+        String tmp = "Thriller - Radio Edit";
+        System.out.println(mp3Helper.prettifySong("Thriller - Radio Edit"));
+        System.out.println(tmp.replaceAll("(?:Radio|Single) (?:Mix|Remix|Album|Version|Edit)",""));
         //System.out.println(getArtistTitleException("The Ramblers", "Dag Schatteboutje"));
 
         //System.out.println(getArtistTitleException("Sarah Brightman", "Time To Say Goodbye (Con Te Partiro) (Sarah's Intimate Version)"));
