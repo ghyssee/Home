@@ -132,10 +132,13 @@ private static void testAlbumArtist(){
 
         //updateMP3();
 
-        String tmp = "Thriller - Radio Edit";
-        System.out.println(mp3Helper.prettifySong("Thriller - Radio Edit"));
-        System.out.println(tmp.replaceAll("(?:Radio|Single) (?:Mix|Remix|Album|Version|Edit)",""));
-        //System.out.println(getArtistTitleException("The Ramblers", "Dag Schatteboutje"));
+        String tmp = "Gimme! Gimme! Gimme! (Mix Edit)";
+        //System.out.println(mp3Helper.prettifySong(tmp));
+        String tmp2 = mp3Helper.prettifyArtist("\uFEFFAxwell Λ Ingrosso");
+        System.out.println(tmp.equals(tmp2));
+        System.out.println(mp3Helper.prettifyArtist("\uFEFFAxwell Λ Ingrosso"));
+        //System.out.println(tmp.replaceAll("Gimme!?,? Gimme!?,? Gimme!?(?: \\(A Man After Midnight\\))?","Gimme!"));
+        System.out.println(getTitleArtistException("Aquagen", "Ihr Seid So Leise! (Scheisse, Scheisse Leise) 2011 (Ti-Mo Remix Edit)"));
 
         //System.out.println(getArtistTitleException("Sarah Brightman", "Time To Say Goodbye (Con Te Partiro) (Sarah's Intimate Version)"));
 

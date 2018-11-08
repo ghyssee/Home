@@ -94,6 +94,14 @@ class FightSettingsTO  {
     public $maxNumberOfAttacks = 0;
     public $maxKillsDay = 0;
     public $minStaminaToFight = 0;
+    public $rivals = false;
+    public $fightList = false;
+    public $profileAttack = false;
+    public $wiseguy = false;
+    public $minLevel = 0;
+    public $staminaCost = 0;
+    public $staminaCostHealth = 0;
+    public $attackTillDiedHealth = 0;
 
     public function getBase(){
         return "fight";
