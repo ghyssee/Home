@@ -286,7 +286,7 @@ function getSongViewLink(){
     function formatRow(index, row) {
         if (row.isNew){
             // red background
-            return 'background-color:#e60000;color:#fff;'
+            return 'background-color:#e60000;color:#000;'
         }
         if (row.status) {
             switch (row.status){
