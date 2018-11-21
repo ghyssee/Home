@@ -96,6 +96,18 @@ const FORM_ID = "settings";
         </div>
         <div data-options="region:'east'" style="width:33%;">
             <div class="fitem">
+                <label for="waitTillEnoughStamina">Wait till enough Stamina</label>
+                <input name="waitTillEnoughStamina" id="waitTillEnoughStamina" class="easyui-numberspinner" style="width:150px;"
+                       data-options="min:0"
+                >
+            </div>
+            <div class="fitem">
+                <label for="waitingTimeKilled">Waiting Time Killed</label>
+                <input name="waitingTimeKilled" id="waitingTimeKilled" class="easyui-numberspinner" style="width:150px;"
+                       data-options="min:0"
+                >
+            </div>
+            <div class="fitem">
                 <label for="rivals">Rivals</label>
                 <input name="rivals"
                        class="easyui-checkbox" type="checkbox" value="true"

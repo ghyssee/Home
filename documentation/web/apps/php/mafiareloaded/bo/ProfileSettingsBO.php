@@ -102,6 +102,8 @@ class FightSettingsTO  {
     public $staminaCost = 0;
     public $staminaCostHealth = 0;
     public $attackTillDiedHealth = 0;
+    public $waitTillEnoughStamina = 0;
+    public $waitingTimeKilled = 0;
 
     public function getBase(){
         return "fight";
