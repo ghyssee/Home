@@ -137,7 +137,7 @@ private static void testAlbumArtist(){
         String tmp2 = mp3Helper.prettifyArtist("\uFEFFAxwell Λ Ingrosso");
         //System.out.println(mp3Helper.prettifyArtist("\uFEFFAxwell Λ Ingrosso"));
         //System.out.println(tmp.replaceAll("Gimme!?,? Gimme!?,? Gimme!?(?: \\(A Man After Midnight\\))?","Gimme!"));
-        System.out.println(getTitleArtistException("Basshunter", "Boten Anna (Orginal Mix)"));
+        System.out.println(getTitleArtistException("Taio Cruz", "Dynamite (Mixin Marc Remix Radio Edit)"));
 
         //System.out.println(getArtistTitleException("Sarah Brightman", "Time To Say Goodbye (Con Te Partiro) (Sarah's Intimate Version)"));
 

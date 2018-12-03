@@ -31,6 +31,10 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
        will be used
     */
     private static final String RENUM_TAG = "{RENUM}";
+    /* if the {TRACKSIZE}n tag is found, than the size of the track will be n long
+       will be used
+    */
+    private static final String TRACK_SIZE = "{TRACKSIZE}";
 
     public static ConfigTO.Config config;
     private static final Logger log = getMainLog(MP3PreProcessorV2.class);
@@ -116,6 +120,7 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
         AlbumInfo.Config configAlbum = info.new Config();
         setAlbumTag(mp3PreprocessorConfig, configAlbum);
         configAlbum.total = 0;
+        configAlbum.renum = mp3PreprocessorConfig.renum;
         AtomicInteger counter = new AtomicInteger(1);
         while ((line = reader2.readLine()) != null) {
             if (StringUtils.isNotBlank(line)) {
@@ -170,6 +175,12 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
             album.renum = true;
             return true;
         }
+        else if (tmpLine.startsWith(TRACK_SIZE)){
+            String tr = tmpLine.replace(TRACK_SIZE, "");
+            album.trackSize = Integer.parseInt(tr);
+            log.info("Custom Track Size found: " + album.trackSize);
+            return true;
+        }
         return false;
     }
 
@@ -179,7 +190,6 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
                              String sPattern, AtomicInteger counter){
         line = MP3Helper.getInstance().replaceSpecialCharacters(line.trim());
         log.info(line);
-        album.renum = mp3Config.renum;
         if (CheckSpecialTags(album, line)){
             log.info("Special Tag Found");
             counter.set(1);

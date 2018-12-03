@@ -121,7 +121,10 @@ function getNextArtistId($artistArray, $artistId){
         .box2 {
             display: inline-block;
         }
-    </style>
+        .datagrid-row-selected {
+            background: #ffe48d;
+            color: #000000;
+        }    </style>
     <script>
         function editSong(){
             var row = $('#dgSearch').datagrid('getSelected');
