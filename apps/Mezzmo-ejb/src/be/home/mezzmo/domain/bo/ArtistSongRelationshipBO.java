@@ -1,11 +1,9 @@
 package be.home.mezzmo.domain.bo;
 
-import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
 import be.home.common.utils.JSONUtils;
 import be.home.mezzmo.domain.model.json.ArtistSongRelationship;
 import be.home.mezzmo.domain.model.json.Artists;
-import be.home.mezzmo.domain.model.json.MP3Prettifier;
 import be.home.mezzmo.domain.model.json.MultiArtistConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -16,7 +14,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static be.home.common.utils.JSONUtils.writeJsonFile;
 import static be.home.common.utils.JSONUtils.writeJsonFileWithCode;
 
 /**

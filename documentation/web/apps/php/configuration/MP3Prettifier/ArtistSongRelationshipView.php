@@ -284,6 +284,11 @@ function fillArtistSongRelation(ArtistBO $artistBO, ArtistSongRelationshipCompos
                         checkBox($input);
                     ?>
                     </div>
+                    <div>
+                        <input id="comment" class="easyui-textbox"
+                               value="<?= $artistSongRelationshipObj->comment ?>"
+                               label="Comment" labelPosition="top" style="width:80%;height:52px">
+                    </div>
                 </div>
             </div>
         </div>
@@ -388,6 +393,7 @@ function fillArtistSongRelation(ArtistBO $artistBO, ArtistSongRelationshipCompos
         var indexTitle = $("#indexTitle").numberspinner('getValue');
         var exact = $('#exact').is(':checked');
         var noCheckOnNewMultiArtist = $('#noCheckOnNewMultiArtist').is(':checked');
+        var comment =$("#comment").textbox('getValue');
 
         var object = {
                       id:'<?= $artistSongId?>',
@@ -403,7 +409,8 @@ function fillArtistSongRelation(ArtistBO $artistBO, ArtistSongRelationshipCompos
                       priority:priority,
                       indexTitle:indexTitle,
                       exact:exact,
-                      noCheckOnNewMultiArtist:noCheckOnNewMultiArtist
+                      noCheckOnNewMultiArtist:noCheckOnNewMultiArtist,
+                      comment:comment
         };
 
         var tmp = $.post('ArtistSongRelationshipAction.php?method=add', { config : JSON.stringify(object)}, function(data2){

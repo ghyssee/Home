@@ -48,6 +48,7 @@ class ArtistSongRelationshipTO extends Castable2 {
     public $indexTitle = 0;
     public $priority = 0;
     public $noCheckOnNewMultiArtist;
+    public $comment;
 
 }
 

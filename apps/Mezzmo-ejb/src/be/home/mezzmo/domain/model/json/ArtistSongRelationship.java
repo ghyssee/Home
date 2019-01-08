@@ -22,6 +22,7 @@ public class ArtistSongRelationship {
         public int priority;
         public int indexTitle;
         public boolean noCheckOnNewMultiArtist;
+        public String comment;
     }
 
     public class ArtistItem {
