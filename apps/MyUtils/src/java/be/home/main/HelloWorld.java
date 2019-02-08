@@ -132,12 +132,13 @@ private static void testAlbumArtist(){
 
         //updateMP3();
 
-        String tmp = "Gimme! Gimme! Gimme! (Mix Edit)";
+        String tmp = "Kuma He";
         //System.out.println(mp3Helper.prettifySong(tmp));
-        String tmp2 = mp3Helper.prettifyArtist("\uFEFFAxwell Λ Ingrosso");
+        System.out.println(mp3Helper.prettifyArtist("Little Caesar & The ROMANS"));
         //System.out.println(mp3Helper.prettifyArtist("\uFEFFAxwell Λ Ingrosso"));
-        //System.out.println(tmp.replaceAll("Gimme!?,? Gimme!?,? Gimme!?(?: \\(A Man After Midnight\\))?","Gimme!"));
-        System.out.println(getTitleArtistException("Taio Cruz", "Dynamite (Mixin Marc Remix Radio Edit)"));
+        System.out.println(tmp.replaceAll("Kuma H[é|e|è]", "Bla"));
+        System.out.println(getTitleArtistException("Milk Inc.", "The Sun Always Shines On TV (Full Version)"));
+        System.out.println(mp3Helper.stripFilename("untitled 08 | 09.06.2014."));
 
         //System.out.println(getArtistTitleException("Sarah Brightman", "Time To Say Goodbye (Con Te Partiro) (Sarah's Intimate Version)"));
 

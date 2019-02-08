@@ -234,6 +234,10 @@
 				<groupId>net.lingala.zip4j</groupId>
 				<artifactId>zip4j</artifactId>
 			</dependency>
+			<dependency>
+				<groupId>com.oracle</groupId>
+				<artifactId>ojdbc14</artifactId>
+			</dependency>
 			</dependencies>
 
     
