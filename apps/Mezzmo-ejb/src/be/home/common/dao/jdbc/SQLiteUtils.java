@@ -31,7 +31,11 @@ public class SQLiteUtils {
             Calendar calendar = GregorianCalendar.getInstance();
             calendar.setTime(date);
             calendar.add(Calendar.YEAR, 31);
-            // calendar.add(Calendar.HOUR, -24);
+            // added on 03/03/2019
+            if (f > 573087600L)  // 01/03/2019 00:00
+            {
+                calendar.add(Calendar.HOUR, +24);
+            }
 
             return calendar.getTime();
         }
