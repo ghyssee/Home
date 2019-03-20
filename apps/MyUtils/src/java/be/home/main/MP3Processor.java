@@ -1,6 +1,7 @@
 package be.home.main;
 
 import be.home.common.mp3.MP3Utils;
+import be.home.common.utils.MyFileWriter;
 import be.home.domain.model.ArtistSongItem;
 import be.home.mezzmo.domain.model.Compilation;
 import be.home.model.json.AlbumInfo;
@@ -90,7 +91,10 @@ public class MP3Processor extends BatchJobV2 {
         if (track.extraArtists != null){
             for (AlbumInfo.ExtraArtist extraArtist : track.extraArtists){
                 if (isType(extraArtist.type, "FEAT")){
-                    artist = artist + " Feat. " + extraArtist.extraArtist;
+                    String addArtist = " Feat. " + extraArtist.extraArtist;
+                    if (!artist.toUpperCase().contains(addArtist.toUpperCase())) {
+                        artist = artist + addArtist;
+                    }
                 }
             }
         }
@@ -122,6 +126,7 @@ public class MP3Processor extends BatchJobV2 {
         log.info("Album Directory: " + mp3Dir);
 
         album.album = helper.prettifyAlbum(album.album, null);
+        MyFileWriter myFile = new MyFileWriter("c:\\My Data\\tmp\\Java\\MP3Processor\\Album\\test.txt", MyFileWriter.NO_APPEND);
         for (AlbumInfo.Track track: album.tracks){
             /*
             track.artist = helper.prettifyArtist(constructArtist(track));
@@ -130,11 +135,32 @@ public class MP3Processor extends BatchJobV2 {
             track.artist = item.getArtist();
             track.title = item.getSong();
             */
+            boolean diff = false;
+            String oldArtist = replaceFeaultArtistItems(track.artist);
+            String oldTitle = track.title;
+            String statusArtist = "ARTIST OK";
+            String statusTitle = "TITLE OK";
+            helper.checkTrack(track);
             ArtistSongItem item = helper.formatSong(constructArtist(track), constructTitle(track));
             track.artist = item.getArtist();
             track.title = item.getSong();
-            helper.checkTrack(track);
+            if (!oldArtist.equals(track.artist)) {
+                statusArtist = "ARTIST DIFF";
+                diff = true;
+            }
+            if (!oldTitle.equals(track.title)){
+                statusTitle = "TITLE DIFF";
+                diff = true;
+            }
+            if (diff) {
+                myFile.append("TRACK: " + track.track);
+                myFile.append("OLD: " + oldArtist + " - " + oldTitle);
+                myFile.append("NEW: " + track.artist + " - " + track.title);
+                myFile.append("STATUS: " + statusArtist + "/ " + statusTitle);
+                myFile.append(StringUtils.repeat('=', 100));
+            }
         }
+        myFile.close();
 
         //List <Path> directories = directoryList(MP3_DIR);
         //if (directories.size() > 0){
@@ -172,6 +198,13 @@ public class MP3Processor extends BatchJobV2 {
         }
 
     }
+
+    public String replaceFeaultArtistItems(String artist){
+        String newArtist = artist.replaceAll(" [F|f](?:ea)?t\\.? ", " Feat. ");
+        return newArtist;
+    }
+
+
 
     public void checkNrOfMP3s(List <AlbumInfo.Track> tracks, int nrOfMP3s){
         if (nrOfMP3s != tracks.size()){
