@@ -407,25 +407,23 @@ public class MP3Helper {
     public void checkTrack(AlbumInfo.Track track){
         // search for (Feat. xxx) or Feat. xxx or Feat xxx or (Feat xxx)
 
-        String FEAT = ".*[\\(|\\[| ][Ff](ea)?t[.| ]";
-        String CLOSE_FEAT = "(?!^Edit\\))\\)|\\]";
+        String FEAT = "[F|f](?:ea)?t\\.? ?";
         if (!StringUtils.endsWith(track.title, "Edit)")) {
-            checkTrackPattern(track, FEAT, CLOSE_FEAT);
+            checkTrackPattern(track, "\\(" + FEAT, "\\)");
+            checkTrackPattern(track, "\\[" + FEAT, "\\]");
         }
     }
 
     private void checkTrackPattern(AlbumInfo.Track track, String startPattern, String endPattern){
-        Pattern pattern = Pattern.compile(startPattern + "(.*)"); // + endPattern);
+        Pattern pattern = Pattern.compile(startPattern + "(.*)" + endPattern + "(.*)");
         Matcher matcher = pattern.matcher(track.title);
-        if (matcher.matches()) {
-            String extraArtist = track.title.replaceAll(startPattern, "").replaceFirst(endPattern, "");
-            extraArtist = prettifyArtist(prettifySong(extraArtist));
-            track.artist += " Feat. " + extraArtist;
-            Pattern p = Pattern.compile("(.*)" + startPattern );
-            Matcher m = p.matcher(track.title);
-            if (m.find()) {
-                String s = m.group(1);
-                track.title = s.trim();
+        if (matcher.find()) {
+            String extraArtist = matcher.group(1);
+            track.title = track.title.replaceFirst(startPattern + extraArtist + endPattern, "");
+            //String extraArtist = track.title.replaceAll(startPattern, "").replaceFirst(endPattern, "");
+            extraArtist = prettifyArtist(extraArtist);
+            if (!track.artist.contains(extraArtist)) {
+                track.artist += " Feat. " + extraArtist;
             }
         }
     }

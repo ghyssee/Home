@@ -136,7 +136,7 @@ public class MP3Processor extends BatchJobV2 {
             track.title = item.getSong();
             */
             boolean diff = false;
-            String oldArtist = replaceFeaultArtistItems(track.artist);
+            String oldArtist = replaceDefaultArtistItems(track.artist);
             String oldTitle = track.title;
             String statusArtist = "ARTIST OK";
             String statusTitle = "TITLE OK";
@@ -199,7 +199,7 @@ public class MP3Processor extends BatchJobV2 {
 
     }
 
-    public String replaceFeaultArtistItems(String artist){
+    public String replaceDefaultArtistItems(String artist){
         String newArtist = artist.replaceAll(" [F|f](?:ea)?t\\.? ", " Feat. ");
         return newArtist;
     }
