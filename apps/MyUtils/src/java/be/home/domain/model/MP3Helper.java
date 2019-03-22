@@ -431,7 +431,7 @@ public class MP3Helper {
     public String prettifyAlbum(String album, String albumArtist){
         String prettifiedText = prettifySong(album);
         if (albumArtist != null) {
-            ArtistSongItem item = prettifyRuleArtistSong(albumArtist, prettifiedText, true);
+            ArtistSongItem item = prettifyRuleArtistSong(albumArtist, prettifiedText, true, SONG_ALBUM_TYPE.ALBUM);
             item.setRule(Rules.ALBUM_RELATION);
             prettifiedText = item.getSong();
         }
@@ -580,8 +580,11 @@ public class MP3Helper {
         }
         return item;
     }
-
     public ArtistSongItem prettifyRuleArtistSong(String artist, String song, boolean logging){
+        return prettifyRuleArtistSong(artist, song, logging, SONG_ALBUM_TYPE.SONG);
+    }
+
+    public ArtistSongItem prettifyRuleArtistSong(String artist, String song, boolean logging, SONG_ALBUM_TYPE songType){
         ArtistSongItem item = checkForArtistTitleException(artist, song, mp3Prettifer.artistSongExceptions.items);
         if (item.isMatched()){
             item.setRule(Rules.AS_EXCEPTION);
@@ -589,7 +592,7 @@ public class MP3Helper {
             logModification(artist, item, ARTIST_SONG_TYPE.ARTIST, logging);
             return item;
         }
-        item = checkArtistTitleRelation(artist, song);
+        item = checkArtistTitleRelation(artist, song, songType);
         if (item.isMatched()){
             item.setRule(Rules.AS_RELATION);
             logModification(song, item, ARTIST_SONG_TYPE.SONG, logging);
@@ -603,13 +606,16 @@ public class MP3Helper {
         ARTIST, SONG
     }
 
+    public enum SONG_ALBUM_TYPE {
+        SONG, ALBUM
+    }
     /*
      This Will lookup Artist Song Relations which starts with one of the artists from the list
      This is never an exact match. For exact match use oldArtistId or oldMultiArtistId
      */
 
 
-    public ArtistSongItem checkArtistTitleRelation(String artist, String song){
+    public ArtistSongItem checkArtistTitleRelation(String artist, String song, SONG_ALBUM_TYPE songType){
         ArtistSongItem artistSongItem =  new ArtistSongItem();
         artistSongItem.setArtist(artist);
         artistSongItem.setSong(song);
@@ -617,6 +623,10 @@ public class MP3Helper {
         int i=0;
         for (ArtistSongRelationship.ArtistSongRelation item : list) {
             i++;
+            if (item.album && songType != SONG_ALBUM_TYPE.ALBUM){
+                // skip album items if it is a song
+                continue;
+            }
             if (ArtistSongRelationshipBO.getInstance().matchArtist(artist, item)){
                 ArtistSongItem newTitle = checkTitle(song, item.oldSong, item.newSong, item.exactMatchTitle, item.indexTitle);
                 if (newTitle != null && newTitle.isMatched()) {

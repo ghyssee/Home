@@ -164,6 +164,7 @@ function validateArtistSong($config){
     else {
         $artistSongRelationShipTO->newSong = $config->newSong;
     }
+    $artistSongRelationShipTO->album = $config->album;
     $artistSongRelationShipTO->comment = $config->comment;
     $artistSongRelationShipTO->priority = intval($config->priority);
     $artistSongRelationShipTO->indexTitle = intval($config->indexTitle);

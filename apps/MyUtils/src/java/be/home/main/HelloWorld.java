@@ -132,13 +132,15 @@ private static void testAlbumArtist(){
 
         //updateMP3();
 
-        String tmp = "Kuma He";
+        String tmp = "Odj Team";
         //System.out.println(mp3Helper.prettifySong(tmp));
-        System.out.println(mp3Helper.prettifyArtist("Little Caesar & The ROMANS"));
+        System.out.println(mp3Helper.prettifyArtist("Sem Thomasson Feat. Mas"));
         //System.out.println(mp3Helper.prettifyArtist("\uFEFFAxwell Λ Ingrosso"));
-        System.out.println(tmp.replaceAll("Kuma H[é|e|è]", "Bla"));
-        System.out.println(getTitleArtistException("Milk Inc.", "The Sun Always Shines On TV (Full Version)"));
-        System.out.println(mp3Helper.stripFilename("untitled 08 | 09.06.2014."));
+        System.out.println(tmp.replaceAll("O\\.?[D|d]\\.?[J|j]\\.? Team", "Bla"));
+        System.out.println(getArtistTitleException("Emeli Sandé", "Read All About It (Part III)"));
+        System.out.println(getTitleArtistException("Britney Spears", "Baby One More Time"));
+        System.out.println(mp3Helper.prettifyAlbum("...Baby One More Time", "Britney Spears"));
+        System.out.println(mp3Helper.stripFilename("...Baby One More Time/Britney - test.mp3"));
 
         //System.out.println(getArtistTitleException("Sarah Brightman", "Time To Say Goodbye (Con Te Partiro) (Sarah's Intimate Version)"));
 
@@ -205,7 +207,6 @@ private static void testAlbumArtist(){
         //reader.setProperty("http://apache.org/xml/properties/schema/external-noNamespaceSchemaLocation", "http://example/url/contacts.xsd");
         // parse the document
         Document document = reader.read(new InputSource("C:\\reports\\contacts.xml"));
-
 
         // output the errors XML
         XMLWriter writer = new XMLWriter( OutputFormat.createPrettyPrint() );

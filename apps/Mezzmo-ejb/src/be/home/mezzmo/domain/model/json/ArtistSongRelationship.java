@@ -23,6 +23,7 @@ public class ArtistSongRelationship {
         public int indexTitle;
         public boolean noCheckOnNewMultiArtist;
         public String comment;
+        public boolean album;
     }
 
     public class ArtistItem {

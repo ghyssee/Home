@@ -130,6 +130,13 @@ function fillArtistSongRelation(ArtistBO $artistBO, ArtistSongRelationshipCompos
                                     'value' => $artistSongRelationshipObj->exact));
                                 checkBox($input);
                                 ?>
+                                <br>
+                                <?php
+                                $input = new Input(array('name' => "album",
+                                    'label' => 'Album',
+                                    'value' => $artistSongRelationshipObj->album));
+                                checkBox($input);
+                                ?>
                         </div>
                     </div>
                 </div>
@@ -392,6 +399,7 @@ function fillArtistSongRelation(ArtistBO $artistBO, ArtistSongRelationshipCompos
         var priority = $("#priority").numberspinner('getValue');
         var indexTitle = $("#indexTitle").numberspinner('getValue');
         var exact = $('#exact').is(':checked');
+        var album = $('#album').is(':checked');
         var noCheckOnNewMultiArtist = $('#noCheckOnNewMultiArtist').is(':checked');
         var comment =$("#comment").textbox('getValue');
 
@@ -409,6 +417,7 @@ function fillArtistSongRelation(ArtistBO $artistBO, ArtistSongRelationshipCompos
                       priority:priority,
                       indexTitle:indexTitle,
                       exact:exact,
+                      album:album,
                       noCheckOnNewMultiArtist:noCheckOnNewMultiArtist,
                       comment:comment
         };

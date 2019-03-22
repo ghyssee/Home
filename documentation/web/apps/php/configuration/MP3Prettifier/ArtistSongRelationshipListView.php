@@ -62,6 +62,8 @@ sessionStart();
         array("field" => "newArtist", "label"=>"New Artist", "size" => 60, "editable" => false, "sortable" => true),
         array("field" => "oldSong", "label"=>"Old Song", "size" => 60, "required" => true, "sortable" => true),
         array("field" => "newSong", "label"=>"New Song", "size" => 60, "required" => true, "sortable" => true),
+        array("field" => "album", "label"=>"Album", "size" => 15, "formatter" => "checkboxFormatter",
+        "align" => "center", "checkbox" => true),
         array("field" => "comment", "label"=>"Comment", "size" => 60, "required" => false, "sortable" => false),
         array("field" => "exact", "label"=>"Exact", "size" => 15, "formatter" => "checkboxFormatter",
         "align" => "center", "checkbox" => true)
