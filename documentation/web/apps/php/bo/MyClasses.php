@@ -63,6 +63,7 @@ class MezzmoFileTO {
 class VersionTO {
     public $version;
     public $lastUpdated;
+    public $dbName;
 }
 
 class FeedBackTO {

@@ -158,6 +158,7 @@ class SongBO
     {
         $result = $this->db->findLatestVersion();
         $version = $this->db->convertToVersionTO($result);
+        $version->dbName = $this->db->dbName;
 
         return $version;
     }

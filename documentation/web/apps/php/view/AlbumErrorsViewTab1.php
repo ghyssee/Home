@@ -17,6 +17,12 @@ function getLatestVersion(){
     <?php
     $version = getLatestVersion();
     $layout = new Layout(array('numCols' => 1));
+    $layout->inputBox(new Input(array('name' => "dbName",
+        'size' => 100,
+        'label' => 'DB Name',
+        'type' => 'text',
+        'disabled' => true,
+        'value' => $version->dbName)));
     $layout->inputBox(new Input(array('name' => "version",
         'size' => 5,
         'label' => 'Version',
