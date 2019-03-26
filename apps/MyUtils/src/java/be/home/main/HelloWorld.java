@@ -13,6 +13,7 @@ import be.home.domain.model.MP3Helper;
 import be.home.domain.model.MP3TagUtils;
 import be.home.domain.model.MezzmoUtils;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
+import be.home.mezzmo.domain.model.VersionTO;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.model.json.AlbumError;
 import be.home.model.json.MP3Settings;
@@ -26,6 +27,7 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 import org.dom4j.util.XMLErrorHandler;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -44,6 +46,7 @@ import java.util.List;
 public class HelloWorld extends BatchJobV2 {
 
     private static final Logger log = getMainLog(HelloWorld.class);
+    public static MezzmoServiceImpl mezzmoService = null;
 
     public static void main(String args[]) throws SAXException, DocumentException, IOException, IllegalAccessException, NoSuchFieldException, ParserConfigurationException {
 
@@ -56,12 +59,27 @@ public class HelloWorld extends BatchJobV2 {
         //batchProcess();
         //testMP3Prettifier();
         //testAlbumArtist();
-        fileNotFound();
+        //fileNotFound();
+        testVersion();
 
     }
 
+private static void testVersion(){
+
+        MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSONWithCode(Constants.JSON.MP3SETTINGS, MP3Settings.class);
+        String version = mp3Settings.mezzmo.version;
+        try {
+            VersionTO versionTO = getMezzmoService().findVersion(version);
+            System.out.println(versionTO.lastUpdated);
+        }
+        catch (EmptyResultDataAccessException e){
+            int nr = getMezzmoService().addVersion(version);
+            log.info("Version: " + version);
+        }
+}
+
 private static void testAlbumArtist(){
-    SQLiteJDBC.initialize(workingDir);
+    SQLiteJDBC.initialize();
     // update Album Artist With New Name
     MGOFileAlbumCompositeTO comp = testAlbumArtistItem(140342L, 4594L, "Sven Van HeesXX");
     // reset it to the Original Name
@@ -267,6 +285,14 @@ private static void testAlbumArtist(){
             // output the errors XML
             XMLWriter writer = new XMLWriter( OutputFormat.createPrettyPrint() );
             writer.write( errorHandler.getErrors() );
+    }
+
+    public static MezzmoServiceImpl getMezzmoService(){
+
+        if (mezzmoService == null) {
+            return MezzmoServiceImpl.getInstance();
+        }
+        return mezzmoService;
     }
 
     @Override

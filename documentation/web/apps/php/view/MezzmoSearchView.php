@@ -56,6 +56,12 @@ else {
 $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
 goMenu();
 
+function getLatestVersion(){
+    $tmpBO =SongBO::db(MEZZMO);
+    $version = $tmpBO->findLatestVersion();
+    return $version;
+}
+
 function getNextArtistId($artistArray, $artistId){
     $next = false;
     foreach($artistArray as $song) {
@@ -68,11 +74,29 @@ function getNextArtistId($artistArray, $artistId){
         }
     }
     return $artistId;
+
+    function showVersion(){
+        $version = getLatestVersion();
+        $txt = '';
+        if ($version != null){
+            $txt = "(Version: " . $version->version . ", " . $version->lastUpdated . ")";
+        }
+        return $txt;
+    }
+
 }
 
 ?>
 
-<h1>Search Song</h1>
+<h1>Search Song<?php
+    $version = getLatestVersion();
+    $txt = '';
+    if ($version != null){
+        $txt = " (DB Version: " . $version->version . ", " . $version->lastUpdated . ")";
+    }
+    echo $txt;
+    ?>
+</h1>
 <div class="horizontalLine">.</div>
 
 <form id="myFormId" action="<?php echo $albumSave ?>" method="post">

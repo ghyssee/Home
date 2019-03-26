@@ -34,7 +34,7 @@ public class ExportAlbums extends BatchJobV2{
         ExportAlbums instance = new ExportAlbums();
         try {
             config = instance.init();
-            SQLiteJDBC.initialize(workingDir);
+            SQLiteJDBC.initialize();
             instance.run();
         }
         catch (FileNotFoundException e){

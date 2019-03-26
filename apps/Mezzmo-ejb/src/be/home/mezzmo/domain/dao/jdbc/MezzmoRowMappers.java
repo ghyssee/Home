@@ -204,4 +204,19 @@ public class MezzmoRowMappers extends MezzmoDAOQueries {
             return albumArtist;
         }
     }
+
+    private static VersionTO mapVersionTO(ResultSet rs, int rowNum)throws SQLException{
+        VersionTO versionTO = new VersionTO();
+        versionTO.setVersion(getString(rs, VersionColumns.VERSION));
+        versionTO.setLastUpdated(getDate(rs, VersionColumns.LASTUPDATED));
+        return versionTO;
+    }
+
+    public static class VersionRowMapper implements RowMapper {
+        public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+            VersionTO versionTO = mapVersionTO(rs, rowNum);
+
+            return versionTO;
+        }
+    }
 }

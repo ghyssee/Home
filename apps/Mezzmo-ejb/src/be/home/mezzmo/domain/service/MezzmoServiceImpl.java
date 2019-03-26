@@ -316,6 +316,17 @@ public class MezzmoServiceImpl {
         return bo.getAllMP3Files(to);
     }
 
+    public VersionTO findVersion(String version) {
+        MezzmoBO bo = getMezzmoBO();
+        return bo.findVersion(version);
+    }
+
+    public int addVersion(String version) {
+        MezzmoBO bo = getMezzmoBO();
+        return bo.addVersion(version);
+    }
+
+
     private MezzmoBO getMezzmoBO() {
         return new MezzmoBO(db.name());
     }

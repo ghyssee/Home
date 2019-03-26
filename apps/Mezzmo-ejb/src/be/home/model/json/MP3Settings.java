@@ -71,6 +71,7 @@ public class MP3Settings {
     }
 
     public class Mezzmo {
+        public String version;
         public String base;
         public boolean synchronizePlaycount;
         public Playlist playlist;

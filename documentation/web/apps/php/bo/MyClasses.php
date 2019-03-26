@@ -60,6 +60,11 @@ class MezzmoFileTO {
     public $newTitle;
 }
 
+class VersionTO {
+    public $version;
+    public $lastUpdated;
+}
+
 class FeedBackTO {
     public $success;
     public $errorFound;

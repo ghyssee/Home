@@ -32,7 +32,7 @@ public class ExportAlbumsToPDF extends BatchJobV2{
         ExportAlbumsToPDF instance = new ExportAlbumsToPDF();
         try {
             config = instance.init();
-            SQLiteJDBC.initialize(workingDir);
+            SQLiteJDBC.initialize();
             instance.run();
         }
         catch (FileNotFoundException e){

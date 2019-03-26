@@ -63,7 +63,7 @@ public class LastPlayedSongs extends BatchJobV2{
         }));
         try {
             config = instance.init();
-            SQLiteJDBC.initialize(workingDir);
+            SQLiteJDBC.initialize();
             log.info("Batch started: " + log.getName());
             do {
                 long sleep = instance.start();

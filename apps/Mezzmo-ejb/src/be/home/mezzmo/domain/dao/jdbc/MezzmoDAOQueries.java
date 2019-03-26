@@ -470,4 +470,16 @@ public class MezzmoDAOQueries extends MezzmoDB {
             .addColumns(TablesEnum.MGOAlbumArtist)
             .render();
 
+    protected static final String GET_VERSION = SQLBuilder.getInstance()
+            .select()
+            .addTable(TablesEnum.VERSION)
+            .addColumns(TablesEnum.VERSION)
+            .addCondition(VersionColumns.VERSION, Comparator.EQUALS, SQLBuilder.PARAMETER)
+            .render();
+
+    protected static final String ADD_VERSION = SQLBuilder.getInstance()
+            .insert()
+            .addTable(TablesEnum.VERSION)
+            .addColumns(TablesEnum.VERSION)
+            .render();
 }

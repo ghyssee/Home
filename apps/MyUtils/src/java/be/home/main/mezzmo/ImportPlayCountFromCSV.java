@@ -55,7 +55,7 @@ public class ImportPlayCountFromCSV extends BatchJobV2{
         ImportPlayCountFromCSV instance = new ImportPlayCountFromCSV();
         try {
             config = instance.init();
-            SQLiteJDBC.initialize(workingDir);
+            SQLiteJDBC.initialize();
             instance.run();
         }
         catch (FileNotFoundException e){

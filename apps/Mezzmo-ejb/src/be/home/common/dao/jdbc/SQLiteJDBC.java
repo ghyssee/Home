@@ -32,6 +32,7 @@ public class SQLiteJDBC
     protected Connection c = null;
     protected NamedParameterJdbcTemplate jdbcTemplate = null;
     private static final Logger log = Logger.getLogger(SQLiteJDBC.class);
+    private static boolean initialized = false;
 
     protected SQLiteJDBC() {
     }
@@ -242,45 +243,42 @@ public class SQLiteJDBC
 
     }
 
-    public static void initialize(String workingDir){
-        initialize();
-    }
-
     public static void initialize(){
-        InputStream i = null;
-        File file = new File (Setup.getInstance().getFullPath(Constants.Path.LOCAL_CONFIG) + File.separator + "localDatabases.json");
-        Map <String, DataBaseConfiguration.DataBase> map = new HashMap <String, DataBaseConfiguration.DataBase>();
-        DataBaseConfiguration localConfig = null;
-        if (file.exists()){
-            log.debug("Local Database Configuration File found: " + file.getAbsolutePath());
-            localConfig = (DataBaseConfiguration) JSONUtils.openJSON(file.getAbsolutePath(), DataBaseConfiguration.class);
-            map = localConfig.getMap();
-        }
-        file = new File(Setup.getInstance().getFullPath(Constants.Path.CONFIG) + File.separator + "databases.json");
-        log.debug("Master Database Configuration File found: " + file.getAbsolutePath());
-        config = (DataBaseConfiguration) JSONUtils.openJSON(file.getAbsolutePath(), DataBaseConfiguration.class);
-        List <DataBaseConfiguration.DataBase> newList = new ArrayList<DataBaseConfiguration.DataBase>();
-        if (localConfig != null && localConfig.sqlLogging != null){
-            config.sqlLogging = localConfig.sqlLogging;
-        }
-        log.info("SQL Logging = " + config.sqlLogging.enabled);
-        for (DataBaseConfiguration.DataBase db : config.databases) {
-            DataBaseConfiguration.DataBase tmpDB = null;
-            if (map.containsKey(db.id)) {
-                tmpDB = map.get(db.id);
-                log.debug("Overriding DB Config with Local DB Config for id: " + db.id);
+        if (!initialized) {
+            InputStream i = null;
+            File file = new File(Setup.getInstance().getFullPath(Constants.Path.LOCAL_CONFIG) + File.separator + "localDatabases.json");
+            Map<String, DataBaseConfiguration.DataBase> map = new HashMap<String, DataBaseConfiguration.DataBase>();
+            DataBaseConfiguration localConfig = null;
+            if (file.exists()) {
+                log.debug("Local Database Configuration File found: " + file.getAbsolutePath());
+                localConfig = (DataBaseConfiguration) JSONUtils.openJSON(file.getAbsolutePath(), DataBaseConfiguration.class);
+                map = localConfig.getMap();
             }
-            else {
-                tmpDB = db;
+            file = new File(Setup.getInstance().getFullPath(Constants.Path.CONFIG) + File.separator + "databases.json");
+            log.debug("Master Database Configuration File found: " + file.getAbsolutePath());
+            config = (DataBaseConfiguration) JSONUtils.openJSON(file.getAbsolutePath(), DataBaseConfiguration.class);
+            List<DataBaseConfiguration.DataBase> newList = new ArrayList<DataBaseConfiguration.DataBase>();
+            if (localConfig != null && localConfig.sqlLogging != null) {
+                config.sqlLogging = localConfig.sqlLogging;
             }
-            replaceEnvrionmentVariables(tmpDB);
-            newList.add(tmpDB);
+            log.info("SQL Logging = " + config.sqlLogging.enabled);
+            for (DataBaseConfiguration.DataBase db : config.databases) {
+                DataBaseConfiguration.DataBase tmpDB = null;
+                if (map.containsKey(db.id)) {
+                    tmpDB = map.get(db.id);
+                    log.debug("Overriding DB Config with Local DB Config for id: " + db.id);
+                } else {
+                    tmpDB = db;
+                }
+                replaceEnvrionmentVariables(tmpDB);
+                newList.add(tmpDB);
+            }
+            config.databases = newList;
+
+
+            log.info("Database Config file = " + file.getAbsolutePath());
         }
-        config.databases = newList;
-
-
-
-        log.info("Database Config file = " + file.getAbsolutePath());
+        log.info("SQLite Already Initialized");
 
     }
 

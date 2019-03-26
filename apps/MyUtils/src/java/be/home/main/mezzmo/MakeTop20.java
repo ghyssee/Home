@@ -47,7 +47,7 @@ public class MakeTop20 extends BatchJobV2{
         MakeTop20 instance = new MakeTop20();
         try {
             config = instance.init();
-            SQLiteJDBC.initialize(workingDir);
+            SQLiteJDBC.initialize();
             instance.run();
         }
         catch (FileNotFoundException e){

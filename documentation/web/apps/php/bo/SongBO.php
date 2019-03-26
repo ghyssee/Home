@@ -10,7 +10,19 @@ class SongBO
 {
     public $db;
     function __construct() {
-        $this->db = new MezzmoSQLiteDatabase(MEZZMOV2);
+        //$this->db = new MezzmoSQLiteDatabase(MEZZMOV2);
+    }
+
+    public static function defaultDB( ) {
+        $instance = new self();
+        $instance->setDB( MEZZMOV2 );
+        return $instance;
+    }
+
+    public static function db( $id ) {
+        $instance = new self();
+        $instance->setDB( $id );
+        return $instance;
     }
 
     function setDB($id){
@@ -141,6 +153,17 @@ class SongBO
         $songObj->source = "DB";
         return $songObj;
     }
+
+    function findLatestVersion()
+    {
+        $result = $this->db->findLatestVersion();
+        $version = $this->db->convertToVersionTO($result);
+
+        return $version;
+    }
+
+
+
 }
 
 

@@ -221,6 +221,14 @@ public class MezzmoBO extends BusinessObject {
         return track;
     }
 
+    public VersionTO findVersion(String version) {
+            return getMezzmoDAO().findVersion(version);
+    }
+
+    public int addVersion(String version) {
+        return getMezzmoDAO().addVersion(version);
+    }
+
     public List<MGOFileAlbumCompositeTO> getAllMP3Files(TransferObject to){
         return getMezzmoDAO().getAllMP3Files(to);
     }

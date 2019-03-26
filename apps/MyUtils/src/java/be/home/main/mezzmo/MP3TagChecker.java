@@ -41,7 +41,7 @@ public class MP3TagChecker extends MP3TagBase {
         MP3TagChecker instance = new MP3TagChecker();
         try {
             config = instance.init();
-            SQLiteJDBC.initialize(workingDir);
+            SQLiteJDBC.initialize();
             instance.run();
         }
         catch (FileNotFoundException e){

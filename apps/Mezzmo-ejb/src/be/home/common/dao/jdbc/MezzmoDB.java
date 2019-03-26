@@ -20,6 +20,7 @@ public class MezzmoDB extends SQLiteJDBC {
     private DataBaseConfiguration.DataBase db = null;
 
     public synchronized static SQLiteJDBC getInstance() {
+        SQLiteJDBC.initialize();
         SQLiteJDBC instance = (SQLiteJDBC) instances.get(database);
         if(instance == null) {
             instance = new SQLiteJDBC();
@@ -30,6 +31,7 @@ public class MezzmoDB extends SQLiteJDBC {
     }
 
     public synchronized static SQLiteJDBC getInstance(String newDatabase) {
+        SQLiteJDBC.initialize();
         if (newDatabase == null){
             newDatabase = database;
         }

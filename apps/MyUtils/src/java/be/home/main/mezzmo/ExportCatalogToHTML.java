@@ -39,7 +39,7 @@ public class ExportCatalogToHTML extends BatchJobV2{
         ExportCatalogToHTML instance = new ExportCatalogToHTML();
         try {
             config = instance.init();
-            SQLiteJDBC.initialize(workingDir);
+            SQLiteJDBC.initialize();
             instance.run();
         }
         catch (FileNotFoundException e){

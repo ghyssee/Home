@@ -374,4 +374,16 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
         return comp;
     }
 
+    public VersionTO findVersion(String version){
+        Object[] params = { version
+        };
+        VersionTO versionTO = (VersionTO) getInstance(db).getJDBCTemplate().queryForObject(GET_VERSION, new VersionRowMapper(), params);
+        return versionTO;
+    }
+
+    public int addVersion(String version){
+        Object[] params = {version, SQLiteUtils.convertDateToString(new java.util.Date())};
+        return getInstance(db).getJDBCTemplate().update(ADD_VERSION, params);
+    }
+
 }

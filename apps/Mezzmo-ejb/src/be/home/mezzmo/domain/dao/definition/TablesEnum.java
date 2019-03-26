@@ -21,7 +21,8 @@ public enum TablesEnum implements DatabaseTables {
     MGOFileArtistRelationship ("FILEARTISTREL", MGOFileArtistRelationshipColumns.values()),
     MGOAlbumArtist ("ALBUMARTIST", MGOAlbumArtistColumns.values()),
     MGOAlbumArtistRelationship ("ALBUMARTISTREL", MGOAlbumArtistRelationshipColumns.values()),
-    MGOFileExtension ("FILEEXTENSION", MGOFileExtensionColumns.values());
+    MGOFileExtension ("FILEEXTENSION", MGOFileExtensionColumns.values()),
+    VERSION ("VERSION", VersionColumns.values());
 
     private String alias;
     private String tableAlias;

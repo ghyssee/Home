@@ -15,6 +15,17 @@ class MezzmoSQLiteDatabase extends CustomDatabase {
         parent::__construct($id);
     }
 
+    public function convertToDate($field){
+        $string = "datetime(" . $field . ", 'unixepoch', 'localtime')";
+        return $string;
+    }
+
+
+    public function getVersionColumns(){
+        $cols = "VERSION.Version                 AS VERSION, ".
+            $this->convertToDate("VERSION.Lastupdated") . "     AS LASTUPDATED";
+        return $cols;
+    }
 
     public function getFileColumns(){
         $cols = "FILE.id             AS ID, ".
@@ -45,6 +56,15 @@ class MezzmoSQLiteDatabase extends CustomDatabase {
             ;
         return $cols;
     }
+
+    public function convertToVersionTO($result){
+        if ($result == null) return null;
+        $versionTO = new VersionTO();
+        $versionTO->version = $result['VERSION'];
+        $versionTO->lastUpdated = $result['LASTUPDATED'];
+        return $versionTO;
+    }
+
 
     public function convertToSongUpdateObj($result){
         $songObj = new SongCorrection();
@@ -173,6 +193,31 @@ class MezzmoSQLiteDatabase extends CustomDatabase {
         switch ($nr) {
             case 0 :
                 throw new ApplicationException("No result found for id " .$id);
+                break;
+            case 1:
+                $songRec = $result[0];
+                break;
+            default:
+                throw new ApplicationException("Multiple results found for id " . $id);
+                break;
+        }
+        return $songRec;
+    }
+
+    public function findLatestVersion(){
+
+        $query = "SELECT " .
+            $this->getVersionColumns() .
+            " FROM Version AS VERSION" .
+            " ORDER BY rowid DESC LIMIT 1";
+        $sth = $this->prepare($query, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+        $sth->execute();
+        $result = $sth->fetchAll();
+        $songRec = null;
+        $nr = count($result);
+        switch ($nr) {
+            case 0 :
+                //throw new ApplicationException("No result found for id " .$id);
                 break;
             case 1:
                 $songRec = $result[0];

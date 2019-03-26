@@ -1,13 +1,34 @@
 <?php
+include_once documentPath (ROOT_PHP_BO, "SongBO.php");
 $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
 $htmlObj = readJSONWithCode(JSON_ALBUMERRORS);
 $mp3SettingsObj = readJSONWithCode(JSON_MP3SETTINGS);
 $_SESSION['previous_location'] = basename($_SERVER['PHP_SELF']);
 $_SESSION['form_location'] = basename($_SERVER['PHP_SELF']);
+
+function getLatestVersion(){
+    $tmpBO =SongBO::db(MEZZMO);
+    $version = $tmpBO->findLatestVersion();
+    return $version;
+}
+
 ?>
 <form action="AlbumErrorsAction.php?method=updateSettings" method="post">
     <?php
+    $version = getLatestVersion();
     $layout = new Layout(array('numCols' => 1));
+    $layout->inputBox(new Input(array('name' => "version",
+        'size' => 5,
+        'label' => 'Version',
+        'type' => 'text',
+        'disabled' => true,
+        'value' => $version->version)));
+    $layout->inputBox(new Input(array('name' => "lastUpdated",
+        'size' => 30,
+        'label' => 'Version Time',
+        'type' => 'text',
+        'disabled' => true,
+        'value' => $version->lastUpdated)));
     $layout->comboBox($mp3SettingsObj->mezzmo->mp3Checker->statuses, "code", "description",
         new Input(array('name' => "albumErrorsStatus",
             'label' => 'Status',

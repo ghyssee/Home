@@ -29,6 +29,10 @@
             'label' => 'Current Relative Path',
             'col' => 1,
             'default' => $mp3SettingsObj->mezzmo->mp3Checker->currentRelativePath)));
+    $layout->inputBox(new Input(array('name' => "version",
+        'size' => 10,
+        'label' => 'version',
+        'value' => $mp3SettingsObj->mezzmo->version)));
     $layout->button(new Input(array('name' => "mp3Settings",
         'value' => 'saveMezzmo',
         'text' => 'Save',
