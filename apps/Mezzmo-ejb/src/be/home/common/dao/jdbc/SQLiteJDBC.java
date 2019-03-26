@@ -277,9 +277,8 @@ public class SQLiteJDBC
 
 
             log.info("Database Config file = " + file.getAbsolutePath());
+            initialized = true;
         }
-        log.info("SQLite Already Initialized");
-
     }
 
     private static void replaceEnvrionmentVariables(DataBaseConfiguration.DataBase db){
