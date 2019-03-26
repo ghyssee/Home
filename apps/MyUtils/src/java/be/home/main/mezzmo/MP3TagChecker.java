@@ -10,6 +10,7 @@ import be.home.common.utils.*;
 import be.home.common.utils.FileUtils;
 import be.home.domain.model.MP3TagBase;
 import be.home.domain.model.MP3TagUtils;
+import be.home.domain.model.MezzmoUtils;
 import be.home.mezzmo.domain.enums.MP3TagCheckerStatus;
 import be.home.mezzmo.domain.model.*;
 import be.home.model.ConfigTO;
@@ -51,23 +52,12 @@ public class MP3TagChecker extends MP3TagBase {
 
     }
 
-    private MP3Settings.Mezzmo.Mp3Checker.RelativePath getRelativePath (MP3Settings mp3Settings){
-        String id = mp3Settings.mezzmo.mp3Checker.currentRelativePath;
-        MP3Settings.Mezzmo.Mp3Checker.RelativePath currentRelativePath = null;
-        for (MP3Settings.Mezzmo.Mp3Checker.RelativePath relativePath : mp3Settings.mezzmo.mp3Checker.relativePaths){
-            if (relativePath.id.equals(id)){
-                currentRelativePath = relativePath;
-            }
-        }
-        return currentRelativePath;
-    }
-
     @Override
     public void run() {
         final String batchJob = "MP3TagChecker";
         MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSONWithCode(Constants.JSON.MP3SETTINGS, MP3Settings.class);
         MP3TagCheckerStatus status = MP3TagCheckerStatus.valueOf(mp3Settings.mezzmo.mp3Checker.status);
-        MP3Settings.Mezzmo.Mp3Checker.RelativePath relativePath = getRelativePath(mp3Settings);
+        MP3Settings.Mezzmo.Mp3Checker.RelativePath relativePath = MezzmoUtils.getRelativePath(mp3Settings);
         AlbumError albumErrors = (AlbumError) JSONUtils.openJSONWithCode(Constants.JSON.ALBUMERRORS, AlbumError.class);
         this.mp3TagUtils = new MP3TagUtils(albumErrors, relativePath);
         if (relativePath == null){

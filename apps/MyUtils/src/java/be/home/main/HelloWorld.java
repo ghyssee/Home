@@ -6,12 +6,16 @@ import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.main.BatchJobV2;
 import be.home.common.mp3.MP3Utils;
 import be.home.common.utils.FileUtils;
+import be.home.common.utils.JSONUtils;
 import be.home.common.utils.MyFileWriter;
 import be.home.domain.model.ArtistSongItem;
 import be.home.domain.model.MP3Helper;
+import be.home.domain.model.MP3TagUtils;
+import be.home.domain.model.MezzmoUtils;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
-import com.mpatric.mp3agic.EncodedText;
+import be.home.model.json.AlbumError;
+import be.home.model.json.MP3Settings;
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.Mp3File;
 import org.apache.commons.lang.StringUtils;
@@ -50,8 +54,9 @@ public class HelloWorld extends BatchJobV2 {
         //System.out.println(MP3Helper.getInstance().checkRegExpDollar("$1Text$1", 1));
         //updateMP3();
         //batchProcess();
-        testMP3Prettifier();
+        //testMP3Prettifier();
         //testAlbumArtist();
+        fileNotFound();
 
     }
 
@@ -138,7 +143,7 @@ private static void testAlbumArtist(){
         //System.out.println(mp3Helper.prettifyArtist("\uFEFFAxwell Λ Ingrosso"));
         System.out.println(tmp.replaceAll("O\\.?[D|d]\\.?[J|j]\\.? Team", "Bla"));
         System.out.println(getArtistTitleException("Emeli Sandé", "Read All About It (Part III)"));
-        System.out.println(getTitleArtistException("Britney Spears", "Baby One More Time"));
+        System.out.println(getTitleArtistException("Remady & Manu", "Life"));
         System.out.println(mp3Helper.prettifyAlbum("...Baby One More Time", "Britney Spears"));
         System.out.println(mp3Helper.stripFilename("...Baby One More Time/Britney - test.mp3"));
 
@@ -175,6 +180,27 @@ private static void testAlbumArtist(){
             String newFile = file + ".MP3";
                 mp3file.save(newFile);
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private static void fileNotFound(){
+        AlbumError albumErrors = (AlbumError) JSONUtils.openJSONWithCode(Constants.JSON.ALBUMERRORS, AlbumError.class);
+        MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSONWithCode(Constants.JSON.MP3SETTINGS, MP3Settings.class);
+        MP3Settings.Mezzmo.Mp3Checker.RelativePath relativePath = MezzmoUtils.getRelativePath(mp3Settings);
+        MP3TagUtils tagUtils = new MP3TagUtils(albumErrors, relativePath);
+        try {
+            MyFileWriter myFile = new MyFileWriter("C:\\My Data\\tmp\\Java\\MP3Processor\\Test\\ren.txt", MyFileWriter.NO_APPEND);
+            for (AlbumError.Item item : albumErrors.items){
+                if (item.type.equals("FILENOTFOUND")){
+                    File file = new File(item.file);
+                    String oldFile = tagUtils.relativizeFile(file.getParent() + File.separator + file.getName().split(" ",2)[0]);
+                    myFile.append("ren \"" + oldFile + "*\" \"" + file.getName() + "\"");
+                }
+            }
+            myFile.close();
+        } catch (IOException e) {
             e.printStackTrace();
         }
 

@@ -53,4 +53,15 @@ public class MezzmoUtils {
         return path;
     }
 
+    public static MP3Settings.Mezzmo.Mp3Checker.RelativePath getRelativePath (MP3Settings mp3Settings) {
+        String id = mp3Settings.mezzmo.mp3Checker.currentRelativePath;
+        MP3Settings.Mezzmo.Mp3Checker.RelativePath currentRelativePath = null;
+        for (MP3Settings.Mezzmo.Mp3Checker.RelativePath relativePath : mp3Settings.mezzmo.mp3Checker.relativePaths) {
+            if (relativePath.id.equals(id)) {
+                currentRelativePath = relativePath;
+            }
+        }
+        return currentRelativePath;
+    }
+
 }
