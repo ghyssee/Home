@@ -213,13 +213,13 @@ function fillArtistSongRelation(ArtistBO $artistBO, ArtistSongRelationshipCompos
                                 <input id="oldFreeArtist"
                                        class="easyui-textbox"
                                        label="Old Artist (Free)"
-                                       value="<?= $artistSongRelationshipObj->oldArtist ?>"
+                                       value="<?= htmlspecialchars($artistSongRelationshipObj->oldArtist) ?>"
                                        labelPosition="top"
                                        style="width:80%;height:52px">
                                 <button type="button" onclick="addFreeArtist();">Add</button>
                             </div>
                             <div style="margin-bottom:20px">
-                                <input id="oldSong" class="easyui-textbox" value="<?= $artistSongRelationshipObj->oldSong ?>"
+                                <input id="oldSong" class="easyui-textbox" value="<?= htmlspecialchars($artistSongRelationshipObj->oldSong) ?>"
                                        label="Old Song" labelPosition="top" style="width:80%;height:52px">
                             </div>
                         </div>
@@ -262,7 +262,7 @@ function fillArtistSongRelation(ArtistBO $artistBO, ArtistSongRelationshipCompos
                                  ">
                     <div style="margin-bottom:20px">
                         <input id="newSong" class="easyui-textbox"
-                               value="<?= $artistSongRelationshipObj->newSong ?>"
+                               value="<?= htmlspecialchars($artistSongRelationshipObj->newSong) ?>"
                                label="New Song" labelPosition="top" style="width:80%;height:52px">
                     </div>
                     <div>
@@ -293,7 +293,7 @@ function fillArtistSongRelation(ArtistBO $artistBO, ArtistSongRelationshipCompos
                     </div>
                     <div>
                         <input id="comment" class="easyui-textbox"
-                               value="<?= $artistSongRelationshipObj->comment ?>"
+                               value="<?= htmlspecialchars($artistSongRelationshipObj->comment) ?>"
                                label="Comment" labelPosition="top" style="width:80%;height:52px">
                     </div>
                 </div>
