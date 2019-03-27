@@ -37,7 +37,6 @@ public class MakeCustomPlaylists extends BatchJobV2{
         MakeCustomPlaylists instance = new MakeCustomPlaylists();
         try {
             config = instance.init();
-            SQLiteJDBC.initialize();
             instance.run();
         }
         catch (FileNotFoundException e){

@@ -39,7 +39,8 @@ public class MP3TagUtils {
     private List <AlbumError.Item> songErrors = new ArrayList();
     // indicates if it is an update and not a default check
     public boolean update = false;
-    MP3Settings.Mezzmo.Mp3Checker.RelativePath relativePath;
+
+    private MP3Settings.Mezzmo.Mp3Checker.RelativePath relativePath;
     private static final Logger log = Logger.getLogger(MP3TagUtils.class);
     public static final String SUBST_A1 = "H:\\Shared\\Mijn Muziek\\Eric\\iPod\\";
     public static final String SUBST_B1 = "T:\\My Music\\iPod\\";
@@ -721,6 +722,10 @@ public class MP3TagUtils {
             ok = false;
         }
         return ok;
+    }
+
+    public MP3Settings.Mezzmo.Mp3Checker.RelativePath getRelativePath() {
+        return relativePath;
     }
 
     public String relativizeFile(String file){

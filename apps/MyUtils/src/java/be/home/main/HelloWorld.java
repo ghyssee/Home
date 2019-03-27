@@ -3,6 +3,7 @@ package be.home.main;
 import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
 import be.home.common.dao.jdbc.SQLiteJDBC;
+import be.home.common.dao.jdbc.SQLiteUtils;
 import be.home.common.main.BatchJobV2;
 import be.home.common.mp3.MP3Utils;
 import be.home.common.utils.FileUtils;
@@ -59,8 +60,8 @@ public class HelloWorld extends BatchJobV2 {
         //batchProcess();
         //testMP3Prettifier();
         //testAlbumArtist();
-        //fileNotFound();
-        testVersion();
+        fileNotFound();
+        //testVersion();
 
     }
 
@@ -208,16 +209,40 @@ private static void testAlbumArtist(){
         MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSONWithCode(Constants.JSON.MP3SETTINGS, MP3Settings.class);
         MP3Settings.Mezzmo.Mp3Checker.RelativePath relativePath = MezzmoUtils.getRelativePath(mp3Settings);
         MP3TagUtils tagUtils = new MP3TagUtils(albumErrors, relativePath);
+
+        final String query = "SELECT MGOFile.ID, MGOFileAlbum.Data AS ALBUM, MGOFile.disc, MGOFile.track, MGOFile.playcount, * from MGOFile MGOFILE" + System.lineSeparator() +
+        "INNER JOIN MGOFileAlbumRelationship ON (MGOFileAlbumRelationship.FileID = MGOFILE.id)" + System.lineSeparator() +
+        "INNER JOIN MGOFileAlbum ON (MGOFileAlbum.ID = MGOFileAlbumRelationship.ID)" + System.lineSeparator() +
+        "INNER JOIN MGOFileArtistRelationship ON (MGOFileArtistRelationship.FileID = MGOFILE.id)" + System.lineSeparator() +
+        "INNER JOIN MGOFileArtist ON (MGOFileArtist.ID = MGOFileArtistRelationship.ID)" + System.lineSeparator() +
+        "INNER JOIN MGOAlbumArtistRelationship ON (MGOAlbumArtistRelationship.FileID = MGOFILE.id)" + System.lineSeparator() +
+        " where MGOFile.FILE like '%";
+
+        final String delQuery = "DELETE FROM MGOFile WHERE ID=";
+
+
         try {
-            MyFileWriter myFile = new MyFileWriter("C:\\My Data\\tmp\\Java\\MP3Processor\\Test\\ren.txt", MyFileWriter.NO_APPEND);
+            MyFileWriter myFile = new MyFileWriter("C:\\My Data\\tmp\\Java\\MP3Processor\\Test\\RenameFiles.txt", MyFileWriter.NO_APPEND);
+            MyFileWriter myFile2 = new MyFileWriter("C:\\My Data\\tmp\\Java\\MP3Processor\\Test\\CheckDoubles.txt", MyFileWriter.NO_APPEND);
             for (AlbumError.Item item : albumErrors.items){
                 if (item.type.equals("FILENOTFOUND")){
                     File file = new File(item.file);
-                    String oldFile = tagUtils.relativizeFile(file.getParent() + File.separator + file.getName().split(" ",2)[0]);
+                    String track = file.getName().split(" ",2)[0];
+                    String oldFile = tagUtils.relativizeFile(file.getParent() + File.separator + track);
                     myFile.append("ren \"" + oldFile + "*\" \"" + file.getName() + "\"");
+                    String relPath = file.getParent();
+                    relPath = SQLiteUtils.escape(relPath.replace(tagUtils.getRelativePath().original, "")
+                                                        .replace(tagUtils.getRelativePath().substitute, "")
+                    );
+                    myFile2.append(query + relPath + File.separator + track + "%'");
+                    myFile2.append("");
+                    myFile2.append(delQuery + item.fileId);
+                    myFile2.append("");
+
                 }
             }
             myFile.close();
+            myFile2.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

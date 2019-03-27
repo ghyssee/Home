@@ -41,7 +41,6 @@ public class SynchronizeIPodPlayCount extends BatchJobV2{
         SynchronizeIPodPlayCount instance = new SynchronizeIPodPlayCount();
         try {
             config = instance.init();
-            SQLiteJDBC.initialize();
             instance.run();
         }
         catch (FileNotFoundException e){

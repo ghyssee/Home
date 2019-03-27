@@ -35,7 +35,6 @@ public class MezzmoDelta extends BatchJobV2 {
     }
 
     private void myInit(){
-        SQLiteJDBC.initialize();
         //MGOFileAlbumCompositeTO comp2 = impl.findFileById(175435);
         //System.out.println(comp2.getFileTO().getFile());
         MP3Helper mp3Helper = MP3Helper.getInstance();

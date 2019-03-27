@@ -54,7 +54,6 @@ public class SynchronizeRating extends BatchJobV2 {
         instance.printHeader("SynchronizeRatings " + VERSION, "=");
         try {
             config = instance.init();
-            SQLiteJDBC.initialize();
             instance.start();
         } catch (IOException e) {
             e.printStackTrace();

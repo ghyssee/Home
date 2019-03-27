@@ -77,6 +77,11 @@ public class SQLiteUtils {
         }
     }
 
+    public static String escape(String text){
+        text = text.replace("'", "''");
+        return text;
+    }
+
 
 
 }

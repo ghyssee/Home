@@ -39,7 +39,6 @@ public class ExportPlayCount extends BatchJobV2{
         ExportPlayCount instance = new ExportPlayCount();
         try {
             config = instance.init();
-            SQLiteJDBC.initialize();
             instance.run();
         }
         catch (FileNotFoundException e){

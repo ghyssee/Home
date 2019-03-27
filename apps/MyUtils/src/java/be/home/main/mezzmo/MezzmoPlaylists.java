@@ -33,7 +33,6 @@ public class MezzmoPlaylists extends BatchJobV2{
         MezzmoPlaylists instance = new MezzmoPlaylists();
         try {
             config = instance.init();
-            SQLiteJDBC.initialize();
             instance.run();
         }
         catch (FileNotFoundException e){
