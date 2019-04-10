@@ -21,6 +21,8 @@ $albumSave = 'MezzmoSearchview.php';
 
 $mp3Settings = readJSONWithCode(JSON_MP3SETTINGS);
 $songBO = new SongBO(); // DB = MEZZMOV2
+$songBO =SongBO::db(MEZZMOV3);
+
 $artistArray = $songBO->loadArtistIdsFile();
 
 if (isset($_POST['submit'])) {

@@ -200,7 +200,7 @@ public class MP3Processor extends BatchJobV2 {
     }
 
     public String replaceDefaultArtistItems(String artist){
-        String newArtist = artist.replaceAll(" [F|f](?:ea)?t\\.? ", " Feat. ");
+        String newArtist = artist.replaceAll(" [F|f](?:ea)?t(?:uring)?\\.? ", " Feat. ");
         return newArtist;
     }
 

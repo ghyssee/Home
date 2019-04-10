@@ -23,8 +23,8 @@ import java.util.List;
 public class MezzmoDelta extends BatchJobV2 {
 
     private static final Logger log = getMainLog(be.home.main.mezzmo.MezzmoDelta.class);
-    private MezzmoServiceImpl impl = MezzmoServiceImpl.getInstance(Databases.MEZZMOV1);
-    private MezzmoServiceImpl impl2 = MezzmoServiceImpl.getInstance(Databases.MEZZMOV2);
+    private MezzmoServiceImpl impl = MezzmoServiceImpl.getInstance(Databases.MEZZMOV2);
+    private MezzmoServiceImpl impl2 = MezzmoServiceImpl.getInstance(Databases.MEZZMOV3);
     private EricServiceImpl ericServiceImpl = EricServiceImpl.getInstance();
 
     public static void main(String args[]) {

@@ -15,7 +15,7 @@ class SongBO
 
     public static function defaultDB( ) {
         $instance = new self();
-        $instance->setDB( MEZZMOV2 );
+        $instance->setDB( MEZZMOV3 );
         return $instance;
     }
 

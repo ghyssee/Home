@@ -5,6 +5,7 @@ include_once documentPath (ROOT_PHP_BO, "MyClasses.php");
 
 const MEZZMO = "MEZZMO";
 const MEZZMOV2 = "MEZZMOV2";
+const MEZZMOV3 = "MEZZMOV3";
 
 /* Just extend the class, add our method */
 class MezzmoSQLiteDatabase extends CustomDatabase {
