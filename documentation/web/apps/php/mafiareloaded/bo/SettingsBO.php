@@ -35,6 +35,19 @@ class GlobalSettingsTO  {
     }
 }
 
+class GlobalRobbingSettingsTO  {
+    public $nrOfProperties = 0;
+    public $properties = "";
+
+    function getBase(){
+        return "robbing";
+    }
+
+    public function __construct()
+    {
+    }
+}
+
 class GlobalSettingsBossTO  {
     public $bossName;
 
@@ -73,6 +86,33 @@ class SettingsBO{
         }
         return $to;
     }
+
+    function saveMultilSettings($settingsArray)
+    {
+        $feedBack = new FeedBackTO();
+        foreach ($settingsArray as $key => $settingsTO) {
+            $tmpVar = get_object_vars($settingsTO);
+            foreach ($tmpVar as $key => $value) {
+                if ($settingsTO->getBase() == null) {
+                    $this->settingsObj->{$key} = $value;
+                } else {
+                    $this->settingsObj->{$settingsTO->getBase()}->{$key} = $value;
+                }
+            }
+        }
+        $this->save();
+        $feedBack->success = true;
+        return $feedBack;
+    }
+
+    function fillSettings($stdSettingsTO, $settingsTO)
+    {
+        $tmpVar = get_object_vars($settingsTO);
+        foreach ($tmpVar as $key => $value) {
+            $stdSettingsTO->{$settingsTO->getBase() . "_" . $key} = $this->getSetting($settingsTO, $key);
+        }
+    }
+
 
     function saveGlobalSettings($to){
         $feedBack = new FeedBackTO();

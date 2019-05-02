@@ -160,6 +160,23 @@ function fillForm($to, $form){
     }
 }
 
+function fillFormV2($to, $form){
+    $tmpVar = get_object_vars($to);
+    foreach($tmpVar as $key => $value) {
+        $typeof = gettype($value);
+        $composedKey = $to->getBase() . "_" . $key;
+        if ($typeof == 'boolean') {
+            $to->{$key} = isset($form[$composedKey]);
+        } elseif ($typeof == 'integer') {
+            if (isset($form[$composedKey])) {
+                $to->{$key} = intval($form[$composedKey]);
+            }
+        } else {
+            $to->{$key} = $form[$composedKey];
+        }
+    }
+}
+
 function getSettingsFighting(){
     $settingsBO = new ProfileSettingsBO();
     $settingsTO = $settingsBO->getSettings(new FightSettingsTO());
@@ -194,17 +211,26 @@ function saveSettingsBoss(){
 
 function getSettingsJob(){
     $settingsBO = new ProfileSettingsBO();
-    $settingsTO = $settingsBO->getSettings(new JobSettingsTO());
+    $settingsTO = new stdClass();
+    $settingsBO->fillSettings($settingsTO, new JobSettingsTO());
+    $settingsBO->fillSettings($settingsTO, new RobbingSettingsTO());
     echo json_encode($settingsTO);
 }
 
 function saveSettingsJob(){
+    $settingsArray = [];
     $jobSettingsTO = new JobSettingsTO();
-    fillForm($jobSettingsTO, $_POST);
+    $settingsArray[] = $jobSettingsTO;
+    $robbingSettingsTO = new RobbingSettingsTO();
+    $settingsArray[] = $robbingSettingsTO;
+    fillFormV2($jobSettingsTO, $_POST);
+    fillFormV2($robbingSettingsTO, $_POST);
 
     $settingsBO = new ProfileSettingsBO();
-    $feedBack = $settingsBO->saveSettings($jobSettingsTO);
+
+    $feedBack = $settingsBO->saveMultiSettings($settingsArray);
     fillSaveMessage($feedBack, "Profile Specific Job Settings");
+
     echo json_encode($feedBack);
 }
 
@@ -275,17 +301,26 @@ function saveDailyLink(){
 
 function getGlobalSettings()
 {
-    $SettingsBO = new SettingsBO();
-    $to = $SettingsBO->getGlobalSettings(new GlobalSettingsTO());
-    echo json_encode($to);
+    $settingsBO = new SettingsBO();
+    $settingsTO = new stdClass();
+    $settingsBO->fillSettings($settingsTO, new GlobalSettingsTO());
+    $settingsBO->fillSettings($settingsTO, new GlobalRobbingSettingsTO());
+    echo json_encode($settingsTO);
 }
 
 function saveGlobalSettings(){
-    $to = new GlobalSettingsTO();
-    fillForm($to, $_POST);
+    $settingsArray = [];
+    $globalSettingsTO = new GlobalSettingsTO();
+    $settingsArray[] = $globalSettingsTO;
+    $globalRobbingSettingsTO = new GlobalRobbingSettingsTO();
+    $settingsArray[] = $globalRobbingSettingsTO;
+    fillFormV2($globalSettingsTO, $_POST);
+    fillFormV2($globalRobbingSettingsTO, $_POST);
+
     $settingsBO = new SettingsBO();
-    $feedBack = $settingsBO->saveGlobalSettings($to);
-    fillSaveMessage($feedBack, "Global Settings");
+
+    $feedBack = $settingsBO->saveMultilSettings($settingsArray);
+    fillSaveMessage($feedBack, "Profile Specific Job Settings");
 
     echo json_encode($feedBack);
 }

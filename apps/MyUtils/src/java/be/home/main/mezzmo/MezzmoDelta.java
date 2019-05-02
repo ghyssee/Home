@@ -35,42 +35,26 @@ public class MezzmoDelta extends BatchJobV2 {
     }
 
     private void myInit(){
-        //MGOFileAlbumCompositeTO comp2 = impl.findFileById(175435);
-        //System.out.println(comp2.getFileTO().getFile());
         MP3Helper mp3Helper = MP3Helper.getInstance();
         mp3Helper.disableLogging();
         TransferObject to = new TransferObject();
-        /*
-        MezzmoFileTO myTO = new MezzmoFileTO();
-        myTO.setId(3);
-        myTO.setStatus("TEST");
-        myTO.setArtistId(3);
-        myTO.setArtistName("TESTARTIST");
-        myTO.setNew(false);
 
-        try {
-            getEricServiceInstance().insertMezzmoFile(myTO);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }*/
-
-            do {
-                List<MGOFileAlbumCompositeTO> list = getMezzmoV2Instance().getAllMP3Files(to);
-                log.info("Index = " + to.getIndex());
-                try {
-                    checkFile(list);
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    break;
-                }
+        do {
+            List<MGOFileAlbumCompositeTO> list = getMezzmoV2Instance().getAllMP3Files(to);
+            log.info("Index = " + to.getIndex());
+            try {
+                checkFile(list);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                break;
             }
-            while (!to.isEndOfList());
+        }
+        while (!to.isEndOfList());
 
     }
 
     private void checkFile(List<MGOFileAlbumCompositeTO> list) throws SQLException {
         for (MGOFileAlbumCompositeTO comp : list){
-            //if (comp.getFileTO().getId() == 17116){
             boolean isNew = false;
             try {
                 MezzmoServiceImpl tmp = getMezzmoV1Instance();
@@ -82,7 +66,6 @@ public class MezzmoDelta extends BatchJobV2 {
                 isNew = true;
             }
             checkArtist(comp, isNew);
-        //}
         }
 
     }

@@ -44,8 +44,19 @@
 <form id="<?php echo FORM_GLOBAL;?>" method="post">
     <div title="Secret District is on/off" class="fitem">
         <label>Event</label>
-        <input name="eventEnabled"
+        <input name="<?php echo GlobalSettingsTO::getBase()?>_eventEnabled"
                class="easyui-checkbox" type="checkbox" value="true"
+        >
+    </div>
+    <div class="fitem">
+        <label title="Number of Properties to rob">Nr. Properties</label>
+        <input name="<?php echo GlobalRobbingSettingsTO::getBase()?>_nrOfProperties" id="<?php echo GlobalRobbingSettingsTO::getBase()?>_nrOfProperties" class="easyui-numberspinner" style="width:150px;"
+               data-options="min:1,max:10"
+        >
+    </div>
+    <div class="fitem">
+        <label title="List of Property Names for robbing seperated by ;" for="robbing_properties">Properties</label>
+        <input name="<?php echo GlobalRobbingSettingsTO::getBase()?>_properties" id="<?php echo GlobalRobbingSettingsTO::getBase()?>_properties" class="easyui-textbox" data-options="required:true" style="width:300px;"
         >
     </div>
     <div>

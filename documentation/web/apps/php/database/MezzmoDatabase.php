@@ -224,7 +224,7 @@ class MezzmoSQLiteDatabase extends CustomDatabase {
                 $songRec = $result[0];
                 break;
             default:
-                throw new ApplicationException("Multiple results found for id " . $id);
+                throw new ApplicationException("Multiple results found. This should never occur...");
                 break;
         }
         return $songRec;

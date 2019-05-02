@@ -18,8 +18,20 @@ class JobSettingsTO  {
     public $levelUpExp = 0;
     public $levelUpMinEnergy = 0;
 
-    public function getBase(){
+    public static function getBase(){
         return "jobs";
+    }
+
+    public function __construct()
+    {
+    }
+}
+
+class RobbingSettingsTO  {
+    public $enabled = false;
+
+    public static function getBase(){
+        return "robbing";
     }
 
     public function __construct()
@@ -141,6 +153,14 @@ class ProfileSettingsBO
         return $settingsTO;
     }
 
+    function fillSettings($stdSettingsTO, $settingsTO)
+    {
+        $tmpVar = get_object_vars($settingsTO);
+        foreach ($tmpVar as $key => $value) {
+            $stdSettingsTO->{$settingsTO->getBase() . "_" . $key} = $this->getSetting($settingsTO, $key);
+        }
+    }
+
     private function getSetting($settingsTO, $key)
     {
         $value = null;
@@ -164,6 +184,25 @@ class ProfileSettingsBO
                 $this->mrObj->{$settingsTO->getBase()}->{$key} = $value;
             }
 
+        }
+        $this->save();
+        $feedBack->success = true;
+        return $feedBack;
+    }
+
+    function saveMultiSettings($settingsArray)
+    {
+        $feedBack = new FeedBackTO();
+        foreach ($settingsArray as $key => $settingsTO) {
+            $tmpVar = get_object_vars($settingsTO);
+            //    $props = getProperties($fightSettingsTO);
+            foreach ($tmpVar as $key => $value) {
+                if ($settingsTO->getBase() == null) {
+                    $this->mrObj->{$key} = $value;
+                } else {
+                    $this->mrObj->{$settingsTO->getBase()}->{$key} = $value;
+                }
+            }
         }
         $this->save();
         $feedBack->success = true;
