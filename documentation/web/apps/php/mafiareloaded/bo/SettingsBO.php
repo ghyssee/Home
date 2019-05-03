@@ -14,7 +14,7 @@ class DailyLinkTO  {
     public $date;
     public $link;
 
-    function getBase(){
+    public static function getBase(){
         return "dailyLink";
 }
 
@@ -26,8 +26,20 @@ class DailyLinkTO  {
 class GlobalSettingsTO  {
     public $eventEnabled = false;
 
-    function getBase(){
+    public static function getBase(){
         return "global";
+    }
+
+    public function __construct()
+    {
+    }
+}
+
+class GlobalFightingSettingsTO  {
+    public $rival = "";
+
+    public static function getBase(){
+        return "fighting";
     }
 
     public function __construct()
@@ -39,7 +51,7 @@ class GlobalRobbingSettingsTO  {
     public $nrOfProperties = 0;
     public $properties = "";
 
-    function getBase(){
+    public static function  getBase(){
         return "robbing";
     }
 
@@ -51,7 +63,7 @@ class GlobalRobbingSettingsTO  {
 class GlobalSettingsBossTO  {
     public $bossName;
 
-    function getBase(){
+    public static function getBase(){
         return "boss";
     }
 
@@ -87,7 +99,7 @@ class SettingsBO{
         return $to;
     }
 
-    function saveMultilSettings($settingsArray)
+    function saveMultiSettings($settingsArray)
     {
         $feedBack = new FeedBackTO();
         foreach ($settingsArray as $key => $settingsTO) {
