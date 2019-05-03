@@ -415,7 +415,7 @@ public class MP3Helper {
     }
 
     private void checkTrackPattern(AlbumInfo.Track track, String startPattern, String endPattern){
-        Pattern pattern = Pattern.compile(startPattern + "(.*)" + endPattern + "(.*)");
+        Pattern pattern = Pattern.compile(startPattern + "(.*?)" + endPattern + "(.*)");
         Matcher matcher = pattern.matcher(track.title);
         if (matcher.find()) {
             String extraArtist = matcher.group(1);
