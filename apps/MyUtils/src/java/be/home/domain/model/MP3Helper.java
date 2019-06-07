@@ -634,6 +634,7 @@ public class MP3Helper {
                     artistSongItem.setSong(newTitle.getSong());
                     artistSongItem.enableMatched();
                     artistSongItem.setRuleId(item.id);
+                    artistSongItem.setComment(item.comment);
                     if (StringUtils.isNotBlank(item.newMultiArtistId)) {
                         MultiArtistConfig.Item tmp = ArtistConfigBO.getInstance().getMultiArtist(item.newMultiArtistId);
                         MP3Prettifier.Word word = ArtistConfigBO.getInstance().constructItem(tmp, false);

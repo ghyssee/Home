@@ -47,6 +47,7 @@ class SongCorrection{
     public $ruleId;
     public $newArtist;
     public $newTitle;
+    public $duration;
 }
 
 class MezzmoFileTO {

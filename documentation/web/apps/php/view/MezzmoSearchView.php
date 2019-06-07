@@ -256,6 +256,7 @@ function getNextArtistId($artistArray, $artistId){
             <th data-options="field:'artist',width:150, formatter: formatArtist">Artist</th>
             <th data-options="field:'title',width:100">Title</th>
             <th data-options="field:'song',width:100, formatter: formatPrice">Song</th>
+            <th data-options="field:'duration',width:25">Duration</th>
             <th data-options="field:'album',width:50">Album</th>
             <th data-options="field:'fileId',width:15">File</th>
             <th data-options="field:'file',width:200">File</th>

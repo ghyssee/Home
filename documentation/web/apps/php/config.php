@@ -190,7 +190,7 @@ class CustomSort{
 
 	public function ascCmp($a, $b)
 	{
-		if (is_numeric($a->{$this->field})){
+		if (is_numeric($a->{$this->field}) && is_numeric($b->{$this->field})){
 			return $a->{$this->field} - $b->{$this->field};
 		}
 		else {

@@ -156,6 +156,9 @@ public class MP3Processor extends BatchJobV2 {
                 myFile.append("TRACK: " + track.track);
                 myFile.append("OLD: " + oldArtist + " - " + oldTitle);
                 myFile.append("NEW: " + track.artist + " - " + track.title);
+                if (StringUtils.isNotBlank(item.getComment())) {
+                    myFile.append("COMMENT: " + item.getComment());
+                }
                 myFile.append("STATUS: " + statusArtist + "/ " + statusTitle);
                 myFile.append(StringUtils.repeat('=', 100));
             }
