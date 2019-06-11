@@ -38,6 +38,9 @@ const FILE_ALBUMWITHOUTERRORS = "albumsWithoutErrors";
 const APPEND = true;
 const ESCAPE_HTML = true;
 const JSON_ASSOCIATIVE = true;
+const INFO = 0;
+const WARN = 1;
+const ERROR = 2;
 define ('DOCUMENT_ROOT', $_SERVER["CONTEXT_DOCUMENT_ROOT"]);
 define ('WEB_ROOT', "/catalog");
 define ('ROOT_APPS', DOCUMENT_ROOT . "/apps");
@@ -138,11 +141,11 @@ function replaceSystemVariables($string){
     return $string;
 }
 
-function getOneDrivePath() {
-    if (isset($GLOBALS["ONEDRIVE"])){
+function getOneDrivePath()
+{
+    if (isset($GLOBALS["ONEDRIVE"])) {
         return $GLOBALS["ONEDRIVE"];
-    }
-    else {
+    } else {
         $Wshshell = new COM('WScript.Shell');
         try {
             $oneDrive = $Wshshell->regRead('HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\OneDrive\\CustomUserFolder');
@@ -150,12 +153,16 @@ function getOneDrivePath() {
             try {
                 $oneDrive = $Wshshell->regRead('HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\OneDrive\\UserFolder');
             } catch (Exception $e) {
-                $oneDrive = $Wshshell->regRead('HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\SkyDrive\\UserFolder');
+                try {
+                    $oneDrive = $Wshshell->regRead('HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\SkyDrive\\UserFolder');
+                } catch (Exception $e) {
+                    $oneDrive = "C:\My Programs\OneDrivePHP";
+                }
             }
         }
-        $GLOBALS["ONEDRIVE"] = $oneDrive;
-        return $oneDrive;
     }
+    $GLOBALS["ONEDRIVE"] = $oneDrive;
+    return $oneDrive;
 }
 
 function readJSON($file, $associative = false){
@@ -205,9 +212,6 @@ function logInfo ($msg){
     file_put_contents($file, $msg . PHP_EOL, FILE_APPEND | LOCK_EX);
 }
 
-const INFO = 0;
-const WARN = 1;
-const ERROR = 2;
 class LogTest {
     public static $file = "C:\\My Programs\\iMacros\logs\\test.txt";
 
