@@ -780,8 +780,8 @@ class MultiArtistBO {
             $errorObj->errorMsg = '';
             $errorObj->artistsAdded = [];
             $errorObj->multiArtist = null;
-            $artistArray = '';
-            $delimiterArray = '';
+            $artistArray = [];
+            $delimiterArray = [];
             $this->buildArtists($multiArtistTxt, $errorObj, $artistArray);
             if (!$errorObj->errorFound) {
                 $this->buildDelimiters($multiArtistTxt, $errorObj, $artistArray, $delimiterArray);

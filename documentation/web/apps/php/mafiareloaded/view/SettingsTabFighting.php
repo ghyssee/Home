@@ -124,6 +124,10 @@ const FORM_ID = "settings";
                 <input name="wiseguy"
                        class="easyui-checkbox" type="checkbox" value="true"
                 >
+                <label for="war">War</label>
+                <input name="war_enabled"
+                       class="easyui-checkbox" type="checkbox" value="true"
+                >
             </div>
         </div>
 
