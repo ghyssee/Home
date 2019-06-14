@@ -32,5 +32,6 @@ class AssassinTO extends FightTO {
 class AllyTO {
     public $id;
     public $name;
+    public $whiteTag;
     public $active;
 }

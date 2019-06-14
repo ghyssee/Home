@@ -179,13 +179,24 @@ function fillFormV2($to, $form){
 
 function getSettingsFighting(){
     $settingsBO = new ProfileSettingsBO();
-    $settingsTO = $settingsBO->getSettings(new FightSettingsTO());
-    echo json_encode($settingsTO);
+    $fightSettingsTO = new FightSettingsTO();
+    $settingsTO = $settingsBO->getSettings($fightSettingsTO);
+
+    $warSettingsTO = $settingsBO->getSubSettings(new WarSettingsTO(), $fightSettingsTO->getBase());
+
+    $obj_merged = (object) array_merge(
+        (array) $settingsTO, (array) $warSettingsTO);
+
+    echo json_encode($obj_merged);
 }
 
 function saveSettingsFighting(){
     $fightSettingsTO = new FightSettingsTO();
     fillForm($fightSettingsTO, $_POST);
+    $fightSettingsTO->war = new WarSettingsTO();
+    fillFormV2($fightSettingsTO->war, $_POST);
+    //$fightSettingsTO->war->enabled = false;
+
 
     $settingsBO = new ProfileSettingsBO();
     $feedBack = $settingsBO->saveSettings($fightSettingsTO);

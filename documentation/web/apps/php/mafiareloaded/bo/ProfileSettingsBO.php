@@ -96,6 +96,13 @@ class BossSettingsTO  {
     }
 }
 
+class WarSettingsTO {
+    public $enabled = false;
+    public function getBase(){
+        return "war";
+    }
+}
+
 class FightSettingsTO  {
     public $autoHeal = false;
     public $heal = 0;
@@ -116,6 +123,7 @@ class FightSettingsTO  {
     public $attackTillDiedHealth = 0;
     public $waitTillEnoughStamina = 0;
     public $waitingTimeKilled = 0;
+    public $war;
 
     public function getBase(){
         return "fight";
@@ -153,6 +161,28 @@ class ProfileSettingsBO
         return $settingsTO;
     }
 
+    function getSubSettings($settingsTO, $subKey)
+    {
+        $tmpVar = get_object_vars($settingsTO);
+        $newSettingsObj = new stdClass();
+        foreach ($tmpVar as $key => $value) {
+            $newSettingsObj->{$settingsTO->getBase() . "_" . $key} = $this->getSubSetting($settingsTO, $key, $subKey);
+        }
+        return $newSettingsObj;
+    }
+
+    private function getSubSetting($settingsTO, $key, $subKey)
+    {
+        $value = null;
+        if ($settingsTO->getBase() == null) {
+            $value = $this->mrObj->{$key}->{$subKey};
+        } else {
+            $value = $this->mrObj->{$subKey}->{$settingsTO->getBase()}->{$key};
+        }
+        return $value;
+    }
+
+
     function fillSettings($stdSettingsTO, $settingsTO)
     {
         $tmpVar = get_object_vars($settingsTO);
@@ -180,6 +210,10 @@ class ProfileSettingsBO
         foreach ($tmpVar as $key => $value) {
             if ($settingsTO->getBase() == null) {
                 $this->mrObj->{$key} = $value;
+
+            } elseif (method_exists($settingsTO->{$key}, "getBase")) {
+                $property = $settingsTO->{$key};
+                $this->saveSubSettings($this->mrObj->{$settingsTO->getBase()}->{$key}, $property);
             } else {
                 $this->mrObj->{$settingsTO->getBase()}->{$key} = $value;
             }
@@ -188,6 +222,18 @@ class ProfileSettingsBO
         $this->save();
         $feedBack->success = true;
         return $feedBack;
+    }
+
+    function saveSubSettings($obj, $settingsTO)
+    {
+        $tmpVar = get_object_vars($settingsTO);
+        foreach ($tmpVar as $key => $value) {
+            if ($settingsTO->getBase() == null) {
+                $obj = $value;
+            } else {
+                $obj->{$key} = $value;
+            }
+        }
     }
 
     function saveMultiSettings($settingsArray)

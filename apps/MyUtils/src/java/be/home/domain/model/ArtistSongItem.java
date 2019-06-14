@@ -9,6 +9,7 @@ public class ArtistSongItem {
     private String song;
     private Rules rule;
     private String ruleId;
+    private String comment;
 
     public ArtistSongItem() {
     }
@@ -56,4 +57,13 @@ public class ArtistSongItem {
     public void setRuleId(String ruleId) {
         this.ruleId = ruleId;
     }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
 }

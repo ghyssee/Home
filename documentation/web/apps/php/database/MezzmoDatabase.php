@@ -93,6 +93,7 @@ class MezzmoSQLiteDatabase extends CustomDatabase {
         $songObj->albumId = $result['ALBUMID'];
         $songObj->album = $result['ALBUM'];
         $songObj->file = $result['FILE'];
+        $songObj->duration = $result['DURATION'];
         return $songObj;
     }
 

@@ -28,6 +28,7 @@ $DIALOG_ID = "dlgAlly";
     <tr>
         <th data-options="field:'id', width:10">Id</th>
         <th data-options="field:'name',width:20">Name</th>
+        <th data-options="field:'whiteTag',width:20">White Tag</th>
         <th data-options="field:'active',width:2,align:'center',formatter:function(value,row,index){return checkboxFormatter(value,row,index);} ">Active</th>
     </tr>
     </thead>
@@ -60,6 +61,14 @@ $DIALOG_ID = "dlgAlly";
             <input id="name"
                    name="name"
                    required="true"
+                   class="easyui-textbox"
+                   style="width:220px"
+            >
+        </div>
+        <div class="fitem">
+            <label>White Tag</label>
+            <input id="whiteTag"
+                   name="whiteTag"
                    class="easyui-textbox"
                    style="width:220px"
             >
