@@ -123,7 +123,6 @@ class FightSettingsTO  {
     public $attackTillDiedHealth = 0;
     public $waitTillEnoughStamina = 0;
     public $waitingTimeKilled = 0;
-    public $war;
 
     public function getBase(){
         return "fight";
