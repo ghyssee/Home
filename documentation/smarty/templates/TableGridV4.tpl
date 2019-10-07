@@ -64,7 +64,7 @@
     </div>
 	</span>
 
-<div id="dlg{{$tablegrid}}" class="easyui-dialog" style="width:400px;height:280px;padding:10px 20px"
+<div id="dlg{{$tablegrid}}" class="easyui-dialog" style="width:400px;height:300px;padding:10px 20px"
      closed="true" buttons="#dlg-buttons{{$tablegrid}}">
     <div class="ftitle">{{$item}} Information</div>
     <form id="fm{{$tablegrid}}" method="post" novalidate>
@@ -118,6 +118,7 @@
         var row = $('#dg{{$tablegrid}}').datagrid('getSelected');
         if (row){
             $('#dlg{{$tablegrid}}').dialog('open').dialog('setTitle','Edit {{$item}}');
+            $('#fm{{$tablegrid}}').form('clear');
             $('#fm{{$tablegrid}}').form('load',row);
             url = {{$updateUrl}};
         }
