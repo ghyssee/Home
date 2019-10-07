@@ -9,6 +9,7 @@ class ArtistTO{
     public $id;
     public $name;
     public $stageName;
+    public $comment;
     public $pattern;
     public $priority=1000;
     public $global=false;

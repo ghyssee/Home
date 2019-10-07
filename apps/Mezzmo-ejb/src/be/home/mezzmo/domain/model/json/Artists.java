@@ -13,6 +13,7 @@ public class Artists {
         public String id;
         public String name;
         public String stageName;
+        public String comment;
         public String pattern;
         public int priority;
         public boolean global;
@@ -40,6 +41,10 @@ public class Artists {
         public void setStageName(String stageName) {
             this.stageName = stageName;
         }
+
+        public String getComment() { return comment;   }
+
+        public void setComment(String comment) { this.comment = comment;  }
 
         public String getPattern() {
             return pattern;
