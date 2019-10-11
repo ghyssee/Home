@@ -232,8 +232,8 @@ public class MP3PreProcessorV2 extends BatchJobV2 {
 
     private boolean checkCDTag(MP3PreprocessorConfig mp3Config, AlbumInfo.Config album, String line){
         String cd = null;
-        // CD TAG followed by zero or more spaces and 1 or more numbers
-        Pattern pattern = Pattern.compile(mp3Config.cdTag.toUpperCase() + "( *)[1-9]{1,}");
+        // CD TAG followed by zero or more spaces and 1 or 2 numbers
+        Pattern pattern = Pattern.compile(mp3Config.cdTag.toUpperCase() + " [1-9][0-9]?");
         Matcher matcher2 = pattern.matcher(line.toUpperCase());
         boolean cdTagFound = false;
         if (matcher2.matches()) {
