@@ -6,8 +6,8 @@
 		                 {{if isset($dragAndDrop)}}$(this).datagrid("enableDnd"){{/if}}
 		                 },
         rowStyler: function(index,row){
-            if ((index % 2) == 3){
-                return "background-color:grey;font-weight:bold;";
+            if ((index % 2) == 1){
+                return "background-color:LightGray;font-weight:bold;";
 
             }
        },

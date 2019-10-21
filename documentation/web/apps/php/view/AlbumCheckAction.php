@@ -11,7 +11,7 @@ if (isset($_POST['albumCheck'])) {
 	}
 }
 
-function updateAlbumInfo($mp3PreprocessorObj){
+function updateAlbumInfo(){
 //	$mp3SettingsObj = readJSONWithCode(JSON_MP3SETTINGS);
 	assignField($albumList, "albumList", !HTML_SPECIAL_CHAR);
 	assignField($albumExclude, "albumExclude", !HTML_SPECIAL_CHAR);
