@@ -61,6 +61,11 @@ function openUrl(url) {
     win.focus();
 }
 
+function removeEmptyDivFromResult(text){
+    text = text.replace('<div id="ConnectiveDocSignExtentionInstalled" data-extension-version="1.0.4"></div>', '');
+    return text;
+}
+
 function submitForm(formId, url) {
     $('#' + formId).form('submit', {
         url: url,
@@ -69,6 +74,7 @@ function submitForm(formId, url) {
 // return false to prevent submit;
         },
         success: function (data) {
+            data = removeEmptyDivFromResult(data);
             var obj = JSON.parse(data);
             if (obj.message) {
                 alert(obj.message);
