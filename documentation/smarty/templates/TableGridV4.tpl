@@ -130,6 +130,7 @@
             },
             success: function(result){
                 //var result = eval('('+result+')');
+                result = removeEmptyDivFromResult(result);
                 var result = JSON.parse(result);
                 if (result.errorMsg){
                     $.messager.show({
@@ -156,6 +157,7 @@
                         url:     "{{$deleteUrl}}",
                         data:    {id: row.{{$id}}},
                         success: function(data) {
+                            data = removeEmptyDivFromResult(data);
                             var dataObj = JSON.parse(data);
                             if (!dataObj.success && dataObj.hasOwnProperty('errorMessage')){
                                 alert(dataObj.errorMessage);

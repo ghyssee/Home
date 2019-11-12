@@ -94,6 +94,7 @@ function submitFormMessage(formId, url, messageId) {
             // return false to prevent submit;
         },
         success: function (data) {
+            data = removeEmptyDivFromResult(data);
             var obj = JSON.parse(data);
             if (obj) {
                 $('#' + messageId).html(obj.message);
@@ -134,11 +135,12 @@ function saveRecord(formId, dialogId, datagridId){
             return $(this).form('validate');
         },
         success: function(result){
-            var result = JSON.parse(result);
-            if (result.errorMsg){
+            result = removeEmptyDivFromResult(result);
+            var dataObj = JSON.parse(result);
+            if (dataObj.errorMsg){
                 $.messager.show({
                     title: 'Error',
-                    msg: result.errorMsg
+                    msg: dataObj.errorMsg
                 });
             } else {
                 $('#' + dialogId).dialog('close');		// close the dialog
@@ -168,6 +170,7 @@ function deleteRecordV2(datagridId, title, idField, deleteUrl){
                     data:    {id: row[idField]},
                     success: function(data) {
                         try {
+                            data = removeEmptyDivFromResult(data);
                             var dataObj = JSON.parse(data);
                             if (!dataObj.success && dataObj.hasOwnProperty('errorMessage')) {
                                 alert(dataObj.errorMessage);
