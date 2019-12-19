@@ -196,10 +196,31 @@ public class MP3TagUtils {
         return ok;
     }
 
+    private Mp3File initMP3File(File file) throws InvalidDataException, UnsupportedTagException {
+        Mp3File mp3file = null;
+        int i=0;
+        do {
+            try {
+                mp3file = new Mp3File(file.getAbsolutePath());
+                log.info("Problem reading file: " + file.getAbsolutePath());
+                i = 5;
+            } catch (IOException e) {
+                i++;
+            }
+        }
+        while (i < 5);
+        return mp3file;
+    }
+
     private void checkMP3Info(MGOFileAlbumCompositeTO comp, File file, int nrOfTracks, int maxDisc){
         Mp3File mp3file = null;
         try {
-            mp3file = new Mp3File(file.getAbsolutePath());
+            // mp3file = new Mp3File(file.getAbsolutePath());
+            mp3file = initMP3File(file);
+            if (mp3file == null){
+                log.error("Could not open file: " + file.getAbsolutePath());
+                return;
+            }
             ID3v2 id3v2Tag;
             if (mp3file.hasId3v2Tag()) {
                 id3v2Tag = MP3Utils.getId3v2Tag(mp3file);
