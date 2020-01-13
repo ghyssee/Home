@@ -37,7 +37,8 @@ public class ConvertArtistSong extends BatchJobV2 {
     public static void main(String args[]) throws SAXException, DocumentException, IOException, IllegalAccessException, NoSuchFieldException, ParserConfigurationException {
 
         ConvertArtistSong instance = new ConvertArtistSong();
-            instance.convert();
+            //instance.convert();
+        instance.checkArtistNamesExistInArtists();
     }
 
     private void convert() throws IOException {
@@ -147,6 +148,20 @@ public class ConvertArtistSong extends BatchJobV2 {
             }
         }
     }
+
+
+    private void checkArtistNamesExistInArtists() throws IOException {
+        ArtistBO artistBO = ArtistBO.getInstance();
+        MP3Prettifier mp3Prettifier = MP3Helper.getInstance().getMp3Prettifier();
+        for (MP3Prettifier.Word artistName : mp3Prettifier.artist.names){
+            //System.out.println(artistName.newWord);
+            Artists.Artist artist = artistBO.findArtistByName(artistName.newWord);
+            if (artist != null){
+                System.out.println("FOUND:" + artistName.newWord);
+            }
+        }
+    }
+
 
     private void checkOldArtists() throws IOException {
         ArtistSongRelationship artistSongRelationship = ArtistSongRelationshipBO.getInstance().getArtistSongRelationship();
