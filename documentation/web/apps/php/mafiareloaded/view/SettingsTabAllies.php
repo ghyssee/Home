@@ -96,52 +96,11 @@ $DIALOG_ID = "dlgAlly";
             'SettingsAction.php?method=updateAlly&id=\'+row[\'id\'] + "&profile=' + getProfile());
     }
     function saveAlly(){
-        $('#<?php echo $FORM_ID;?>').form('submit',{
-            url: url,
-            onSubmit: function(){
-                return $(this).form('validate');
-            },
-            success: function(result){
-                var result = JSON.parse(result);
-                if (result.errorMsg){
-                    $.messager.show({
-                        title: 'Error',
-                        msg: result.errorMsg
-                    });
-                } else {
-                    $('#<?php echo $DIALOG_ID;?>').dialog('close');		// close the dialog
-                    $('#<?php echo $DATAGRID_ID;?>').datagrid('reload');	// reload the user data
-                }
-            }
-        });
+        saveRecord('<?php echo $FORM_ID;?>', '<?php echo $DIALOG_ID;?>', '<?php echo $DATAGRID_ID;?>');
     }
 
     function deleteAlly(){
-        var row = $('#<?php echo $DATAGRID_ID;?>').datagrid('getSelected');
-        if (row){
-            $.messager.confirm('Confirm','Are you sure you want to delete this Ally?',function(r){
-                if (r){
-                    $.ajax({
-                        type:    "POST",
-                        url:     "SettingsAction.php?method=deleteAlly" + "&profile=" + getProfile(),
-                        data:    {id: row.id},
-                        success: function(data) {
-                            var dataObj = JSON.parse(data);
-                            if (!dataObj.success && dataObj.hasOwnProperty('errorMessage')){
-                                alert(dataObj.errorMessage);
-                            }
-                            $('#<?php echo $DATAGRID_ID;?>').datagrid('reload');
-                        },
-                        // vvv---- This is the new bit
-                        error:   function(jqXHR, textStatus, errorThrown) {
-                            alert("Error, status = " + textStatus + ", " +
-                                "error thrown: " + errorThrown
-                            );
-                        }
-                    });
-                }
-            });
-        }
+        deleteRecordV2('<?php echo $DATAGRID_ID;?>','Ally', 'id', "SettingsAction.php?method=deleteAlly" + "&profile=" + getProfile());
     }
 
     function refreshAllies(profile){

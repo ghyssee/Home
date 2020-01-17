@@ -409,7 +409,7 @@ function addAssassin(){
     $assassinBO = new AssassinBO(getProfile());
     $feedBackTO = $assassinBO->addAssassin($assassinTO);
     if ($feedBackTO->success){
-        echo json_encode($assassinBO->getListAssassin());
+        echo json_encode($assassinBO->getListAssassin(getProfile()));
     }
     else {
         echo json_encode($feedBackTO);

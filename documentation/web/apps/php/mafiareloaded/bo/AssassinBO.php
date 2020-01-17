@@ -102,6 +102,8 @@ class AssassinBO
     }
 
     function addAssassin(AssassinTO $assassinTO){
+        // bug: should be added to >assassinObj->profiles[0..n]->players
+        // first look up the exact profile, than add player to that profile
         $assassinTO->id = getUniqueId();
         $feedbackTO = new FeedBackTO();
         $this->assassinObj->players[] = $assassinTO;
