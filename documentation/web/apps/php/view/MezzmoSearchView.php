@@ -130,8 +130,8 @@ function getNextArtistId($artistArray, $artistId){
     <script>
         var data = <?php echo json_encode($data) ?>;
         var data2 = [{"id":10, "name":'Test'},
-                    {"id":11, "name":'Test2'}
-            ];
+            {"id":11, "name":'Test2'}
+        ];
 
         function doIt(){
             alert("done");
@@ -215,7 +215,7 @@ function getNextArtistId($artistArray, $artistId){
             }
             return cellInfo;
             //return '<div><span class="box">Old Artist:</span><span class="box2">' + cellInfo +
-              //     '</span></div><div><span class="box">New Artist:</span><span class="box2">' + row.newArtist + '</span></div>';
+            //     '</span></div><div><span class="box">New Artist:</span><span class="box2">' + row.newArtist + '</span></div>';
             //return '<div><span class="box">Old Artist:</span><span class="box2"><a href="'+url+'" target="_blank">'+val+'</a></span></div><div><span class="box">New Artist:</span><span class="box2">BlaBla</span></div>';
         }
         function formatTitle(val,row){
@@ -238,6 +238,7 @@ function getNextArtistId($artistArray, $artistId){
 
            data-options='fitColumns:true,
                          singleSelect:true,
+                         remoteSort:false,
                          rowStyler: function(index,row){ return formatRow(index,row) },
                          toolbar:"#toolbarArtistWord",
                          data:data
@@ -254,13 +255,13 @@ function getNextArtistId($artistArray, $artistId){
             <th data-options="field:'editLink',width:15, formatter: editLink">Edit</th>
             <th data-options="field:'artistId',width:15">ArtistId</th>
             <th data-options="field:'artist',width:150, formatter: formatArtist">Artist</th>
-            <th data-options="field:'title',width:100">Title</th>
+            <th data-options="field:'title',width:100,sortable:true">Title</th>
             <th data-options="field:'song',width:100, formatter: formatPrice">Song</th>
-            <th data-options="field:'duration',width:25">Duration</th>
+            <th data-options="field:'duration',width:25,sortable:true">Duration</th>
             <th data-options="field:'album',width:50">Album</th>
-            <th data-options="field:'fileId',width:15">File</th>
+            <th data-options="field:'fileId',width:15,sortable:true">File</th>
             <th data-options="field:'file',width:200">File</th>
-            <th data-options="field:'isNew',width:15,align:'center',formatter:function(value,row,index){return checkboxFormatter(value,row,index);} ">New</th>
+            <th data-options="field:'isNew',width:15,align:'center',sortable:true,formatter:function(value,row,index){return checkboxFormatter(value,row,index);} ">New</th>
             <th data-options="field:'status',width:20">Status</th>
         </tr>
         </thead>

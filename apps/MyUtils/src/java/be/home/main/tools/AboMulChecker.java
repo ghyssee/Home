@@ -35,7 +35,7 @@ public class AboMulChecker extends BatchJobV2 {
     public void start(){
 //        File file = new File("C:\\Temp\\atos\\check\\ABO_MUL.F0017211");
   //      processSingleFile(file);
-        String ROOT = "C:\\Temp\\atos\\check";
+        String ROOT = "C:\\Temp\\awl";
         FileVisitor<Path> fileProcessor = new ProcessFile();
         try {
             Files.walkFileTree(Paths.get(ROOT), fileProcessor);
@@ -53,10 +53,10 @@ public class AboMulChecker extends BatchJobV2 {
         ) throws IOException {
             File file = aFile.toFile();
             String name = file.getName();
-            if (name.startsWith("ABO_MUL")) {
+            if (name.startsWith("A")) {
                 processAboMul(file);
             }
-            else if (name.endsWith(".MSK")){
+            else if (name.startsWith(".MLTL")){
                 processAwl(file);
             }
             //System.out.println("Processing file:" + fileName);
@@ -81,6 +81,9 @@ public class AboMulChecker extends BatchJobV2 {
                     //System.out.println("TPPN: " + line.substring(1470,1473));
                     try {
                         Integer tppn = new Integer(line.substring(1470, 1474));
+                        if (tppn == 3795){
+                            System.out.println(file.getAbsolutePath() + ":" + line);
+                        }
                         if (!tppns.contains(tppn)) {
                             tppns.add(tppn);
                         }

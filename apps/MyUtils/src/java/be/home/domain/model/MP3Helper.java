@@ -408,7 +408,7 @@ public class MP3Helper {
     public void checkTrack(AlbumInfo.Track track){
         // search for (Feat. xxx) or Feat. xxx or Feat xxx or (Feat xxx)
 
-        String FEAT = "[F|f](?:ea)?t\\.? ?";
+        String FEAT = "[F|f](?:ea)?t(?:uring)?\\.? ?";
         if (!StringUtils.endsWith(track.title, "Edit)")) {
             checkTrackPattern(track, "\\(" + FEAT, "\\)");
             checkTrackPattern(track, "\\[" + FEAT, "\\]");
