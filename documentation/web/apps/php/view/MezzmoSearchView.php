@@ -20,7 +20,7 @@ include_once documentPath (ROOT_PHP_BO, "EricBO.php");
 $albumSave = 'MezzmoSearchview.php';
 
 $mp3Settings = readJSONWithCode(JSON_MP3SETTINGS);
-$songBO =SongBO::db(MEZZMOV3);
+$songBO =SongBO::db(MEZZMOV4);
 
 $artistArray = $songBO->loadArtistIdsFile();
 
