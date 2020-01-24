@@ -1,7 +1,9 @@
 <?php
     include_once documentPath (ROOT_PHP_MR_BO, "AssassinBO.php");
     $DATAGRID_ID = "dgAssassin";
+    $DIALOG_ID = "dlgAssassin";
     $FORM_ID = "fmAssassin";
+    $FORM2_ID = "fmAssassin2";
 ?>
 <form id="<?php echo $FORM_ID;?>" method="post">
     <div id="ccAssassin" class="easyui-layout" style="width:100%;height:90px;">
@@ -78,9 +80,9 @@
                 </div>
 </span>
 
-<div id="dlgAssassin" class="easyui-dialog" style="width:600px;height:500px;padding:10px 20px"
+<div id="<?php echo $DIALOG_ID;?>" class="easyui-dialog" style="width:600px;height:500px;padding:10px 20px"
      closed="true" buttons="#dlg-buttonsAssassin">
-    <form id="<?php echo $FORM_ID;?>" method="post" novalidate>
+    <form id="<?php echo $FORM2_ID;?>" method="post" novalidate>
         <div class="ftitle">Assassin</div>
         <div class="fitem">
             <label>Id</label>
@@ -172,7 +174,7 @@
 
     function newAssassin(){
         $('#dlgAssassin').dialog('open').dialog('setTitle','New Assassin');
-        $('#<?php echo $FORM_ID;?>').form('reset');
+        //$('#<?php echo $FORM_ID;?>').form('reset');
         url = 'SettingsAction.php?method=addAssassin' + getUrlAssassinParameters();
     }
     function editAssassin(){
@@ -184,24 +186,7 @@
         }
     }
     function saveAssassin(){
-        $('#<?php echo $FORM_ID;?>').form('submit',{
-            url: url,
-            onSubmit: function(){
-                return $(this).form('validate');
-            },
-            success: function(result){
-                var result = JSON.parse(result);
-                if (result.errorMsg){
-                    $.messager.show({
-                        title: 'Error',
-                        msg: result.errorMsg
-                    });
-                } else {
-                    $('#dlgAssassin').dialog('close');		// close the dialog
-                    $('#<?php echo $DATAGRID_ID;?>').datagrid('reload');	// reload the user data
-                }
-            }
-        });
+        saveRecord('<?php echo $FORM2_ID;?>', '<?php echo $DIALOG_ID;?>', '<?php echo $DATAGRID_ID;?>');
     }
 
     function deleteAssassin(){
