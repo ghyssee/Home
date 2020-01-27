@@ -266,6 +266,14 @@ public class MezzmoDAOImpl extends MezzmoRowMappers {
                 params = new Object[] {comp.getFileTO().getDisc(), comp.getFileTO().getId()};
                 nr = getInstance(db).getJDBCTemplate().update(FILE_UPDATE_DISC, params);
                 break;
+            case DURATION:
+                params = new Object[] {comp.getFileTO().getDuration(), comp.getFileTO().getId()};
+                nr = getInstance(db).getJDBCTemplate().update(FILE_UPDATE_DURATION, params);
+                break;
+            case RATING:
+                params = new Object[] {comp.getFileTO().getRanking(), comp.getFileTO().getId()};
+                nr = getInstance(db).getJDBCTemplate().update(FILE_UPDATE_RATING, params);
+                break;
             default:
                 log.error("Unknown Type: " + mp3Tag.name());
                 break;

@@ -181,6 +181,38 @@ public abstract class MP3TagBase extends BatchJobV2 {
         }
     }
 
+    protected void updateDuration(AlbumError.Item item){
+        MGOFileAlbumCompositeTO comp = new MGOFileAlbumCompositeTO();
+        comp.getFileTO().setId(item.getId());
+        comp.getFileTO().setDuration(Integer.parseInt(item.getNewValue()));
+        try {
+            int nr = getMezzmoService().updateSong(comp, MP3Tag.valueOf(item.getType()));
+            if (nr > 0) {
+                log.info("Duration updated: " + "Id: " + item.getId() +
+                        " / New Duration: " + item.getNewValue() + " / " + nr + " record(s)");
+                updateMP3(item);
+            }
+        } catch (SQLException e) {
+            LogUtils.logError(log, e);
+        }
+    }
+
+    protected void updateRating(AlbumError.Item item){
+        MGOFileAlbumCompositeTO comp = new MGOFileAlbumCompositeTO();
+        comp.getFileTO().setId(item.getId());
+        comp.getFileTO().setRanking(Integer.parseInt(item.getNewValue()));
+        try {
+            int nr = getMezzmoService().updateSong(comp, MP3Tag.valueOf(item.getType()));
+            if (nr > 0) {
+                log.info("Rating updated: " + "Id: " + item.getId() +
+                        " / New Rating: " + item.getNewValue() + " / " + nr + " record(s)");
+                updateMP3(item);
+            }
+        } catch (SQLException e) {
+            LogUtils.logError(log, e);
+        }
+    }
+
     protected void updateAlbum(AlbumError.Item item){
 
         MGOFileAlbumCompositeTO comp = new MGOFileAlbumCompositeTO();
@@ -313,6 +345,12 @@ public abstract class MP3TagBase extends BatchJobV2 {
                 case DISC:
                     id3v2Tag.setPartOfSet(item.getNewValue());
                     update = true;
+                    break;
+                case DURATION:
+                    // nothing to do
+                    break;
+                case RATING:
+                    // nothing to do
                     break;
                 case TRACK:
                     if (item.getNewValue().equals(id3v2Tag.getTrack())) {

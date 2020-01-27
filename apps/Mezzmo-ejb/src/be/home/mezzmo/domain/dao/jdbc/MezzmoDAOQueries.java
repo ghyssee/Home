@@ -323,6 +323,13 @@ public class MezzmoDAOQueries extends MezzmoDB {
             .addCondition(MGOFileColumns.ID, Comparator.EQUALS, SQLBuilder.PARAMETER)
             .render();
 
+    protected static final String FILE_UPDATE_DURATION = SQLBuilder.getInstance()
+            .update()
+            .addTable(TablesEnum.MGOFile)
+            .updateColumn(MGOFileColumns.DURATION, Type.PARAMETER)
+            .addCondition(MGOFileColumns.ID, Comparator.EQUALS, SQLBuilder.PARAMETER)
+            .render();
+
     protected static final String FILE_UPDATE_FILE = SQLBuilder.getInstance()
             .update()
             .addTable(TablesEnum.MGOFile)

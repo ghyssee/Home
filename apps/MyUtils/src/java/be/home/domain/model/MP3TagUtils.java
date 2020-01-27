@@ -229,6 +229,8 @@ public class MP3TagUtils {
                     checkArtist(comp, id3v2Tag.getArtist());
                     checkTitle(comp, id3v2Tag.getTitle());
                     checkForExceptions(comp);
+                    checkDuration(comp, id3v2Tag.getLength());
+                    checkRating(comp, id3v2Tag.getWmpRating());
                     if (checkDisc(comp, id3v2Tag.getPartOfSet())) {
                         if (checkFilename(comp, nrOfTracks, maxDisc)) {
                             // if filename is ok, an extra check for filetitle
@@ -271,6 +273,47 @@ public class MP3TagUtils {
             e.printStackTrace();
             log.error(e);
         }
+    }
+
+    private boolean checkDuration(MGOFileAlbumCompositeTO comp, int duration) {
+        int durationFromDB = comp.getFileTO().getDuration();
+        int durationFromMP3 = duration;
+        boolean ok = true;
+        if (durationFromMP3 < (durationFromDB-1) || durationFromMP3 > (durationFromDB+1)){
+            ok = false;
+        }
+        if (!ok){
+            addItem(comp.getFileTO().getId(),
+                    comp.getFileTO().getId(),
+                    comp.getFileTO().getFile(),
+                    comp.getFileAlbumTO().getName(),
+                    MP3Tag.DURATION, String.valueOf(durationFromDB), String.valueOf(durationFromMP3));
+            try {
+                comp.getFileTO().setDuration(durationFromMP3);
+            }
+            catch (NumberFormatException e){
+                // nothing to do
+            }
+        }
+        return ok;
+    }
+
+    private boolean checkRating(MGOFileAlbumCompositeTO comp, int rating) {
+        int ratingFromDB = comp.getFileTO().getRanking();
+        int ratingFromMP3 = rating;
+        boolean ok = true;
+        if (ratingFromMP3 != ratingFromDB){
+            ok = false;
+        }
+        if (!ok){
+            addItem(comp.getFileTO().getId(),
+                    comp.getFileTO().getId(),
+                    comp.getFileTO().getFile(),
+                    comp.getFileAlbumTO().getName(),
+                    MP3Tag.RATING, String.valueOf(ratingFromDB), String.valueOf(ratingFromMP3));
+            comp.getFileTO().setRanking(ratingFromMP3);
+        }
+        return ok;
     }
 
     private boolean checkDisc(MGOFileAlbumCompositeTO comp, String disc) {

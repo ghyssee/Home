@@ -2,7 +2,6 @@ package be.home.main.mezzmo;
 
 import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
-import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.enums.MP3Tag;
 import be.home.common.exceptions.ApplicationException;
 import be.home.common.model.TransferObject;
@@ -17,10 +16,8 @@ import be.home.model.ConfigTO;
 import be.home.model.json.AlbumError;
 import be.home.model.json.MP3Settings;
 import be.home.model.json.SongCorrections;
-import org.apache.commons.io.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.apache.velocity.texen.util.FileUtil;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import java.io.*;
@@ -246,6 +243,12 @@ public class MP3TagChecker extends MP3TagBase {
                         break;
                     case DISC:
                         updateDisc(item);
+                        break;
+                    case DURATION:
+                        updateDuration(item);
+                        break;
+                    case RATING:
+                        updateRating(item);
                         break;
                     default:
                         log.error("Id: " + item.getId() + " / Unknwon Type: " + MP3Tag.valueOf(item.getType()));
