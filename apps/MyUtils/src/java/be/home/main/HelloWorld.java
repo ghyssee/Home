@@ -4,6 +4,7 @@ import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
 import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.dao.jdbc.SQLiteUtils;
+import be.home.common.enums.MP3Tag;
 import be.home.common.main.BatchJobV2;
 import be.home.common.mp3.MP3Utils;
 import be.home.common.utils.FileUtils;
@@ -19,6 +20,8 @@ import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.model.json.AlbumError;
 import be.home.model.json.MP3Settings;
 import com.mpatric.mp3agic.ID3v2;
+import com.mpatric.mp3agic.ID3v2Frame;
+import com.mpatric.mp3agic.ID3v2FrameSet;
 import com.mpatric.mp3agic.Mp3File;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -56,11 +59,11 @@ public class HelloWorld extends BatchJobV2 {
         //testMP3Prettifier();
         //System.out.println(MP3Helper.getInstance().test("A\\$2AP$2Test$2Test$3Test$4", "\\$2", "\\$3", 2));
         //System.out.println(MP3Helper.getInstance().checkRegExpDollar("$1Text$1", 1));
-        //updateMP3();
+        updateMP3();
         //batchProcess();
         //testMP3Prettifier();
         //testAlbumArtist();
-        fileNotFound();
+        //fileNotFound();
         //testVersion();
 
     }
@@ -158,13 +161,13 @@ private static void testAlbumArtist(){
 
         String tmp = "Odj Team";
         //System.out.println(mp3Helper.prettifySong(tmp));
-        System.out.println(mp3Helper.prettifyArtist("Sem Thomasson Feat. Mas"));
+        //System.out.println(mp3Helper.prettifyArtist("Sem Thomasson Feat. Mas"));
         //System.out.println(mp3Helper.prettifyArtist("\uFEFFAxwell Λ Ingrosso"));
-        System.out.println(tmp.replaceAll("O\\.?[D|d]\\.?[J|j]\\.? Team", "Bla"));
-        System.out.println(getArtistTitleException("Emeli Sandé", "Read All About It (Part III)"));
-        System.out.println(getTitleArtistException("Remady & Manu", "Life"));
-        System.out.println(mp3Helper.prettifyAlbum("...Baby One More Time", "Britney Spears"));
-        System.out.println(mp3Helper.stripFilename("...Baby One More Time/Britney - test.mp3"));
+        //System.out.println(tmp.replaceAll("O\\.?[D|d]\\.?[J|j]\\.? Team", "Bla"));
+        //System.out.println(getArtistTitleException("Emeli Sandé", "Read All About It (Part III)"));
+        System.out.println(getTitleArtistException("Eurythmics", "Sweet Dreams"));
+        //System.out.println(mp3Helper.prettifyAlbum("...Baby One More Time", "Britney Spears"));
+        //System.out.println(mp3Helper.stripFilename("...Baby One More Time/Britney - test.mp3"));
 
         //System.out.println(getArtistTitleException("Sarah Brightman", "Time To Say Goodbye (Con Te Partiro) (Sarah's Intimate Version)"));
 
@@ -182,6 +185,7 @@ private static void testAlbumArtist(){
     }
 
     private static void updateMP3(){
+        MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSONWithCode(Constants.JSON.MP3SETTINGS, MP3Settings.class);
         Mp3File mp3file = null;
         String file = "C:\\My Data\\tmp\\Java\\MP3Processor\\Test\\test.mp3";
         //String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\test.mp3";
@@ -193,11 +197,11 @@ private static void testAlbumArtist(){
             //id3v2Tag.setArtist("Axwell Λ Ingrosso");
                 //mp3file.setId3v2Tag(id3v2Tag);
             String myString = "Test";
+            long len = mp3file.getLengthInSeconds();
             //byte ptext[] = myString.getBytes();
            //String value = new String(ptext, "ISO-8859-1");
-            id3v2Tag.setWmpRating(5);
             String newFile = file + ".MP3";
-                mp3file.save(newFile);
+                //mp3file.save(newFile);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -208,7 +212,7 @@ private static void testAlbumArtist(){
         AlbumError albumErrors = (AlbumError) JSONUtils.openJSONWithCode(Constants.JSON.ALBUMERRORS, AlbumError.class);
         MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSONWithCode(Constants.JSON.MP3SETTINGS, MP3Settings.class);
         MP3Settings.Mezzmo.Mp3Checker.RelativePath relativePath = MezzmoUtils.getRelativePath(mp3Settings);
-        MP3TagUtils tagUtils = new MP3TagUtils(albumErrors, relativePath);
+        MP3TagUtils tagUtils = new MP3TagUtils(albumErrors, relativePath, mp3Settings.rating);
 
         final String query = "SELECT MGOFile.ID, MGOFileAlbum.Data AS ALBUM, MGOFile.disc, MGOFile.track, MGOFile.playcount, * from MGOFile MGOFILE" + System.lineSeparator() +
         "INNER JOIN MGOFileAlbumRelationship ON (MGOFileAlbumRelationship.FileID = MGOFILE.id)" + System.lineSeparator() +

@@ -1,5 +1,6 @@
 package be.home.common.mp3;
 
+import be.home.model.json.MP3Settings;
 import com.mpatric.mp3agic.*;
 import com.mpatric.mp3agic.ID3v24Tag;
 import org.apache.commons.lang3.StringUtils;
@@ -243,5 +244,41 @@ public class MP3Utils {
         return true;
 
     }
+
+    public int convertRating (MP3Settings.Rating mp3Rating, int rating){
+        int stars = 0;
+        if (rating == 1){
+            stars = 1;
+        }
+        else if (rating == 64){
+            stars = 2;
+        }
+        else if (rating == -128){
+            stars = 3;
+        }
+        else if (rating == -60){
+            stars = 4;
+        }
+        else if (rating == -1){
+            stars = 5;
+        }
+        return stars;
+    }
+
+    public int getRating(ID3v2 id3v2Tag){
+        int rating = 0;
+        ID3v2FrameSet frameSet = id3v2Tag.getFrameSets().get("POPM");
+        if (frameSet != null) {
+            ID3v2Frame frame = frameSet.getFrames().get(0);
+            byte[] array = frame.getData();
+            String address = "Windows Media Player 9 Series";
+            if (array.length > address.length()) {
+                byte rat = array[address.length() + 1];
+                rating = rat;
+            }
+        }
+        return rating;
+    }
+
 
 }

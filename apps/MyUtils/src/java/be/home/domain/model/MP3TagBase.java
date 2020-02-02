@@ -191,6 +191,7 @@ public abstract class MP3TagBase extends BatchJobV2 {
                 log.info("Duration updated: " + "Id: " + item.getId() +
                         " / New Duration: " + item.getNewValue() + " / " + nr + " record(s)");
                 updateMP3(item);
+                item.setDone(true);
             }
         } catch (SQLException e) {
             LogUtils.logError(log, e);
@@ -207,6 +208,7 @@ public abstract class MP3TagBase extends BatchJobV2 {
                 log.info("Rating updated: " + "Id: " + item.getId() +
                         " / New Rating: " + item.getNewValue() + " / " + nr + " record(s)");
                 updateMP3(item);
+                item.setDone(true);
             }
         } catch (SQLException e) {
             LogUtils.logError(log, e);

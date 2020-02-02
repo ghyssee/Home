@@ -55,7 +55,7 @@ public class MP3TagChecker extends MP3TagBase {
         MP3TagCheckerStatus status = MP3TagCheckerStatus.valueOf(mp3Settings.mezzmo.mp3Checker.status);
         MP3Settings.Mezzmo.Mp3Checker.RelativePath relativePath = MezzmoUtils.getRelativePath(mp3Settings);
         AlbumError albumErrors = (AlbumError) JSONUtils.openJSONWithCode(Constants.JSON.ALBUMERRORS, AlbumError.class);
-        this.mp3TagUtils = new MP3TagUtils(albumErrors, relativePath);
+        this.mp3TagUtils = new MP3TagUtils(albumErrors, relativePath, mp3Settings.rating);
         if (relativePath == null){
             throw new ApplicationException("Relative Path with id " + mp3Settings.mezzmo.mp3Checker.currentRelativePath + " not found!");
         }

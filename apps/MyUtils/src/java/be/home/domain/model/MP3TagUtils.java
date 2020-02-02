@@ -12,10 +12,7 @@ import be.home.mezzmo.domain.dao.definition.TablesEnum;
 import be.home.model.json.AlbumError;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.model.json.MP3Settings;
-import com.mpatric.mp3agic.ID3v2;
-import com.mpatric.mp3agic.InvalidDataException;
-import com.mpatric.mp3agic.Mp3File;
-import com.mpatric.mp3agic.UnsupportedTagException;
+import com.mpatric.mp3agic.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -41,6 +38,7 @@ public class MP3TagUtils {
     public boolean update = false;
 
     private MP3Settings.Mezzmo.Mp3Checker.RelativePath relativePath;
+    private MP3Settings.Rating rating;
     private static final Logger log = Logger.getLogger(MP3TagUtils.class);
     public static final String SUBST_A1 = "H:\\Shared\\Mijn Muziek\\Eric\\iPod\\";
     public static final String SUBST_B1 = "T:\\My Music\\iPod\\";
@@ -59,10 +57,11 @@ public class MP3TagUtils {
         return idCounter++;
     }
 
-    public MP3TagUtils(AlbumError albumErrors, MP3Settings.Mezzmo.Mp3Checker.RelativePath relativePath){
+    public MP3TagUtils(AlbumError albumErrors, MP3Settings.Mezzmo.Mp3Checker.RelativePath relativePath, MP3Settings.Rating rating){
 
         this.albumErrors = albumErrors;
         this.relativePath = relativePath;
+        this.rating = rating;
         this.update = update;
 
     }
@@ -196,24 +195,16 @@ public class MP3TagUtils {
         return ok;
     }
 
-    private Mp3File initMP3File(File file) throws InvalidDataException, UnsupportedTagException {
+    private Mp3File initMP3File(File file) throws InvalidDataException, UnsupportedTagException, IOException {
         Mp3File mp3file = null;
         int i=0;
-        do {
-            try {
-                mp3file = new Mp3File(file.getAbsolutePath());
-                log.info("Problem reading file: " + file.getAbsolutePath());
-                i = 5;
-            } catch (IOException e) {
-                i++;
-            }
-        }
-        while (i < 5);
+        mp3file = new Mp3File(file.getAbsolutePath());
         return mp3file;
     }
 
     private void checkMP3Info(MGOFileAlbumCompositeTO comp, File file, int nrOfTracks, int maxDisc){
         Mp3File mp3file = null;
+        MP3Utils mp3Utils = new MP3Utils();
         try {
             // mp3file = new Mp3File(file.getAbsolutePath());
             mp3file = initMP3File(file);
@@ -229,8 +220,8 @@ public class MP3TagUtils {
                     checkArtist(comp, id3v2Tag.getArtist());
                     checkTitle(comp, id3v2Tag.getTitle());
                     checkForExceptions(comp);
-                    checkDuration(comp, id3v2Tag.getLength());
-                    checkRating(comp, id3v2Tag.getWmpRating());
+                    checkDuration(comp, mp3file.getLengthInSeconds());
+                    checkRating(comp, id3v2Tag);
                     if (checkDisc(comp, id3v2Tag.getPartOfSet())) {
                         if (checkFilename(comp, nrOfTracks, maxDisc)) {
                             // if filename is ok, an extra check for filetitle
@@ -275,9 +266,9 @@ public class MP3TagUtils {
         }
     }
 
-    private boolean checkDuration(MGOFileAlbumCompositeTO comp, int duration) {
+    private boolean checkDuration(MGOFileAlbumCompositeTO comp, long duration) {
         int durationFromDB = comp.getFileTO().getDuration();
-        int durationFromMP3 = duration;
+        long durationFromMP3 = duration;
         boolean ok = true;
         if (durationFromMP3 < (durationFromDB-1) || durationFromMP3 > (durationFromDB+1)){
             ok = false;
@@ -289,7 +280,7 @@ public class MP3TagUtils {
                     comp.getFileAlbumTO().getName(),
                     MP3Tag.DURATION, String.valueOf(durationFromDB), String.valueOf(durationFromMP3));
             try {
-                comp.getFileTO().setDuration(durationFromMP3);
+                comp.getFileTO().setDuration(Math.toIntExact(durationFromMP3));
             }
             catch (NumberFormatException e){
                 // nothing to do
@@ -298,11 +289,13 @@ public class MP3TagUtils {
         return ok;
     }
 
-    private boolean checkRating(MGOFileAlbumCompositeTO comp, int rating) {
+    private boolean checkRating(MGOFileAlbumCompositeTO comp, ID3v2 id3v2Tag) {
         int ratingFromDB = comp.getFileTO().getRanking();
-        int ratingFromMP3 = rating;
+        MP3Utils mp3Utils = new MP3Utils();
+        int ratingFromMP3 = mp3Utils.getRating(id3v2Tag);
+        int stars = mp3Utils.convertRating(this.rating, ratingFromMP3);
         boolean ok = true;
-        if (ratingFromMP3 != ratingFromDB){
+        if (stars != ratingFromDB){
             ok = false;
         }
         if (!ok){
@@ -310,8 +303,8 @@ public class MP3TagUtils {
                     comp.getFileTO().getId(),
                     comp.getFileTO().getFile(),
                     comp.getFileAlbumTO().getName(),
-                    MP3Tag.RATING, String.valueOf(ratingFromDB), String.valueOf(ratingFromMP3));
-            comp.getFileTO().setRanking(ratingFromMP3);
+                    MP3Tag.RATING, String.valueOf(ratingFromDB), String.valueOf(stars));
+            comp.getFileTO().setRanking(stars);
         }
         return ok;
     }
