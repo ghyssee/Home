@@ -280,5 +280,15 @@ public class MP3Utils {
         return rating;
     }
 
-
+    public static long getDuration(Mp3File mp3File) {
+        double d = 8 * (mp3File.getEndOffset() - mp3File.getStartOffset());
+        double kbps = 0;
+        if (mp3File.isVbr()) {
+            kbps = (mp3File.getBitrate() - 0.5) * 1000;
+        } else {
+            kbps = (mp3File.getBitrate()) * 1000;
+        }
+        long secs = (long) ((d / kbps));
+        return secs;
+    }
 }

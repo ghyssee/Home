@@ -19,10 +19,7 @@ import be.home.mezzmo.domain.model.VersionTO;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.model.json.AlbumError;
 import be.home.model.json.MP3Settings;
-import com.mpatric.mp3agic.ID3v2;
-import com.mpatric.mp3agic.ID3v2Frame;
-import com.mpatric.mp3agic.ID3v2FrameSet;
-import com.mpatric.mp3agic.Mp3File;
+import com.mpatric.mp3agic.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
@@ -195,12 +192,9 @@ private static void testAlbumArtist(){
             ID3v2 id3v2Tag = MP3Utils.getId3v2Tag(mp3file);
             //id3v2Tag.setTitle("test2");
             //id3v2Tag.setArtist("Axwell Λ Ingrosso");
-                //mp3file.setId3v2Tag(id3v2Tag);
             String myString = "Test";
-            long len = mp3file.getLengthInSeconds();
-            //byte ptext[] = myString.getBytes();
-           //String value = new String(ptext, "ISO-8859-1");
             String newFile = file + ".MP3";
+            System.out.println("Duration: " + MP3Utils.getDuration(mp3file));
                 //mp3file.save(newFile);
         } catch (Exception e) {
             e.printStackTrace();
