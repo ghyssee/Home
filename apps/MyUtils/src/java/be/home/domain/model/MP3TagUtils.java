@@ -38,7 +38,6 @@ public class MP3TagUtils {
     public boolean update = false;
 
     private MP3Settings.Mezzmo.Mp3Checker.RelativePath relativePath;
-    private MP3Settings.Rating rating;
     private static final Logger log = Logger.getLogger(MP3TagUtils.class);
     public static final String SUBST_A1 = "H:\\Shared\\Mijn Muziek\\Eric\\iPod\\";
     public static final String SUBST_B1 = "T:\\My Music\\iPod\\";
@@ -57,11 +56,10 @@ public class MP3TagUtils {
         return idCounter++;
     }
 
-    public MP3TagUtils(AlbumError albumErrors, MP3Settings.Mezzmo.Mp3Checker.RelativePath relativePath, MP3Settings.Rating rating){
+    public MP3TagUtils(AlbumError albumErrors, MP3Settings.Mezzmo.Mp3Checker.RelativePath relativePath){
 
         this.albumErrors = albumErrors;
         this.relativePath = relativePath;
-        this.rating = rating;
         this.update = update;
 
     }
@@ -293,7 +291,7 @@ public class MP3TagUtils {
         int ratingFromDB = comp.getFileTO().getRanking();
         MP3Utils mp3Utils = new MP3Utils();
         int ratingFromMP3 = mp3Utils.getRating(id3v2Tag);
-        int stars = mp3Utils.convertRating(this.rating, ratingFromMP3);
+        int stars = mp3Utils.convertRating(ratingFromMP3);
         boolean ok = true;
         if (stars != ratingFromDB){
             ok = false;

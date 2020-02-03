@@ -245,7 +245,7 @@ public class MP3Utils {
 
     }
 
-    public int convertRating (MP3Settings.Rating mp3Rating, int rating){
+    public int convertRating (int rating){
         int stars = 0;
         if (rating == 1){
             stars = 1;
