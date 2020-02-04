@@ -247,19 +247,19 @@ public class MP3Utils {
 
     public int convertRating (int rating){
         int stars = 0;
-        if (rating == 1){
+        if (rating >= 1 && rating < 63){
             stars = 1;
         }
-        else if (rating == 64){
+        else if (rating >= 64 && rating < 128){
             stars = 2;
         }
-        else if (rating == -128){
+        else if (rating >= 128 && rating < 196){
             stars = 3;
         }
-        else if (rating == -60){
+        else if (rating >= 196 && rating < 255){
             stars = 4;
         }
-        else if (rating == -1){
+        else if (rating == 255){
             stars = 5;
         }
         return stars;
@@ -271,10 +271,12 @@ public class MP3Utils {
         if (frameSet != null) {
             ID3v2Frame frame = frameSet.getFrames().get(0);
             byte[] array = frame.getData();
-            String address = "Windows Media Player 9 Series";
-            if (array.length > address.length()) {
-                byte rat = array[address.length() + 1];
-                rating = rat;
+            if (array.length > 6){
+                if (array[array.length-1] == 0 && array[array.length-2] == 0 && array[array.length-3] == 0
+                        && array[array.length-4] == 0 && array[array.length-6] == 0){
+                    byte rat = array[array.length - 5];
+                    rating = rat & 0xFF; // mask off the sign bits
+                }
             }
         }
         return rating;
@@ -288,7 +290,7 @@ public class MP3Utils {
         } else {
             kbps = (mp3File.getBitrate()) * 1000;
         }
-        long secs = (long) ((d / kbps));
+        long secs = (long) (Math.round((d / kbps)));
         return secs;
     }
 }
