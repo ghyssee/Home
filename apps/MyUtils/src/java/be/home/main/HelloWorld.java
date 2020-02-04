@@ -184,6 +184,7 @@ private static void testAlbumArtist(){
     private static void updateMP3(){
         MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSONWithCode(Constants.JSON.MP3SETTINGS, MP3Settings.class);
         Mp3File mp3file = null;
+        MP3Utils mp3Utils = new MP3Utils();
         String file = "C:\\My Data\\tmp\\Java\\MP3Processor\\Test\\test.mp3";
         //String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\test.mp3";
         //String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\108 Di-Rect - Hungry For Love.mp3";
@@ -194,6 +195,8 @@ private static void testAlbumArtist(){
             //id3v2Tag.setArtist("Axwell Λ Ingrosso");
             String myString = "Test";
             String newFile = file + ".MP3";
+            int i = mp3Utils.convertRating(mp3Utils.getRating(id3v2Tag));
+            System.out.println("Rating: " + i);
             System.out.println("Duration: " + MP3Utils.getDuration(mp3file));
                 //mp3file.save(newFile);
         } catch (Exception e) {
@@ -206,7 +209,7 @@ private static void testAlbumArtist(){
         AlbumError albumErrors = (AlbumError) JSONUtils.openJSONWithCode(Constants.JSON.ALBUMERRORS, AlbumError.class);
         MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSONWithCode(Constants.JSON.MP3SETTINGS, MP3Settings.class);
         MP3Settings.Mezzmo.Mp3Checker.RelativePath relativePath = MezzmoUtils.getRelativePath(mp3Settings);
-        MP3TagUtils tagUtils = new MP3TagUtils(albumErrors, relativePath, mp3Settings.rating);
+        MP3TagUtils tagUtils = new MP3TagUtils(albumErrors, relativePath);
 
         final String query = "SELECT MGOFile.ID, MGOFileAlbum.Data AS ALBUM, MGOFile.disc, MGOFile.track, MGOFile.playcount, * from MGOFile MGOFILE" + System.lineSeparator() +
         "INNER JOIN MGOFileAlbumRelationship ON (MGOFileAlbumRelationship.FileID = MGOFILE.id)" + System.lineSeparator() +
