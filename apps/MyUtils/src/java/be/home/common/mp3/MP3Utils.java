@@ -271,10 +271,18 @@ public class MP3Utils {
         if (frameSet != null) {
             ID3v2Frame frame = frameSet.getFrames().get(0);
             byte[] array = frame.getData();
-            if (array.length > 6){
-                if (array[array.length-1] == 0 && array[array.length-2] == 0 && array[array.length-3] == 0
-                        && array[array.length-4] == 0 && array[array.length-6] == 0){
-                    byte rat = array[array.length - 5];
+            if (array.length > 6) {
+                if (array[array.length - 1] == 0) {
+                    // find first non null character
+                    for (int i = array.length - 1; i > 0; i--) {
+                        if (array[i] != 0) {
+                            byte rat = array[i];
+                            rating = rat & 0xFF; // mask off the sign bits
+                            break;
+                        }
+                    }
+                } else if (array[array.length - 2] == 0) {
+                    byte rat = array[array.length - 1];
                     rating = rat & 0xFF; // mask off the sign bits
                 }
             }
@@ -282,8 +290,33 @@ public class MP3Utils {
         return rating;
     }
 
-    public static long getDuration(Mp3File mp3File) {
+    public int getRating2(ID3v2 id3v2Tag){
+        int rating = 0;
+        ID3v2FrameSet frameSet = id3v2Tag.getFrameSets().get("POPM");
+        if (frameSet != null) {
+            ID3v2Frame frame = frameSet.getFrames().get(0);
+            byte[] array = frame.getData();
+            if (array.length > 6){
+                if (array[array.length-1] == 0 && array[array.length-2] == 0 && array[array.length-3] == 0
+                        && array[array.length-4] == 0 && array[array.length-6] == 0){
+                    byte rat = array[array.length - 5];
+                    rating = rat & 0xFF; // mask off the sign bits
+                }
+                else if (array[array.length-2] == 0){
+                    byte rat = array[array.length - 1];
+                    rating = rat & 0xFF; // mask off the sign bits
+                }
+            }
+        }
+        return rating;
+    }
+
+    public long getDuration(Mp3File mp3File) {
         double d = 8 * (mp3File.getEndOffset() - mp3File.getStartOffset());
+        long lenth = mp3File.getLength() / mp3File.getEndOffset();
+        if (lenth > 1){
+            d = 8 * (mp3File.getLength() - mp3File.getStartOffset());
+        }
         double kbps = 0;
         if (mp3File.isVbr()) {
             kbps = (mp3File.getBitrate() - 0.5) * 1000;
@@ -291,6 +324,7 @@ public class MP3Utils {
             kbps = (mp3File.getBitrate()) * 1000;
         }
         long secs = (long) (Math.round((d / kbps)));
+        //long secs = (long) (d / kbps);
         return secs;
     }
 }

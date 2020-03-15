@@ -218,7 +218,7 @@ public class MP3TagUtils {
                     checkArtist(comp, id3v2Tag.getArtist());
                     checkTitle(comp, id3v2Tag.getTitle());
                     checkForExceptions(comp);
-                    checkDuration(comp, mp3file.getLengthInSeconds());
+                    checkDuration(comp, mp3Utils.getDuration(mp3file));
                     checkRating(comp, id3v2Tag);
                     if (checkDisc(comp, id3v2Tag.getPartOfSet())) {
                         if (checkFilename(comp, nrOfTracks, maxDisc)) {
