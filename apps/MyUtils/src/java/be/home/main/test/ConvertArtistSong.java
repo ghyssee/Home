@@ -11,7 +11,6 @@ import be.home.mezzmo.domain.bo.ArtistBO;
 import be.home.mezzmo.domain.bo.ArtistConfigBO;
 import be.home.mezzmo.domain.bo.ArtistSongRelationshipBO;
 import be.home.mezzmo.domain.model.json.*;
-import javafx.application.Application;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.DocumentException;
@@ -219,7 +218,7 @@ public class ConvertArtistSong extends BatchJobV2 {
         return found;
     }
 
-    private  MultiArtistConfig.Item findMultiArtist(String multiArtistName){
+    public  MultiArtistConfig.Item findMultiArtist(String multiArtistName){
         MultiArtistConfig.Item multiArtistItem = null;
         List<String> splitters = constructSplitters();
         for (String splitter : splitters) {
