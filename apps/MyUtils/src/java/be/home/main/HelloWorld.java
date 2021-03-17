@@ -56,9 +56,9 @@ public class HelloWorld extends BatchJobV2 {
         //testMP3Prettifier();
         //System.out.println(MP3Helper.getInstance().test("A\\$2AP$2Test$2Test$3Test$4", "\\$2", "\\$3", 2));
         //System.out.println(MP3Helper.getInstance().checkRegExpDollar("$1Text$1", 1));
-        updateMP3();
+        //updateMP3();
         //batchProcess();
-        //testMP3Prettifier();
+        testMP3Prettifier();
         //testAlbumArtist();
         //fileNotFound();
         //testVersion();
@@ -156,13 +156,13 @@ private static void testAlbumArtist(){
 
         //updateMP3();
 
-        String tmp = "Odj Team";
+        String tmp = "7-11";
         //System.out.println(mp3Helper.prettifySong(tmp));
-        //System.out.println(mp3Helper.prettifyArtist("Sem Thomasson Feat. Mas"));
+        System.out.println(mp3Helper.prettifyArtist("Willy Sommers Feat. Dorothee Vegas & Like Maarten"));
         //System.out.println(mp3Helper.prettifyArtist("\uFEFFAxwell Λ Ingrosso"));
-        //System.out.println(tmp.replaceAll("O\\.?[D|d]\\.?[J|j]\\.? Team", "Bla"));
-        //System.out.println(getArtistTitleException("Emeli Sandé", "Read All About It (Part III)"));
-        System.out.println(getTitleArtistException("Eurythmics", "Sweet Dreams"));
+        //System.out.println(tmp.replaceAll("'?7[/|-| |-]?11", "Bla"));
+        System.out.println(getArtistTitleException("Philip Oakey & Giorgio Moroder", "Together In Electric Dreams"));
+        System.out.println(getTitleArtistException("DJ Paul Elstak", "Rainbow In The Sky (K&A's Radio Blast)"));
         //System.out.println(mp3Helper.prettifyAlbum("...Baby One More Time", "Britney Spears"));
         //System.out.println(mp3Helper.stripFilename("...Baby One More Time/Britney - test.mp3"));
 
@@ -185,7 +185,7 @@ private static void testAlbumArtist(){
         MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSONWithCode(Constants.JSON.MP3SETTINGS, MP3Settings.class);
         Mp3File mp3file = null;
         MP3Utils mp3Utils = new MP3Utils();
-        String file = "C:\\My Data\\tmp\\Java\\MP3Processor\\Test\\test.mp3";
+        String file = "C:\\My Data\\tmp\\Java\\MP3Processor\\Test\\35 Luc Steeno - Ik Hoor Nog Steeds Dat Lied.mp3";
         //String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\test.mp3";
         //String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\108 Di-Rect - Hungry For Love.mp3";
         try {

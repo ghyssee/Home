@@ -40,7 +40,7 @@ public class Test extends BatchJobV2 {
         try {
 
             connection = DriverManager.getConnection(
-                "jdbc:oracle:thin:@ldap://oid.netpost/FARD2,cn=OracleContext,dc=pr,dc=netpost,dc=be", "DATA_MGR", "MGR_DATA");
+                "jdbc:oracle:thin:@ldap://oid.netpost/XXXXX,cn=OracleContext,dc=pr,dc=netpost,dc=be", "XXXX", "XXXXX");
 
         } catch (SQLException e) {
 

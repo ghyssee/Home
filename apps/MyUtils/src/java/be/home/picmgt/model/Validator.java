@@ -1,10 +1,16 @@
 package be.home.picmgt.model;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.PrintStream;
+import java.net.URL;
+
+import org.apache.commons.io.FileUtils;
 import org.xml.sax.*;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
+import org.apache.xerces.parsers.SAXParser;
 
 public class Validator extends DefaultHandler
 {
@@ -12,12 +18,34 @@ public class Validator extends DefaultHandler
     public static void main(String args[])
     {
         //System.out.println(validate(args[0]));
-    	validate("c:/Temp/INVALID_112538.xml");
-    	System.out.println(output);
+    	//validate("c:/Temp/pmt/NEWPMT_152401_cloud_https.xml");
+    	//System.out.println(output);
+    	readFile();
     }
 
     public Validator()
     {
+    }
+
+    public static void readFile(){
+        try {
+            FileUtils.copyURLToFile(
+                    new URL("http://pmt-pr.netpost/xsd/Catalog_v02.xsd"),
+                    new File("c:/temp/pmt/test.xsd"),
+                    6000,
+                    6000);
+            FileUtils.copyURLToFile(new URL("http://pmt-st.awsprv.bpost.cloud/F035/xsd/Catalog_v02.xsd"),
+                    new File("c:/temp/pmt/test2.xsd"),
+                    6000,
+                    6000);
+            FileUtils.copyURLToFile(new URL("https://pmt-st.awsprv.bpost.cloud/F035/xsd/Catalog_v02.xsd"),
+                    new File("c:/temp/pmt/test3.xsd"),
+                    6000,
+                    6000);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void printResults(String uri, long time, long memory)
