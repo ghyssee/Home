@@ -218,7 +218,7 @@ public class MP3TagUtils {
                     checkArtist(comp, id3v2Tag.getArtist());
                     checkTitle(comp, id3v2Tag.getTitle());
                     checkForExceptions(comp);
-                    checkDuration(comp, mp3file.getLengthInSeconds());
+                    checkDuration(comp, mp3Utils.getDuration(mp3file));
                     checkRating(comp, id3v2Tag);
                     if (checkDisc(comp, id3v2Tag.getPartOfSet())) {
                         if (checkFilename(comp, nrOfTracks, maxDisc)) {
@@ -268,7 +268,11 @@ public class MP3TagUtils {
         int durationFromDB = comp.getFileTO().getDuration();
         long durationFromMP3 = duration;
         boolean ok = true;
-        if (durationFromMP3 < (durationFromDB-1) || durationFromMP3 > (durationFromDB+1)){
+        if (duration >= 1800){
+            //ignore check for mp3 longer thang 0,5 hour
+            return true;
+        }
+        if (durationFromMP3 < (durationFromDB-2) || durationFromMP3 > (durationFromDB+2)){
             ok = false;
         }
         if (!ok){

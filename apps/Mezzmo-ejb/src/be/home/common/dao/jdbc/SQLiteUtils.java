@@ -32,9 +32,11 @@ public class SQLiteUtils {
             calendar.setTime(date);
             calendar.add(Calendar.YEAR, 31);
             // added on 03/03/2019
-            if (f > 573087600L)  // 01/03/2019 00:00
+            if (f > 573087600L && f <= 604623600L)
+            // 573087600L = Thu Feb 28 00:00:00 CET 2019
+            // 604623600L Sat Feb 29 00:00:00 CET 2020
             {
-                calendar.add(Calendar.HOUR, +24);
+                calendar.add(Calendar.HOUR, +25);
             }
 
             return calendar.getTime();

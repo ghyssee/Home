@@ -5,6 +5,8 @@ import com.mpatric.mp3agic.*;
 import com.mpatric.mp3agic.ID3v24Tag;
 import org.apache.commons.lang3.StringUtils;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -271,10 +273,18 @@ public class MP3Utils {
         if (frameSet != null) {
             ID3v2Frame frame = frameSet.getFrames().get(0);
             byte[] array = frame.getData();
-            if (array.length > 6){
-                if (array[array.length-1] == 0 && array[array.length-2] == 0 && array[array.length-3] == 0
-                        && array[array.length-4] == 0 && array[array.length-6] == 0){
-                    byte rat = array[array.length - 5];
+            if (array.length > 5) {
+                if (array[array.length - 1] == 0) {
+                    // find first non null character
+                    for (int i = array.length - 1; i > 0; i--) {
+                        if (array[i] != 0) {
+                            byte rat = array[i];
+                            rating = rat & 0xFF; // mask off the sign bits
+                            break;
+                        }
+                    }
+                } else if (array[array.length - 2] == 0) {
+                    byte rat = array[array.length - 1];
                     rating = rat & 0xFF; // mask off the sign bits
                 }
             }
@@ -282,15 +292,69 @@ public class MP3Utils {
         return rating;
     }
 
-    public static long getDuration(Mp3File mp3File) {
+    public int getRating2(ID3v2 id3v2Tag){
+        int rating = 0;
+        ID3v2FrameSet frameSet = id3v2Tag.getFrameSets().get("POPM");
+        if (frameSet != null) {
+            ID3v2Frame frame = frameSet.getFrames().get(0);
+            byte[] array = frame.getData();
+            if (array.length > 6){
+                if (array[array.length-1] == 0 && array[array.length-2] == 0 && array[array.length-3] == 0
+                        && array[array.length-4] == 0 && array[array.length-6] == 0){
+                    byte rat = array[array.length - 5];
+                    rating = rat & 0xFF; // mask off the sign bits
+                }
+                else if (array[array.length-2] == 0){
+                    byte rat = array[array.length - 1];
+                    rating = rat & 0xFF; // mask off the sign bits
+                }
+            }
+        }
+        return rating;
+    }
+
+    public long getDuration(Mp3File mp3File) {
+        BigDecimal d = new BigDecimal(mp3File.getEndOffset());
+        d = d.subtract(new BigDecimal(mp3File.getStartOffset()));
+        d = d.multiply(new BigDecimal(8));
+        BigDecimal length = new BigDecimal(mp3File.getLength());
+        length = length.divide(new BigDecimal(mp3File.getEndOffset()), 8, RoundingMode.HALF_UP);
+        if (length.doubleValue() > 1.1){
+            // set to 1.01 09 Joeri Fransen - Ya 'Bout To Find Ou
+            //set to 1.001 02 Meat Loaf - Paradise By The Dashboard Light.mp3
+            // set to 1.008 De Nostalgie 1000 Van 2016\0001-0100\0077 Queen - Radio Ga Ga.mp3
+            // set to 1.1 Nostalgie - De 890 Van 80 Of 90 (2016)/ 245 Vaya Con Dios - Heading For A Fall.mp3
+            d = new BigDecimal(mp3File.getLength());
+            d = d.subtract(new BigDecimal(mp3File.getStartOffset()));
+            d = d.multiply(new BigDecimal(8));
+        }
+        BigDecimal kbps = new BigDecimal(mp3File.getBitrate());
+        if (mp3File.isVbr()) {
+            //kbps = kbps.subtract(new BigDecimal(0.5));
+            kbps = kbps.multiply(new BigDecimal(1000));
+        } else {
+            kbps = kbps.multiply(new BigDecimal(1000));
+        }
+        //long secs = (long) (Math.round((d / kbps)));
+        d = d.divide(kbps, 4, RoundingMode.HALF_UP);
+        return d.longValue();
+    }
+
+    public long getDuration2(Mp3File mp3File) {
         double d = 8 * (mp3File.getEndOffset() - mp3File.getStartOffset());
+        long lenth = mp3File.getLength() / mp3File.getEndOffset();
+        if (lenth >= 1){
+            d = 8 * (mp3File.getLength() - mp3File.getStartOffset());
+        }
         double kbps = 0;
         if (mp3File.isVbr()) {
-            kbps = (mp3File.getBitrate() - 0.5) * 1000;
+            //kbps = (mp3File.getBitrate() - 0.5) * 1000;
+            kbps = (mp3File.getBitrate()) * 1000;
         } else {
             kbps = (mp3File.getBitrate()) * 1000;
         }
-        long secs = (long) (Math.round((d / kbps)));
+        //long secs = (long) (Math.round((d / kbps)));
+        long secs = (long) (d / kbps);
         return secs;
     }
 }
