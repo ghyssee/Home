@@ -4,7 +4,6 @@ import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
 import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.dao.jdbc.SQLiteUtils;
-import be.home.common.enums.MP3Tag;
 import be.home.common.main.BatchJobV2;
 import be.home.common.mp3.MP3Utils;
 import be.home.common.utils.FileUtils;
@@ -14,8 +13,10 @@ import be.home.domain.model.ArtistSongItem;
 import be.home.domain.model.MP3Helper;
 import be.home.domain.model.MP3TagUtils;
 import be.home.domain.model.MezzmoUtils;
+import be.home.main.test.ConvertArtistSong;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.VersionTO;
+import be.home.mezzmo.domain.model.json.MultiArtistConfig;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.model.json.AlbumError;
 import be.home.model.json.MP3Settings;
@@ -31,6 +32,7 @@ import org.dom4j.util.XMLErrorHandler;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import be.home.mezzmo.domain.model.json.*;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -39,6 +41,7 @@ import javax.xml.validation.SchemaFactory;
 import java.io.*;
 import java.net.URI;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -56,13 +59,23 @@ public class HelloWorld extends BatchJobV2 {
         //testMP3Prettifier();
         //System.out.println(MP3Helper.getInstance().test("A\\$2AP$2Test$2Test$3Test$4", "\\$2", "\\$3", 2));
         //System.out.println(MP3Helper.getInstance().checkRegExpDollar("$1Text$1", 1));
-        updateMP3();
+        //updateMP3();
         //batchProcess();
-        //testMP3Prettifier();
+        //testiPodDate();
+        testMP3Prettifier();
         //testAlbumArtist();
         //fileNotFound();
         //testVersion();
 
+    }
+
+    private static void testiPodDate(){
+        Date tmp = SQLiteUtils.convertiPodDateToDate(610643234L);
+        System.out.println(tmp);
+        tmp = SQLiteUtils.convertiPodDateToDate(573087600L);
+        System.out.println(tmp);
+        tmp = SQLiteUtils.convertiPodDateToDate(604623600L);
+        System.out.println(tmp);
     }
 
 private static void testVersion(){
@@ -156,13 +169,16 @@ private static void testAlbumArtist(){
 
         //updateMP3();
 
-        String tmp = "Odj Team";
+        String tmp = "TλL";
+        ConvertArtistSong test = new ConvertArtistSong();
+        MultiArtistConfig.Item item = test.findMultiArtist("Raf Marchesini Feat. D'Amico, Valax Vs. Gabin");
         //System.out.println(mp3Helper.prettifySong(tmp));
         //System.out.println(mp3Helper.prettifyArtist("Sem Thomasson Feat. Mas"));
-        //System.out.println(mp3Helper.prettifyArtist("\uFEFFAxwell Λ Ingrosso"));
-        //System.out.println(tmp.replaceAll("O\\.?[D|d]\\.?[J|j]\\.? Team", "Bla"));
-        //System.out.println(getArtistTitleException("Emeli Sandé", "Read All About It (Part III)"));
-        System.out.println(getTitleArtistException("Eurythmics", "Sweet Dreams"));
+        System.out.println(mp3Helper.prettifyArtist("Raf Marchesini Feat. D'Amico, Valax Vs Gavin"));
+        System.out.println(mp3Helper.prettifyArtist("Raf Marchesini, D'Amico, Valax & Gavin"));
+        //System.out.println(tmp.replaceAll("", "Bla"));
+        System.out.println(getArtistTitleException("Johnny Mathis And Gladys Knight & The Pips", "When A Child Is Born"));
+        System.out.println(getTitleArtistException("Tones And I", "Ur So F**kInG cOoL"));
         //System.out.println(mp3Helper.prettifyAlbum("...Baby One More Time", "Britney Spears"));
         //System.out.println(mp3Helper.stripFilename("...Baby One More Time/Britney - test.mp3"));
 
@@ -185,7 +201,7 @@ private static void testAlbumArtist(){
         MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSONWithCode(Constants.JSON.MP3SETTINGS, MP3Settings.class);
         Mp3File mp3file = null;
         MP3Utils mp3Utils = new MP3Utils();
-        String file = "C:\\My Data\\tmp\\Java\\MP3Processor\\Test\\test.mp3";
+        String file = "c:\\download\\_Unsecure\\102 Pink - Family Portrait.mp3";
         //String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\test.mp3";
         //String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\108 Di-Rect - Hungry For Love.mp3";
         try {
@@ -197,7 +213,7 @@ private static void testAlbumArtist(){
             String newFile = file + ".MP3";
             int i = mp3Utils.convertRating(mp3Utils.getRating(id3v2Tag));
             System.out.println("Rating: " + i);
-            System.out.println("Duration: " + MP3Utils.getDuration(mp3file));
+            System.out.println("Duration: " + mp3Utils.getDuration(mp3file));
                 //mp3file.save(newFile);
         } catch (Exception e) {
             e.printStackTrace();
