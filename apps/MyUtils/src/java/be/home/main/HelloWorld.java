@@ -61,7 +61,7 @@ public class HelloWorld extends BatchJobV2 {
         //System.out.println(MP3Helper.getInstance().checkRegExpDollar("$1Text$1", 1));
         //updateMP3();
         //batchProcess();
-        //testiPodDate();
+        //testMP3Prettifier();
         testMP3Prettifier();
         //testAlbumArtist();
         //fileNotFound();
@@ -169,15 +169,15 @@ private static void testAlbumArtist(){
 
         //updateMP3();
 
-        String tmp = "TλL";
+        String tmp = "Odj Team";
         ConvertArtistSong test = new ConvertArtistSong();
         MultiArtistConfig.Item item = test.findMultiArtist("Raf Marchesini Feat. D'Amico, Valax Vs. Gabin");
         //System.out.println(mp3Helper.prettifySong(tmp));
-        //System.out.println(mp3Helper.prettifyArtist("Sem Thomasson Feat. Mas"));
+        System.out.println(mp3Helper.prettifyArtist("Willy Sommers Feat. Dorothee Vegas & Like Maarten"));
         System.out.println(mp3Helper.prettifyArtist("Raf Marchesini Feat. D'Amico, Valax Vs Gavin"));
-        System.out.println(mp3Helper.prettifyArtist("Raf Marchesini, D'Amico, Valax & Gavin"));
-        //System.out.println(tmp.replaceAll("", "Bla"));
-        System.out.println(getArtistTitleException("Johnny Mathis And Gladys Knight & The Pips", "When A Child Is Born"));
+        //System.out.println(tmp.replaceAll("O\\.?[D|d]\\.?[J|j]\\.? Team", "Bla"));
+        //System.out.println(getArtistTitleException("Emeli Sandé", "Read All About It (Part III)"));
+        System.out.println(getTitleArtistException("Eurythmics", "Sweet Dreams"));
         System.out.println(getTitleArtistException("Tones And I", "Ur So F**kInG cOoL"));
         //System.out.println(mp3Helper.prettifyAlbum("...Baby One More Time", "Britney Spears"));
         //System.out.println(mp3Helper.stripFilename("...Baby One More Time/Britney - test.mp3"));
@@ -201,7 +201,7 @@ private static void testAlbumArtist(){
         MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSONWithCode(Constants.JSON.MP3SETTINGS, MP3Settings.class);
         Mp3File mp3file = null;
         MP3Utils mp3Utils = new MP3Utils();
-        String file = "c:\\download\\_Unsecure\\102 Pink - Family Portrait.mp3";
+        String file = "C:\\My Data\\tmp\\Java\\MP3Processor\\Test\\test.mp3";
         //String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\test.mp3";
         //String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\108 Di-Rect - Hungry For Love.mp3";
         try {
