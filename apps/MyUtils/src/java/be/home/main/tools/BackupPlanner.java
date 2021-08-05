@@ -29,7 +29,7 @@ public class BackupPlanner extends BatchJobV2{
     public static void main(String args[]) {
         Backup backup = (Backup) JSONUtils.openJSONWithCode(Constants.JSON.BACKUP, Backup.class );
         BackupPlanner instance = new BackupPlanner();
-        instance.start(backup, args.length > 0 ? args[0] : null);
+        instance.start(backup, args.length > 0 ? args[0] : "ConfigJavaL");
 
     }
 
@@ -114,7 +114,6 @@ public class BackupPlanner extends BatchJobV2{
     public void startBackup(Backup.Scheme scheme) throws ZipException {
         ZipUtils zipUtils = new ZipUtils();
         String timeStamp = DateUtils.formatDate(new Date(), DateUtils.YYYYMMDDHHMMSS);
-        //String zipFile = "C:/My Backups/Music." + timeStamp + ".zip";
         String zipFile = scheme.backupFile.replaceAll("<TIMESTAMP>", timeStamp);
         for (Backup.Scheme.Item item : scheme.items){
             String realPath = Setup.replaceEnvironmentVariables(item.path);
@@ -130,9 +129,9 @@ public class BackupPlanner extends BatchJobV2{
                         log.info("Backing up file " + file.toString());
                         Path basePath = Paths.get(realPath);
                         Path relativePath = FileUtils.relativize(basePath, file.getParent());
-                        zipUtils.zipFile(zipFile, item.zipPath +
+                        ZipUtils.zip(zipFile, item.zipPath +
                                 (StringUtils.isBlank(relativePath.toString()) ? "" : "/")
-                                + relativePath, file);
+                                + relativePath, file.toString(), null);
 
                     }
                 } catch (IOException e) {
@@ -141,7 +140,7 @@ public class BackupPlanner extends BatchJobV2{
             }
             else {
                 log.info("Backing up folder " + realPath);
-                zipUtils.zipFolder(zipFile, "/" + item.zipPath, realPath);
+                ZipUtils.zip(zipFile, "/" + item.zipPath, realPath, null);
             }
             log.info(StringUtils.repeat('*', 200));
 

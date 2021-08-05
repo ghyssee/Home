@@ -90,7 +90,11 @@
 				<groupId>net.lingala.zip4j</groupId>
 				<artifactId>zip4j</artifactId>
 			</dependency>
-		</dependencies>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-compress</artifactId>
+            </dependency>
+        </dependencies>
 
 	
 

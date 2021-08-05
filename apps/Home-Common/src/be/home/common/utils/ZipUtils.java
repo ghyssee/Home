@@ -1,9 +1,12 @@
 package be.home.common.utils;
 
-import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
-import net.lingala.zip4j.util.Zip4jConstants;
+import net.lingala.zip4j.model.enums.CompressionMethod;
+import net.lingala.zip4j.model.enums.CompressionLevel;
+import net.lingala.zip4j.model.enums.EncryptionMethod;
+import net.lingala.zip4j.model.enums.AesKeyStrength;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -13,22 +16,41 @@ import java.nio.file.Path;
  */
 public class ZipUtils {
 
-    private enum ZipType {
-        FILE, FOLDER;
-    }
-
     public ZipUtils() {
     }
 
-    public void zipFile(String nameOfZipFile, String zipFolder, Path file) throws ZipException {
+    public static void zip(String nameOfZipFile, String zipFolder, String folderOrFile, String password) {
+        try {
+            zipFolder = zipFolder.startsWith("/") ? zipFolder : "/" + zipFolder;
+            ZipParameters parameters = new ZipParameters();
+            parameters.setCompressionMethod(CompressionMethod.DEFLATE);
+            parameters.setCompressionLevel(CompressionLevel.MAXIMUM);
+            parameters.setRootFolderNameInZip(zipFolder);
+            //parameters.setDefaultFolderPath();
+            //parameters.setDefaultFolderPath(zipFolder);
+            ZipFile zipFile = new ZipFile(nameOfZipFile);
 
-        zip(nameOfZipFile, zipFolder, file.toString(), ZipType.FILE);
+            if (password != null && password.length() > 0) {
+                parameters.setEncryptFiles(true);
+                parameters.setEncryptionMethod(EncryptionMethod.AES);
+                parameters.setAesKeyStrength(AesKeyStrength.KEY_STRENGTH_256);
+                zipFile.setPassword(password.toCharArray());
+            }
+
+
+            File targetFile = new File(folderOrFile);
+            if (targetFile.isFile()) {
+                zipFile.addFile(targetFile, parameters);
+            } else if (targetFile.isDirectory()) {
+                zipFile.addFolder(targetFile, parameters);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public void zipFolder(String nameOfZipFile, String zipFolder, String folder) throws ZipException {
-
-        zip(nameOfZipFile, zipFolder, folder, ZipType.FOLDER);
-    }
+    /*
 
     private void zip(String nameOfZipFile, String zipFolder, String folderOrFile, ZipType zipType) throws ZipException {
         ZipFile zipFile = new ZipFile(nameOfZipFile);
@@ -55,5 +77,6 @@ public class ZipUtils {
                 break;
         }
     }
+    */
 
 }
