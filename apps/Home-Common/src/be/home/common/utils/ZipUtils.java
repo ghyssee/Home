@@ -1,15 +1,14 @@
 package be.home.common.utils;
 
 import net.lingala.zip4j.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.model.enums.CompressionMethod;
 import net.lingala.zip4j.model.enums.CompressionLevel;
 import net.lingala.zip4j.model.enums.EncryptionMethod;
 import net.lingala.zip4j.model.enums.AesKeyStrength;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
-import java.nio.file.Path;
 
 /**
  * Created by Gebruiker on 25/12/2016.
@@ -25,9 +24,9 @@ public class ZipUtils {
             ZipParameters parameters = new ZipParameters();
             parameters.setCompressionMethod(CompressionMethod.DEFLATE);
             parameters.setCompressionLevel(CompressionLevel.MAXIMUM);
-            parameters.setRootFolderNameInZip(zipFolder);
-            //parameters.setDefaultFolderPath();
-            //parameters.setDefaultFolderPath(zipFolder);
+            if (StringUtils.isNotBlank(zipFolder)){
+                parameters.setRootFolderNameInZip(zipFolder);
+            }
             ZipFile zipFile = new ZipFile(nameOfZipFile);
 
             if (password != null && password.length() > 0) {
