@@ -1,5 +1,7 @@
 package be.home.model;
 
+import com.opencsv.bean.CsvBindByPosition;
+
 import java.io.File;
 
 /**
@@ -7,13 +9,20 @@ import java.io.File;
  */
 public class MovieTO {
 
+    @CsvBindByPosition(position = 0)
     private String id;
+    @CsvBindByPosition(position = 1)
     private String title;
+    @CsvBindByPosition(position = 2)
     private String alternateTitle;
+    @CsvBindByPosition(position = 3)
     private String year;
-    private String imdbId;
+    @CsvBindByPosition(position = 4)
     private String genre;
+    @CsvBindByPosition(position = 5)
     private String stockPlace;
+    @CsvBindByPosition(position = 6)
+    private String imdbId;
     private boolean movieSynchronized = false;
     private File syncDir;
 

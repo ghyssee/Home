@@ -17,6 +17,8 @@ import be.home.domain.model.MezzmoUtils;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.VersionTO;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
+import be.home.model.MovieBO;
+import be.home.model.MovieTO;
 import be.home.model.json.AlbumError;
 import be.home.model.json.MP3Settings;
 import com.mpatric.mp3agic.*;
@@ -58,7 +60,8 @@ public class HelloWorld extends BatchJobV2 {
         //System.out.println(MP3Helper.getInstance().checkRegExpDollar("$1Text$1", 1));
         //updateMP3();
         //batchProcess();
-        testMP3Prettifier();
+        //testMP3Prettifier();
+        TestMovieFile();
         //testAlbumArtist();
         //fileNotFound();
         //testVersion();
@@ -90,6 +93,19 @@ private static void testAlbumArtist(){
     comp = testAlbumArtistItem(comp.getFileTO().getId(), comp.getAlbumArtistTO().getId(), "Sven Van HEES");
     comp = testAlbumArtistItem(comp.getFileTO().getId(), comp.getAlbumArtistTO().getId(), "Sven Van Hees");
 }
+
+private static void TestMovieFile(){
+    try {
+        List<MovieTO> listOfMoviesFromCSV = MovieBO.getListOfMoviesFromCSV("C:/My Programs/OneDrive/Movies/emdbV3.csv");
+        for (MovieTO movieTO: listOfMoviesFromCSV){
+            System.out.println(movieTO.getTitle());
+        }
+    } catch (FileNotFoundException e) {
+        e.printStackTrace();
+    }
+
+}
+
     private static MGOFileAlbumCompositeTO testAlbumArtistItem(long fileId, long albumArtistId, String name){
         MGOFileAlbumCompositeTO comp = new MGOFileAlbumCompositeTO();
         comp.getFileTO().setId(fileId);
@@ -197,7 +213,7 @@ private static void testAlbumArtist(){
             String newFile = file + ".MP3";
             int i = mp3Utils.convertRating(mp3Utils.getRating(id3v2Tag));
             System.out.println("Rating: " + i);
-            System.out.println("Duration: " + MP3Utils.getDuration(mp3file));
+            //System.out.println("Duration: " + MP3Utils.getDuration(mp3file));
                 //mp3file.save(newFile);
         } catch (Exception e) {
             e.printStackTrace();

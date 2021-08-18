@@ -35,45 +35,4 @@ public class URLUtils {
 			e.printStackTrace();
 		}
 	}
-
-	public static List<String> dump2(String URLName)
-			throws IOException {
-
-		List<String> lines = new ArrayList <String> ();
-		BufferedReader di = null;
-
-		// PROXY
-		Properties systemSettings = System.getProperties();
-		systemSettings.put("http.proxyHost", "proxy.pxpost.netpost");
-		systemSettings.put("http.proxyPort", "8080");
-
-		URL u = new URL(URLName);
-		HttpURLConnection con = (HttpURLConnection) u.openConnection();
-
-		//
-		// it's not the greatest idea to use a sun.misc.* class
-		// Sun strongly advises not to use them since they can
-		// change or go away in a future release so beware.
-		//
-		sun.misc.BASE64Encoder encoder = new sun.misc.BASE64Encoder();
-		String encodedUserPwd = encoder.encode("POST\\ghyssee:XXX"
-				.getBytes());
-		con
-				.setRequestProperty("Proxy-Authorization", "Basic "
-						+ encodedUserPwd);
-		// PROXY ----------
-
-		di = new BufferedReader(new InputStreamReader(con.getInputStream()));
-		// while(-1 != di.read(b,0,1)) {
-		String line = null;
-		line = di.readLine();
-		while (line != null) {
-
-			lines.add(line);
-			line = di.readLine();
-		}
-		con.disconnect();
-		di.close();
-		return lines;
-	}
 }
