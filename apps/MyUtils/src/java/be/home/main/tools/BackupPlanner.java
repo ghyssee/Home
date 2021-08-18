@@ -29,7 +29,7 @@ public class BackupPlanner extends BatchJobV2{
     public static void main(String args[]) {
         Backup backup = (Backup) JSONUtils.openJSONWithCode(Constants.JSON.BACKUP, Backup.class );
         BackupPlanner instance = new BackupPlanner();
-        instance.start(backup, args.length > 0 ? args[0] : "ConfigJavaL");
+        instance.start(backup, args.length > 0 ? args[0] : null);
 
     }
 
@@ -112,7 +112,6 @@ public class BackupPlanner extends BatchJobV2{
     }
 
     public void startBackup(Backup.Scheme scheme) throws ZipException {
-        ZipUtils zipUtils = new ZipUtils();
         String timeStamp = DateUtils.formatDate(new Date(), DateUtils.YYYYMMDDHHMMSS);
         String zipFile = scheme.backupFile.replaceAll("<TIMESTAMP>", timeStamp);
         for (Backup.Scheme.Item item : scheme.items){

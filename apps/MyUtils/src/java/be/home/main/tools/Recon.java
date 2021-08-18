@@ -430,7 +430,7 @@ public class Recon  {
             p.setProperty("file.resource.loader.path", "C:\\Projects\\far\\DBUtil\\");
             p.setProperty("input.encoding", "UTF-8");
             p.setProperty("output.encoding", "UTF-8");
-            p.setProperty(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS, "org.apache.velocity.runtime.log.Log4JLogChute");
+            //p.setProperty(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS, "org.apache.velocity.runtime.log.Log4JLogChute");
             p.setProperty("runtime.log.logsystem.log4j.logger","velocity");
 
             VelocityEngine ve = new VelocityEngine();

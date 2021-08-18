@@ -1,8 +1,12 @@
 package be.home.model;
 
 import com.opencsv.CSVParser;
+import com.opencsv.CSVParserBuilder;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
 import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.CsvToBean;
+import com.opencsv.bean.CsvToBeanBuilder;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
@@ -92,16 +96,24 @@ public class MovieBO {
     }
 
     public static List<MovieTO> getListOfMoviesFromCSV(String importFile) throws FileNotFoundException {
+        Reader reader = new BufferedReader ( new FileReader(importFile));
+
         ColumnPositionMappingStrategy mappingStrategy = new ColumnPositionMappingStrategy();
         mappingStrategy.setType(MovieTO.class);
-        String[] columns = new String[] {"id", "title", "alternateTitle", "year", "genre", "stockPlace", "imdbId"}; // the fields to bind do in your JavaBean
-        mappingStrategy.setColumnMapping(columns);
+        //String[] columns = new String[] {"id", "title", "alternateTitle", "year", "genre", "stockPlace", "imdbId"}; // the fields to bind do in your JavaBean
+        //mappingStrategy.setColumnMapping(columns);
 
-        CsvToBean csv = new CsvToBean();
-        com.opencsv.CSVReader reader = null;
-        List<MovieTO> list = null;
-        reader = new com.opencsv.CSVReader(new FileReader(importFile), ';', CSVParser.DEFAULT_QUOTE_CHARACTER, CSVParser.DEFAULT_ESCAPE_CHARACTER, 0, false, false);
-        list = csv.parse(mappingStrategy, reader);
+
+        CsvToBean cb = new CsvToBeanBuilder(reader)
+                .withSeparator(';')
+                .withIgnoreQuotations(true)
+                .withStrictQuotes(false)
+                .withSkipLines(1)
+                .withType(MovieTO.class)
+                .withMappingStrategy(mappingStrategy)
+                .build();
+
+        List<MovieTO> list = cb.parse();
         if (list != null && !list.isEmpty() && "\0".compareTo(((MovieTO) list.get(list.size()-1)).getId()) == 0){
             list.remove(list.size()-1);
         }
