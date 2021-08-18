@@ -26,7 +26,7 @@ public class VelocityUtils {
         p.setProperty("input.encoding", "UTF-8");
         p.setProperty("output.encoding", "UTF-8");
         p.setProperty("userdirective", "be.home.common.utils.Ifnull");
-        p.setProperty(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS, "org.apache.velocity.runtime.log.Log4JLogChute" );
+        //p.setProperty(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS, "org.apache.velocity.runtime.log.Log4JLogChute" );
         p.setProperty("runtime.log.logsystem.log4j.logger","velocity");
 
         VelocityEngine ve = new VelocityEngine();

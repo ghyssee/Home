@@ -2,7 +2,7 @@ package be.home.common.database.sqlbuilder;
 
 import be.home.common.database.DatabaseColumn;
 import be.home.common.database.FieldType;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;

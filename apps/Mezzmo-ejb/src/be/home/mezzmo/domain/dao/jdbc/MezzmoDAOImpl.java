@@ -11,7 +11,7 @@ import be.home.mezzmo.domain.dao.definition.MGOFileAlbumColumns;
 import be.home.mezzmo.domain.dao.definition.MGOFileColumns;
 import be.home.mezzmo.domain.dao.definition.TablesEnum;
 import be.home.mezzmo.domain.model.*;
-import org.apache.commons.lang.SerializationUtils;
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.log4j.Logger;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;

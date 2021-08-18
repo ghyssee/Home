@@ -3,8 +3,7 @@ package be.home.mezzmo.domain.dao.jdbc;
 import be.home.common.dao.jdbc.MezzmoDB;
 import be.home.common.database.sqlbuilder.*;
 import be.home.mezzmo.domain.dao.definition.*;
-import be.home.mezzmo.domain.model.MGOFileArtistTO;
-import org.apache.commons.lang.SerializationUtils;
+import org.apache.commons.lang3.SerializationUtils;
 
 /**
  * Created by Gebruiker on 8/12/2016.
