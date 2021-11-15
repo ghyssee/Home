@@ -313,6 +313,18 @@ public class MP3Processor extends BatchJobV2 {
         id3v2Tag.setTrack(MP3Helper.getInstance().formatTrack(album, track.track));
         id3v2Tag.setArtist(track.artist);
         id3v2Tag.setTitle(track.title);
+        cleanUpTag(id3v2Tag, id3v2Tag.getComment(), AbstractID3v2Tag.ID_COMMENT);
+        cleanUpTag(id3v2Tag, id3v2Tag.getUrl(), AbstractID3v2Tag.ID_URL);
+        cleanUpTag(id3v2Tag, id3v2Tag.getEncoder(), AbstractID3v2Tag.ID_ENCODER);
+        cleanUpTag(id3v2Tag, id3v2Tag.getKey(), AbstractID3v2Tag.ID_KEY);
+        cleanUpTag(id3v2Tag, id3v2Tag.getLyrics(), AbstractID3v2Tag.ID_TEXT_LYRICS);
+        cleanUpTag(id3v2Tag, id3v2Tag.getAudioSourceUrl(), AbstractID3v2Tag.ID_AUDIOSOURCE_URL);
+        cleanUpTag(id3v2Tag, id3v2Tag.getAudiofileUrl(), AbstractID3v2Tag.ID_AUDIOFILE_URL);
+        cleanUpTag(id3v2Tag, id3v2Tag.getArtistUrl(), AbstractID3v2Tag.ID_ARTIST_URL);
+        cleanUpTag(id3v2Tag, id3v2Tag.getCommercialUrl(), AbstractID3v2Tag.ID_COMMERCIAL_URL);
+        cleanUpTag(id3v2Tag, id3v2Tag.getPaymentUrl(), AbstractID3v2Tag.ID_PAYMENT_URL);
+        cleanUpTag(id3v2Tag, id3v2Tag.getPublisherUrl(), AbstractID3v2Tag.ID_PUBLISHER_URL);
+        cleanUpTag(id3v2Tag, id3v2Tag.getRadiostationUrl(), AbstractID3v2Tag.ID_RADIOSTATION_URL);
         id3v2Tag.clearAlbumImage();
         if (album.total > 1) {
             id3v2Tag.setPartOfSet(track.cd);
@@ -344,6 +356,13 @@ public class MP3Processor extends BatchJobV2 {
         //  System.err.println("There was a problem deleting the file " + fileName);
         //}*/
         mp3file.save(newFile.getAbsolutePath());
+    }
+
+    private void cleanUpTag(ID3v2 id3v2Tag, String tagToCheck, String Key){
+        final String TAG_TO_DELETE = "RJ/SNWTJE";
+        if (tagToCheck != null && tagToCheck.compareToIgnoreCase(TAG_TO_DELETE) == 0){
+            id3v2Tag.clearFrameSet(Key);
+        }
     }
 
     private String constructFilename(MP3Settings mp3Settings, AlbumInfo.Config album, AlbumInfo.Track track, String ext){
