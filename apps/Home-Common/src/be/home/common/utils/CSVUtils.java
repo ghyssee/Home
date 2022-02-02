@@ -13,15 +13,21 @@ public class CSVUtils {
     Writer writer = null;
 
     public CSVPrinter initialize(File file, String[] fields) throws IOException {
+        return this.initialize(file, fields, ';');
+    }
+
+    public CSVPrinter initialize(File file, String[] fields, char delimiter) throws IOException {
         FileOutputStream outputStream = null;
         outputStream = new FileOutputStream(file);
         this.writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
         CSVPrinter csvFilePrinter = null;
-        CSVFormat csvFileFormat = CSVFormat.DEFAULT.withHeader(fields);
+        CSVFormat csvFileFormat = CSVFormat.DEFAULT.withDelimiter(delimiter);
+        if (fields != null) {
+            csvFileFormat = csvFileFormat.withHeader(fields);
+        }
         csvFilePrinter = new CSVPrinter(this.writer, csvFileFormat);
         return csvFilePrinter;
     }
-
     public void close(CSVPrinter csvPrinter) {
         if (this.writer != null) {
             try {

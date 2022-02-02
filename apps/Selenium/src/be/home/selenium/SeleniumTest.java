@@ -2,11 +2,10 @@ package be.home.selenium;
 
 import be.home.common.main.BatchJobV2;
 import be.home.common.model.UltratopConfigBO;
-import be.home.common.model.json.UltratopConfig;
 import be.home.common.utils.DateUtils;
-import be.home.gui.common.GUIUtils;
+
 import be.home.model.M3uTO;
-import be.home.selenium.common.FirefoxDriverSetup;
+
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
@@ -14,17 +13,13 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.*;
 import org.openqa.selenium.remote.*;
-import org.openqa.selenium.remote.http.W3CHttpCommandCodec;
-import org.openqa.selenium.remote.http.W3CHttpResponseCodec;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -140,74 +135,8 @@ public class SeleniumTest extends BatchJobV2 {
         return driver;
     }
 
-    public WebDriver makeWebDriver2(){
-        File pathToBinary = new File("C:\\My Programs\\Firefox\\Test\\App\\Firefox\\Firefox.exe");
-        FirefoxBinary ffBinary = new FirefoxBinary(pathToBinary);
-        //FirefoxProfile firefoxProfile = new FirefoxProfile(new File("C:\\My Programs\\Firefox\\FirefoxPortableV49.Node1\\Data\\profile"));
-        FirefoxProfile firefoxProfile = new FirefoxProfile(new File("C:\\My Programs\\Firefox\\Test\\Data\\profile"));
-        //FirefoxProfile firefoxProfile = new FirefoxProfile();
-        System.setProperty("webdriver.gecko.driver", "C:\\My Programs\\Firefox\\geckodriver.exe");
-        FirefoxOptions options = new FirefoxOptions();
-        options.setBinary(ffBinary);
-        options.setProfile(firefoxProfile);
-        //options.setCapability(CapabilityType.BROWSER_NAME, "Firefox");
 
-        //DesiredCapabilities capabilities = DesiredCapabilities.firefox();
-        //capabilities.setCapability(FirefoxDriver.BINARY, ffBinary);
-        //capabilities.setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, UnexpectedAlertBehaviour.IGNORE);
-        System.setProperty("webdriver.gecko.driver", "C:\\My Programs\\Firefox\\geckodriver.exe");
-        System.setProperty(FirefoxDriver.SystemProperty.BROWSER_LOGFILE,"/php/test.logs");
-        java.util.logging.Logger.getLogger("org.openqa.selenium").setLevel(Level.OFF);
-        options.setLogLevel(FirefoxDriverLogLevel.INFO);
-        //WebDriver driver = new FirefoxDriver(options);
-        WebDriver driver = null;
-        DesiredCapabilities capabilities =  DesiredCapabilities.firefox();
-        capabilities.setCapability(FirefoxOptions.FIREFOX_OPTIONS, options);
-        /*
-        capabilities.setPlatform(Platform.WIN10);
-        capabilities.setAcceptInsecureCerts(true);
-        capabilities.setJavascriptEnabled(true);
-        capabilities.setVersion("10.0");
-        */
-        //capabilities.setCapability("marionette", true);
-        //capabilities.setCapability("networkConnectionEnabled", true);
-        //capabilities.setCapability("browserConnectionEnabled", true);        //capability.setCapability("marionette", true);
-        try {
-            driver = new RemoteWebDriver(new URL("http://127.0.0.1:4444"), capabilities);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        return driver;
-    }
 
-    public RemoteWebDriver makeWebDriver3() throws MalformedURLException {
-        FirefoxProfile firefoxProfile = new FirefoxProfile(new File("C:\\My Programs\\Firefox\\Test\\Data\\profile"));
-        System.setProperty("webdriver.gecko.driver", "C:\\My Programs\\Firefox\\geckodriver.exe");
-        FirefoxOptions options = new FirefoxOptions();
-        options.setProfile(firefoxProfile);
-        //options.setCapability(CapabilityType.BROWSER_NAME, "Firefox");
-
-        //DesiredCapabilities capabilities = DesiredCapabilities.firefox();
-        //capabilities.setCapability(FirefoxDriver.BINARY, ffBinary);
-        //capabilities.setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, UnexpectedAlertBehaviour.IGNORE);
-        System.setProperty("webdriver.gecko.driver", "C:\\My Programs\\Firefox\\geckodriver.exe");
-        System.setProperty(FirefoxDriver.SystemProperty.BROWSER_LOGFILE,"/php/test.logs");
-        java.util.logging.Logger.getLogger("org.openqa.selenium").setLevel(Level.OFF);
-        options.setLogLevel(FirefoxDriverLogLevel.INFO);
-        //WebDriver driver = new FirefoxDriver(options);
-        DesiredCapabilities capabilities =  DesiredCapabilities.firefox();
-        capabilities.setCapability(FirefoxOptions.FIREFOX_OPTIONS, options);
-        /*
-        capabilities.setPlatform(Platform.WIN10);
-        capabilities.setAcceptInsecureCerts(true);
-        capabilities.setJavascriptEnabled(true);
-        capabilities.setVersion("10.0");
-        */
-        SessionId session_id = new SessionId("05c68e07-736a-478e-9014-1d24edb7f171");
-        RemoteWebDriver driver = createDriverFromSession(session_id, new URL("http://127.0.0.1:43451"));
-
-        return driver;
-    }
 
     public void FacebookLogin(WebDriver driver) {
 
@@ -301,44 +230,6 @@ public class SeleniumTest extends BatchJobV2 {
 
     private String matchClass(String className) {
         return "[contains(concat(' ', normalize-space(@class), ' ')," + "' " + className + " ')]";
-    }
-
-    public RemoteWebDriver createDriverFromSession(final SessionId sessionId, URL command_executor){
-        CommandExecutor executor = new HttpCommandExecutor(command_executor) {
-
-            @Override
-            public Response execute(Command command) throws IOException {
-                Response response = null;
-                if (command.getName() == "newSession") {
-                    response = new Response();
-                    response.setSessionId(sessionId.toString());
-                    response.setStatus(0);
-                    response.setValue(Collections.<String, String>emptyMap());
-
-                    try {
-                        Field commandCodec = null;
-                        commandCodec = this.getClass().getSuperclass().getDeclaredField("commandCodec");
-                        commandCodec.setAccessible(true);
-                        commandCodec.set(this, new W3CHttpCommandCodec());
-
-                        Field responseCodec = null;
-                        responseCodec = this.getClass().getSuperclass().getDeclaredField("responseCodec");
-                        responseCodec.setAccessible(true);
-                        responseCodec.set(this, new W3CHttpResponseCodec());
-                    } catch (NoSuchFieldException e) {
-                        e.printStackTrace();
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                    }
-
-                } else {
-                    response = super.execute(command);
-                }
-                return response;
-            }
-        };
-
-        return new RemoteWebDriver(executor, new DesiredCapabilities());
     }
 
 }

@@ -1,7 +1,6 @@
 package be.home.selenium.ultratop;
 
 import be.home.common.model.UltratopConfigBO;
-import be.home.common.utils.DateUtils;
 import be.home.model.M3uTO;
 import be.home.selenium.common.FirefoxDriverSetup;
 import org.apache.commons.text.StringEscapeUtils;
