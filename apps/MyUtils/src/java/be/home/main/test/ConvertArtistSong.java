@@ -11,7 +11,7 @@ import be.home.mezzmo.domain.bo.ArtistBO;
 import be.home.mezzmo.domain.bo.ArtistConfigBO;
 import be.home.mezzmo.domain.bo.ArtistSongRelationshipBO;
 import be.home.mezzmo.domain.model.json.*;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.DocumentException;
 import org.xml.sax.SAXException;

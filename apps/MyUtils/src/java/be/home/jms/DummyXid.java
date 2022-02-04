@@ -21,7 +21,7 @@
  */
 package be.home.jms;
 
-import org.jboss.messaging.utils.Base64;
+import jonelo.sugar.util.Base64;
 
 import javax.transaction.xa.Xid;
 

@@ -15,7 +15,7 @@ import be.home.mezzmo.domain.model.json.ArtistSongRelationship;
 import be.home.mezzmo.domain.model.json.ArtistSongTest;
 import be.home.mezzmo.domain.model.json.MP3Prettifier;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.DocumentException;
 import org.xml.sax.SAXException;

@@ -2,35 +2,20 @@ package be.home.main.test;
 
 import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
-import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.exceptions.ApplicationException;
 import be.home.common.main.BatchJobV2;
-import be.home.common.utils.DateUtils;
-import be.home.common.utils.FileUtils;
-import be.home.common.utils.JSONUtils;
-import be.home.common.utils.MyFileWriter;
 import be.home.domain.model.MP3Helper;
 import be.home.mezzmo.domain.bo.ArtistBO;
-import be.home.mezzmo.domain.bo.ArtistConfigBO;
-import be.home.mezzmo.domain.bo.ArtistSongRelationshipBO;
 import be.home.mezzmo.domain.bo.MP3PrettifierBO;
-import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.json.*;
-import be.home.mezzmo.domain.service.MezzmoServiceImpl;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.DocumentException;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
-
-import static be.home.common.utils.JSONUtils.writeJsonFile;
-import static be.home.common.utils.JSONUtils.writeJsonFileWithCode;
 
 /**
  * Created by ghyssee on 20/02/2015.
