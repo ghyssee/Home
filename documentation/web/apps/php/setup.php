@@ -148,13 +148,13 @@ function getOneDrivePath()
     } else {
         $Wshshell = new COM('WScript.Shell');
         try {
-            $oneDrive = $Wshshell->regRead('HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\OneDrive\\CustomUserFolder');
+            $oneDrive = $Wshshell->regRead('HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\OneDrive\\CustomUserFolderXX');
         } catch (Exception $e) {
             try {
-                $oneDrive = $Wshshell->regRead('HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\OneDrive\\UserFolder');
+                $oneDrive = $Wshshell->regRead('HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\OneDrive\\UserFolderXX');
             } catch (Exception $e) {
                 try {
-                    $oneDrive = $Wshshell->regRead('HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\SkyDrive\\UserFolder');
+                    $oneDrive = $Wshshell->regRead('HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\SkyDrive\\UserFolderXX');
                 } catch (Exception $e) {
                     $oneDrive = "C:\My Programs\OneDrivePHP";
                 }

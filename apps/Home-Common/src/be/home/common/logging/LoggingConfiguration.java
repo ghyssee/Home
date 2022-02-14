@@ -33,4 +33,13 @@ public class LoggingConfiguration {
         return log;
     }
 
+    private static Logger setLogFileOld(String name){
+        String logFile = Setup.getInstance().getFullPath(Constants.Path.LOG) + File.separator + name;
+        System.setProperty("logfile.name", logFile);
+        System.setProperty("p6spy.config.logfile", Setup.getInstance().getFullPath(Constants.Path.LOG) + File.separator + "P6Spy." + name);
+        java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.OFF);
+        Logger log = Logger.getLogger(BatchJobV2.class);
+        log.info("Setting Log4J Log file to:" + logFile);
+        return log;
+    }
 }

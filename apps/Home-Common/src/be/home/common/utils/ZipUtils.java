@@ -25,6 +25,7 @@ public class ZipUtils {
             parameters.setCompressionMethod(CompressionMethod.DEFLATE);
             parameters.setCompressionLevel(CompressionLevel.MAXIMUM);
             if (StringUtils.isNotBlank(zipFolder)){
+                parameters.setIncludeRootFolder(false);
                 parameters.setRootFolderNameInZip(zipFolder);
             }
             ZipFile zipFile = new ZipFile(nameOfZipFile);

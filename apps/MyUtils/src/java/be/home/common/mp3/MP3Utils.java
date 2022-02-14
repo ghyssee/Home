@@ -313,7 +313,7 @@ public class MP3Utils {
         return rating;
     }
 
-    public long getDuration(Mp3File mp3File) {
+    public static long getDuration(Mp3File mp3File) {
         BigDecimal d = new BigDecimal(mp3File.getEndOffset());
         d = d.subtract(new BigDecimal(mp3File.getStartOffset()));
         d = d.multiply(new BigDecimal(8));
