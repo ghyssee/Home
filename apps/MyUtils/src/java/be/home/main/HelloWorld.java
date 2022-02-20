@@ -23,7 +23,7 @@ import be.home.model.MovieTO;
 import be.home.model.json.AlbumError;
 import be.home.model.json.MP3Settings;
 import com.mpatric.mp3agic.*;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -31,10 +31,16 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 import org.dom4j.util.XMLErrorHandler;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
+import org.jaudiotagger.audio.mp3.MP3File;
+import org.jaudiotagger.tag.FieldKey;
+import org.jaudiotagger.tag.TagException;
+import org.jaudiotagger.tag.id3.ID3v24Tag;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import be.home.mezzmo.domain.model.json.*;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -42,6 +48,8 @@ import javax.xml.parsers.SAXParserFactory;
 import javax.xml.validation.SchemaFactory;
 import java.io.*;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
@@ -64,10 +72,11 @@ public class HelloWorld extends BatchJobV2 {
         //updateMP3();
         //batchProcess();
         //testMP3Prettifier();
-        TestMovieFile();
+        //TestMovieFile();
         //testAlbumArtist();
         //fileNotFound();
         //testVersion();
+        testJAudioTagger();
 
     }
 
@@ -313,7 +322,47 @@ private static void TestMovieFile(){
         XMLWriter writer = new XMLWriter( OutputFormat.createPrettyPrint() );
         writer.write( errorHandler.getErrors() );
     }
-
+    private static void testJAudioTagger(){
+        MP3File mp3File = null;
+        try {
+            File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\119 David Bulla & Thimlife Feat. JESSIA - Bring Me 2 Life (No ID3v2 Tag Info Found).mp3");
+            File newFile = new File("C:\\My Data\\tmp\\Java\\MP3Processor\\new" + File.separator + file.getName());
+            Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            mp3File = new MP3File(newFile.getAbsolutePath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (TagException e) {
+            e.printStackTrace();
+        } catch (ReadOnlyFileException e) {
+            e.printStackTrace();
+        } catch (CannotReadException e) {
+            e.printStackTrace();
+        } catch (InvalidAudioFrameException e) {
+            e.printStackTrace();
+        }
+        //File fileToSave = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\11 New.mp3");
+        try {
+            ID3v24Tag tag = mp3File.getID3v2TagAsv24();
+            tag.setField(FieldKey.ARTIST,"Kings of Leon");
+            tag.deleteField(FieldKey.DISC_NO);
+            tag.setField(FieldKey.IS_COMPILATION,"1");
+            tag.setField(FieldKey.TITLE,"Test");
+            tag.setField(FieldKey.TRACK,"81");
+            tag.setField(FieldKey.YEAR,"2022");
+            System.out.println(tag.getFirst(FieldKey.RATING));
+            System.out.println(mp3File.getMP3AudioHeader().getTrackLengthAsString());
+            System.out.println(mp3File.getMP3AudioHeader().getPreciseTrackLength());
+            tag.deleteField(FieldKey.RATING);
+            tag.addField(FieldKey.RATING,"255");
+            //tag.setField(FieldKey.RATING,"50");
+            mp3File.setID3v2Tag(tag);
+            mp3File.save();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (TagException e) {
+            e.printStackTrace();
+        }
+    }
 
         private static void test() throws IOException, NoSuchFieldException, IllegalAccessException, SAXException, ParserConfigurationException, DocumentException {
 
