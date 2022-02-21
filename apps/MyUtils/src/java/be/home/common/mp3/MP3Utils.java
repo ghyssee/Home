@@ -247,6 +247,11 @@ public class MP3Utils {
 
     }
 
+    public int convertRating (String rating) {
+        int rat = Integer.valueOf(rating);
+        return convertRating(rat);
+    }
+
     public int convertRating (int rating){
         int stars = 0;
         if (rating >= 1 && rating < 63){
