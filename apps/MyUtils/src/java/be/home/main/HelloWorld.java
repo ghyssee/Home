@@ -13,6 +13,9 @@ import be.home.domain.model.ArtistSongItem;
 import be.home.domain.model.MP3Helper;
 import be.home.domain.model.MP3TagUtils;
 import be.home.domain.model.MezzmoUtils;
+import be.home.domain.model.service.MP3Exception;
+import be.home.domain.model.service.MP3JAudioTaggerServiceImpl;
+import be.home.domain.model.service.MP3Service;
 import be.home.main.test.ConvertArtistSong;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.VersionTO;
@@ -322,10 +325,33 @@ private static void TestMovieFile(){
         XMLWriter writer = new XMLWriter( OutputFormat.createPrettyPrint() );
         writer.write( errorHandler.getErrors() );
     }
+
     private static void testJAudioTagger(){
+        File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\01 Test.mp3");
+        File newFile = new File("C:\\My Data\\tmp\\Java\\MP3Processor\\new" + File.separator + file.getName());
+        try {
+            Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            MP3Service mp3File = null;
+            try {
+                mp3File = new MP3JAudioTaggerServiceImpl(newFile.getAbsolutePath());
+                mp3File.setArtist("Kings of Leon");
+                mp3File.setCompilation(true);
+                mp3File.setYear("2022");
+                mp3File.setRating(4);
+                System.out.println(mp3File.getStringRating());
+                mp3File.commit();
+            } catch (MP3Exception e) {
+                e.printStackTrace();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void testJAudioTaggerOld(){
         MP3File mp3File = null;
         try {
-            File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\119 David Bulla & Thimlife Feat. JESSIA - Bring Me 2 Life (No ID3v2 Tag Info Found).mp3");
+            File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\01 Test.mp3");
             File newFile = new File("C:\\My Data\\tmp\\Java\\MP3Processor\\new" + File.separator + file.getName());
             Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
             mp3File = new MP3File(newFile.getAbsolutePath());
