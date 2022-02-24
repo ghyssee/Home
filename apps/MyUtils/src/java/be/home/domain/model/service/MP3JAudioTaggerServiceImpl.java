@@ -8,9 +8,13 @@ import org.jaudiotagger.audio.mp3.MP3File;
 import org.jaudiotagger.tag.FieldDataInvalidException;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.TagException;
+import org.jaudiotagger.tag.TagField;
+import org.jaudiotagger.tag.id3.ID3v24Frame;
+import org.jaudiotagger.tag.id3.ID3v24Frames;
 import org.jaudiotagger.tag.id3.ID3v24Tag;
 
 import java.io.IOException;
+import java.util.List;
 
 public class MP3JAudioTaggerServiceImpl implements MP3Service {
 
@@ -37,6 +41,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
             throw new MP3Exception(e);
         }
         this.tag = mp3File.getID3v2TagAsv24();
+
     }
 
     @Override
@@ -92,7 +97,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         return mp3Utils.convertRating(Rating);
     }
 
-    public String getStringRating() {
+    public String getRatingAsString() {
         String rating = tag.getFirst(FieldKey.RATING);
         return rating;
     }
@@ -100,6 +105,86 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
     public boolean isCompilation() {
         String compilation = tag.getFirst(FieldKey.IS_COMPILATION);
         return "1".compareTo(compilation) ==  0;
+    }
+
+    @Override
+    public String getUrl() {
+        //  WXXX:DISCOGS_ARTIST
+        String url = tag.getFirst(FieldKey.URL_DISCOGS_ARTIST_SITE);
+        return url;
+    }
+
+    @Override
+    public String getEncoder() {
+        // TENC
+        String encoder = tag.getFirst(FieldKey.ENCODER);
+        return encoder;
+   }
+
+    @Override
+    public String getKey() {
+        // TKEY
+        String key = tag.getFirst(FieldKey.KEY);
+        return key;
+    }
+
+    @Override
+    public String getLyrics() {
+        // USLT
+        String lyrics = tag.getFirst(FieldKey.LYRICS);
+        return lyrics;
+    }
+
+    @Override
+    public String getAudioSourceUrl() {
+        // WOAS
+        String audioSourceUrl = null;
+        ID3v24Tag tag = mp3File.getID3v2TagAsv24();
+        List<TagField> tags = tag.getFrame(ID3v24Frames.FRAME_ID_URL_SOURCE_WEB);
+        TagField tagField = null;
+        if (tags != null && tags.size() > 0) {
+            tagField = tags.get(0);
+            ID3v24Frame frame = (ID3v24Frame) tagField;
+            audioSourceUrl = frame.getContent();
+        }
+        return audioSourceUrl;
+    }
+
+    @Override
+    public String getAudiofileUrl() {
+        // WOAF
+        return null;
+    }
+
+    @Override
+    public String getArtistUrl() {
+        // WOAR
+        String artistUrl = tag.getFirst(FieldKey.URL_OFFICIAL_ARTIST_SITE);
+        return artistUrl;
+    }
+
+    @Override
+    public String getCommercialUrl() {
+        String commercialUrl = tag.getFirst(FieldKey.URL_WIKIPEDIA_RELEASE_SITE);
+        return commercialUrl;
+    }
+
+    @Override
+    public String getPaymentUrl() {
+        String paymentUrl = tag.getFirst(FieldKey.URL_WIKIPEDIA_ARTIST_SITE);
+        return paymentUrl;
+    }
+
+    @Override
+    public String getPublisherUrl() {
+        String publisherUrl = tag.getFirst(FieldKey.URL_WIKIPEDIA_ARTIST_SITE);
+        return publisherUrl;
+    }
+
+    @Override
+    public String getRadiostationUrl() {
+        String radioStationUrl = tag.getFirst(FieldKey.URL_WIKIPEDIA_ARTIST_SITE);
+        return radioStationUrl;
     }
 
     @Override
@@ -228,6 +313,19 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         }
     }
 
+    @Override
+    public void setAudioSourceUrl(String audioSourceUrl) {
+        // WOAS
+        ID3v24Tag tag = mp3File.getID3v2TagAsv24();
+            tag.removeFrame(ID3v24Frames.FRAME_ID_URL_SOURCE_WEB);
+        if (audioSourceUrl != null){
+            ID3v24Frame newFrame = tag.createFrame(ID3v24Frames.FRAME_ID_URL_SOURCE_WEB);
+//            newFrame.setContent(audioSourceUrl);
+//            tag.setFrame(newFrame);
+        }
+//        List<TagField> tags = tag.getFrame(ID3v24Frames.FRAME_ID_URL_SOURCE_WEB);
+    }
+
     public void commit() throws MP3Exception {
         this.mp3File.setID3v2Tag(tag);
         try {
@@ -240,4 +338,18 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
 
     }
 
+    public void cleanupTag(String tagToCheck, String key){
+        FieldKey fieldKey = null;
+        try {
+            fieldKey = FieldKey.valueOf(key);
+            String tag = this.tag.getFirst(fieldKey);
+            if (tag != null && tag.compareToIgnoreCase(TAG_TO_DELETE) == 0){
+                this.tag.deleteField(fieldKey);
+                //id3v2Tag.clearFrameSet(Key);
+            }
+        }
+        catch (IllegalArgumentException ex){
+            System.err.println("Invalid MP3 Key: " + key);
+        }
+    }
 }

@@ -25,7 +25,8 @@ import be.home.model.MovieBO;
 import be.home.model.MovieTO;
 import be.home.model.json.AlbumError;
 import be.home.model.json.MP3Settings;
-import com.mpatric.mp3agic.*;
+import com.mpatric.mp3agic.ID3v2;
+import com.mpatric.mp3agic.Mp3File;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
@@ -38,8 +39,10 @@ import org.jaudiotagger.audio.exceptions.CannotReadException;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.audio.mp3.MP3File;
-import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.TagException;
+import org.jaudiotagger.tag.TagField;
+import org.jaudiotagger.tag.id3.ID3v24Frame;
+import org.jaudiotagger.tag.id3.ID3v24Frames;
 import org.jaudiotagger.tag.id3.ID3v24Tag;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.xml.sax.InputSource;
@@ -338,7 +341,9 @@ private static void TestMovieFile(){
                 mp3File.setCompilation(true);
                 mp3File.setYear("2022");
                 mp3File.setRating(4);
-                System.out.println(mp3File.getStringRating());
+                System.out.println(mp3File.getRatingAsString());
+                System.out.println(mp3File.getAudioSourceUrl());
+                mp3File.setAudioSourceUrl("NRJ/SNW");
                 mp3File.commit();
             } catch (MP3Exception e) {
                 e.printStackTrace();
@@ -367,8 +372,20 @@ private static void TestMovieFile(){
             e.printStackTrace();
         }
         //File fileToSave = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\11 New.mp3");
-        try {
+        //try {
             ID3v24Tag tag = mp3File.getID3v2TagAsv24();
+            List<TagField> tags = tag.getFrame(ID3v24Frames.FRAME_ID_URL_SOURCE_WEB);
+            TagField tmp = null;
+            if (tags != null && tags.size() > 0) {
+                tmp = tags.get(0);
+                System.out.println(tmp.getId());
+            }
+            tags = tag.getFrame(ID3v24Frames.FRAME_ID_ARTIST);
+            tmp = tags.get(0);
+            ID3v24Frame frame = (ID3v24Frame) tmp;
+            String content = frame.getContent();
+            System.out.println(content);
+             /*
             tag.setField(FieldKey.ARTIST,"Kings of Leon");
             tag.deleteField(FieldKey.DISC_NO);
             tag.setField(FieldKey.IS_COMPILATION,"1");
@@ -383,11 +400,13 @@ private static void TestMovieFile(){
             //tag.setField(FieldKey.RATING,"50");
             mp3File.setID3v2Tag(tag);
             mp3File.save();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (TagException e) {
-            e.printStackTrace();
-        }
+            */
+        //} catch (IOException e) {
+        //    e.printStackTrace();
+        //} catch (TagException e) {
+        //    e.printStackTrace();
+        //}
+
     }
 
         private static void test() throws IOException, NoSuchFieldException, IllegalAccessException, SAXException, ParserConfigurationException, DocumentException {
