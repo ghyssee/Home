@@ -337,13 +337,20 @@ private static void TestMovieFile(){
             MP3Service mp3File = null;
             try {
                 mp3File = new MP3JAudioTaggerServiceImpl(newFile.getAbsolutePath());
+                System.out.println(mp3File.getComment());
+                System.out.println(mp3File.getArtist());
                 mp3File.setArtist("Kings of Leon");
+                mp3File.setTitle("On The Fly");
                 mp3File.setCompilation(true);
                 mp3File.setYear("2022");
                 mp3File.setRating(4);
+                mp3File.setDisc("5");
+                mp3File.setTrack("80");
+                mp3File.setAlbumArtist("Various Artists");
+                mp3File.clearAlbumImage();
                 System.out.println(mp3File.getRatingAsString());
                 System.out.println(mp3File.getAudioSourceUrl());
-                mp3File.setAudioSourceUrl("NRJ/SNW");
+                mp3File.cleanupTags();
                 mp3File.commit();
             } catch (MP3Exception e) {
                 e.printStackTrace();

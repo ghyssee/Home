@@ -188,82 +188,104 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
     }
 
     @Override
+    public String getDiscTotal() {
+        String discTotal = tag.getFirst(FieldKey.DISC_TOTAL);
+        return discTotal;
+    }
+
+    @Override
     public void setArtist(String artist) throws MP3Exception {
         this.tag.deleteField(FieldKey.ARTIST);
-        try {
-            this.tag.addField(FieldKey.ARTIST, artist);
-        } catch (FieldDataInvalidException e) {
-            throw new MP3Exception(e);
+        if (artist != null) {
+            try {
+                this.tag.addField(FieldKey.ARTIST, artist);
+            } catch (FieldDataInvalidException e) {
+                throw new MP3Exception(e);
+            }
         }
     }
 
     @Override
     public void setTitle(String title) throws MP3Exception {
         this.tag.deleteField(FieldKey.TITLE);
-        try {
-            this.tag.addField(FieldKey.TITLE, title);
-        } catch (FieldDataInvalidException e) {
-            throw new MP3Exception(e);
+        if (title != null) {
+            try {
+                this.tag.addField(FieldKey.TITLE, title);
+            } catch (FieldDataInvalidException e) {
+                throw new MP3Exception(e);
+            }
         }
     }
 
     @Override
     public void setTrack(String track) throws MP3Exception {
         this.tag.deleteField(FieldKey.TRACK);
-        try {
-            this.tag.addField(FieldKey.TRACK, track);
-        } catch (FieldDataInvalidException e) {
-            throw new MP3Exception(e);
+        if (track != null) {
+            try {
+                this.tag.addField(FieldKey.TRACK, track);
+            } catch (FieldDataInvalidException e) {
+                throw new MP3Exception(e);
+            }
         }
     }
 
     @Override
     public void setDisc(String disc) throws MP3Exception {
         this.tag.deleteField(FieldKey.DISC_NO);
-        try {
-            this.tag.addField(FieldKey.DISC_NO, disc);
-        } catch (FieldDataInvalidException e) {
-            throw new MP3Exception(e);
+        if (disc != null) {
+            try {
+                this.tag.addField(FieldKey.DISC_NO, disc);
+            } catch (FieldDataInvalidException e) {
+                throw new MP3Exception(e);
+            }
         }
     }
 
     @Override
     public void setAlbum(String album) throws MP3Exception {
         this.tag.deleteField(FieldKey.ALBUM);
-        try {
-            this.tag.addField(FieldKey.ALBUM, album);
-        } catch (FieldDataInvalidException e) {
-            throw new MP3Exception(e);
+        if (album != null) {
+            try {
+                this.tag.addField(FieldKey.ALBUM, album);
+            } catch (FieldDataInvalidException e) {
+                throw new MP3Exception(e);
+            }
         }
     }
 
     @Override
     public void setAlbumArtist(String albumArtist) throws MP3Exception {
         this.tag.deleteField(FieldKey.ALBUM_ARTIST);
-        try {
-            this.tag.addField(FieldKey.ALBUM_ARTIST, albumArtist);
-        } catch (FieldDataInvalidException e) {
-            throw new MP3Exception(e);
+        if (albumArtist != null) {
+            try {
+                this.tag.addField(FieldKey.ALBUM_ARTIST, albumArtist);
+            } catch (FieldDataInvalidException e) {
+                throw new MP3Exception(e);
+            }
         }
     }
 
     @Override
     public void setYear(String year) throws MP3Exception {
         this.tag.deleteField(FieldKey.YEAR);
-        try {
-            this.tag.addField(FieldKey.ARTIST, year);
-        } catch (FieldDataInvalidException e) {
-            throw new MP3Exception(e);
+        if (year != null) {
+            try {
+                this.tag.addField(FieldKey.YEAR, year);
+            } catch (FieldDataInvalidException e) {
+                throw new MP3Exception(e);
+            }
         }
     }
 
     @Override
     public void setComment(String comment) throws MP3Exception {
         this.tag.deleteField(FieldKey.COMMENT);
-        try {
-            this.tag.addField(FieldKey.COMMENT, comment);
-        } catch (FieldDataInvalidException e) {
-            throw new MP3Exception(e);
+        if (comment != null) {
+            try {
+                this.tag.addField(FieldKey.COMMENT, comment);
+            } catch (FieldDataInvalidException e) {
+                throw new MP3Exception(e);
+            }
         }
     }
 
@@ -314,16 +336,67 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
     }
 
     @Override
-    public void setAudioSourceUrl(String audioSourceUrl) {
+    public void setDiscTotal(String discTotal) throws MP3Exception {
+        this.tag.deleteField(FieldKey.DISC_TOTAL);
+        if (discTotal != null) {
+
+            try {
+                this.tag.addField(FieldKey.DISC_TOTAL, discTotal);
+            } catch (FieldDataInvalidException e) {
+                throw new MP3Exception(e);
+            }
+
+        }
+    }
+
+    private void ClearAudioSourceUrl() {
         // WOAS
-        ID3v24Tag tag = mp3File.getID3v2TagAsv24();
-            tag.removeFrame(ID3v24Frames.FRAME_ID_URL_SOURCE_WEB);
-        if (audioSourceUrl != null){
-            ID3v24Frame newFrame = tag.createFrame(ID3v24Frames.FRAME_ID_URL_SOURCE_WEB);
+        cleanupTag(ID3v24Frames.FRAME_ID_URL_SOURCE_WEB);
+
+        //if (audioSourceUrl != null){
+//            ID3v24Frame newFrame = tag.createFrame(ID3v24Frames.FRAME_ID_URL_SOURCE_WEB);
 //            newFrame.setContent(audioSourceUrl);
 //            tag.setFrame(newFrame);
-        }
+        //}
 //        List<TagField> tags = tag.getFrame(ID3v24Frames.FRAME_ID_URL_SOURCE_WEB);
+    }
+
+    @Override
+    public void cleanupTags() {
+        cleanupTag(ID3v24Frames.FRAME_ID_URL_SOURCE_WEB); // WOAS
+        cleanupTag(ID3v24Frames.FRAME_ID_COMMENT); // COMM
+        cleanupTag(ID3v24Frames.FRAME_ID_USER_DEFINED_URL); // WXXX
+        cleanupTag(ID3v24Frames.FRAME_ID_ENCODEDBY); // TENC
+        cleanupTag(ID3v24Frames.FRAME_ID_INITIAL_KEY); // TKEY
+        cleanupTag(ID3v24Frames.FRAME_ID_UNSYNC_LYRICS); // USLT
+        cleanupTag(ID3v24Frames.FRAME_ID_URL_SOURCE_WEB); // WOAS
+        cleanupTag(ID3v24Frames.FRAME_ID_URL_FILE_WEB);  // WOAF
+        cleanupTag(ID3v24Frames.FRAME_ID_URL_ARTIST_WEB); // WOAR
+        cleanupTag(ID3v24Frames.FRAME_ID_URL_COMMERCIAL); // WCOM
+        cleanupTag(ID3v24Frames.FRAME_ID_URL_PAYMENT); // WPAY
+        cleanupTag(ID3v24Frames.FRAME_ID_URL_PUBLISHERS); // WPUB
+        cleanupTag(ID3v24Frames.FRAME_ID_URL_OFFICIAL_RADIO); // WORS
+        cleanupTag(ID3v24Frames.FRAME_ID_RADIO_NAME); // TRSN
+        cleanupTag(ID3v24Frames.FRAME_ID_RADIO_OWNER); // TRSO
+    }
+
+    public void cleanupTag(String frameId){
+        ID3v24Tag tag = mp3File.getID3v2TagAsv24();
+        List<TagField> tags = tag.getFrame(frameId);
+        TagField tagField = null;
+        String value = null;
+        if (tags != null && tags.size() > 0) {
+            tagField = tags.get(0);
+            ID3v24Frame frame = (ID3v24Frame) tagField;
+            value = frame.getContent();
+            if (value != null && value.compareToIgnoreCase(TAG_TO_DELETE) == 0){
+                tag.removeFrame(frameId);
+            }
+        }
+    }
+
+    public void clearAlbumImage() {
+        this.tag.deleteArtworkField();
     }
 
     public void commit() throws MP3Exception {
@@ -336,20 +409,5 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
             throw new MP3Exception(e);
         }
 
-    }
-
-    public void cleanupTag(String tagToCheck, String key){
-        FieldKey fieldKey = null;
-        try {
-            fieldKey = FieldKey.valueOf(key);
-            String tag = this.tag.getFirst(fieldKey);
-            if (tag != null && tag.compareToIgnoreCase(TAG_TO_DELETE) == 0){
-                this.tag.deleteField(fieldKey);
-                //id3v2Tag.clearFrameSet(Key);
-            }
-        }
-        catch (IllegalArgumentException ex){
-            System.err.println("Invalid MP3 Key: " + key);
-        }
     }
 }

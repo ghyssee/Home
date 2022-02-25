@@ -194,7 +194,7 @@ public class MP3Utils {
         id3v2Tag.setArtist(id3v2.getArtist());
         id3v2Tag.setArtistUrl(id3v2.getArtistUrl());
         id3v2Tag.setAudiofileUrl(id3v2.getAudiofileUrl());
-        id3v2Tag.setAudioSourceUrl(id3v2.getAudioSourceUrl());
+        id3v2Tag.ClearAudioSourceUrl(id3v2.getAudioSourceUrl());
         try {
             id3v2Tag.setBPM(id3v2.getBPM());
         }

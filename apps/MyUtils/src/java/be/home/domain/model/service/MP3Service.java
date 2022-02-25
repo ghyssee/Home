@@ -28,6 +28,7 @@ public interface MP3Service {
     public String getPaymentUrl();
     public String getPublisherUrl();
     public String getRadiostationUrl();
+    public String getDiscTotal();
 
     public  void setArtist(String artist) throws MP3Exception;
     public void setTitle(String title) throws MP3Exception;
@@ -39,8 +40,10 @@ public interface MP3Service {
     public void setComment(String comment) throws MP3Exception;
     public void setRating(int Rating) throws MP3Exception;
     public void setCompilation(boolean compilation) throws MP3Exception;
-    public void setAudioSourceUrl(String audioSourceUrl);
+    public void setDiscTotal(String discTotal) throws MP3Exception;
+    public void cleanupTags();
+    public void clearAlbumImage();
 
     public void commit() throws MP3Exception;
-    public void cleanupTag(String tagToCheck, String key);
+    public void cleanupTag(String frameId);
 }

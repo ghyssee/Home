@@ -279,14 +279,7 @@ public class MP3Processor extends BatchJobV2 {
     private void readMP3File(AlbumInfo.Config album, MP3Settings mp3Settings, AlbumInfo.Track track, String fileName, String prefixFileName) throws InvalidDataException, IOException, UnsupportedTagException, NotSupportedException {
         Mp3File mp3file = new Mp3File(fileName);
         ID3v2 id3v2Tag = MP3Utils.getId3v2Tag(mp3file);
-        /*
-        if (mp3file.hasId3v2Tag()) {
-            id3v2Tag = mp3file.getId3v2Tag();
-        }
-        else {
-            id3v2Tag =  new ID3v24Tag();
-            mp3file.setId3v2Tag(id3v2Tag);
-        }*/
+
         System.out.println("Track: " + id3v2Tag.getTrack());
         System.out.println("NEW Track: " + MP3Helper.getInstance().formatTrack(album, track.track));
         System.out.println(StringUtils.repeat('=', 100));
@@ -345,16 +338,6 @@ public class MP3Processor extends BatchJobV2 {
             newFile = new File(Setup.getInstance().getFullPath(Constants.Path.NEW) + File.separator + prefixFileName + originalFile.getName());
         }
         System.out.println("New File " + newFile);
-        //if (track.artist.contains("Λ")){
-        //    id3v2Tag.setArtist(track.artist.replaceAll("Λ", "&"));
-        //}
-        //mp3file.save(newFile.getAbsolutePath());
-        //if (originalFile.delete()){
-        //   newFile.renameTo(originalFile);
-        //}
-        //else {
-        //  System.err.println("There was a problem deleting the file " + fileName);
-        //}*/
         mp3file.save(newFile.getAbsolutePath());
     }
 
