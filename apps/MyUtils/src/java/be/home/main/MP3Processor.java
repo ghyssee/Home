@@ -3,6 +3,9 @@ package be.home.main;
 import be.home.common.mp3.MP3Utils;
 import be.home.common.utils.MyFileWriter;
 import be.home.domain.model.ArtistSongItem;
+import be.home.domain.model.service.MP3Exception;
+import be.home.domain.model.service.MP3JAudioTaggerServiceImpl;
+import be.home.domain.model.service.MP3Service;
 import be.home.mezzmo.domain.model.Compilation;
 import be.home.model.json.AlbumInfo;
 import be.home.model.ConfigTO;
@@ -234,49 +237,7 @@ public class MP3Processor extends BatchJobV2 {
         log.info("Finished processing MP3s");
     }
 
-    private void readMP3FileOld(AlbumInfo.Config album, AlbumInfo.Track track, String fileName, String prefixFileName) throws InvalidDataException, IOException, UnsupportedTagException, NotSupportedException {
-        Mp3File mp3file = new Mp3File(fileName);
-        File f = new File(fileName);
-        AudioFile af = null;
-        try {
-            af = AudioFileIO.read(f);
-            Tag tag = af.getTag();
-
-            tag.deleteField(FieldKey.TRACK);
-            tag.setField(FieldKey.TRACK, MP3Helper.getInstance().formatTrack(album, track.track));
-            tag.deleteField(FieldKey.ARTIST);
-            tag.setField(FieldKey.ARTIST, track.artist);
-            tag.deleteField(FieldKey.TITLE);
-            tag.setField(FieldKey.TITLE, track.title);
-            tag.deleteField(FieldKey.ALBUM);
-            tag.setField(FieldKey.ALBUM, album.album);
-            tag.deleteField(FieldKey.IS_COMPILATION);
-            tag.setField(FieldKey.IS_COMPILATION, Compilation.TRUE.getValue());
-            tag.deleteField(FieldKey.ALBUM_ARTIST);
-            tag.setField(FieldKey.ALBUM_ARTIST, "Various Artists");
-            if (StringUtils.isBlank(track.cd)){
-                tag.deleteField(FieldKey.DISC_NO);
-            }
-            else if (album.total > 1) {
-                tag.setField(FieldKey.DISC_NO, track.cd);
-            }
-            tag.deleteField(FieldKey.COVER_ART);
-            af.commit();
-        } catch (CannotReadException e) {
-            e.printStackTrace();
-        } catch (TagException e) {
-            e.printStackTrace();
-        } catch (ReadOnlyFileException e) {
-            e.printStackTrace();
-        } catch (InvalidAudioFrameException e) {
-            e.printStackTrace();
-        } catch (CannotWriteException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    private void readMP3File(AlbumInfo.Config album, MP3Settings mp3Settings, AlbumInfo.Track track, String fileName, String prefixFileName) throws InvalidDataException, IOException, UnsupportedTagException, NotSupportedException {
+    private void readMP3FileOld(AlbumInfo.Config album, MP3Settings mp3Settings, AlbumInfo.Track track, String fileName, String prefixFileName) throws InvalidDataException, IOException, UnsupportedTagException, NotSupportedException {
         Mp3File mp3file = new Mp3File(fileName);
         ID3v2 id3v2Tag = MP3Utils.getId3v2Tag(mp3file);
 
@@ -339,6 +300,66 @@ public class MP3Processor extends BatchJobV2 {
         }
         System.out.println("New File " + newFile);
         mp3file.save(newFile.getAbsolutePath());
+    }
+
+
+    private void readMP3File(AlbumInfo.Config album, MP3Settings mp3Settings, AlbumInfo.Track track, String fileName, String prefixFileName) throws InvalidDataException, IOException, UnsupportedTagException, NotSupportedException {
+
+        File newFile;
+        File originalFile = new File(fileName);
+        if (mp3Settings.filename.renameEnabled){
+            String newFilename = constructFilename(mp3Settings, album, track, FilenameUtils.getExtension(fileName));
+            newFile = new File(Setup.getInstance().getFullPath(Constants.Path.NEW) + File.separator  + newFilename);
+        }
+        else {
+            newFile = new File(Setup.getInstance().getFullPath(Constants.Path.NEW) + File.separator + prefixFileName + originalFile.getName());
+        }
+
+        Files.copy(originalFile.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+        try {
+            MP3Service mp3File = new MP3JAudioTaggerServiceImpl(fileName);
+            System.out.println("Track: " + mp3File.getTrack());
+            System.out.println("NEW Track: " + MP3Helper.getInstance().formatTrack(album, track.track));
+            System.out.println(StringUtils.repeat('=', 100));
+            System.out.println("Artist: " + mp3File.getArtist());
+            System.out.println("NEW Artist: " + track.artist);
+            System.out.println(StringUtils.repeat('=', 100));
+            System.out.println("Title: " + mp3File.getTitle());
+            System.out.println("NEW Title: " + track.title);
+            System.out.println(StringUtils.repeat('=', 100));
+
+            if (StringUtils.isNotBlank(album.album)){
+                mp3File.setAlbum(album.album);
+            }
+            if (StringUtils.isBlank(mp3Settings.albumArtist)) {
+                // compilation cd //
+                mp3File.setCompilation(true);
+                mp3File.setAlbumArtist("Various Artists");
+            }
+            else {
+                mp3File.setAlbumArtist(mp3Settings.albumArtist);
+            }
+            if (StringUtils.isNotBlank(mp3Settings.albumYear)) {
+                mp3File.setYear(mp3Settings.albumYear);
+            }
+            mp3File.setTrack(MP3Helper.getInstance().formatTrack(album, track.track));
+            mp3File.setArtist(track.artist);
+            mp3File.setTitle(track.title);
+            mp3File.cleanupTags();
+            mp3File.clearAlbumImage();
+            if (album.total > 1) {
+                mp3File.setDisc(track.cd);
+            }
+            else {
+                mp3File.setDisc(null);
+            }
+            mp3File.commit();
+
+        } catch (MP3Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println("New File " + newFile);
     }
 
     private void cleanUpTag(ID3v2 id3v2Tag, String tagToCheck, String Key){

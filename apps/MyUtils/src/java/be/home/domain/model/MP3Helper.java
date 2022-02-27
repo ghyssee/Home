@@ -11,13 +11,14 @@ import be.home.mezzmo.domain.model.json.MultiArtistConfig;
 import be.home.model.json.AlbumInfo;
 import be.home.mezzmo.domain.model.json.MP3Prettifier;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.WordUtils;
 import org.apache.log4j.Logger;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static org.apache.commons.text.WordUtils.capitalizeFully;
 
 /**
  * Created by ghyssee on 23/06/2016.
@@ -101,7 +102,7 @@ public class MP3Helper {
     public String prettifyString(String text){
         String prettifiedText = replaceSpecialCharacters(text);
         if (StringUtils.isNotBlank(text)) {
-            prettifiedText = WordUtils.capitalizeFully(prettifiedText, startChars);
+            prettifiedText = capitalizeFully(prettifiedText, startChars);
         }
         return prettifiedText;
     }
