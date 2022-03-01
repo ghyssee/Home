@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Properties>
+        <Property name="LOG_PATTERN">%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} %p %m%n</Property>
+		<Property name="LOG_DIR">C:/temp/logs</Property>
+    </Properties>
+<RollingFile
+  name="rollingFile"
+  fileName="${LOG_DIR}/application.log"
+  filePattern="${LOG_DIR}/application.%i.log.gz"
+  ignoreExceptions="false">
+  <PatternLayout>
+      <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %m%n</Pattern>
+  </PatternLayout>
+  <Policies>
+      <TimeBasedTriggeringPolicy interval="1"/>
+  </Policies>
+  <DefaultRolloverStrategy max="5" />
+</RollingFile>
+
+  <Appenders>
+    <Console name="STDOUT" target="SYSTEM_OUT">
+      <!-- <PatternLayout pattern="%d %-5p [%t] %C{2} (%F:%L) - %m%n"/> -->
+	  <PatternLayout pattern="${LOG_PATTERN}"/>
+    </Console>
+  </Appenders>
+  <Loggers>
+    <Logger name="org.apache.log4j.xml" level="info"/>
+	<logger name="org.springframework" level="warn"/> 
+	 <logger name="net.sf.jasperreports" level="warn"/> 
+	 <logger name="log4j.category.velocity" level="warn"/>
+	<Root level="debug">
+      <AppenderRef ref="STDOUT"/>
+      <AppenderRef ref="rollingFile"/>
+    </Root>
+  </Loggers>
+</Configuration>
