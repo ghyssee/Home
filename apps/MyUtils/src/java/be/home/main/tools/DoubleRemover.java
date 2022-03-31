@@ -9,7 +9,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.input.BOMInputStream;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;

@@ -2,7 +2,7 @@ package be.home.main.tools;
 
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.FileUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;

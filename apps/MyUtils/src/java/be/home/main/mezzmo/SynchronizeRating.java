@@ -1,6 +1,5 @@
 package be.home.main.mezzmo;
 
-import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.utils.FileUtils;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.MGOFileTO;
@@ -12,11 +11,11 @@ import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 
 import be.home.common.utils.JSONUtils;
-import be.home.domain.model.MP3Helper;
 import be.home.model.json.MP3Settings;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.exceptions.CannotReadException;

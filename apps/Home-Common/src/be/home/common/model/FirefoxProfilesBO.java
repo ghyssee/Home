@@ -3,7 +3,8 @@ package be.home.common.model;
 import be.home.common.constants.Constants;
 import be.home.common.model.json.FirefoxProfiles;
 import be.home.common.utils.JSONUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.List;
@@ -13,7 +14,7 @@ public class FirefoxProfilesBO {
     private static final String fileCode = Constants.JSON.FIREFOXPROFILES;
     private static FirefoxProfilesBO firefoxProfilesBO = new FirefoxProfilesBO();
     private static FirefoxProfiles firefoxProfiles;
-    private static final Logger log = Logger.getLogger(FirefoxProfilesBO.class);
+    private static final Logger log = LogManager.getLogger();
 
     private FirefoxProfilesBO() {
         firefoxProfiles = (FirefoxProfiles) JSONUtils.openJSONWithCode(fileCode, FirefoxProfiles.class);

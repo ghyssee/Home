@@ -15,7 +15,8 @@ import be.home.model.json.MP3Settings;
 import com.mpatric.mp3agic.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,7 +39,7 @@ public class MP3TagUtils {
     public boolean update = false;
 
     private MP3Settings.Mezzmo.Mp3Checker.RelativePath relativePath;
-    private static final Logger log = Logger.getLogger(MP3TagUtils.class);
+    private static final Logger log = LogManager.getLogger();
     public static final String SUBST_A1 = "H:\\Shared\\Mijn Muziek\\Eric\\iPod\\";
     public static final String SUBST_B1 = "T:\\My Music\\iPod\\";
     public static final String SUBST_A = "H:\\Shared\\Mijn Muziek\\";

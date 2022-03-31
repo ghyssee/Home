@@ -4,7 +4,9 @@ import be.home.mezzmo.domain.dao.jdbc.MezzmoAlbumArtistDAOImpl;
 import be.home.mezzmo.domain.model.MGOAlbumArtistTO;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.Result;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.sql.SQLException;
@@ -14,7 +16,7 @@ import java.util.List;
  * Created by Gebruiker on 12/03/2017.
  */
 public class AlbumArtistBO {
-    private static final Logger log = Logger.getLogger(AlbumArtistBO.class);
+    private static final Logger log = LogManager.getLogger();
 
     public MGOAlbumArtistTO findAlbumArtist(MGOAlbumArtistTO albumArtist){
 

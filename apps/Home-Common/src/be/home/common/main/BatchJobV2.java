@@ -14,8 +14,6 @@ import java.security.CodeSource;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
-
 public abstract class BatchJobV2 extends LoggingConfiguration {
 
     public static String workingDir = System.getProperty("user.dir");

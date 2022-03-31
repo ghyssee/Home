@@ -11,7 +11,7 @@ import be.home.common.utils.JSONUtils;
 import be.home.domain.model.MP3Helper;
 import be.home.model.json.MP3PreprocessorConfig;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.nio.charset.Charset;

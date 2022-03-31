@@ -17,7 +17,8 @@ import be.home.model.json.AlbumError;
 import be.home.model.json.MP3Settings;
 import be.home.model.json.SongCorrections;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import java.io.*;

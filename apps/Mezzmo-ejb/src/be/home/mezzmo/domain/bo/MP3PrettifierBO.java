@@ -4,7 +4,8 @@ import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
 import be.home.common.utils.JSONUtils;
 import be.home.mezzmo.domain.model.json.MP3Prettifier;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -16,7 +17,7 @@ public class MP3PrettifierBO {
 
     private static MP3PrettifierBO mp3PrettifierBO = new MP3PrettifierBO();
     private static MP3Prettifier mp3Prettifier;
-    private static final Logger log = Logger.getLogger(MP3PrettifierBO.class);
+    private static final Logger log = LogManager.getLogger();
 
     private MP3PrettifierBO() {
         mp3Prettifier = (MP3Prettifier) JSONUtils.openJSONWithCode(Constants.JSON.MP3PRETTIFIER, MP3Prettifier.class);

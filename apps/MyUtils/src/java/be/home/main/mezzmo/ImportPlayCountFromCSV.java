@@ -22,7 +22,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;

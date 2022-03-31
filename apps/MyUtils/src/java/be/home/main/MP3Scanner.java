@@ -33,9 +33,9 @@ public class MP3Scanner extends BatchJobV2 {
     public static void main(String args[]) {
 
         MP3Scanner instance = new MP3Scanner();
-        instance.printHeader("DIRLIST " + VERSION, "=");
+        instance.printHeader("MP3Scanner " + VERSION, "=");
         //Map <String,String> params = instance.validateParams(args, PARAMS);
-        instance.printHeader("Result: ", "");
+        instance.printHeader("MP3Scanner: ", "");
         //instance.start(instance.getParam(PARAMS[BASE].getId(), params), instance.getParam(PARAMS[OUTPUT].getId(), params), instance.getParam(PARAMS[INDENT_ID].getId(), params));
         instance.start();
     }

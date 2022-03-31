@@ -28,7 +28,8 @@ import be.home.model.json.MP3Settings;
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.Mp3File;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.io.OutputFormat;

@@ -1,7 +1,7 @@
 package be.home.main;
 
 import be.home.common.main.BatchJobV2;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

@@ -6,7 +6,8 @@ import be.home.mezzmo.domain.model.json.ArtistSongRelationship;
 import be.home.mezzmo.domain.model.json.Artists;
 import be.home.mezzmo.domain.model.json.MultiArtistConfig;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public class ArtistSongRelationshipBO {
 
     private static ArtistSongRelationshipBO artistSongRelationshipBO = null;
     private static ArtistSongRelationship artistSongRelationship;
-    private static final Logger log = Logger.getLogger(ArtistSongRelationshipBO.class);
+    private static final Logger log = LogManager.getLogger();
     public static List<ArtistSongRelationship.ArtistSongRelation> artistSongRelationshipList;
 
 

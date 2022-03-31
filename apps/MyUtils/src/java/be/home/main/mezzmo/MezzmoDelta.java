@@ -1,7 +1,6 @@
 package be.home.main.mezzmo;
 
 import be.home.common.dao.jdbc.Databases;
-import be.home.common.dao.jdbc.SQLiteJDBC;
 import be.home.common.main.BatchJobV2;
 import be.home.common.model.TransferObject;
 import be.home.domain.model.ArtistSongItem;
@@ -10,7 +9,8 @@ import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.eric.MezzmoFileTO;
 import be.home.mezzmo.domain.service.EricServiceImpl;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import java.sql.SQLException;

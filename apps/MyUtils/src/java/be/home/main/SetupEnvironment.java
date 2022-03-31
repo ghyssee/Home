@@ -1,15 +1,13 @@
 package be.home.main;
 
-import be.home.common.exceptions.ApplicationException;
 import be.home.common.utils.FileUtils;
 import be.home.model.ConfigTO;
 import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
 import be.home.common.main.BatchJobV2;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import java.io.*;
-import java.nio.file.*;
 
 /**
  * Created by ghyssee on 20/02/2015.
