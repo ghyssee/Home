@@ -5,7 +5,6 @@ import be.home.common.constants.Constants;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.runtime.RuntimeConstants;
 
 import java.io.BufferedWriter;
 import java.io.IOException;

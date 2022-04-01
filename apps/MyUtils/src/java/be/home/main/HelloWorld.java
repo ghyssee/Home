@@ -330,8 +330,8 @@ private static void TestMovieFile(){
     }
 
     private static void testJAudioTagger(){
-        File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\01 Test.mp3");
-        File newFile = new File("C:\\My Data\\tmp\\Java\\MP3Processor\\new" + File.separator + file.getName());
+        File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\Stromae - Fils de joie   (3;15).mp3");
+        File newFile = new File("C:\\My Data\\tmp\\Java\\MP3Processor\\new" + File.separator + "test.mp3");
         try {
             Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
             MP3Service mp3File = null;
@@ -344,8 +344,8 @@ private static void TestMovieFile(){
                 mp3File.setCompilation(true);
                 mp3File.setYear("2022");
                 mp3File.setRating(4);
-                mp3File.setDisc("5");
-                mp3File.setTrack("80");
+                mp3File.setDisc(null);
+                mp3File.setTrack("10");
                 mp3File.setAlbumArtist("Various Artists");
                 mp3File.clearAlbumImage();
                 System.out.println(mp3File.getRatingAsString());

@@ -62,7 +62,10 @@
  <logger name="net.sf.jasperreports">
     <level value="warn"/> 
   </logger>
- <logger name="log4j.category.velocity">
+ <logger name="net.sf.jasperreports">
+    <level value="warn"/> 
+  </logger>
+  <logger name="org.apache.velocity">
     <level value="warn"/> 
   </logger>
  <root> 
