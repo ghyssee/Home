@@ -8,7 +8,9 @@ package be.home.mezzmo.domain.bo;
         import be.home.mezzmo.domain.model.json.MP3Prettifier;
         import be.home.mezzmo.domain.model.json.MultiArtistConfig;
         import org.apache.commons.lang3.StringUtils;
-        import org.apache.log4j.Logger;
+        import org.apache.logging.log4j.LogManager;
+        import org.apache.logging.log4j.Logger;
+
 
         import java.util.ArrayList;
         import java.util.Collections;
@@ -21,7 +23,7 @@ public class ArtistConfigBO {
 
     private static ArtistConfigBO artistConfigBO = new ArtistConfigBO();
     private static MultiArtistConfig multiArtistConfig;
-    private static final Logger log = Logger.getLogger(ArtistConfigBO.class);
+    private static final Logger log = LogManager.getLogger();
     private static Map<String, MultiArtistConfig.Splitter> mapSplitters;
     private static Map<String, MultiArtistConfig.Item> mapItems;
     private static String splitter;

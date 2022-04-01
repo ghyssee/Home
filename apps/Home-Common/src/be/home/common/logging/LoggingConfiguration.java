@@ -3,7 +3,9 @@ package be.home.common.logging;
 import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
 import be.home.common.main.BatchJobV2;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 
 import java.io.File;
 
@@ -12,24 +14,25 @@ public class LoggingConfiguration {
 
     public static Logger getMainLog(Class className){
         setLogFile(className.getSimpleName() + ".log");
-        Logger log = Logger.getLogger(className);
+        Logger log = LogManager.getLogger(className);
         return log;
     }
 
     public static Logger getLogger(Class className){
         if (log == null) {
-            log = Logger.getLogger(className);
+            log = log = LogManager.getLogger(className);
         }
         return log;
     }
 
     private static Logger setLogFile(String name){
-        String logFile = Setup.getInstance().getFullPath(Constants.Path.LOG) + File.separator + name;
-        System.setProperty("logfile.name", logFile);
+        String logDir = Setup.getInstance().getFullPath(Constants.Path.LOG);
+        System.setProperty("logDir", logDir);
+        System.setProperty("logFilename", name);
         System.setProperty("p6spy.config.logfile", Setup.getInstance().getFullPath(Constants.Path.LOG) + File.separator + "P6Spy." + name);
         java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.OFF);
-        Logger log = Logger.getLogger(BatchJobV2.class);
-        log.info("Setting Log4J Log file to:" + logFile);
+        Logger log = LogManager.getLogger(BatchJobV2.class);
+        log.info("Setting Log4J Log file to:" + logDir + File.separator + name);
         return log;
     }
 
@@ -38,7 +41,7 @@ public class LoggingConfiguration {
         System.setProperty("logfile.name", logFile);
         System.setProperty("p6spy.config.logfile", Setup.getInstance().getFullPath(Constants.Path.LOG) + File.separator + "P6Spy." + name);
         java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.OFF);
-        Logger log = Logger.getLogger(BatchJobV2.class);
+        Logger log = LogManager.getLogger((BatchJobV2.class));
         log.info("Setting Log4J Log file to:" + logFile);
         return log;
     }

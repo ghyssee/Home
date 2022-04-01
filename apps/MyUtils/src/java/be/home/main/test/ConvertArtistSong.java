@@ -12,7 +12,8 @@ import be.home.mezzmo.domain.bo.ArtistConfigBO;
 import be.home.mezzmo.domain.bo.ArtistSongRelationshipBO;
 import be.home.mezzmo.domain.model.json.*;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+
 import org.dom4j.DocumentException;
 import org.xml.sax.SAXException;
 
@@ -23,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static be.home.common.utils.JSONUtils.writeJsonFile;
 import static be.home.common.utils.JSONUtils.writeJsonFileWithCode;
 
 /**

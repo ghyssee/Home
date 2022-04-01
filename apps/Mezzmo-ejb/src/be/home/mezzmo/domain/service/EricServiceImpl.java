@@ -3,7 +3,8 @@ package be.home.mezzmo.domain.service;
 import be.home.common.dao.jdbc.Databases;
 import be.home.mezzmo.domain.bo.EricBO;
 import be.home.mezzmo.domain.model.eric.MezzmoFileTO;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -14,7 +15,7 @@ import java.util.Map;
  */
 public class EricServiceImpl {
     private static Map<Databases, EricServiceImpl> instances = new HashMap<>();
-    private static final Logger log = Logger.getLogger(MezzmoServiceImpl.class);
+    private static final Logger log = LogManager.getLogger();
     private Databases db = null;
 
     private EricServiceImpl() {

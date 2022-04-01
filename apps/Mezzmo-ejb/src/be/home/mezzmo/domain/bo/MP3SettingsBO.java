@@ -3,7 +3,8 @@ package be.home.mezzmo.domain.bo;
 import be.home.common.constants.Constants;
 import be.home.common.utils.JSONUtils;
 import be.home.model.json.MP3Settings;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
@@ -13,7 +14,7 @@ import java.io.IOException;
 public class MP3SettingsBO {
     private static MP3SettingsBO mp3SettingsBO = new MP3SettingsBO();
     private static MP3Settings mp3Settings;
-    private static final Logger log = Logger.getLogger(MP3SettingsBO.class);
+    private static final Logger log = LogManager.getLogger();
 
     private MP3SettingsBO() {
         mp3Settings = (MP3Settings) JSONUtils.openJSONWithCode(Constants.JSON.MP3SETTINGS, MP3Settings.class);

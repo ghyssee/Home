@@ -1,6 +1,6 @@
 package be.home.common.utils;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Created by Gebruiker on 22/12/2016.

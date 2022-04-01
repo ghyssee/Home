@@ -4,7 +4,8 @@ import be.home.common.model.UltratopConfigBO;
 import be.home.model.M3uTO;
 import be.home.selenium.common.FirefoxDriverSetup;
 import org.apache.commons.text.StringEscapeUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.*;
@@ -18,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 public class UltratopList {
 
-    private static final Logger log = Logger.getLogger(UltratopList.class);
+    private static final Logger log = LogManager.getLogger();
 
     public List<M3uTO> start(Date strDate) throws IOException {
         String computerName = be.home.common.utils.NetUtils.getHostName();

@@ -3,7 +3,8 @@ package be.home.common.utils;
 import be.home.common.exceptions.ApplicationException;
 import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.net.URLEncoder;
@@ -21,7 +22,7 @@ import static java.nio.file.FileVisitOption.FOLLOW_LINKS;
 
 public class FileUtils {
 
-	private static final Logger log = Logger.getLogger(FileUtils.class);
+	private static final Logger log = LogManager.getLogger();
     public static final boolean REMOVE_EMPTY_LINES = true;
     public static final String UTF8_BOM = "\uFEFF";
 

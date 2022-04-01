@@ -5,7 +5,9 @@ import be.home.mezzmo.domain.model.*;
 import be.home.mezzmo.domain.model.json.PlaylistSetup;
 import be.home.mezzmo.domain.model.playlist.*;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.util.ArrayList;
@@ -16,7 +18,7 @@ import java.util.List;
  */
 public class PlaylistBO {
 
-    private static final Logger log = Logger.getLogger(PlaylistBO.class);
+    private static final Logger log = LogManager.getLogger();
 
     public List<String> validatePlaylist(PlaylistSetup.PlaylistRecord pr){
         log.info("Validating " + pr.name);

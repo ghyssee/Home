@@ -120,14 +120,16 @@
         <dependencies>
 
             <!--Other provided dependencies-->
-            <dependency>
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-api</artifactId>
+		    </dependency>
+			<!--
+						<dependency>
                 <groupId>log4j</groupId>
                 <artifactId>log4j</artifactId>
             </dependency>
-			<dependency>
-				<groupId>log4j</groupId>
-				<artifactId>apache-log4j-extras</artifactId>
-			</dependency>			
+			-->		
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
@@ -241,11 +243,10 @@
 				<groupId>net.lingala.zip4j</groupId>
 				<artifactId>zip4j</artifactId>
 			</dependency>
-
-			<dependency>
-				<groupId>xerces</groupId>
-				<artifactId>xerces</artifactId>
-			</dependency>
+		<dependency>
+		  <groupId>xml-apis</groupId>
+		  <artifactId>xml-apis</artifactId>
+		</dependency>
 			<!--
 			<dependency>
 			<groupId>xerces</groupId>

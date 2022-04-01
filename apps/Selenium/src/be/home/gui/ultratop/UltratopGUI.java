@@ -1,13 +1,11 @@
 package be.home.gui.ultratop;
 
 import be.home.gui.common.GUIApplication;
-import be.home.gui.common.GUIUtils;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import org.apache.log4j.Logger;
-
+import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 
 public class UltratopGUI extends GUIApplication {

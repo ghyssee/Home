@@ -10,7 +10,6 @@ import org.apache.commons.io.FileUtils;
 import org.xml.sax.*;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
-import org.apache.xerces.parsers.SAXParser;
 
 public class Validator extends DefaultHandler
 {

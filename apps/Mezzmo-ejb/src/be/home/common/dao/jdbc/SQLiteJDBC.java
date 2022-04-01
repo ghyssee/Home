@@ -9,12 +9,12 @@ import be.home.common.database.DatabaseColumn;
 import be.home.common.model.DataBaseConfiguration;
 import be.home.common.utils.JSONUtils;
 import be.home.common.utils.WinUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -31,7 +31,7 @@ public class SQLiteJDBC
     public static Map <String, DataBaseConfiguration.DataBase> dbMap = new HashMap <String, DataBaseConfiguration.DataBase>();
     protected Connection c = null;
     protected NamedParameterJdbcTemplate jdbcTemplate = null;
-    private static final Logger log = Logger.getLogger(SQLiteJDBC.class);
+    private static final Logger log = LogManager.getLogger();
     private static boolean initialized = false;
 
     protected SQLiteJDBC() {

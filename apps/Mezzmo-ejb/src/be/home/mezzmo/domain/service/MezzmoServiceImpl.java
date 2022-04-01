@@ -9,7 +9,9 @@ import be.home.mezzmo.domain.bo.PlaylistBO;
 import be.home.mezzmo.domain.dao.definition.TablesEnum;
 import be.home.mezzmo.domain.model.*;
 import be.home.mezzmo.domain.model.json.PlaylistSetup;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.sql.SQLException;
@@ -23,7 +25,7 @@ import java.util.Map;
 public class MezzmoServiceImpl {
 
     private static Map<Databases, MezzmoServiceImpl> instances = new HashMap<>();
-    private static final Logger log = Logger.getLogger(MezzmoServiceImpl.class);
+    private static final Logger log = LogManager.getLogger();
     private Databases db = null;
 
     private MezzmoServiceImpl() {

@@ -12,7 +12,9 @@ import be.home.mezzmo.domain.dao.definition.MGOFileColumns;
 import be.home.mezzmo.domain.dao.definition.TablesEnum;
 import be.home.mezzmo.domain.model.*;
 import org.apache.commons.lang3.SerializationUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -26,7 +28,7 @@ import java.util.List;
  */
 public class MezzmoDAOImpl extends MezzmoRowMappers {
 
-    private static final Logger log = Logger.getLogger(MezzmoDAOImpl.class);
+    private static final Logger log = LogManager.getLogger();
     private String db = null;
 
     public MezzmoDAOImpl (String db){

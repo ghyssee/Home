@@ -13,7 +13,7 @@ import be.home.model.json.MP3Settings;
 import be.home.common.model.json.UltratopConfig;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.nio.charset.Charset;

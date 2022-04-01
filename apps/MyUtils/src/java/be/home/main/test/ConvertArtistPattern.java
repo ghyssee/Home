@@ -9,7 +9,8 @@ import be.home.mezzmo.domain.bo.ArtistBO;
 import be.home.mezzmo.domain.bo.MP3PrettifierBO;
 import be.home.mezzmo.domain.model.json.*;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+
 import org.dom4j.DocumentException;
 import org.xml.sax.SAXException;
 

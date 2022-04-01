@@ -2,7 +2,6 @@ package be.home.common.model;
 
 import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
-import be.home.common.model.json.FirefoxProfiles;
 import be.home.common.model.json.UltratopConfig;
 import be.home.common.utils.DateUtils;
 import be.home.common.utils.JSONUtils;
@@ -10,8 +9,10 @@ import be.home.common.utils.MyFileWriter;
 import be.home.mezzmo.domain.bo.MP3SettingsBO;
 import be.home.model.M3uTO;
 import be.home.model.json.MP3Settings;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +25,7 @@ public class UltratopConfigBO {
     private static final String fileCode = Constants.JSON.ULTRATOP;
     private static UltratopConfigBO ultratopConfigBO = new UltratopConfigBO();
     private static UltratopConfig ultratopConfig;
-    private static final Logger log = Logger.getLogger(UltratopConfigBO.class);
+    private static final Logger log = LogManager.getLogger();
 
     private UltratopConfigBO() {
         ultratopConfig = (UltratopConfig) JSONUtils.openJSONWithCode(fileCode, UltratopConfig.class);
