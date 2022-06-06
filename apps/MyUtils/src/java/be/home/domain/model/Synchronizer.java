@@ -8,7 +8,8 @@ import be.home.mezzmo.domain.bo.MezzmoBO;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.MGOFileTO;
 import org.apache.commons.csv.CSVPrinter;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.io.*;
@@ -24,7 +25,7 @@ import java.util.Map;
 public class Synchronizer {
 
     List<MGOFileAlbumCompositeTO> iPodList;
-    private static final Logger log = Logger.getLogger(Synchronizer.class);
+    private static final Logger log = LogManager.getLogger(Synchronizer.class);
     Map<String, MGOFileAlbumCompositeTO> discMap;
     boolean sync;
     MezzmoBO mezzmoBO;

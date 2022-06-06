@@ -2,7 +2,8 @@ package be.home.picmgt.model;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.ini4j.Profile.Section;
 
 import be.home.common.constants.InitConstants;
@@ -12,7 +13,7 @@ import be.home.common.utils.ini.CommonIniFile;
 
 public abstract class BasePicMgt {
 
-	private static final Logger log = Logger.getLogger(BasePicMgt.class);
+	private static final Logger log = LogManager.getLogger(BasePicMgt.class);
 
 	public CommonIniFile configIni = null;
 	

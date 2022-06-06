@@ -3,7 +3,8 @@ package be.home.common.mp3;
 import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -23,7 +24,7 @@ import java.util.Properties;
  */
 public class PlayList {
 
-    private static final Logger log = Logger.getLogger(PlayList.class);
+    private static final Logger log = LogManager.getLogger(PlayList.class);
 
     public static final String EXTENSION = ".m3u";
 

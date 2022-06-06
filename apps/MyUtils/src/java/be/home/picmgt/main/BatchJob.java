@@ -2,7 +2,6 @@ package be.home.picmgt.main;
 
 import java.net.URL;
 
-import org.apache.log4j.xml.DOMConfigurator;
 import java.net.*;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -17,12 +16,14 @@ import be.home.common.utils.ini.CommonIniFile;
 import be.home.common.utils.ini.CommonIniFileImpl;
 
 import java.io.IOException;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.ini4j.Profile.Section;
 
 public abstract class BatchJob {
 
-	private static final Logger log = Logger.getLogger(BatchJob.class);
+	private static final Logger log = LogManager.getLogger(BatchJob.class);
 
 	public CommonIniFile ini = null;
 
@@ -61,11 +62,14 @@ public abstract class BatchJob {
 					+ ini.get(InitConstants.SECTION_LOG4J, "config"));
 		} catch (MalformedURLException ex) {
 		}
+		/*
 		if (log4jConfigURL != null) {
 			DOMConfigurator.configure(log4jConfigURL);
 		} else {
 			System.err.println("Error in initializing Log4J - config file not found");
 		}
+		*/
+
 
 		// show all the parameters
 		

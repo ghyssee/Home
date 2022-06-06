@@ -1,13 +1,11 @@
 package be.home.picmgt.model.wiki;
 
-import java.io.BufferedReader;
+
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -16,7 +14,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 
 import be.home.common.constants.InitConstants;
 import be.home.common.logging.Log4GE;
@@ -25,10 +22,12 @@ import be.home.picmgt.common.CSVPrinterImpl;
 import be.home.picmgt.model.BasePicMgt;
 import be.home.picmgt.model.to.WikiAppsTO;
 import be.home.common.utils.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class Wiki extends BasePicMgt {
 
-	private static final Logger log = Logger.getLogger(Wiki.class);
+	private static final Logger log = LogManager.getLogger(Wiki.class);
 
 	private static final int CATEGORY = 0;
 	private static final int TITLE = 1;

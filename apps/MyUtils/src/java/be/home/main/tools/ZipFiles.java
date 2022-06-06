@@ -8,7 +8,8 @@ import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.DateUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.nio.file.*;
@@ -24,7 +25,7 @@ public class ZipFiles extends BatchJobV2 {
 
     public static Log4GE log4GE;
     public static ConfigTO.Config config;
-    private static final Logger log = Logger.getLogger(ZipFiles.class);
+    private static final Logger log = LogManager.getLogger(ZipFiles.class);
     private static ParamTO PARAMS [] = {new ParamTO("-source", new String[]{"This is the source directory to start the backup", "of files and folders"},
                                                     ParamTO.REQUIRED),
                                         new ParamTO("-zipFile", new String[]{"This is the name of the zipfile"},

@@ -8,12 +8,13 @@ import be.home.common.constants.InitConstants;
 import be.home.common.exceptions.ApplicationException;
 import be.home.common.utils.ini.CommonIniFile;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.ini4j.Profile.Section;
 
 public class PicMgt extends BatchJob {
 
-	private static final Logger log = Logger.getLogger(PicMgt.class);
+	private static final Logger log = LogManager.getLogger(PicMgt.class);
 
 	public static void main(String args[]) {
 		PicMgt instance = new PicMgt();

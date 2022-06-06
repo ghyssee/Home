@@ -22,7 +22,8 @@
 
 package be.home.jms;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -42,7 +43,7 @@ public class SpawnedVMSupport
 {
    // Constants -----------------------------------------------------
 
-   private static final Logger log = Logger.getLogger(SpawnedVMSupport.class);
+   private static final Logger log = LogManager.getLogger(SpawnedVMSupport.class);
 
    // Attributes ----------------------------------------------------
 

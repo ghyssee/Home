@@ -6,7 +6,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.ini4j.Ini;
 
 import java.util.Map;
@@ -15,7 +16,7 @@ import java.util.Set;
 public class CommonIniFileBase implements CommonIniFile {
 
 	private File iniFile;
-	private static final Logger log = Logger.getLogger(CommonIniFileBase.class);
+	private static final Logger log = LogManager.getLogger(CommonIniFileBase.class);
 	private Ini ini;
 
 	public CommonIniFileBase(File iniFile) {
