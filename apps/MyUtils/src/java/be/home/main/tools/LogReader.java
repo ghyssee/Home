@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -37,25 +38,7 @@ public class LogReader extends BatchJobV2 {
 
     }
 
-    public void startX(){
-        File file = new File("C:\\Temp\\logs\\jboss_run.log.20211129.080000");
-        //      processSingleFile(file);
-        String ROOT = "C:\\Temp\\coda-isabel\\all";
-        try {
-            List<String> lines = FileUtils.getContents(file, StandardCharsets.UTF_8);
-            for (String line : lines) {
-                if (line.contains("started fire for engineCode ")) {
-                    System.out.println(line);
-                }
-                else if (line.contains("Automatic Match")) {
-                    System.out.println(line);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-    }
     public void start(){
         String ROOT = "C:\\Temp\\logs";
         FileVisitor<Path> fileProcessor = new ProcessFile();
@@ -86,10 +69,11 @@ public class LogReader extends BatchJobV2 {
     }
 
     private void readLog(File file){
+        List<String> excludeList = Arrays.asList("PENS_ACT_BR", "PENS_BR_ER", "PENSCOCIER");
         try {
             List<String> lines = FileUtils.getContents(file, StandardCharsets.UTF_8);
             for (String line : lines) {
-                if (line.contains("started fire for engineCode ")) {
+                if (line.contains("started fire for engineCode ") && !hasMatchingSubstring(line, excludeList) ) {
                     System.out.println(line);
                 }
                 else if (line.contains("Automatic Match")) {
@@ -100,4 +84,14 @@ public class LogReader extends BatchJobV2 {
             e.printStackTrace();
         }
     }
+
+    private boolean hasMatchingSubstring(String str, List<String> substrings) {
+        for (String substring : substrings){
+            if (str.contains(substring)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
+
