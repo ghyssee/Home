@@ -78,12 +78,12 @@ public class HelloWorld extends BatchJobV2 {
         //System.out.println(MP3Helper.getInstance().checkRegExpDollar("$1Text$1", 1));
         //updateMP3();
         //batchProcess();
-        //testMP3Prettifier();
+        testMP3Prettifier();
         //TestMovieFile();
         //testAlbumArtist();
         //fileNotFound();
         //testVersion();
-        testJAudioTagger();
+        //testJAudioTagger();
 
     }
 
@@ -194,22 +194,23 @@ private static void TestMovieFile(){
         //System.out.println(mp3Helper.prettifyArtist("Dorothee Vegas & Like Maarten Feat. Sam Gooris"));
         //System.out.println("Axwell ^ Ingrosso".replaceAll("Axwell \\^ Ingrosso", "test"));
         //System.out.println(getTitleArtistException("Kontra K", "Zwischen Himmel Hlle"));
-        //System.out.println(mp3Helper.prettifyAlbum("MNM Big Hits 2018 Vol. 3", null));
+        System.out.println(mp3Helper.prettifyAlbum("Kuschelrock 35", "Various Artists"));
         //System.out.println(getTitleArtistException("Dna", "blabla"));
         //System.out.println(getArtistTitleException("Dna", "blabla"));
+        System.out.println(getArtistTitleException("Michael Patrick Kelly", "Love Goes On (Live) [aus \"Sing meinen Song, Vol. 7\"]"));
 
         //updateMP3();
 
         String tmp = "Odj Team";
-        ConvertArtistSong test = new ConvertArtistSong();
-        MultiArtistConfig.Item item = test.findMultiArtist("Raf Marchesini Feat. D'Amico, Valax Vs. Gabin");
+        //ConvertArtistSong test = new ConvertArtistSong();
+        //MultiArtistConfig.Item item = test.findMultiArtist("Raf Marchesini Feat. D'Amico, Valax Vs. Gabin");
         //System.out.println(mp3Helper.prettifySong(tmp));
-        System.out.println(mp3Helper.prettifyArtist("Willy Sommers Feat. Dorothee Vegas & Like Maarten"));
-        System.out.println(mp3Helper.prettifyArtist("Raf Marchesini Feat. D'Amico, Valax Vs Gavin"));
+        //System.out.println(mp3Helper.prettifyArtist("Willy Sommers Feat. Dorothee Vegas & Like Maarten"));
+        //System.out.println(mp3Helper.prettifyArtist("Raf Marchesini Feat. D'Amico, Valax Vs Gavin"));
         //System.out.println(tmp.replaceAll("O\\.?[D|d]\\.?[J|j]\\.? Team", "Bla"));
         //System.out.println(getArtistTitleException("Emeli Sandé", "Read All About It (Part III)"));
-        System.out.println(getTitleArtistException("Eurythmics", "Sweet Dreams"));
-        System.out.println(getTitleArtistException("Tones And I", "Ur So F**kInG cOoL"));
+        //System.out.println(getTitleArtistException("Eurythmics", "Sweet Dreams"));
+        //System.out.println(getTitleArtistException("Tones And I", "Ur So F**kInG cOoL"));
         //System.out.println(mp3Helper.prettifyAlbum("...Baby One More Time", "Britney Spears"));
         //System.out.println(mp3Helper.stripFilename("...Baby One More Time/Britney - test.mp3"));
 

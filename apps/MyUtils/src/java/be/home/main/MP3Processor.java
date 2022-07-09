@@ -102,9 +102,25 @@ public class MP3Processor extends BatchJobV2 {
                     title = title + " (" + extraArtist.extraArtist + " Mix)";
                 }
                 else if (isType(extraArtist.type, "REMIX")){
-                    title = title + " (" + extraArtist.extraArtist + " Remix)";
+                    title = checkRemix(title, extraArtist.extraArtist );
                 }
             }
+        }
+        return title;
+    }
+
+    private String checkRemix(String title, String remixInfo){
+        ArrayList<String> remixArray = new ArrayList<String>(
+                Arrays.asList("Remix", "Radio Edit", "Mix"));
+        Optional<String> value = remixArray
+                .stream()
+                .filter(a -> remixInfo.contains(a))
+                .findFirst();
+        if (value.isPresent()) {
+            title = title + " (" + remixInfo + " Remix)";
+        }
+        else {
+            log.info("Ignoring Remix Info: " + remixInfo);
         }
         return title;
     }
@@ -118,7 +134,7 @@ public class MP3Processor extends BatchJobV2 {
         String mp3Dir = Setup.getInstance().getFullPath(Constants.Path.ALBUM) + File.separator + mp3Settings.album;
         log.info("Album Directory: " + mp3Dir);
 
-        album.album = helper.prettifyAlbum(album.album, null);
+        album.album = helper.prettifyAlbum(album.album, album.albumArtist);
         MyFileWriter myFile = new MyFileWriter("c:\\My Data\\tmp\\Java\\MP3Processor\\Album\\test.txt", MyFileWriter.NO_APPEND);
         for (AlbumInfo.Track track: album.tracks){
             /*

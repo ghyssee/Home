@@ -421,7 +421,7 @@ public class MP3Helper {
         if (matcher.find()) {
             String extraArtist = matcher.group(1);
             track.title = track.title.replaceFirst(startPattern + extraArtist + endPattern, "");
-            //String extraArtist = track.title.replaceAll(startPattern, "").replaceFirst(endPattern, "");
+            //String extraArexactist = track.title.replaceAll(startPattern, "").replaceFirst(endPattern, "");
             extraArtist = prettifyArtist(extraArtist);
             if (!track.artist.contains(extraArtist)) {
                 track.artist += " Feat. " + extraArtist;
