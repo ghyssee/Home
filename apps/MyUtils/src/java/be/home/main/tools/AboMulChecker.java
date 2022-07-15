@@ -35,7 +35,7 @@ public class AboMulChecker extends BatchJobV2 {
     public void start(){
 //        File file = new File("C:\\Temp\\atos\\check\\ABO_MUL.F0017211");
   //      processSingleFile(file);
-        String ROOT = "C:\\Temp\\awl";
+        String ROOT = "C:\\Temp\\awl\\multilot";
         FileVisitor<Path> fileProcessor = new ProcessFile();
         try {
             Files.walkFileTree(Paths.get(ROOT), fileProcessor);
@@ -81,13 +81,13 @@ public class AboMulChecker extends BatchJobV2 {
                     //System.out.println("TPPN: " + line.substring(1470,1473));
                     try {
                         Integer tppn = new Integer(line.substring(1470, 1474));
-                        if (tppn == 3795){
-                            System.out.println(file.getAbsolutePath() + ":" + line);
+                        if (tppn == 4681){
+                            System.out.println(file.getAbsolutePath() + ": " + line);
                         }
                         if (!tppns.contains(tppn)) {
                             tppns.add(tppn);
                         }
-                        findId(line);
+                        //findId(line);
                     }
                     catch (NumberFormatException ex){
 

@@ -95,7 +95,8 @@ public class MP3Helper {
         text = text.replaceAll("…", "...");
         text = text.replaceAll("\\u0435", "e");
         text = text.replaceAll("\\u0430", "a");
-
+        text = text.replaceAll("\\u0430", "a");
+        text = text.replaceAll("\\u201a", ","); // e2 80 9a SINGLE LOW-9 QUOTATION MARK
 
         return text;
     }
