@@ -9,10 +9,14 @@ import org.jaudiotagger.tag.FieldDataInvalidException;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.TagException;
 import org.jaudiotagger.tag.TagField;
+
 import org.jaudiotagger.tag.id3.ID3v24FieldKey;
 import org.jaudiotagger.tag.id3.ID3v24Frame;
 import org.jaudiotagger.tag.id3.ID3v24Frames;
 import org.jaudiotagger.tag.id3.ID3v24Tag;
+import org.jaudiotagger.tag.id3.ID3v23Frame;
+import org.jaudiotagger.tag.id3.ID3v23Tag;
+import org.jaudiotagger.tag.id3.framebody.FrameBodyTCON;
 
 import java.io.IOException;
 import java.util.List;
@@ -51,6 +55,11 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         return artist;
     }
 
+    @Override
+    public String getGenre() {
+        String genre = tag.getFirst(FieldKey.GENRE);
+        return genre;
+    }
     @Override
     public String getTitle() {
         String title = tag.getFirst(FieldKey.TITLE);
@@ -221,8 +230,21 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
     }
 
     @Override
+    public void setGenre(String genre) throws MP3Exception {
+        // when genre is saved, it's replaced by id. Ex. Pop = 13
+        // that's why we use frame to alter genre
+        this.tag.deleteField(FieldKey.GENRE);
+        if (genre != null){
+            ID3v23Tag v23Tag = new ID3v23Tag();
+            ID3v23Frame frame = v23Tag.createFrame(ID3v24Frames.FRAME_ID_GENRE);
+            FrameBodyTCON framebody = (FrameBodyTCON) frame.getBody();
+            framebody.setText(genre);
+            this.tag.addFrame(frame);
+        }
+    }
+
+    @Override
     public void setTrack(String track) throws MP3Exception {
-        //this.tag.deleteField(FieldKey.TRACK);
         this.tag.deleteField(ID3v24FieldKey.TRACK);
         if (track != null) {
             try {
@@ -274,7 +296,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
 
     @Override
     public void setYear(String year) throws MP3Exception {
-        this.tag.deleteField(FieldKey.YEAR);
+        //this.tag.deleteField(FieldKey.YEAR);
         this.tag.deleteField(ID3v24FieldKey.YEAR);
         if (year != null) {
             try {
@@ -388,6 +410,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         cleanupTag(ID3v24Frames.FRAME_ID_URL_PUBLISHERS); // WPUB
         cleanupTag(ID3v24Frames.FRAME_ID_URL_OFFICIAL_RADIO); // WORS
         cleanupTag(ID3v24Frames.FRAME_ID_RADIO_NAME); // TRSN
+        cleanupTag(ID3v24Frames.FRAME_ID_MOOD ); // TMOD
         cleanupTag(ID3v24Frames.FRAME_ID_RADIO_OWNER); // TRSO
     }
 

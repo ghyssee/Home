@@ -78,12 +78,12 @@ public class HelloWorld extends BatchJobV2 {
         //System.out.println(MP3Helper.getInstance().checkRegExpDollar("$1Text$1", 1));
         //updateMP3();
         //batchProcess();
-        testMP3Prettifier();
+        //testMP3Prettifier();
         //TestMovieFile();
         //testAlbumArtist();
         //fileNotFound();
         //testVersion();
-        //testJAudioTagger();
+        testJAudioTagger();
 
     }
 
@@ -332,7 +332,7 @@ private static void TestMovieFile(){
     }
 
     private static void testJAudioTagger(){
-        File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\Stromae - Fils de joie   (3;15).mp3");
+        File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\Album\\New\\Meduza , James Carter ft. Elley Duhé & Fast Boy - Bad Memories  (2;26).mp3");
         File newFile = new File("C:\\My Data\\tmp\\Java\\MP3Processor\\new" + File.separator + "test.mp3");
         try {
             Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -347,13 +347,17 @@ private static void TestMovieFile(){
                 mp3File.setYear("2022");
                 mp3File.setRating(4);
                 mp3File.setDisc(null);
+                System.out.println("old genre: " + mp3File.getGenre());
                 mp3File.setTrack("10");
+                mp3File.setGenre("Pop");
+                System.out.println("new genre: " + mp3File.getGenre());
                 mp3File.setAlbumArtist("Various Artists");
                 mp3File.clearAlbumImage();
                 System.out.println(mp3File.getRatingAsString());
                 System.out.println(mp3File.getAudioSourceUrl());
                 mp3File.cleanupTags();
                 mp3File.commit();
+                mp3File.setGenre("Pop");
             } catch (MP3Exception e) {
                 e.printStackTrace();
             }

@@ -349,6 +349,8 @@ public class MP3Processor extends BatchJobV2 {
             if (StringUtils.isNotBlank(mp3Settings.albumYear)) {
                 mp3File.setYear(mp3Settings.albumYear);
             }
+            prettifyGenre(mp3File);
+
             mp3File.setTrack(MP3Helper.getInstance().formatTrack(album, track.track));
             mp3File.setArtist(track.artist);
             mp3File.setTitle(track.title);
@@ -361,11 +363,19 @@ public class MP3Processor extends BatchJobV2 {
                 mp3File.setDisc(null);
             }
             mp3File.commit();
-
         } catch (MP3Exception e) {
             e.printStackTrace();
         }
         System.out.println("New File " + newFile);
+    }
+
+    private void prettifyGenre(MP3Service mp3Service) throws MP3Exception {
+        String genre = mp3Service.getGenre();
+        if (StringUtils.isNotBlank(genre)) {
+            genre = MP3Helper.getInstance().prettifyString(genre);
+            mp3Service.setGenre(genre);
+        }
+
     }
 
     private void cleanUpTag(ID3v2 id3v2Tag, String tagToCheck, String Key){

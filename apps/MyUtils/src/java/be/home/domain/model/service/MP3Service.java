@@ -29,6 +29,7 @@ public interface MP3Service {
     public String getPublisherUrl();
     public String getRadiostationUrl();
     public String getDiscTotal();
+    public String getGenre();
 
     public  void setArtist(String artist) throws MP3Exception;
     public void setTitle(String title) throws MP3Exception;
@@ -41,6 +42,7 @@ public interface MP3Service {
     public void setRating(int Rating) throws MP3Exception;
     public void setCompilation(boolean compilation) throws MP3Exception;
     public void setDiscTotal(String discTotal) throws MP3Exception;
+    public void setGenre(String grenre) throws MP3Exception;
     public void cleanupTags();
     public void clearAlbumImage();
 
