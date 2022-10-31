@@ -332,7 +332,7 @@ private static void TestMovieFile(){
     }
 
     private static void testJAudioTagger(){
-        File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\Album\\New\\Meduza , James Carter ft. Elley Duhé & Fast Boy - Bad Memories  (2;26).mp3");
+        File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\01 - Sick Individuals & Dastic - I'll Be There.mp3");
         File newFile = new File("C:\\My Data\\tmp\\Java\\MP3Processor\\new" + File.separator + "test.mp3");
         try {
             Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -341,23 +341,23 @@ private static void TestMovieFile(){
                 mp3File = new MP3JAudioTaggerServiceImpl(newFile.getAbsolutePath());
                 System.out.println(mp3File.getComment());
                 System.out.println(mp3File.getArtist());
-                mp3File.setArtist("Kings of Leon");
-                mp3File.setTitle("On The Fly");
-                mp3File.setCompilation(true);
-                mp3File.setYear("2022");
-                mp3File.setRating(4);
-                mp3File.setDisc(null);
+                //mp3File.setArtist("Kings of Leon");
+                //mp3File.setTitle("On The Fly");
+                //mp3File.setCompilation(true);
+                //mp3File.setYear("2022");
+                //mp3File.setRating(4);
+               // mp3File.setDisc(null);
                 System.out.println("old genre: " + mp3File.getGenre());
-                mp3File.setTrack("10");
-                mp3File.setGenre("Pop");
-                System.out.println("new genre: " + mp3File.getGenre());
-                mp3File.setAlbumArtist("Various Artists");
+                //mp3File.setTrack("10");
+                //mp3File.setGenre("Pop");
+                //System.out.println("new genre: " + mp3File.getGenre());
+                //mp3File.setAlbumArtist("Various Artists");
                 mp3File.clearAlbumImage();
                 System.out.println(mp3File.getRatingAsString());
                 System.out.println(mp3File.getAudioSourceUrl());
                 mp3File.cleanupTags();
                 mp3File.commit();
-                mp3File.setGenre("Pop");
+                //mp3File.setGenre("Pop");
             } catch (MP3Exception e) {
                 e.printStackTrace();
             }

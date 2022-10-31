@@ -5,10 +5,7 @@ import org.jaudiotagger.audio.exceptions.CannotReadException;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.audio.mp3.MP3File;
-import org.jaudiotagger.tag.FieldDataInvalidException;
-import org.jaudiotagger.tag.FieldKey;
-import org.jaudiotagger.tag.TagException;
-import org.jaudiotagger.tag.TagField;
+import org.jaudiotagger.tag.*;
 
 import org.jaudiotagger.tag.id3.ID3v24FieldKey;
 import org.jaudiotagger.tag.id3.ID3v24Frame;
@@ -434,6 +431,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
     }
 
     public void commit() throws MP3Exception {
+        TagOptionSingleton.getInstance().setId3v2PaddingWillShorten(true);
         this.mp3File.setID3v2Tag(tag);
         try {
             this.mp3File.save();
