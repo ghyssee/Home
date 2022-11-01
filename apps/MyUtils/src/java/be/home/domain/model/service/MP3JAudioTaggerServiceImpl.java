@@ -230,6 +230,19 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
     public void setGenre(String genre) throws MP3Exception {
         // when genre is saved, it's replaced by id. Ex. Pop = 13
         // that's why we use frame to alter genre
+        // update: use setWriteMp3GenresAsText to prevent that genre is replaced by id
+        // Ex. Pop = 13
+        // TOTEST
+        TagOptionSingleton.getInstance().setWriteMp3GenresAsText(true);
+        this.tag.deleteField(ID3v24FieldKey.GENRE);
+        if (genre != null) {
+            try {
+                this.tag.addField(FieldKey.GENRE, genre);
+            } catch (FieldDataInvalidException e) {
+                throw new MP3Exception(e);
+            }
+        }
+/*
         this.tag.deleteField(FieldKey.GENRE);
         if (genre != null){
             ID3v23Tag v23Tag = new ID3v23Tag();
@@ -238,6 +251,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
             framebody.setText(genre);
             this.tag.addFrame(frame);
         }
+*/
     }
 
     @Override

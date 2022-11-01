@@ -349,7 +349,7 @@ private static void TestMovieFile(){
                // mp3File.setDisc(null);
                 System.out.println("old genre: " + mp3File.getGenre());
                 //mp3File.setTrack("10");
-                //mp3File.setGenre("Pop");
+                mp3File.setGenre("Pop");
                 //System.out.println("new genre: " + mp3File.getGenre());
                 //mp3File.setAlbumArtist("Various Artists");
                 mp3File.clearAlbumImage();
