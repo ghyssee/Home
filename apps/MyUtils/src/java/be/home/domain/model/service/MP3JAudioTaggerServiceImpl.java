@@ -43,6 +43,9 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
             throw new MP3Exception(e);
         }
         this.tag = mp3File.getID3v2TagAsv24();
+        if (this.tag == null) {
+            this.tag = new ID3v24Tag();
+        }
 
     }
 
@@ -146,8 +149,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
     public String getAudioSourceUrl() {
         // WOAS
         String audioSourceUrl = null;
-        ID3v24Tag tag = mp3File.getID3v2TagAsv24();
-        List<TagField> tags = tag.getFrame(ID3v24Frames.FRAME_ID_URL_SOURCE_WEB);
+        List<TagField> tags = this.tag.getFrame(ID3v24Frames.FRAME_ID_URL_SOURCE_WEB);
         TagField tagField = null;
         if (tags != null && tags.size() > 0) {
             tagField = tags.get(0);
@@ -426,8 +428,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
     }
 
     public void cleanupTag(String frameId){
-        ID3v24Tag tag = mp3File.getID3v2TagAsv24();
-        List<TagField> tags = tag.getFrame(frameId);
+        List<TagField> tags = this.tag.getFrame(frameId);
         TagField tagField = null;
         String value = null;
         if (tags != null && tags.size() > 0) {
