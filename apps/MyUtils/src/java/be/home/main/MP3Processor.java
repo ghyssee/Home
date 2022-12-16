@@ -228,8 +228,9 @@ public class MP3Processor extends BatchJobV2 {
         for (Path path : listOfFiles) {
             log.info(path.toString());
             try {
-                AlbumInfo.Track track = findMP3File(album, index++);
-                readMP3File(album, mp3Settings, track, path.toString(), prefix);
+                AlbumInfo.Track track = findMP3File(album, index);
+               readMP3File(album, mp3Settings, track, path.toString(), prefix, index);
+                index++;
             }  catch (NotSupportedException e) {
                 e.printStackTrace();
             } catch (InvalidDataException e) {
@@ -248,7 +249,7 @@ public class MP3Processor extends BatchJobV2 {
         ID3v2 id3v2Tag = MP3Utils.getId3v2Tag(mp3file);
 
         System.out.println("Track: " + id3v2Tag.getTrack());
-        System.out.println("NEW Track: " + MP3Helper.getInstance().formatTrack(album, track.track));
+        System.out.println("NEW Track: " + MP3Helper.getInstance().formatTrack(album, track.track,0));
         System.out.println(StringUtils.repeat('=', 100));
         System.out.println("Artist: " + id3v2Tag.getArtist());
         System.out.println("NEW Artist: " + track.artist);
@@ -270,7 +271,7 @@ public class MP3Processor extends BatchJobV2 {
         if (StringUtils.isNotBlank(mp3Settings.albumYear)) {
             id3v2Tag.setYear(mp3Settings.albumYear);
         }
-        id3v2Tag.setTrack(MP3Helper.getInstance().formatTrack(album, track.track));
+        id3v2Tag.setTrack(MP3Helper.getInstance().formatTrack(album, track.track, 0));
         id3v2Tag.setArtist(track.artist);
         id3v2Tag.setTitle(track.title);
         cleanUpTag(id3v2Tag, id3v2Tag.getComment(), AbstractID3v2Tag.ID_COMMENT);
@@ -309,10 +310,11 @@ public class MP3Processor extends BatchJobV2 {
     }
 
 
-    private void readMP3File(AlbumInfo.Config album, MP3Settings mp3Settings, AlbumInfo.Track track, String fileName, String prefixFileName) throws InvalidDataException, IOException, UnsupportedTagException, NotSupportedException {
+    private void readMP3File(AlbumInfo.Config album, MP3Settings mp3Settings, AlbumInfo.Track track, String fileName, String prefixFileName, int index) throws InvalidDataException, IOException, UnsupportedTagException, NotSupportedException {
 
         File newFile;
         File originalFile = new File(fileName);
+        System.out.println("Track Number: " + index);
         if (mp3Settings.filename.renameEnabled){
             String newFilename = constructFilename(mp3Settings, album, track, FilenameUtils.getExtension(fileName));
             newFile = new File(Setup.getInstance().getFullPath(Constants.Path.NEW) + File.separator  + newFilename);
@@ -326,7 +328,7 @@ public class MP3Processor extends BatchJobV2 {
         try {
             MP3Service mp3File = new MP3JAudioTaggerServiceImpl(newFile.getAbsolutePath());
             System.out.println("Track: " + mp3File.getTrack());
-            System.out.println("NEW Track: " + MP3Helper.getInstance().formatTrack(album, track.track));
+            System.out.println("NEW Track: " + MP3Helper.getInstance().formatTrack(album, track.track, index));
             System.out.println(StringUtils.repeat('=', 100));
             System.out.println("Artist: " + mp3File.getArtist());
             System.out.println("NEW Artist: " + track.artist);
@@ -351,7 +353,7 @@ public class MP3Processor extends BatchJobV2 {
             }
             prettifyGenre(mp3File);
 
-            mp3File.setTrack(MP3Helper.getInstance().formatTrack(album, track.track));
+            mp3File.setTrack(MP3Helper.getInstance().formatTrack(album, track.track,index));
             mp3File.setArtist(track.artist);
             mp3File.setTitle(track.title);
             mp3File.cleanupTags();
