@@ -1,6 +1,7 @@
 package be.home.domain.model.service;
 
 import be.home.common.mp3.MP3Utils;
+import be.home.common.utils.FileUtils;
 import org.jaudiotagger.audio.exceptions.CannotReadException;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
@@ -30,6 +31,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
     public MP3JAudioTaggerServiceImpl(String file) throws MP3Exception {
 
         try {
+            FileUtils.makeFileWriteable(file);
             this.mp3File = new MP3File(file);
         } catch (IOException e) {
             e.printStackTrace();

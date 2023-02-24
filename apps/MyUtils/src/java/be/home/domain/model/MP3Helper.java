@@ -467,6 +467,8 @@ public class MP3Helper {
 
     public String formatTrack(AlbumInfo.Config albumInfo, String track, int index) {
         int trackSize = albumInfo.trackSize == 0 ? 2 : albumInfo.trackSize;
+        // remove spaces from track. This causes issues when setting tag track
+        track = StringUtils.trim(track);
         // check if track is in format A1 / A2 / B1 / B2
         boolean isFirstChar = Character.isLetter(track.charAt(0));
         if (isFirstChar){

@@ -78,12 +78,12 @@ public class HelloWorld extends BatchJobV2 {
         //System.out.println(MP3Helper.getInstance().checkRegExpDollar("$1Text$1", 1));
         //updateMP3();
         //batchProcess();
-        //testMP3Prettifier();
+        testMP3Prettifier();
         //TestMovieFile();
         //testAlbumArtist();
         //fileNotFound();
         //testVersion();
-        testJAudioTagger();
+        //testJAudioTagger();
 
     }
 
@@ -194,10 +194,13 @@ private static void TestMovieFile(){
         //System.out.println(mp3Helper.prettifyArtist("Dorothee Vegas & Like Maarten Feat. Sam Gooris"));
         //System.out.println("Axwell ^ Ingrosso".replaceAll("Axwell \\^ Ingrosso", "test"));
         //System.out.println(getTitleArtistException("Kontra K", "Zwischen Himmel Hlle"));
-        System.out.println(mp3Helper.prettifyAlbum("Kuschelrock 35", "Various Artists"));
-        //System.out.println(getTitleArtistException("Dna", "blabla"));
+        System.out.println(mp3Helper.prettifyArtist("Kendji Girac avec Soolking"));
+        System.out.println(mp3Helper.prettifyAlbum("Qmusic Top 40 Jaaroverzicht 2020", "Various Artists"));
+        System.out.println(getArtistTitleException("Camila Cabello featuring Ed Sheeran", "Bam Bam"));
+        System.out.println(getTitleArtistException("Taylor Swift", "Me"));
+        System.out.println(getTitleArtistException("Taylor Swift", "Message in a bottle"));
         //System.out.println(getArtistTitleException("Dna", "blabla"));
-        System.out.println(getArtistTitleException("Michael Patrick Kelly", "Love Goes On (Live) [aus \"Sing meinen Song, Vol. 7\"]"));
+        //System.out.println(getArtistTitleException("Michael Patrick Kelly", "Love Goes On (Live) [aus \"Sing meinen Song, Vol. 7\"]"));
 
         //updateMP3();
 
@@ -332,7 +335,7 @@ private static void TestMovieFile(){
     }
 
     private static void testJAudioTagger(){
-        File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\01 - Sick Individuals & Dastic - I'll Be There.mp3");
+        File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\01. Underworld - Born Slippy (Nuxx).mp3");
         File newFile = new File("C:\\My Data\\tmp\\Java\\MP3Processor\\new" + File.separator + "test.mp3");
         try {
             Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -350,6 +353,7 @@ private static void TestMovieFile(){
                 System.out.println("old genre: " + mp3File.getGenre());
                 //mp3File.setTrack("10");
                 mp3File.setGenre("Pop");
+                mp3File.setTrack("01");
                 //System.out.println("new genre: " + mp3File.getGenre());
                 //mp3File.setAlbumArtist("Various Artists");
                 mp3File.clearAlbumImage();

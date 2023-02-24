@@ -2,6 +2,7 @@ package be.home.main;
 
 import be.home.common.mp3.MP3Utils;
 import be.home.common.utils.MyFileWriter;
+import be.home.common.utils.SortUtils;
 import be.home.domain.model.ArtistSongItem;
 import be.home.domain.model.service.MP3Exception;
 import be.home.domain.model.service.MP3JAudioTaggerServiceImpl;
@@ -25,6 +26,9 @@ import org.apache.logging.log4j.Logger;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
+import java.util.regex.Pattern;
+
+import static be.home.common.utils.SortUtils.stripAccentsIgnoreCase;
 
 /**
  * Created by ghyssee on 20/02/2015.
@@ -85,7 +89,8 @@ public class MP3Processor extends BatchJobV2 {
             for (AlbumInfo.ExtraArtist extraArtist : track.extraArtists){
                 if (isType(extraArtist.type, "FEAT")){
                     String addArtist = " Feat. " + extraArtist.extraArtist;
-                    if (!artist.toUpperCase().contains(addArtist.toUpperCase())) {
+                    String findExtraArtist = "(.*) Feat(uring)?\\.? " + extraArtist.extraArtist;
+                    if (!artist.toUpperCase().matches(findExtraArtist.toUpperCase())) {
                         artist = artist + addArtist;
                     }
                 }
@@ -125,10 +130,25 @@ public class MP3Processor extends BatchJobV2 {
         return title;
     }
 
+    public int getTrackSize(AlbumInfo.Config album) {
+        int maxNr = 0;
+        for (AlbumInfo.Track track : album.tracks) {
+            int nr = Integer.valueOf(track.track);
+            if (maxNr < nr) {
+                maxNr = nr;
+            }
+        }
+        return String.valueOf(maxNr).length();
+    }
+
+
     public void start() throws IOException {
 
         AlbumInfo.Config album = (AlbumInfo.Config) JSONUtils.openJSON(INPUT_FILE, AlbumInfo.Config.class, "UTF-8");
         MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSONWithCode(Constants.JSON.MP3SETTINGS, MP3Settings.class);
+        if (album.trackSize == 0) {
+            album.trackSize = getTrackSize(album);
+        }
 
         MP3Helper helper = MP3Helper.getInstance();
         String mp3Dir = Setup.getInstance().getFullPath(Constants.Path.ALBUM) + File.separator + mp3Settings.album;
@@ -425,7 +445,7 @@ public class MP3Processor extends BatchJobV2 {
                 directoryStream.close();
             } catch (IOException ex) {
             }
-            Collections.sort(fileNames, (f1, f2) -> f1.toString().compareTo(f2.toString()));
+            Collections.sort(fileNames, (f1, f2) -> SortUtils.stripAccentsIgnoreCase(f1.toString()).compareTo(SortUtils.stripAccentsIgnoreCase(f2.toString())));
         }
         else {
             throw new ApplicationException("MP3 Directory " + directory + " does not exist!");
@@ -449,7 +469,7 @@ public class MP3Processor extends BatchJobV2 {
                 directoryStream.close();
             } catch (IOException ex) {
             }
-            Collections.sort(fileNames, (f1, f2) -> f1.toString().compareTo(f2.toString()));
+            Collections.sort(fileNames, (f1, f2) -> SortUtils.stripAccentsIgnoreCase(f1.toString()).compareTo(SortUtils.stripAccentsIgnoreCase(f2.toString())));
         }
         else {
             throw new ApplicationException("MP3 Directory " + directory + " does not exist!");
