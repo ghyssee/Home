@@ -26,9 +26,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
-import java.util.regex.Pattern;
-
-import static be.home.common.utils.SortUtils.stripAccentsIgnoreCase;
 
 /**
  * Created by ghyssee on 20/02/2015.
@@ -36,6 +33,7 @@ import static be.home.common.utils.SortUtils.stripAccentsIgnoreCase;
 public class MP3Processor extends BatchJobV2 {
 
     private static final String VERSION = "V1.0";
+    private static final String VARIOUS = "Various Artists";
 
     public static Log4GE log4GE;
     public static ConfigTO.Config config;
@@ -133,7 +131,7 @@ public class MP3Processor extends BatchJobV2 {
     public int getTrackSize(AlbumInfo.Config album) {
         int maxNr = 0;
         for (AlbumInfo.Track track : album.tracks) {
-            int nr = Integer.valueOf(track.track);
+            int nr = Integer.valueOf(track.track.trim());
             if (maxNr < nr) {
                 maxNr = nr;
             }
@@ -283,7 +281,7 @@ public class MP3Processor extends BatchJobV2 {
         if (StringUtils.isBlank(mp3Settings.albumArtist)) {
             // compilation cd //
             id3v2Tag.setCompilation(true);
-            id3v2Tag.setAlbumArtist("Various Artists");
+            id3v2Tag.setAlbumArtist(VARIOUS);
         }
         else {
             id3v2Tag.setAlbumArtist(mp3Settings.albumArtist);
@@ -360,10 +358,19 @@ public class MP3Processor extends BatchJobV2 {
             if (StringUtils.isNotBlank(album.album)){
                 mp3File.setAlbum(album.album);
             }
-            if (StringUtils.isBlank(mp3Settings.albumArtist)) {
+            if (StringUtils.isNotBlank(album.albumArtist)) {
+                if (album.albumArtist.equals(VARIOUS)){
+                    mp3File.setCompilation(true);
+                }
+                else {
+                    mp3File.setCompilation(false);
+                }
+                mp3File.setAlbumArtist(album.albumArtist);
+            }
+            else if (StringUtils.isBlank(mp3Settings.albumArtist)) {
                 // compilation cd //
                 mp3File.setCompilation(true);
-                mp3File.setAlbumArtist("Various Artists");
+                mp3File.setAlbumArtist(VARIOUS);
             }
             else {
                 mp3File.setAlbumArtist(mp3Settings.albumArtist);
