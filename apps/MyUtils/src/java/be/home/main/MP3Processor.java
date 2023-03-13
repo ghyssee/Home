@@ -130,10 +130,17 @@ public class MP3Processor extends BatchJobV2 {
 
     public int getTrackSize(AlbumInfo.Config album) {
         int maxNr = 0;
+        int nr = 0;
         for (AlbumInfo.Track track : album.tracks) {
-            int nr = Integer.valueOf(track.track.trim());
-            if (maxNr < nr) {
-                maxNr = nr;
+            nr++;
+            try {
+                nr = Integer.valueOf(track.track.trim());
+                if (maxNr < nr) {
+                    maxNr = nr;
+                }
+            }
+            catch (NumberFormatException ex){
+               maxNr = nr;
             }
         }
         return String.valueOf(maxNr).length();
