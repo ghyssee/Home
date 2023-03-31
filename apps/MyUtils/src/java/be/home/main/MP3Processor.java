@@ -159,7 +159,7 @@ public class MP3Processor extends BatchJobV2 {
         String mp3Dir = Setup.getInstance().getFullPath(Constants.Path.ALBUM) + File.separator + mp3Settings.album;
         log.info("Album Directory: " + mp3Dir);
 
-        album.album = helper.prettifyAlbum(album.album, album.albumArtist);
+        album.album = helper.prettifyAlbum(album.album, album.albumArtist == null ? VARIOUS: album.albumArtist);
         MyFileWriter myFile = new MyFileWriter("c:\\My Data\\tmp\\Java\\MP3Processor\\Album\\test.txt", MyFileWriter.NO_APPEND);
         for (AlbumInfo.Track track: album.tracks){
             /*
