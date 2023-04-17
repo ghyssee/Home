@@ -7,6 +7,9 @@ import be.home.common.exceptions.ApplicationException;
 import be.home.common.main.BatchJobV2;
 import be.home.common.mp3.MP3Utils;
 import be.home.common.utils.*;
+import be.home.domain.model.service.MP3Exception;
+import be.home.domain.model.service.MP3JAudioTaggerServiceImpl;
+import be.home.domain.model.service.MP3Service;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.model.json.AlbumError;
@@ -288,6 +291,102 @@ public abstract class MP3TagBase extends BatchJobV2 {
     }
 
     private void updateMP3(AlbumError.Item item) {
+        String file = this.mp3TagUtils.relativizeFile(item.getFile());
+        MP3Service mp3File;
+        try {
+            mp3File = new MP3JAudioTaggerServiceImpl(file);
+        } catch (MP3Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        try {
+            boolean update = false;
+            switch (MP3Tag.valueOf(item.getType())){
+                case ALBUM:
+                    if (item.getNewValue().equals(mp3File.getAlbum())) {
+                        log.info("No Update needed for " + item.getFile());
+                        log.info("MP3 Album Info: " + mp3File.getAlbum());
+                        log.info("Update Info: " + item.getType());
+                        setDone(item);
+                    }
+                    else {
+                        update = true;
+                        mp3File.setAlbum(item.getNewValue());
+                    }
+                    break;
+                case ARTIST :
+                    if (item.getNewValue().equals(mp3File.getArtist())) {
+                        log.info("No Update needed for " + item.getFile());
+                        log.info("MP3 Artist Info: " + mp3File.getArtist());
+                        log.info("Update Info: " + item.getType());
+                        setDone(item);
+                    }
+                    else {
+                        update = true;
+                        mp3File.setArtist(item.getNewValue());
+                    }
+                    break;
+                case ALBUMARTIST :
+                    if (item.getNewValue().equals(mp3File.getAlbumArtist())) {
+                        log.info("No Update needed for " + item.getFile());
+                        log.info("MP3 Album Artist Info: " + mp3File.getAlbumArtist());
+                        log.info("Update Info: " + item.getType());
+                        setDone(item);
+                    }
+                    else {
+                        update = true;
+                        mp3File.setAlbumArtist(item.getNewValue());
+                    }
+                    break;
+                case TITLE:
+                    if (item.getNewValue().equals(mp3File.getTitle())) {
+                        log.info("No Update needed for " + item.getFile());
+                        log.info("MP3 Title Info: " + mp3File.getTitle());
+                        log.info("Update Info: " + item.getType());
+                        setDone(item);
+                    }
+                    else {
+                        mp3File.setTitle(item.getNewValue());
+                        update = true;
+                    }
+                    break;
+                case DISC:
+                    mp3File.setDisc(item.getNewValue());
+                    update = true;
+                    break;
+                case DURATION:
+                    // nothing to do
+                    break;
+                case RATING:
+                    // nothing to do
+                    break;
+                case TRACK:
+                    if (item.getNewValue().equals(mp3File.getTrack())) {
+                        log.info("No Update needed for " + item.getFile());
+                        log.info("MP3 Track Info: " + mp3File.getTrack());
+                        log.info("Update Info: " + item.getType());
+                        setDone(item);
+                    }
+                    else {
+                        mp3File.setTrack(item.getNewValue());
+                        update = true;
+                    }
+                    break;
+            }
+            if (update) {
+                try {
+                    mp3File.commit();
+                    setDone(item);
+                } catch (MP3Exception ex) {
+                    LogUtils.logError(log, ex);
+                }
+            }
+        } catch (Exception e) {
+            LogUtils.logError(log, e);
+        }
+    }
+
+    private void updateMP3Old(AlbumError.Item item) {
         String file = this.mp3TagUtils.relativizeFile(item.getFile());
         Mp3File mp3file = null;
         try {

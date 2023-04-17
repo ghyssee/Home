@@ -60,6 +60,8 @@ public class MP3Helper {
     private static final String OPEN_BRACKET = "[\\(|\\[]";
     private static final String CLOSE_BRACKET = "[\\)|\\]]";
 
+    private static final String FEAT = "[F|f](?:ea)?t(?:uring)?\\.? ?";
+
     public MP3Prettifier getMp3Prettifier(){
         return this.mp3Prettifer;
     }
@@ -216,6 +218,8 @@ public class MP3Helper {
         if (StringUtils.isNotBlank(text)) {
             prettifiedText = prettifiedText.replaceAll(replaceBetweenBrackets("Remix"), "");
             prettifiedText = prettifiedText.replaceAll(replaceBetweenBrackets("Black Box Radio Edit"), "");
+            // remove brackets from artist if it's a feat. string
+            prettifiedText = stripArtist(prettifiedText);
 
             prettifiedText = stripSong(prettifiedText);
             prettifiedText = prettifiedText.replaceAll("  ", " ");
@@ -406,10 +410,20 @@ public class MP3Helper {
         return prettifiedText;
     }
 
+    private String stripArtist(String text){
+        String prettifiedText = text;
+        if (StringUtils.isNotBlank(text)){
+            Pattern pattern = Pattern.compile("(.*)" + OPEN_BRACKET + FEAT + "(.*)" + CLOSE_BRACKET );
+            Matcher matcher = pattern.matcher(text);
+            if (matcher.find() && matcher.groupCount() == 2) {
+                prettifiedText = matcher.group(1) + "Feat. " + matcher.group(2);
+            }
+        }
+        return prettifiedText;
+    }
     public void checkTrack(AlbumInfo.Track track){
         // search for (Feat. xxx) or Feat. xxx or Feat xxx or (Feat xxx)
 
-        String FEAT = "[F|f](?:ea)?t(?:uring)?\\.? ?";
         if (!StringUtils.endsWith(track.title, "Edit)")) {
             checkTrackPattern(track, "\\(" + FEAT, "\\)");
             checkTrackPattern(track, "\\[" + FEAT, "\\]");
@@ -451,8 +465,15 @@ public class MP3Helper {
         return prettifiedText;
     }
 
-    public String formatTrack(AlbumInfo.Config albumInfo, String track) {
+    public String formatTrack(AlbumInfo.Config albumInfo, String track, int index) {
         int trackSize = albumInfo.trackSize == 0 ? 2 : albumInfo.trackSize;
+        // remove spaces from track. This causes issues when setting tag track
+        track = StringUtils.trim(track);
+        // check if track is in format A1 / A2 / B1 / B2
+        boolean isFirstChar = Character.isLetter(track.charAt(0));
+        if (isFirstChar){
+            track = String.valueOf(index);
+        }
         return StringUtils.leftPad(track, trackSize, "0");
 
     }

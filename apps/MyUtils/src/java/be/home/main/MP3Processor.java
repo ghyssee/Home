@@ -2,6 +2,7 @@ package be.home.main;
 
 import be.home.common.mp3.MP3Utils;
 import be.home.common.utils.MyFileWriter;
+import be.home.common.utils.SortUtils;
 import be.home.domain.model.ArtistSongItem;
 import be.home.domain.model.service.MP3Exception;
 import be.home.domain.model.service.MP3JAudioTaggerServiceImpl;
@@ -32,6 +33,7 @@ import java.util.*;
 public class MP3Processor extends BatchJobV2 {
 
     private static final String VERSION = "V1.0";
+    private static final String VARIOUS = "Various Artists";
 
     public static Log4GE log4GE;
     public static ConfigTO.Config config;
@@ -85,7 +87,8 @@ public class MP3Processor extends BatchJobV2 {
             for (AlbumInfo.ExtraArtist extraArtist : track.extraArtists){
                 if (isType(extraArtist.type, "FEAT")){
                     String addArtist = " Feat. " + extraArtist.extraArtist;
-                    if (!artist.toUpperCase().contains(addArtist.toUpperCase())) {
+                    String findExtraArtist = "(.*) Feat(uring)?\\.? " + extraArtist.extraArtist;
+                    if (!artist.toUpperCase().matches(findExtraArtist.toUpperCase())) {
                         artist = artist + addArtist;
                     }
                 }
@@ -125,16 +128,38 @@ public class MP3Processor extends BatchJobV2 {
         return title;
     }
 
+    public int getTrackSize(AlbumInfo.Config album) {
+        int maxNr = 0;
+        int nr = 0;
+        for (AlbumInfo.Track track : album.tracks) {
+            nr++;
+            try {
+                nr = Integer.valueOf(track.track.trim());
+                if (maxNr < nr) {
+                    maxNr = nr;
+                }
+            }
+            catch (NumberFormatException ex){
+               maxNr = nr;
+            }
+        }
+        return String.valueOf(maxNr).length();
+    }
+
+
     public void start() throws IOException {
 
         AlbumInfo.Config album = (AlbumInfo.Config) JSONUtils.openJSON(INPUT_FILE, AlbumInfo.Config.class, "UTF-8");
         MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSONWithCode(Constants.JSON.MP3SETTINGS, MP3Settings.class);
+        if (album.trackSize == 0) {
+            album.trackSize = getTrackSize(album);
+        }
 
         MP3Helper helper = MP3Helper.getInstance();
         String mp3Dir = Setup.getInstance().getFullPath(Constants.Path.ALBUM) + File.separator + mp3Settings.album;
         log.info("Album Directory: " + mp3Dir);
 
-        album.album = helper.prettifyAlbum(album.album, album.albumArtist);
+        album.album = helper.prettifyAlbum(album.album, album.albumArtist == null ? VARIOUS: album.albumArtist);
         MyFileWriter myFile = new MyFileWriter("c:\\My Data\\tmp\\Java\\MP3Processor\\Album\\test.txt", MyFileWriter.NO_APPEND);
         for (AlbumInfo.Track track: album.tracks){
             /*
@@ -228,8 +253,9 @@ public class MP3Processor extends BatchJobV2 {
         for (Path path : listOfFiles) {
             log.info(path.toString());
             try {
-                AlbumInfo.Track track = findMP3File(album, index++);
-                readMP3File(album, mp3Settings, track, path.toString(), prefix);
+                AlbumInfo.Track track = findMP3File(album, index);
+               readMP3File(album, mp3Settings, track, path.toString(), prefix, index);
+                index++;
             }  catch (NotSupportedException e) {
                 e.printStackTrace();
             } catch (InvalidDataException e) {
@@ -248,7 +274,7 @@ public class MP3Processor extends BatchJobV2 {
         ID3v2 id3v2Tag = MP3Utils.getId3v2Tag(mp3file);
 
         System.out.println("Track: " + id3v2Tag.getTrack());
-        System.out.println("NEW Track: " + MP3Helper.getInstance().formatTrack(album, track.track));
+        System.out.println("NEW Track: " + MP3Helper.getInstance().formatTrack(album, track.track,0));
         System.out.println(StringUtils.repeat('=', 100));
         System.out.println("Artist: " + id3v2Tag.getArtist());
         System.out.println("NEW Artist: " + track.artist);
@@ -262,7 +288,7 @@ public class MP3Processor extends BatchJobV2 {
         if (StringUtils.isBlank(mp3Settings.albumArtist)) {
             // compilation cd //
             id3v2Tag.setCompilation(true);
-            id3v2Tag.setAlbumArtist("Various Artists");
+            id3v2Tag.setAlbumArtist(VARIOUS);
         }
         else {
             id3v2Tag.setAlbumArtist(mp3Settings.albumArtist);
@@ -270,7 +296,7 @@ public class MP3Processor extends BatchJobV2 {
         if (StringUtils.isNotBlank(mp3Settings.albumYear)) {
             id3v2Tag.setYear(mp3Settings.albumYear);
         }
-        id3v2Tag.setTrack(MP3Helper.getInstance().formatTrack(album, track.track));
+        id3v2Tag.setTrack(MP3Helper.getInstance().formatTrack(album, track.track, 0));
         id3v2Tag.setArtist(track.artist);
         id3v2Tag.setTitle(track.title);
         cleanUpTag(id3v2Tag, id3v2Tag.getComment(), AbstractID3v2Tag.ID_COMMENT);
@@ -309,10 +335,11 @@ public class MP3Processor extends BatchJobV2 {
     }
 
 
-    private void readMP3File(AlbumInfo.Config album, MP3Settings mp3Settings, AlbumInfo.Track track, String fileName, String prefixFileName) throws InvalidDataException, IOException, UnsupportedTagException, NotSupportedException {
+    private void readMP3File(AlbumInfo.Config album, MP3Settings mp3Settings, AlbumInfo.Track track, String fileName, String prefixFileName, int index) throws InvalidDataException, IOException, UnsupportedTagException, NotSupportedException {
 
         File newFile;
         File originalFile = new File(fileName);
+        System.out.println("Track Number: " + index);
         if (mp3Settings.filename.renameEnabled){
             String newFilename = constructFilename(mp3Settings, album, track, FilenameUtils.getExtension(fileName));
             newFile = new File(Setup.getInstance().getFullPath(Constants.Path.NEW) + File.separator  + newFilename);
@@ -326,7 +353,7 @@ public class MP3Processor extends BatchJobV2 {
         try {
             MP3Service mp3File = new MP3JAudioTaggerServiceImpl(newFile.getAbsolutePath());
             System.out.println("Track: " + mp3File.getTrack());
-            System.out.println("NEW Track: " + MP3Helper.getInstance().formatTrack(album, track.track));
+            System.out.println("NEW Track: " + MP3Helper.getInstance().formatTrack(album, track.track, index));
             System.out.println(StringUtils.repeat('=', 100));
             System.out.println("Artist: " + mp3File.getArtist());
             System.out.println("NEW Artist: " + track.artist);
@@ -338,10 +365,19 @@ public class MP3Processor extends BatchJobV2 {
             if (StringUtils.isNotBlank(album.album)){
                 mp3File.setAlbum(album.album);
             }
-            if (StringUtils.isBlank(mp3Settings.albumArtist)) {
+            if (StringUtils.isNotBlank(album.albumArtist)) {
+                if (album.albumArtist.equals(VARIOUS)){
+                    mp3File.setCompilation(true);
+                }
+                else {
+                    mp3File.setCompilation(false);
+                }
+                mp3File.setAlbumArtist(album.albumArtist);
+            }
+            else if (StringUtils.isBlank(mp3Settings.albumArtist)) {
                 // compilation cd //
                 mp3File.setCompilation(true);
-                mp3File.setAlbumArtist("Various Artists");
+                mp3File.setAlbumArtist(VARIOUS);
             }
             else {
                 mp3File.setAlbumArtist(mp3Settings.albumArtist);
@@ -351,7 +387,7 @@ public class MP3Processor extends BatchJobV2 {
             }
             prettifyGenre(mp3File);
 
-            mp3File.setTrack(MP3Helper.getInstance().formatTrack(album, track.track));
+            mp3File.setTrack(MP3Helper.getInstance().formatTrack(album, track.track,index));
             mp3File.setArtist(track.artist);
             mp3File.setTitle(track.title);
             mp3File.cleanupTags();
@@ -423,7 +459,7 @@ public class MP3Processor extends BatchJobV2 {
                 directoryStream.close();
             } catch (IOException ex) {
             }
-            Collections.sort(fileNames, (f1, f2) -> f1.toString().compareTo(f2.toString()));
+            Collections.sort(fileNames, (f1, f2) -> SortUtils.stripAccentsIgnoreCase(f1.toString()).compareTo(SortUtils.stripAccentsIgnoreCase(f2.toString())));
         }
         else {
             throw new ApplicationException("MP3 Directory " + directory + " does not exist!");
@@ -447,7 +483,7 @@ public class MP3Processor extends BatchJobV2 {
                 directoryStream.close();
             } catch (IOException ex) {
             }
-            Collections.sort(fileNames, (f1, f2) -> f1.toString().compareTo(f2.toString()));
+            Collections.sort(fileNames, (f1, f2) -> SortUtils.stripAccentsIgnoreCase(f1.toString()).compareTo(SortUtils.stripAccentsIgnoreCase(f2.toString())));
         }
         else {
             throw new ApplicationException("MP3 Directory " + directory + " does not exist!");

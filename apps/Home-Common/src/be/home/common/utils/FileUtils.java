@@ -299,4 +299,12 @@ public class FileUtils {
 		}
 		return s;
 	}
+
+	public static void makeFileWriteable(String filename){
+		File file = new File(filename);
+		if (!file.canWrite()) {
+			file.setWritable(true);
+		}
+	}
+
 }
