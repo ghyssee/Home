@@ -172,7 +172,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
     public String getAudioSourceUrl() {
         // WOAS
         String audioSourceUrl = null;
-        List<TagField> tags = mp3File.getID3v2Tag().getFrame((ID3v24Frames.FRAME_ID_URL_SOURCE_WEB);
+        List<TagField> tags = mp3File.getID3v2Tag().getFrame((ID3v24Frames.FRAME_ID_URL_SOURCE_WEB));
         TagField tagField = null;
         if (tags != null && tags.size() > 0) {
             tagField = tags.get(0);
@@ -336,6 +336,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
     public void setYear(String year) throws MP3Exception {
         this.tag.deleteField(FieldKey.YEAR);
         //this.tag.deleteField(ID3v24FieldKey.YEAR);
+
         if (year != null) {
             try {
                 this.tag.addField(FieldKey.YEAR, year);
@@ -453,7 +454,8 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
     }
 
     public void cleanupTag(String frameId){
-        List<TagField> tags = this.tag.getFrame(frameId);
+        //List<TagField> tags = this.tag.getFrame(frameId);
+        List<TagField> tags = this.mp3File.getID3v2Tag().getFrame(frameId);
         TagField tagField = null;
         String value = null;
         if (tags != null && tags.size() > 0) {
@@ -461,7 +463,8 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
             ID3v24Frame frame = (ID3v24Frame) tagField;
             value = frame.getContent();
             if (value != null && value.compareToIgnoreCase(TAG_TO_DELETE) == 0){
-                tag.removeFrame(frameId);
+                //tag.removeFrame(frameId);
+                this.mp3File.getID3v2Tag().removeFrame(frameId);
             }
         }
     }
@@ -486,7 +489,11 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
 
     public void commit() throws MP3Exception {
         //TagOptionSingleton.getInstance().setId3v2PaddingWillShorten(true);
-        this.mp3File.setID3v2Tag(tag);
+        //this.mp3File.setID3v2Tag(tag);
+        AbstractID3v2Tag tag2 = (AbstractID3v2Tag) tag;
+        org.jaudiotagger.tag.id3.AbstractID3v2Tag test;
+        test.
+        this.mp3File.setID3v2Tag((AbstractID3v2Tag) tag);
         try {
             this.mp3File.save();
         } catch (IOException e) {
