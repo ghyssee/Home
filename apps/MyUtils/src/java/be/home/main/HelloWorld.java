@@ -78,12 +78,12 @@ public class HelloWorld extends BatchJobV2 {
         //System.out.println(MP3Helper.getInstance().checkRegExpDollar("$1Text$1", 1));
         //updateMP3();
         //batchProcess();
-        testMP3Prettifier();
+        //testMP3Prettifier();
         //TestMovieFile();
         //testAlbumArtist();
         //fileNotFound();
         //testVersion();
-        //testJAudioTagger();
+        testJAudioTagger();
 
     }
 
@@ -194,11 +194,14 @@ private static void TestMovieFile(){
         //System.out.println(mp3Helper.prettifyArtist("Dorothee Vegas & Like Maarten Feat. Sam Gooris"));
         //System.out.println("Axwell ^ Ingrosso".replaceAll("Axwell \\^ Ingrosso", "test"));
         //System.out.println(getTitleArtistException("Kontra K", "Zwischen Himmel Hlle"));
-        System.out.println(mp3Helper.prettifyArtist("Kendji Girac avec Soolking"));
-        System.out.println(mp3Helper.prettifyAlbum("Qmusic Top 40 Jaaroverzicht 2020", "Various Artists"));
-        System.out.println(getArtistTitleException("Camila Cabello featuring Ed Sheeran", "Bam Bam"));
-        System.out.println(getTitleArtistException("Taylor Swift", "Me"));
-        System.out.println(getTitleArtistException("Taylor Swift", "Message in a bottle"));
+        System.out.println(mp3Helper.prettifyArtist("Pink Sweat$"));
+        System.out.println(mp3Helper.prettifyArtist("Galantis Feat. Ship Wrek & Pink Sweat$"));
+        //System.out.println(mp3Helper.prettifyArtist("Ella Henderson Feat. Roger Sanchez"));
+        System.out.println(mp3Helper.prettifyAlbum("Billboard Year-End Hot 100 singles of 2022", "Various Artists"));
+        //System.out.println(getArtistTitleException("Galantis Feat. Ship Wrek & Pink Sweat$", "Only a Fool"));
+        //System.out.println(getArtistTitleException("Reflekt ft. Delline Bass", "Need To Feel Loved (Cristoph Remix)"));
+        //System.out.println(getTitleArtistException("Taylor Swift", "Me"));
+        //System.out.println(getTitleArtistException("Taylor Swift", "Message in a bottle"));
         //System.out.println(getArtistTitleException("Dna", "blabla"));
         //System.out.println(getArtistTitleException("Michael Patrick Kelly", "Love Goes On (Live) [aus \"Sing meinen Song, Vol. 7\"]"));
 
@@ -335,13 +338,14 @@ private static void TestMovieFile(){
     }
 
     private static void testJAudioTagger(){
-        File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\01. Underworld - Born Slippy (Nuxx).mp3");
-        File newFile = new File("C:\\My Data\\tmp\\Java\\MP3Processor\\new" + File.separator + "test.mp3");
+        File file = new File("C:\\Temp\\0\\Ultratop 50 20200104 04 Januari 2020\\73 David Guetta & Morten Feat. Raye - Make It To Heaven.mp3");
+        File newFile = new File("C:\\Temp\\0\\Ultratop 50 20200104 04 Januari 2020\\new.mp3");
         try {
             Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
             MP3Service mp3File = null;
             try {
                 mp3File = new MP3JAudioTaggerServiceImpl(newFile.getAbsolutePath());
+                System.out.println("year: " + mp3File.getYear());
                 System.out.println(mp3File.getComment());
                 System.out.println(mp3File.getArtist());
                 //mp3File.setArtist("Kings of Leon");
@@ -350,16 +354,19 @@ private static void TestMovieFile(){
                 //mp3File.setYear("2022");
                 //mp3File.setRating(4);
                // mp3File.setDisc(null);
+                mp3File.setArtist("David Guetta & MORTEN Feat. Raye");
                 System.out.println("old genre: " + mp3File.getGenre());
                 //mp3File.setTrack("10");
-                mp3File.setGenre("Pop");
-                mp3File.setTrack("01");
+                //mp3File.setGenre("Pop");
+                //mp3File.setTrack("01");
                 //System.out.println("new genre: " + mp3File.getGenre());
                 //mp3File.setAlbumArtist("Various Artists");
-                mp3File.clearAlbumImage();
-                System.out.println(mp3File.getRatingAsString());
-                System.out.println(mp3File.getAudioSourceUrl());
-                mp3File.cleanupTags();
+                //mp3File.clearAlbumImage();
+                //System.out.println(mp3File.getRatingAsString());
+                //System.out.println(mp3File.getAudioSourceUrl());
+                //System.out.println(mp3File.);
+                //mp3File.cleanupTags();
+                System.out.println(mp3File.getDuration());
                 mp3File.commit();
                 //mp3File.setGenre("Pop");
             } catch (MP3Exception e) {

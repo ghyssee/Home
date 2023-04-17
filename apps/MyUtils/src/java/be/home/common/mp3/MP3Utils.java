@@ -1,6 +1,6 @@
 package be.home.common.mp3;
 
-import be.home.model.json.MP3Settings;
+import be.home.domain.model.service.MP3Service;
 import com.mpatric.mp3agic.*;
 import com.mpatric.mp3agic.ID3v24Tag;
 import org.apache.commons.lang3.StringUtils;
@@ -15,30 +15,6 @@ import java.util.Map;
  * Created by ghyssee on 16/12/2016.
  */
 public class MP3Utils {
-
-    public static String getMP3Field(ID3v2 id3v2Tag, String field, String id){
-        if (!StringUtils.isBlank(field)){
-            id3v2Tag.clearFrameSet(id);
-        }
-        return field;
-    }
-
-    public static int getMP3Field(ID3v2 id3v2Tag, int field, String id){
-            id3v2Tag.clearFrameSet(id);
-            return field;
-    }
-
-    public static List getMP3Field(ID3v2 id3v2Tag, List field, String id){
-        if (field != null && field.size() > 0) {
-            id3v2Tag.clearFrameSet(id);
-        }
-        return field;
-    }
-
-    public static boolean getMP3Field(ID3v2 id3v2Tag, boolean field, String id){
-            id3v2Tag.clearFrameSet(id);
-        return field;
-    }
 
     private static String getTagId(String id){
         Map map = new HashMap();
@@ -236,11 +212,11 @@ public class MP3Utils {
         return id3v2Tag;
     }
 
-    public static boolean checkId3v2Tag(ID3v2 id3v2Tag){
-        if (id3v2Tag.getArtist() == null ||
-                id3v2Tag.getTitle() == null ||
-                id3v2Tag.getAlbumArtist() == null ||
-                id3v2Tag.getAlbum() == null){
+    public static boolean checkId3v2Tag(MP3Service mp3Service){
+        if (mp3Service.getArtist() == null ||
+                mp3Service.getTitle() == null ||
+                mp3Service.getAlbumArtist() == null ||
+                mp3Service.getAlbum() == null){
             return false;
         }
         return true;
@@ -248,7 +224,10 @@ public class MP3Utils {
     }
 
     public int convertRating (String rating) {
-        int rat = Integer.valueOf(rating);
+        int rat = 0;
+        if (StringUtils.isNotBlank(rating)){
+            rat = Integer.valueOf(rating);
+        }
         return convertRating(rat);
     }
 

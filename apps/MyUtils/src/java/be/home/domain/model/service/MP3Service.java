@@ -31,6 +31,10 @@ public interface MP3Service {
     public String getDiscTotal();
     public String getGenre();
 
+    public int getDuration();
+
+    public boolean hasTag();
+
     public  void setArtist(String artist) throws MP3Exception;
     public void setTitle(String title) throws MP3Exception;
     public void setTrack(String track) throws MP3Exception;

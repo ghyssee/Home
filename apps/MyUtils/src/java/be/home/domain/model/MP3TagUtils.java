@@ -7,6 +7,9 @@ import be.home.common.enums.MP3Tag;
 import be.home.common.mp3.MP3Utils;
 import be.home.common.database.sqlbuilder.SQLBuilder;
 import be.home.common.utils.LogUtils;
+import be.home.domain.model.service.MP3Exception;
+import be.home.domain.model.service.MP3JAudioTaggerServiceImpl;
+import be.home.domain.model.service.MP3Service;
 import be.home.mezzmo.domain.dao.definition.MGOFileColumns;
 import be.home.mezzmo.domain.dao.definition.TablesEnum;
 import be.home.model.json.AlbumError;
@@ -194,15 +197,13 @@ public class MP3TagUtils {
         return ok;
     }
 
-    private Mp3File initMP3File(File file) throws InvalidDataException, UnsupportedTagException, IOException {
-        Mp3File mp3file = null;
-        int i=0;
-        mp3file = new Mp3File(file.getAbsolutePath());
+    private MP3Service initMP3File(File file) throws MP3Exception {
+        MP3Service mp3file = new MP3JAudioTaggerServiceImpl(file.getAbsolutePath());
         return mp3file;
     }
 
     private void checkMP3Info(MGOFileAlbumCompositeTO comp, File file, int nrOfTracks, int maxDisc){
-        Mp3File mp3file = null;
+        MP3Service mp3file = null;
         MP3Utils mp3Utils = new MP3Utils();
         try {
             // mp3file = new Mp3File(file.getAbsolutePath());
@@ -211,25 +212,24 @@ public class MP3TagUtils {
                 log.error("Could not open file: " + file.getAbsolutePath());
                 return;
             }
-            ID3v2 id3v2Tag;
-            if (mp3file.hasId3v2Tag()) {
-                id3v2Tag = MP3Utils.getId3v2Tag(mp3file);
-                if (MP3Utils.checkId3v2Tag(id3v2Tag)) {
-                    checkTrack(id3v2Tag.getTrack(), comp, nrOfTracks, maxDisc);
-                    checkArtist(comp, id3v2Tag.getArtist());
-                    checkTitle(comp, id3v2Tag.getTitle());
+            if (mp3file.hasTag()) {
+                //id3v2Tag = MP3Utils.getId3v2Tag(mp3file);
+                if (MP3Utils.checkId3v2Tag(mp3file)) {
+                    checkTrack(mp3file.getTrack(), comp, nrOfTracks, maxDisc);
+                    checkArtist(comp, mp3file.getArtist());
+                    checkTitle(comp, mp3file.getTitle());
                     checkForExceptions(comp);
-                    checkDuration(comp, mp3Utils.getDuration(mp3file));
-                    checkRating(comp, id3v2Tag);
-                    if (checkDisc(comp, id3v2Tag.getPartOfSet())) {
+                    checkDuration(comp, mp3file.getDuration());
+                    checkRating(comp, mp3file.getRating());
+                    if (checkDisc(comp, mp3file.getDisc())) {
                         if (checkFilename(comp, nrOfTracks, maxDisc)) {
                             // if filename is ok, an extra check for filetitle
                             checkFileTitle(comp);
                         }
                     }
-                    checkAlbumArtist(comp, id3v2Tag.isCompilation(), id3v2Tag.getAlbumArtist());
+                    checkAlbumArtist(comp, mp3file.isCompilation(), mp3file.getAlbumArtist());
                     checkForAlbumExceptions(comp);
-                    checkAlbum(comp, id3v2Tag.getAlbum());
+                    checkAlbum(comp, mp3file.getAlbum());
 
                     /*System.out.println(StringUtils.repeat('=', 100));
                     System.out.println("MP3 Tag Info");
@@ -253,17 +253,11 @@ public class MP3TagUtils {
                 log.error("No id3v2Tag Info found for file: " + file.getAbsolutePath());
                 return;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-            log.error(e);
-        } catch (UnsupportedTagException e) {
-            log.error(e);
-            e.printStackTrace();
-        } catch (InvalidDataException e) {
+        } catch (MP3Exception | UnsupportedEncodingException e) {
             e.printStackTrace();
             log.error(e);
         }
-    }
+}
 
     private boolean checkDuration(MGOFileAlbumCompositeTO comp, long duration) {
         int durationFromDB = comp.getFileTO().getDuration();
@@ -292,11 +286,10 @@ public class MP3TagUtils {
         return ok;
     }
 
-    private boolean checkRating(MGOFileAlbumCompositeTO comp, ID3v2 id3v2Tag) {
+    private boolean checkRating(MGOFileAlbumCompositeTO comp, int ratingFromMP3) {
         int ratingFromDB = comp.getFileTO().getRanking();
         MP3Utils mp3Utils = new MP3Utils();
-        int ratingFromMP3 = mp3Utils.getRating(id3v2Tag);
-        int stars = mp3Utils.convertRating(ratingFromMP3);
+        int stars = ratingFromMP3; // mp3Utils.convertRating(ratingFromMP3);
         boolean ok = true;
         if (stars != ratingFromDB){
             ok = false;

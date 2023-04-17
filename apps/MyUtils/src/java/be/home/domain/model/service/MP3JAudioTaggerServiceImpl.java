@@ -2,19 +2,15 @@ package be.home.domain.model.service;
 
 import be.home.common.mp3.MP3Utils;
 import be.home.common.utils.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jaudiotagger.audio.exceptions.CannotReadException;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.audio.mp3.MP3File;
 import org.jaudiotagger.tag.*;
 
-import org.jaudiotagger.tag.id3.ID3v24FieldKey;
-import org.jaudiotagger.tag.id3.ID3v24Frame;
-import org.jaudiotagger.tag.id3.ID3v24Frames;
-import org.jaudiotagger.tag.id3.ID3v24Tag;
-import org.jaudiotagger.tag.id3.ID3v23Frame;
-import org.jaudiotagger.tag.id3.ID3v23Tag;
-import org.jaudiotagger.tag.id3.framebody.FrameBodyTCON;
+import org.jaudiotagger.tag.id3.*;
+import org.jaudiotagger.tag.id3.framebody.FrameBodyDeprecated;
 
 import java.io.IOException;
 import java.util.List;
@@ -22,7 +18,7 @@ import java.util.List;
 public class MP3JAudioTaggerServiceImpl implements MP3Service {
 
     MP3File mp3File;
-    ID3v24Tag tag;
+    Tag tag;
 
     private MP3JAudioTaggerServiceImpl(){
 
@@ -44,11 +40,25 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         } catch (InvalidAudioFrameException e) {
             throw new MP3Exception(e);
         }
-        this.tag = mp3File.getID3v2TagAsv24();
+        this.tag = mp3File.getTagAndConvertOrCreateDefault();
         if (this.tag == null) {
-            this.tag = new ID3v24Tag();
+            if (mp3File.hasID3v1Tag()) {
+                this.tag = new ID3v24Tag(mp3File.getID3v1Tag());
+            }
+            else {
+                this.tag = new ID3v24Tag();
+            }
         }
 
+    }
+
+    public int getDuration() {
+        int length = mp3File.getAudioHeader().getTrackLength();
+        return length;
+    }
+
+    public boolean hasTag() {
+        return mp3File.hasID3v2Tag() || mp3File.hasID3v1Tag();
     }
 
     @Override
@@ -93,6 +103,17 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
     @Override
     public String getYear() {
         String year = tag.getFirst(FieldKey.YEAR);
+        if (StringUtils.isBlank(year)) {
+            /*
+           List<TagField> tags = this.tag.getFrame(ID3v23Frames.FRAME_ID_V3_TYER);
+            TagField tagField = null;
+            if (tags != null && tags.size() > 0) {
+                tagField = tags.get(0);
+                ID3v24Frame frame = (ID3v24Frame) tagField;
+                year = frame.getContent();
+                //year = ((FrameBodyDeprecated) frame.frameBody).originalFrameBody;
+            }*/
+        }
         return year;
     }
 
@@ -151,7 +172,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
     public String getAudioSourceUrl() {
         // WOAS
         String audioSourceUrl = null;
-        List<TagField> tags = this.tag.getFrame(ID3v24Frames.FRAME_ID_URL_SOURCE_WEB);
+        List<TagField> tags = mp3File.getID3v2Tag().getFrame((ID3v24Frames.FRAME_ID_URL_SOURCE_WEB);
         TagField tagField = null;
         if (tags != null && tags.size() > 0) {
             tagField = tags.get(0);
@@ -206,8 +227,8 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
 
     @Override
     public void setArtist(String artist) throws MP3Exception {
-        //this.tag.deleteField(FieldKey.ARTIST);
-        this.tag.deleteField(ID3v24FieldKey.ARTIST);
+        this.tag.deleteField(FieldKey.ARTIST);
+        //this.tag.deleteField(ID3v24FieldKey.ARTIST);
         if (artist != null) {
             try {
                 this.tag.addField(FieldKey.ARTIST, artist);
@@ -219,8 +240,8 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
 
     @Override
     public void setTitle(String title) throws MP3Exception {
-        //this.tag.deleteField(FieldKey.TITLE);
-        this.tag.deleteField(ID3v24FieldKey.TITLE);
+        this.tag.deleteField(FieldKey.TITLE);
+        //this.tag.deleteField(ID3v24FieldKey.TITLE);
         if (title != null) {
             try {
                 this.tag.addField(FieldKey.TITLE, title);
@@ -238,7 +259,8 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         // Ex. Pop = 13
         // TOTEST
         TagOptionSingleton.getInstance().setWriteMp3GenresAsText(true);
-        this.tag.deleteField(ID3v24FieldKey.GENRE);
+        this.tag.deleteField(FieldKey.GENRE);
+        //this.tag.deleteField(ID3v24FieldKey.GENRE);
         if (genre != null) {
             try {
                 this.tag.addField(FieldKey.GENRE, genre);
@@ -260,7 +282,8 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
 
     @Override
     public void setTrack(String track) throws MP3Exception {
-        this.tag.deleteField(ID3v24FieldKey.TRACK);
+        this.tag.deleteField(FieldKey.TRACK);
+        //this.tag.deleteField(ID3v24FieldKey.TRACK);
         if (track != null) {
             try {
                 this.tag.addField(FieldKey.TRACK, track);
@@ -272,8 +295,8 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
 
     @Override
     public void setDisc(String disc) throws MP3Exception {
-        // this.tag.deleteField(FieldKey.DISC_NO); dos not delete if for example 1/0
-        this.tag.deleteField(ID3v24FieldKey.DISC_NO);
+        this.tag.deleteField(FieldKey.DISC_NO); //dos not delete if for example 1/0
+        //this.tag.deleteField(ID3v24FieldKey.DISC_NO);
         if (disc != null) {
             try {
                 this.tag.addField(FieldKey.DISC_NO, disc);
@@ -285,8 +308,8 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
 
     @Override
     public void setAlbum(String album) throws MP3Exception {
-        //this.tag.deleteField(FieldKey.ALBUM);
-        this.tag.deleteField(ID3v24FieldKey.ALBUM);
+        this.tag.deleteField(FieldKey.ALBUM);
+        //this.tag.deleteField(ID3v24FieldKey.ALBUM);
         if (album != null) {
             try {
                 this.tag.addField(FieldKey.ALBUM, album);
@@ -298,8 +321,8 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
 
     @Override
     public void setAlbumArtist(String albumArtist) throws MP3Exception {
-        //this.tag.deleteField(FieldKey.ALBUM_ARTIST);
-        this.tag.deleteField(ID3v24FieldKey.ALBUM_ARTIST);
+        this.tag.deleteField(FieldKey.ALBUM_ARTIST);
+        //this.tag.deleteField(ID3v24FieldKey.ALBUM_ARTIST);
         if (albumArtist != null) {
             try {
                 this.tag.addField(FieldKey.ALBUM_ARTIST, albumArtist);
@@ -311,8 +334,8 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
 
     @Override
     public void setYear(String year) throws MP3Exception {
-        //this.tag.deleteField(FieldKey.YEAR);
-        this.tag.deleteField(ID3v24FieldKey.YEAR);
+        this.tag.deleteField(FieldKey.YEAR);
+        //this.tag.deleteField(ID3v24FieldKey.YEAR);
         if (year != null) {
             try {
                 this.tag.addField(FieldKey.YEAR, year);
@@ -324,8 +347,8 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
 
     @Override
     public void setComment(String comment) throws MP3Exception {
-        //this.tag.deleteField(FieldKey.COMMENT);
-        this.tag.deleteField(ID3v24FieldKey.COMMENT);
+        this.tag.deleteField(FieldKey.COMMENT);
+        //this.tag.deleteField(ID3v24FieldKey.COMMENT);
         if (comment != null) {
             try {
                 this.tag.addField(FieldKey.COMMENT, comment);
@@ -360,8 +383,8 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
             default:
                 str = "0";
         }
-        //this.tag.deleteField(FieldKey.RATING);
-        this.tag.deleteField(ID3v24FieldKey.RATING);
+        this.tag.deleteField(FieldKey.RATING);
+        //this.tag.deleteField(ID3v24FieldKey.RATING);
         try {
             this.tag.addField(FieldKey.RATING,str);
         } catch (FieldDataInvalidException e) {
@@ -384,8 +407,8 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
 
     @Override
     public void setDiscTotal(String discTotal) throws MP3Exception {
-        //this.tag.deleteField(FieldKey.DISC_TOTAL);
-        this.tag.deleteField(ID3v24FieldKey.DISC_TOTAL);
+        this.tag.deleteField(FieldKey.DISC_TOTAL);
+        //this.tag.deleteField(ID3v24FieldKey.DISC_TOTAL);
         if (discTotal != null) {
 
             try {
@@ -443,12 +466,26 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         }
     }
 
+    public void cleanupTagOld(String frameId){
+        /*
+        List<TagField> tags = this.tag.getFrame(frameId);
+        TagField tagField = null;
+        String value = null;
+        if (tags != null && tags.size() > 0) {
+            tagField = tags.get(0);
+            ID3v24Frame frame = (ID3v24Frame) tagField;
+            value = frame.getContent();
+            if (value != null && value.compareToIgnoreCase(TAG_TO_DELETE) == 0){
+                tag.removeFrame(frameId);
+            }
+        }*/
+    }
     public void clearAlbumImage() {
         this.tag.deleteArtworkField();
     }
 
     public void commit() throws MP3Exception {
-        TagOptionSingleton.getInstance().setId3v2PaddingWillShorten(true);
+        //TagOptionSingleton.getInstance().setId3v2PaddingWillShorten(true);
         this.mp3File.setID3v2Tag(tag);
         try {
             this.mp3File.save();
