@@ -42,9 +42,11 @@ import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.audio.mp3.MP3File;
 import org.jaudiotagger.tag.TagException;
 import org.jaudiotagger.tag.TagField;
+import org.jaudiotagger.tag.TagOptionSingleton;
 import org.jaudiotagger.tag.id3.ID3v24Frame;
 import org.jaudiotagger.tag.id3.ID3v24Frames;
 import org.jaudiotagger.tag.id3.ID3v24Tag;
+import org.jaudiotagger.tag.reference.ID3V2Version;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -338,8 +340,11 @@ private static void TestMovieFile(){
     }
 
     private static void testJAudioTagger(){
-        File file = new File("C:\\Temp\\0\\Ultratop 50 20200104 04 Januari 2020\\73 David Guetta & Morten Feat. Raye - Make It To Heaven.mp3");
+        File file = new File("C:\\Temp\\0\\Ultratop 50 20200104 04 Januari 2020\\01 Test.mp3");
+        //File file = new File("C:\\Temp\\0\\Ultratop 50 20200104 04 Januari 2020\\07 The Weeknd - Blinding Lights.mp3");
         File newFile = new File("C:\\Temp\\0\\Ultratop 50 20200104 04 Januari 2020\\new.mp3");
+       // TagOptionSingleton.getInstance().setOriginalSavedAfterAdjustingID3v2Padding(false);
+       // TagOptionSingleton.getInstance().setRemoveTrailingTerminatorOnWrite(true);
         try {
             Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
             MP3Service mp3File = null;
@@ -348,27 +353,25 @@ private static void TestMovieFile(){
                 System.out.println("year: " + mp3File.getYear());
                 System.out.println(mp3File.getComment());
                 System.out.println(mp3File.getArtist());
+                System.out.println(mp3File.getUrl());
                 //mp3File.setArtist("Kings of Leon");
                 //mp3File.setTitle("On The Fly");
-                //mp3File.setCompilation(true);
+                mp3File.setCompilation(true);
                 //mp3File.setYear("2022");
-                //mp3File.setRating(4);
-               // mp3File.setDisc(null);
+                mp3File.setRating(4);
+                mp3File.setDisc("1");
                 mp3File.setArtist("David Guetta & MORTEN Feat. Raye");
                 System.out.println("old genre: " + mp3File.getGenre());
-                //mp3File.setTrack("10");
-                //mp3File.setGenre("Pop");
-                //mp3File.setTrack("01");
-                //System.out.println("new genre: " + mp3File.getGenre());
-                //mp3File.setAlbumArtist("Various Artists");
-                //mp3File.clearAlbumImage();
-                //System.out.println(mp3File.getRatingAsString());
-                //System.out.println(mp3File.getAudioSourceUrl());
-                //System.out.println(mp3File.);
-                //mp3File.cleanupTags();
+                mp3File.setTrack("100");
+                mp3File.setGenre("Test");
+                mp3File.setAlbumArtist("Various ArtistsXXX");
+                mp3File.clearAlbumImage();
+                System.out.println(mp3File.getRatingAsString());
+                System.out.println(mp3File.getAudioSourceUrl());
+                mp3File.cleanupTags();
                 System.out.println(mp3File.getDuration());
+                mp3File.analyze();
                 mp3File.commit();
-                //mp3File.setGenre("Pop");
             } catch (MP3Exception e) {
                 e.printStackTrace();
             }

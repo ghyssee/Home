@@ -2,7 +2,6 @@ package be.home.domain.model.service;
 
 import be.home.common.mp3.MP3Utils;
 import be.home.common.utils.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.jaudiotagger.audio.exceptions.CannotReadException;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
@@ -10,7 +9,9 @@ import org.jaudiotagger.audio.mp3.MP3File;
 import org.jaudiotagger.tag.*;
 
 import org.jaudiotagger.tag.id3.*;
+import org.jaudiotagger.tag.id3.framebody.AbstractID3v2FrameBody;
 import org.jaudiotagger.tag.id3.framebody.FrameBodyDeprecated;
+import org.jaudiotagger.tag.reference.ID3V2Version;
 
 import java.io.IOException;
 import java.util.List;
@@ -19,13 +20,17 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
 
     MP3File mp3File;
     Tag tag;
+    ID3v24Tag idv24Tag;
 
-    private MP3JAudioTaggerServiceImpl(){
+    private MP3JAudioTaggerServiceImpl() {
 
     }
 
     public MP3JAudioTaggerServiceImpl(String file) throws MP3Exception {
 
+        TagOptionSingleton.getInstance().setId3v2PaddingWillShorten(true);
+        TagOptionSingleton.getInstance().setID3V2Version(ID3V2Version.ID3_V24);
+        TagOptionSingleton.getInstance().setRemoveTrailingTerminatorOnWrite(true);
         try {
             FileUtils.makeFileWriteable(file);
             this.mp3File = new MP3File(file);
@@ -41,15 +46,8 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
             throw new MP3Exception(e);
         }
         this.tag = mp3File.getTagAndConvertOrCreateDefault();
-        if (this.tag == null) {
-            if (mp3File.hasID3v1Tag()) {
-                this.tag = new ID3v24Tag(mp3File.getID3v1Tag());
-            }
-            else {
-                this.tag = new ID3v24Tag();
-            }
-        }
-
+        this.idv24Tag = mp3File.getID3v2TagAsv24();
+        analyze();
     }
 
     public int getDuration() {
@@ -72,6 +70,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         String genre = tag.getFirst(FieldKey.GENRE);
         return genre;
     }
+
     @Override
     public String getTitle() {
         String title = tag.getFirst(FieldKey.TITLE);
@@ -83,6 +82,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         String track = tag.getFirst(FieldKey.TRACK);
         return track;
     }
+
     @Override
     public String getDisc() {
         String disc = tag.getFirst(FieldKey.DISC_NO);
@@ -100,20 +100,10 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         String albumArtist = tag.getFirst(FieldKey.ALBUM_ARTIST);
         return albumArtist;
     }
+
     @Override
     public String getYear() {
         String year = tag.getFirst(FieldKey.YEAR);
-        if (StringUtils.isBlank(year)) {
-            /*
-           List<TagField> tags = this.tag.getFrame(ID3v23Frames.FRAME_ID_V3_TYER);
-            TagField tagField = null;
-            if (tags != null && tags.size() > 0) {
-                tagField = tags.get(0);
-                ID3v24Frame frame = (ID3v24Frame) tagField;
-                year = frame.getContent();
-                //year = ((FrameBodyDeprecated) frame.frameBody).originalFrameBody;
-            }*/
-        }
         return year;
     }
 
@@ -134,10 +124,11 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         String rating = tag.getFirst(FieldKey.RATING);
         return rating;
     }
+
     @Override
     public boolean isCompilation() {
         String compilation = tag.getFirst(FieldKey.IS_COMPILATION);
-        return "1".compareTo(compilation) ==  0;
+        return "1".compareTo(compilation) == 0;
     }
 
     @Override
@@ -152,7 +143,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         // TENC
         String encoder = tag.getFirst(FieldKey.ENCODER);
         return encoder;
-   }
+    }
 
     @Override
     public String getKey() {
@@ -172,12 +163,14 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
     public String getAudioSourceUrl() {
         // WOAS
         String audioSourceUrl = null;
-        List<TagField> tags = mp3File.getID3v2Tag().getFrame((ID3v24Frames.FRAME_ID_URL_SOURCE_WEB));
-        TagField tagField = null;
-        if (tags != null && tags.size() > 0) {
-            tagField = tags.get(0);
-            ID3v24Frame frame = (ID3v24Frame) tagField;
-            audioSourceUrl = frame.getContent();
+        if (mp3File.getID3v2Tag() != null) {
+            List<TagField> tags = mp3File.getID3v2Tag().getFrame((ID3v24Frames.FRAME_ID_URL_SOURCE_WEB));
+            TagField tagField = null;
+            if (tags != null && tags.size() > 0) {
+                tagField = tags.get(0);
+                AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
+                audioSourceUrl = frame.getContent();
+            }
         }
         return audioSourceUrl;
     }
@@ -362,7 +355,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
     @Override
     public void setRating(int rating) throws MP3Exception {
         String str = "0";
-        switch (rating){
+        switch (rating) {
             case 0:
                 str = "0";
                 break;
@@ -387,7 +380,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         this.tag.deleteField(FieldKey.RATING);
         //this.tag.deleteField(ID3v24FieldKey.RATING);
         try {
-            this.tag.addField(FieldKey.RATING,str);
+            this.tag.addField(FieldKey.RATING, str);
         } catch (FieldDataInvalidException e) {
             throw new MP3Exception(e);
         }
@@ -396,11 +389,11 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
     @Override
     public void setCompilation(boolean compilation) throws MP3Exception {
         String comp = "0";
-        if (compilation){
+        if (compilation) {
             comp = "1";
         }
         try {
-            tag.setField(FieldKey.IS_COMPILATION,comp);
+            tag.setField(FieldKey.IS_COMPILATION, comp);
         } catch (FieldDataInvalidException e) {
             throw new MP3Exception(e);
         }
@@ -449,27 +442,30 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         cleanupTag(ID3v24Frames.FRAME_ID_URL_PUBLISHERS); // WPUB
         cleanupTag(ID3v24Frames.FRAME_ID_URL_OFFICIAL_RADIO); // WORS
         cleanupTag(ID3v24Frames.FRAME_ID_RADIO_NAME); // TRSN
-        cleanupTag(ID3v24Frames.FRAME_ID_MOOD ); // TMOD
+        cleanupTag(ID3v24Frames.FRAME_ID_MOOD); // TMOD
         cleanupTag(ID3v24Frames.FRAME_ID_RADIO_OWNER); // TRSO
+        cleanupTag(ID3v24Frames.FRAME_ID_BPM); // TBPM
     }
 
-    public void cleanupTag(String frameId){
+    public void cleanupTag(String frameId) {
         //List<TagField> tags = this.tag.getFrame(frameId);
-        List<TagField> tags = this.mp3File.getID3v2Tag().getFrame(frameId);
-        TagField tagField = null;
-        String value = null;
-        if (tags != null && tags.size() > 0) {
-            tagField = tags.get(0);
-            ID3v24Frame frame = (ID3v24Frame) tagField;
-            value = frame.getContent();
-            if (value != null && value.compareToIgnoreCase(TAG_TO_DELETE) == 0){
-                //tag.removeFrame(frameId);
-                this.mp3File.getID3v2Tag().removeFrame(frameId);
+        if (this.mp3File.getID3v2Tag() != null) {
+            List<TagField> tags = this.mp3File.getID3v2Tag().getFrame(frameId);
+            TagField tagField = null;
+            String value = null;
+            if (tags != null && tags.size() > 0) {
+                tagField = tags.get(0);
+                AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
+                value = frame.getContent();
+                if (value != null && value.compareToIgnoreCase(TAG_TO_DELETE) == 0) {
+                    //tag.removeFrame(frameId);
+                    this.mp3File.getID3v2Tag().removeFrame(frameId);
+                }
             }
         }
     }
 
-    public void cleanupTagOld(String frameId){
+    public void cleanupTagOld(String frameId) {
         /*
         List<TagField> tags = this.tag.getFrame(frameId);
         TagField tagField = null;
@@ -483,6 +479,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
             }
         }*/
     }
+
     public void clearAlbumImage() {
         this.tag.deleteArtworkField();
     }
@@ -490,9 +487,8 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
     public void commit() throws MP3Exception {
         //TagOptionSingleton.getInstance().setId3v2PaddingWillShorten(true);
         //this.mp3File.setID3v2Tag(tag);
-        AbstractID3v2Tag tag2 = (AbstractID3v2Tag) tag;
-        org.jaudiotagger.tag.id3.AbstractID3v2Tag test;
-        test.
+        setComment("Test");
+        //this.mp3File.
         this.mp3File.setID3v2Tag((AbstractID3v2Tag) tag);
         try {
             this.mp3File.save();
@@ -503,4 +499,75 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         }
 
     }
+
+    public void convertInvalidFID3v2frame(AbstractID3v2Tag tag, String wrongId, String goodId, FieldKey fieldKey){
+        if (tag.hasFrame(wrongId)) {
+            System.out.println("problem in tag found");
+            if (!tag.hasFrame(goodId)) {
+                List<TagField> myList = tag.getFrame(wrongId);
+                AbstractID3v2Frame frame = (AbstractID3v2Frame) myList.get(0);
+                AbstractTagFrameBody frameBody = frame.getBody();
+                AbstractID3v2FrameBody dep = (AbstractID3v2FrameBody) frameBody;
+                String value = dep.getUserFriendlyValue();
+            }
+            else {
+                // just delete the redundant frame. Corresponding id3v24 frame exists
+                this.tag.deleteField(wrongId);
+            }
+        }
+
+    }
+
+    public void convertInvalidFID3v2frameOld(AbstractID3v2Tag tag, String wrongId, String goodId, FieldKey fieldKey){
+        if (tag.hasFrame(wrongId)) {
+            System.out.println("problem in tag found");
+            if (!tag.hasFrame(goodId)) {
+                List<TagField> myList = tag.getFrame(wrongId);
+                AbstractID3v2Frame frame = (AbstractID3v2Frame) myList.get(0);
+                AbstractTagFrameBody frameBody = frame.getBody();
+                FrameBodyDeprecated dep = (FrameBodyDeprecated) frameBody;
+                AbstractID3v2FrameBody oFrameBody = dep.getOriginalFrameBody();
+                //String year = ((FrameBodyTYER) oFrameBody).getText();
+                String year = oFrameBody.getUserFriendlyValue();
+                this.tag.deleteField(wrongId);
+                this.tag.deleteField(goodId);
+                try {
+                    this.tag.addField(fieldKey, year);
+                } catch (FieldDataInvalidException e) {
+                    throw new RuntimeException(e);
+                }
+                //try {
+                //    this.setYear(year);
+                //} catch (MP3Exception e) {
+                //    throw new RuntimeException(e);
+                //}
+            }
+            else {
+                // just delete the redundant frame. Corresponding id3v24 frame exists
+                this.tag.deleteField(wrongId);
+            }
+        }
+
+    }
+    public void analyze() {
+        AbstractID3v2Tag tag = this.mp3File.getID3v2Tag();
+        if (tag instanceof ID3v24Tag ) {
+            convertInvalidFID3v2frame(tag, ID3v23Frames.FRAME_ID_V3_TYER, ID3v24Frames.FRAME_ID_YEAR, FieldKey.YEAR);
+        }
+        if (tag instanceof ID3v23Tag ) {
+            convertInvalidFID3v2frame(tag, ID3v24Frames.FRAME_ID_YEAR, ID3v23Frames.FRAME_ID_V3_TYER, FieldKey.YEAR);
+        }
+        /* there is a problem if tag is ID3v24, and the year tag is TYER instead of TDOR,
+           the year is not fetched. This is a way to convert frame
+         */
+
+        /*
+        while(tagFieldIterator.hasNext()) {
+            TagField element = tagFieldIterator.next();
+            String id = element.getId();
+            System.out.println(id);
+        }
+        */
+    }
 }
+
