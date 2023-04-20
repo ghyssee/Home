@@ -580,7 +580,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                     value = rawText;
                 }
                 if (value != null) {
-                    save = = true;
+                    save = true;
                     log.warn("Value found: " + value);
                     this.tag.deleteField(wrongId);
                     this.tag.deleteField(goodId);
@@ -594,6 +594,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
             else {
                 // just delete the redundant frame. Corresponding id3v24 frame exists
                 save = true;
+                log.warn("Remove double frame: " + wrongId);
                 this.tag.deleteField(wrongId);
             }
         }
@@ -604,11 +605,21 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
            the year is not fetched. This is a way to convert frame
          */
         AbstractID3v2Tag tag = this.mp3File.getID3v2Tag();
-        if (tag instanceof ID3v24Tag ) {
-            convertInvalidFID3v2frame(tag, ID3v23Frames.FRAME_ID_V3_TYER, ID3v24Frames.FRAME_ID_YEAR, FieldKey.YEAR);
+        if (this.tag instanceof ID3v23Tag){
+            if (tag instanceof ID3v24Tag ) {
+                convertInvalidFID3v2frame(tag, ID3v24Frames.FRAME_ID_YEAR, ID3v23Frames.FRAME_ID_V3_TYER, FieldKey.YEAR);
+            }
+            else if (tag instanceof ID3v23Tag ) {
+                //convertInvalidFID3v2frame(tag, ID3v24Frames.FRAME_ID_YEAR, ID3v23Frames.FRAME_ID_V3_TYER, FieldKey.YEAR);
+            }
         }
-        if (tag instanceof ID3v23Tag ) {
-            convertInvalidFID3v2frame(tag, ID3v24Frames.FRAME_ID_YEAR, ID3v23Frames.FRAME_ID_V3_TYER, FieldKey.YEAR);
+        else if (this.tag instanceof ID3v24Tag) {
+            if (tag instanceof ID3v24Tag) {
+                convertInvalidFID3v2frame(tag, ID3v23Frames.FRAME_ID_V3_TYER, ID3v24Frames.FRAME_ID_YEAR, FieldKey.YEAR);
+            }
+            if (tag instanceof ID3v23Tag) {
+                convertInvalidFID3v2frame(tag, ID3v23Frames.FRAME_ID_V3_TYER, ID3v24Frames.FRAME_ID_YEAR, FieldKey.YEAR);
+            }
         }
 
 

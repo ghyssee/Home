@@ -1,9 +1,16 @@
 package be.home.main;
 
+import be.home.domain.model.service.MP3Exception;
+import be.home.domain.model.service.MP3JAudioTaggerServiceImpl;
+import be.home.domain.model.service.MP3Service;
+import be.home.main.tools.ZipFiles;
 import be.home.model.ConfigTO;
 import be.home.model.ParamTO;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jaudiotagger.audio.mp3.MP3File;
 
 import java.io.*;
 import java.nio.file.*;
@@ -17,6 +24,7 @@ public class MP3Scanner extends BatchJobV2 {
 
     private static final String VERSION = "V1.0";
 
+    private static final Logger log =  getMainLog(MP3Scanner.class);
     public static Log4GE log4GE;
     public static ConfigTO.Config config;
     private static final int BASE = 0;
@@ -46,7 +54,7 @@ public class MP3Scanner extends BatchJobV2 {
     }
 
     public static void start(){
-        String ROOT = "C:\\My Programs\\OneDrive\\AutoIt";
+        String ROOT = "t:\\My Music\\iPod\\Ultratop 50 20200104 04 Januari 2020";
         FileVisitor<Path> fileProcessor = new ProcessFile();
         try {
             Files.walkFileTree(Paths.get(ROOT), fileProcessor);
@@ -60,11 +68,21 @@ public class MP3Scanner extends BatchJobV2 {
                 Path aFile, BasicFileAttributes aAttrs
         ) throws IOException {
             String fileName = aFile.getFileName().toString();
+            log.info("Processing " + fileName);
             if (fileName.length() > 40){
                 //System.out.println("Filename too long:" + fileName);
             }
-            else if (containsFrench(fileName)){
-                System.out.println("Filename with special characters:" + aFile);
+            else {
+                if (containsFrench(fileName)){
+                    System.out.println("Filename with special characters:" + aFile);
+                    log.warn(fileName + ": " + "Filename contains special characters");
+                }
+            }
+            try {
+                MP3Service mp3File = new MP3JAudioTaggerServiceImpl(aFile.toString());
+            }
+            catch (MP3Exception ex){
+                log.info(ex.getMessage());
             }
             //System.out.println("Processing file:" + fileName);
             return FileVisitResult.CONTINUE;
