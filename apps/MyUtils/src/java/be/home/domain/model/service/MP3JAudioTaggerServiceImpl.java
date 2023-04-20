@@ -2,6 +2,8 @@ package be.home.domain.model.service;
 
 import be.home.common.mp3.MP3Utils;
 import be.home.common.utils.FileUtils;
+import be.home.main.mezzmo.MP3TagChecker;
+import org.apache.logging.log4j.Logger;
 import org.jaudiotagger.audio.exceptions.CannotReadException;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
@@ -11,16 +13,23 @@ import org.jaudiotagger.tag.*;
 import org.jaudiotagger.tag.id3.*;
 import org.jaudiotagger.tag.id3.framebody.AbstractID3v2FrameBody;
 import org.jaudiotagger.tag.id3.framebody.FrameBodyDeprecated;
+import org.jaudiotagger.tag.id3.framebody.FrameBodyUnsupported;
 import org.jaudiotagger.tag.reference.ID3V2Version;
 
 import java.io.IOException;
 import java.util.List;
 
+import static be.home.common.logging.LoggingConfiguration.getMainLog;
+
 public class MP3JAudioTaggerServiceImpl implements MP3Service {
 
+    private static final Logger log = getMainLog(MP3TagChecker.class);
     MP3File mp3File;
     Tag tag;
     ID3v24Tag idv24Tag;
+
+    boolean warning = false;
+    boolean save = false;
 
     private MP3JAudioTaggerServiceImpl() {
 
@@ -500,56 +509,100 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
 
     }
 
-    public void convertInvalidFID3v2frame(AbstractID3v2Tag tag, String wrongId, String goodId, FieldKey fieldKey){
-        if (tag.hasFrame(wrongId)) {
-            System.out.println("problem in tag found");
-            if (!tag.hasFrame(goodId)) {
-                List<TagField> myList = tag.getFrame(wrongId);
-                AbstractID3v2Frame frame = (AbstractID3v2Frame) myList.get(0);
-                AbstractTagFrameBody frameBody = frame.getBody();
-                AbstractID3v2FrameBody dep = (AbstractID3v2FrameBody) frameBody;
-                String value = dep.getUserFriendlyValue();
-            }
-            else {
-                // just delete the redundant frame. Corresponding id3v24 frame exists
-                this.tag.deleteField(wrongId);
-            }
-        }
-
-    }
-
     public void convertInvalidFID3v2frameOld(AbstractID3v2Tag tag, String wrongId, String goodId, FieldKey fieldKey){
         if (tag.hasFrame(wrongId)) {
             System.out.println("problem in tag found");
             if (!tag.hasFrame(goodId)) {
                 List<TagField> myList = tag.getFrame(wrongId);
                 AbstractID3v2Frame frame = (AbstractID3v2Frame) myList.get(0);
-                AbstractTagFrameBody frameBody = frame.getBody();
-                FrameBodyDeprecated dep = (FrameBodyDeprecated) frameBody;
-                AbstractID3v2FrameBody oFrameBody = dep.getOriginalFrameBody();
-                //String year = ((FrameBodyTYER) oFrameBody).getText();
-                String year = oFrameBody.getUserFriendlyValue();
+                byte[] array = frame.getRawContent();
+                String rawText = new String(array);
+                rawText = rawText.replaceAll("^TDRC","");
+                StringBuffer regex = new StringBuffer("[");
+                for (int i=0; i < 8; i++) {
+                    if (i > 0) {
+                        regex.append("|");
+                    }
+                    char ascii = (char) i;
+                    regex.append(ascii);
+                }
+                regex.append("]");
+                rawText = rawText.replaceAll(regex.toString(), "");
                 this.tag.deleteField(wrongId);
                 this.tag.deleteField(goodId);
                 try {
-                    this.tag.addField(fieldKey, year);
+                    this.tag.addField(fieldKey, rawText);
                 } catch (FieldDataInvalidException e) {
                     throw new RuntimeException(e);
                 }
-                //try {
-                //    this.setYear(year);
-                //} catch (MP3Exception e) {
-                //    throw new RuntimeException(e);
-                //}
+            }
+            else {
+                // just delete the redundant frame. Corresponding frame exists
+                this.tag.deleteField(wrongId);
+            }
+        }
+
+    }
+
+    public void convertInvalidFID3v2frame(AbstractID3v2Tag tag, String wrongId, String goodId, FieldKey fieldKey){
+        if (tag.hasFrame(wrongId)) {
+            warning = true;
+            log.warn("Invalid Frame found in MP3 " + mp3File.getFile());
+            log.warn("Destination Tag Version: " + this.tag.getClass());
+            log.warn("TagId: " + goodId + " / Invalid TagId: " + wrongId);
+            log.warn("Original Tag Version: " + tag.getClass());
+
+            if (!tag.hasFrame(goodId)) {
+                String value = null;
+                List<TagField> myList = tag.getFrame(wrongId);
+                AbstractID3v2Frame frame = (AbstractID3v2Frame) myList.get(0);
+                AbstractTagFrameBody frameBody = frame.getBody();
+                log.warn("FrameBody: " + tag.getClass());
+                if (frameBody instanceof FrameBodyDeprecated) {
+                    FrameBodyDeprecated dep = (FrameBodyDeprecated) frameBody;
+                    AbstractID3v2FrameBody oFrameBody = dep.getOriginalFrameBody();
+                    value = oFrameBody.getUserFriendlyValue();
+                }
+                else if (frameBody instanceof FrameBodyUnsupported){
+                    byte[] array = frame.getRawContent();
+                    String rawText = new String(array);
+                    rawText = rawText.replaceAll("^" + wrongId,"");
+                    StringBuffer regex = new StringBuffer("[");
+                    for (int i=0; i < 8; i++) {
+                        if (i > 0) {
+                            regex.append("|");
+                        }
+                        char ascii = (char) i;
+                        regex.append(ascii);
+                    }
+                    regex.append("]");
+                    rawText = rawText.replaceAll(regex.toString(), "");
+                    value = rawText;
+                }
+                if (value != null) {
+                    save = = true;
+                    log.warn("Value found: " + value);
+                    this.tag.deleteField(wrongId);
+                    this.tag.deleteField(goodId);
+                    try {
+                        this.tag.addField(fieldKey, value);
+                    } catch (FieldDataInvalidException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
             }
             else {
                 // just delete the redundant frame. Corresponding id3v24 frame exists
+                save = true;
                 this.tag.deleteField(wrongId);
             }
         }
 
     }
     public void analyze() {
+        /* there is a problem if tag is ID3v24, and the year tag is TYER instead of TDOR,
+           the year is not fetched. This is a way to convert frame
+         */
         AbstractID3v2Tag tag = this.mp3File.getID3v2Tag();
         if (tag instanceof ID3v24Tag ) {
             convertInvalidFID3v2frame(tag, ID3v23Frames.FRAME_ID_V3_TYER, ID3v24Frames.FRAME_ID_YEAR, FieldKey.YEAR);
@@ -557,9 +610,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         if (tag instanceof ID3v23Tag ) {
             convertInvalidFID3v2frame(tag, ID3v24Frames.FRAME_ID_YEAR, ID3v23Frames.FRAME_ID_V3_TYER, FieldKey.YEAR);
         }
-        /* there is a problem if tag is ID3v24, and the year tag is TYER instead of TDOR,
-           the year is not fetched. This is a way to convert frame
-         */
+
 
         /*
         while(tagFieldIterator.hasNext()) {
