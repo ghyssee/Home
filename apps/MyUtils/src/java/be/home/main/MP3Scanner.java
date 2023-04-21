@@ -1,5 +1,7 @@
 package be.home.main;
 
+import be.home.common.configuration.Setup;
+import be.home.common.constants.Constants;
 import be.home.domain.model.service.MP3Exception;
 import be.home.domain.model.service.MP3JAudioTaggerServiceImpl;
 import be.home.domain.model.service.MP3Service;
@@ -10,7 +12,11 @@ import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.audio.mp3.MP3File;
+import org.jaudiotagger.tag.TagException;
 
 import java.io.*;
 import java.nio.file.*;
@@ -80,8 +86,12 @@ public class MP3Scanner extends BatchJobV2 {
             }
             try {
                 MP3Service mp3File = new MP3JAudioTaggerServiceImpl(aFile.toString());
+                if (mp3File.isSave()){
+                    saveMP3(mp3File);
+                }
             }
-            catch (MP3Exception ex){
+            catch (MP3Exception | TagException | CannotReadException | InvalidAudioFrameException |
+                   ReadOnlyFileException ex){
                 log.info(ex.getMessage());
             }
             //System.out.println("Processing file:" + fileName);
@@ -94,6 +104,16 @@ public class MP3Scanner extends BatchJobV2 {
             //System.out.println("Processing directory:" + aDir);
             return FileVisitResult.CONTINUE;
         }
+    }
+
+    private static void saveMP3(MP3Service mp3File) throws IOException, TagException, CannotReadException, InvalidAudioFrameException, ReadOnlyFileException, MP3Exception {
+        File oldFile = new File(mp3File.getFile());
+        //File newFile = new File(Setup.getInstance().getFullPath(Constants.Path.NEW) + File.separator + prefixFileName + originalFile.getName());
+        File newFile = new File("C:\\temp\\0\\Ultratop" + File.separator + oldFile.getName());
+        Files.copy(oldFile.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        MP3Service newMP3File = new MP3JAudioTaggerServiceImpl(newFile.getAbsolutePath(), false);
+        newMP3File.setTag(mp3File.getTag());
+        newMP3File.commit();
     }
 
     public static boolean containsFrench(String s) {

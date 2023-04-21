@@ -3,6 +3,7 @@ package be.home.domain.model.service;
 import be.home.common.mp3.MP3Utils;
 import be.home.common.utils.FileUtils;
 import be.home.main.mezzmo.MP3TagChecker;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.jaudiotagger.audio.exceptions.CannotReadException;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
@@ -31,17 +32,21 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
     boolean warning = false;
     boolean save = false;
 
+    String file;
+
     private MP3JAudioTaggerServiceImpl() {
 
     }
 
-    public MP3JAudioTaggerServiceImpl(String file) throws MP3Exception {
+    public MP3JAudioTaggerServiceImpl(String file, boolean analyze
+    ) throws MP3Exception {
 
         TagOptionSingleton.getInstance().setId3v2PaddingWillShorten(true);
         TagOptionSingleton.getInstance().setID3V2Version(ID3V2Version.ID3_V24);
         TagOptionSingleton.getInstance().setRemoveTrailingTerminatorOnWrite(true);
         try {
             FileUtils.makeFileWriteable(file);
+            this.file = file;
             this.mp3File = new MP3File(file);
         } catch (IOException e) {
             e.printStackTrace();
@@ -56,7 +61,26 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         }
         this.tag = mp3File.getTagAndConvertOrCreateDefault();
         this.idv24Tag = mp3File.getID3v2TagAsv24();
-        analyze();
+        if (analyze) {
+            analyze();
+        }
+    }
+
+    public MP3JAudioTaggerServiceImpl(String file) throws MP3Exception {
+
+        this(file, true);
+    }
+
+    public Tag getTag() {
+        return this.tag;
+    }
+
+    public void setTag(Tag tag){
+        this.tag = tag;
+    }
+
+    public String getFile(){
+        return file;
     }
 
     public int getDuration() {
@@ -494,10 +518,6 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
     }
 
     public void commit() throws MP3Exception {
-        //TagOptionSingleton.getInstance().setId3v2PaddingWillShorten(true);
-        //this.mp3File.setID3v2Tag(tag);
-        setComment("Test");
-        //this.mp3File.
         this.mp3File.setID3v2Tag((AbstractID3v2Tag) tag);
         try {
             this.mp3File.save();
@@ -544,15 +564,52 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
 
     }
 
-    public void convertInvalidFID3v2frame(AbstractID3v2Tag tag, String wrongId, String goodId, FieldKey fieldKey){
-        if (tag.hasFrame(wrongId)) {
-            warning = true;
-            log.warn("Invalid Frame found in MP3 " + mp3File.getFile());
-            log.warn("Destination Tag Version: " + this.tag.getClass());
-            log.warn("TagId: " + goodId + " / Invalid TagId: " + wrongId);
-            log.warn("Original Tag Version: " + tag.getClass());
+    public void removeMultipleValues(FieldKey fieldKey){
+        if (this.tag.getAll(fieldKey).size()> 1) {
+            log.warn("Deleting Multiple values for " + fieldKey.name());
+            String val = this.tag.getFirst(fieldKey);
+            this.tag.deleteField(fieldKey);
+            try {
+                this.tag.setField(fieldKey, val);
+                log.warn("Multiple values successfully deleted");
+            } catch (FieldDataInvalidException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 
-            if (!tag.hasFrame(goodId)) {
+    public void removeEmptyField(FieldKey fieldKey){
+        if (this.tag.hasField(fieldKey)) {
+            String value = this.tag.getFirst(fieldKey);
+            if (StringUtils.isBlank(value)){
+                log.warn("Deleting empty value for " + fieldKey.name());
+                this.tag.deleteField(fieldKey);
+            }
+        }
+    }
+
+    public boolean isWarning() {
+        return warning;
+    }
+
+    public boolean isSave() {
+        return save;
+    }
+
+    public boolean convertInvalidFID3v2frame(AbstractID3v2Tag tag, String wrongId, String goodId, FieldKey fieldKey){
+        boolean wrongFrame = false;
+        if (tag.hasFrame(wrongId)) {
+
+            if (!this.tag.hasField(fieldKey) || StringUtils.isBlank(this.tag.getFirst(fieldKey))) {
+                // no value found for the goodId in the converted frame
+                warning = true;
+                wrongFrame = true;
+
+                log.warn("Invalid Frame found in MP3 " + mp3File.getFile());
+                log.warn("Destination Tag Version: " + this.tag.getClass());
+                log.warn("TagId: " + goodId + " / Invalid TagId: " + wrongId);
+                log.warn("Original Tag Version: " + tag.getClass());
+
                 String value = null;
                 List<TagField> myList = tag.getFrame(wrongId);
                 AbstractID3v2Frame frame = (AbstractID3v2Frame) myList.get(0);
@@ -592,37 +649,64 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 }
             }
             else {
-                // just delete the redundant frame. Corresponding id3v24 frame exists
-                save = true;
-                log.warn("Remove double frame: " + wrongId);
-                this.tag.deleteField(wrongId);
+                // do nothing. Original Frame does not contain the wrong Id
             }
         }
+        if (tag.hasFrame(wrongId) && tag.hasFrame(goodId)) {
+            // frame is correctly converted
+            // just delete the redundant frame. Corresponding id3v24 frame exists
+            save = true;
+            log.warn("Remove double frame: " + wrongId);
+            if (this.tag.hasField(wrongId)) {
+                // normally, this should never occur. The frame is correctly converted, but just to be sure
+                this.tag.deleteField(wrongId);
+            }
+            removeMultipleValues(fieldKey);
+        }
+
+        return wrongFrame;
 
     }
     public void analyze() {
         /* there is a problem if tag is ID3v24, and the year tag is TYER instead of TDOR,
            the year is not fetched. This is a way to convert frame
          */
+        if (this.mp3File.getFile().getName().startsWith("07")) {
+            System.out.println("test");
+        }
         AbstractID3v2Tag tag = this.mp3File.getID3v2Tag();
         if (this.tag instanceof ID3v23Tag){
             if (tag instanceof ID3v24Tag ) {
-                convertInvalidFID3v2frame(tag, ID3v24Frames.FRAME_ID_YEAR, ID3v23Frames.FRAME_ID_V3_TYER, FieldKey.YEAR);
+                if (convertInvalidFID3v2frame(tag, ID3v24Frames.FRAME_ID_YEAR, ID3v23Frames.FRAME_ID_V3_TYER, FieldKey.YEAR)) {
+                    log.info("ID3v24Tag -> ID3v23Tag, original ID3v24Tag contains an ID3v23Tag");
+                }
             }
             else if (tag instanceof ID3v23Tag ) {
-                //convertInvalidFID3v2frame(tag, ID3v24Frames.FRAME_ID_YEAR, ID3v23Frames.FRAME_ID_V3_TYER, FieldKey.YEAR);
+                if (convertInvalidFID3v2frame(tag, ID3v24Frames.FRAME_ID_YEAR, ID3v23Frames.FRAME_ID_V3_TYER, FieldKey.YEAR)){
+                    log.info("ID3v23Tag -> ID3v23Tag, but original contains frame of ID3v24Tag");
+                }
             }
         }
         else if (this.tag instanceof ID3v24Tag) {
             if (tag instanceof ID3v24Tag) {
-                convertInvalidFID3v2frame(tag, ID3v23Frames.FRAME_ID_V3_TYER, ID3v24Frames.FRAME_ID_YEAR, FieldKey.YEAR);
+                if (convertInvalidFID3v2frame(tag, ID3v23Frames.FRAME_ID_V3_TYER, ID3v24Frames.FRAME_ID_YEAR, FieldKey.YEAR)){
+                    log.info("ID3v24Tag -> ID3v24Tag, but original contains frame of ID3v23Tag");
+                }
             }
             if (tag instanceof ID3v23Tag) {
-                convertInvalidFID3v2frame(tag, ID3v23Frames.FRAME_ID_V3_TYER, ID3v24Frames.FRAME_ID_YEAR, FieldKey.YEAR);
+                if (convertInvalidFID3v2frame(tag, ID3v23Frames.FRAME_ID_V3_TYER, ID3v24Frames.FRAME_ID_YEAR, FieldKey.YEAR)){
+                    log.info("ID3v23Tag -> ID3v24Tag, original ID3v23Tag contains an ID3v24Tag");
+                }
             }
         }
-
-
+        /* check for multple values in a field */
+        for (FieldKey checkKey : FieldKey.values()){
+            removeMultipleValues(checkKey);
+            // don't remove empty comment fields. Tag is always added in mp3file
+            if (checkKey != FieldKey.COMMENT) {
+                removeEmptyField(checkKey);
+            }
+        }
         /*
         while(tagFieldIterator.hasNext()) {
             TagField element = tagFieldIterator.next();

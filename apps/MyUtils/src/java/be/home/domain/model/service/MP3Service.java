@@ -1,6 +1,7 @@
 package be.home.domain.model.service;
 
 import org.jaudiotagger.tag.FieldDataInvalidException;
+import org.jaudiotagger.tag.Tag;
 
 public interface MP3Service {
 
@@ -54,4 +55,14 @@ public interface MP3Service {
 
     public void commit() throws MP3Exception;
     public void cleanupTag(String frameId);
+
+    public boolean isWarning();
+
+    public boolean isSave();
+
+    public String getFile();
+
+    public Tag getTag();
+
+    public void setTag(Tag tag);
 }
