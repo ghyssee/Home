@@ -3,6 +3,8 @@ package be.home.domain.model.service;
 import org.jaudiotagger.tag.FieldDataInvalidException;
 import org.jaudiotagger.tag.Tag;
 
+import java.util.ArrayList;
+
 public interface MP3Service {
 
     final String TAG_TO_DELETE = "RJ/SNWTJE";
@@ -31,6 +33,7 @@ public interface MP3Service {
     public String getRadiostationUrl();
     public String getDiscTotal();
     public String getGenre();
+    public ArrayList<String> getWarnings();
 
     public int getDuration();
 

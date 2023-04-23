@@ -340,9 +340,9 @@ private static void TestMovieFile(){
     }
 
     private static void testJAudioTagger(){
-        File file = new File("C:\\Temp\\0\\Ultratop 50 20200104 04 Januari 2020\\01 Test.mp3");
+        File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\07 Test Comment.mp3");
         //File file = new File("C:\\Temp\\0\\Ultratop 50 20200104 04 Januari 2020\\07 The Weeknd - Blinding Lights.mp3");
-        File newFile = new File("C:\\Temp\\0\\Ultratop 50 20200104 04 Januari 2020\\new.mp3");
+        File newFile = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\new.mp3");
        // TagOptionSingleton.getInstance().setOriginalSavedAfterAdjustingID3v2Padding(false);
        // TagOptionSingleton.getInstance().setRemoveTrailingTerminatorOnWrite(true);
         try {
@@ -356,21 +356,21 @@ private static void TestMovieFile(){
                 System.out.println(mp3File.getUrl());
                 //mp3File.setArtist("Kings of Leon");
                 //mp3File.setTitle("On The Fly");
-                mp3File.setCompilation(true);
+                //mp3File.setCompilation(true);
                 //mp3File.setYear("2022");
-                mp3File.setRating(4);
-                mp3File.setDisc("1");
-                mp3File.setArtist("David Guetta & MORTEN Feat. Raye");
+               // mp3File.setRating(4);
+                //mp3File.setDisc("1");
+                //mp3File.setArtist("David Guetta & MORTEN Feat. Raye");
                 System.out.println("old genre: " + mp3File.getGenre());
-                mp3File.setTrack("100");
-                mp3File.setGenre("Test");
-                mp3File.setAlbumArtist("Various ArtistsXXX");
-                mp3File.clearAlbumImage();
+                //mp3File.setTrack("100");
+                //mp3File.setGenre("Test");
+                //mp3File.setAlbumArtist("Various ArtistsXXX");
+                //mp3File.clearAlbumImage();
                 System.out.println(mp3File.getRatingAsString());
                 System.out.println(mp3File.getAudioSourceUrl());
-                mp3File.cleanupTags();
+                //mp3File.cleanupTags();
                 System.out.println(mp3File.getDuration());
-                mp3File.analyze();
+                //mp3File.analyze();
                 mp3File.commit();
             } catch (MP3Exception e) {
                 e.printStackTrace();

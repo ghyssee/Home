@@ -2,6 +2,7 @@ package be.home.main;
 
 import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
+import be.home.common.utils.MyFileWriter;
 import be.home.domain.model.service.MP3Exception;
 import be.home.domain.model.service.MP3JAudioTaggerServiceImpl;
 import be.home.domain.model.service.MP3Service;
@@ -10,6 +11,7 @@ import be.home.model.ConfigTO;
 import be.home.model.ParamTO;
 import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jaudiotagger.audio.exceptions.CannotReadException;
@@ -21,6 +23,7 @@ import org.jaudiotagger.tag.TagException;
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 /**
@@ -51,7 +54,11 @@ public class MP3Scanner extends BatchJobV2 {
         //Map <String,String> params = instance.validateParams(args, PARAMS);
         instance.printHeader("MP3Scanner: ", "");
         //instance.start(instance.getParam(PARAMS[BASE].getId(), params), instance.getParam(PARAMS[OUTPUT].getId(), params), instance.getParam(PARAMS[INDENT_ID].getId(), params));
-        instance.start();
+        try {
+            instance.start();
+        } catch (MP3Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -59,17 +66,30 @@ public class MP3Scanner extends BatchJobV2 {
 
     }
 
-    public static void start(){
-        String ROOT = "t:\\My Music\\iPod\\Ultratop 50 20200104 04 Januari 2020";
-        FileVisitor<Path> fileProcessor = new ProcessFile();
+    public static void start() throws MP3Exception {
+        String ROOT = "t:\\My Music\\iPod";
+        MyFileWriter myFile = null;
         try {
-            Files.walkFileTree(Paths.get(ROOT), fileProcessor);
+            myFile = new MyFileWriter("c:\\My Data\\tmp\\MP3Scanner.log", false);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        FileVisitor<Path> fileProcessor = new ProcessFile(myFile);
+        try {
+           Files.walkFileTree(Paths.get(ROOT), fileProcessor);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     private static final class ProcessFile extends SimpleFileVisitor<Path> {
+        private MyFileWriter myFile = null;
+
+        public ProcessFile(MyFileWriter myFile) throws MP3Exception {
+            this.myFile = myFile;
+        }
+
+
         @Override public FileVisitResult visitFile(
                 Path aFile, BasicFileAttributes aAttrs
         ) throws IOException {
@@ -80,7 +100,6 @@ public class MP3Scanner extends BatchJobV2 {
             }
             else {
                 if (containsFrench(fileName)){
-                    System.out.println("Filename with special characters:" + aFile);
                     log.warn(fileName + ": " + "Filename contains special characters");
                 }
             }
@@ -89,12 +108,27 @@ public class MP3Scanner extends BatchJobV2 {
                 if (mp3File.isSave()){
                     saveMP3(mp3File);
                 }
+                if (mp3File.isWarning()) {
+                    myFile.append(StringUtils.repeat('=', 100));
+                    myFile.append("Processing " + fileName);
+                    myFile.append("Location: " + aFile.getParent().toString());
+                }
+                ArrayList<String> warnings = mp3File.getWarnings();
+                for (String warningMessage : warnings){
+                    myFile.append(warningMessage);
+                }
             }
-            catch (MP3Exception | TagException | CannotReadException | InvalidAudioFrameException |
-                   ReadOnlyFileException ex){
+            catch (MP3Exception ex){
                 log.info(ex.getMessage());
+            } catch (TagException e) {
+                e.printStackTrace();
+            } catch (CannotReadException e) {
+                e.printStackTrace();
+            } catch (InvalidAudioFrameException e) {
+                e.printStackTrace();
+            } catch (ReadOnlyFileException e) {
+                e.printStackTrace();
             }
-            //System.out.println("Processing file:" + fileName);
             return FileVisitResult.CONTINUE;
         }
 
@@ -109,10 +143,12 @@ public class MP3Scanner extends BatchJobV2 {
     private static void saveMP3(MP3Service mp3File) throws IOException, TagException, CannotReadException, InvalidAudioFrameException, ReadOnlyFileException, MP3Exception {
         File oldFile = new File(mp3File.getFile());
         //File newFile = new File(Setup.getInstance().getFullPath(Constants.Path.NEW) + File.separator + prefixFileName + originalFile.getName());
-        File newFile = new File("C:\\temp\\0\\Ultratop" + File.separator + oldFile.getName());
+        File newFile = new File("c:\\My Data\\tmp\\Ultratop" + File.separator + oldFile.getName());
         Files.copy(oldFile.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         MP3Service newMP3File = new MP3JAudioTaggerServiceImpl(newFile.getAbsolutePath(), false);
         newMP3File.setTag(mp3File.getTag());
+        int rating = newMP3File.getRating();
+        newMP3File.setRating(rating);
         newMP3File.commit();
     }
 
