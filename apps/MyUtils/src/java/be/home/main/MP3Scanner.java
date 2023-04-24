@@ -3,6 +3,7 @@ package be.home.main;
 import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
 import be.home.common.utils.MyFileWriter;
+import be.home.domain.model.MP3Helper;
 import be.home.domain.model.service.MP3Exception;
 import be.home.domain.model.service.MP3JAudioTaggerServiceImpl;
 import be.home.domain.model.service.MP3Service;
@@ -14,6 +15,7 @@ import be.home.common.main.BatchJobV2;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.util.FileUtils;
 import org.jaudiotagger.audio.exceptions.CannotReadException;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
@@ -23,6 +25,7 @@ import org.jaudiotagger.tag.TagException;
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
@@ -45,7 +48,9 @@ public class MP3Scanner extends BatchJobV2 {
             new ParamTO("-output", new String[] {"This is the output file to which the result will be written",
                     "Default output file is <current directory>/" + DEFAULT_FILE}),
             new ParamTO("-indent", new String[] {"Number of characters to append after a new level", "DEFAULT is " + String.valueOf(INDENT)})};
-
+    private static String timeStamp = new SimpleDateFormat("yyyyMM.dd.HH.mm.ss").format(new java.util.Date());
+    private static String ROOT = "t:\\My Music\\iPod\\Ultratop 50 20210102 02 Januari 2021";
+    private static final boolean OVERWRITE = true;
 
     public static void main(String args[]) {
 
@@ -67,10 +72,11 @@ public class MP3Scanner extends BatchJobV2 {
     }
 
     public static void start() throws MP3Exception {
-        String ROOT = "t:\\My Music\\iPod";
         MyFileWriter myFile = null;
+
         try {
-            myFile = new MyFileWriter("c:\\My Data\\tmp\\MP3Scanner.log", false);
+            myFile = new MyFileWriter(Setup.getInstance().getFullPath(Constants.Path.NEW) + File.separator +
+                    "MP3Scanner." + timeStamp + ".log", false);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -141,15 +147,29 @@ public class MP3Scanner extends BatchJobV2 {
     }
 
     private static void saveMP3(MP3Service mp3File) throws IOException, TagException, CannotReadException, InvalidAudioFrameException, ReadOnlyFileException, MP3Exception {
-        File oldFile = new File(mp3File.getFile());
-        //File newFile = new File(Setup.getInstance().getFullPath(Constants.Path.NEW) + File.separator + prefixFileName + originalFile.getName());
-        File newFile = new File("c:\\My Data\\tmp\\Ultratop" + File.separator + oldFile.getName());
-        Files.copy(oldFile.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        MP3Service newMP3File = new MP3JAudioTaggerServiceImpl(newFile.getAbsolutePath(), false);
-        newMP3File.setTag(mp3File.getTag());
-        int rating = newMP3File.getRating();
-        newMP3File.setRating(rating);
-        newMP3File.commit();
+        if (OVERWRITE){
+            File oldFile = new File(mp3File.getFile());
+            String strippedAlbum = MP3Helper.getInstance().stripFilename(mp3File.getAlbum());
+            File destinationDir = new File(Setup.getInstance().getFullPath(Constants.Path.TMP) + File.separator + "Backup" +
+                    File.separator + MP3Helper.getInstance().stripFilename(strippedAlbum) + "." + timeStamp);
+            FileUtils.mkdir(destinationDir, true);
+            File newFile = new File(destinationDir.getAbsolutePath() + File.separator + File.separator + oldFile.getName());
+            Files.copy(oldFile.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            int rating = mp3File.getRating();
+            mp3File.setRating(rating);
+            mp3File.commit();
+        }
+        else {
+            File oldFile = new File(mp3File.getFile());
+            File newFile = new File(Setup.getInstance().getFullPath(Constants.Path.TMP) + File.separator + "Ultratop" + File.separator + oldFile.getName());
+            Files.copy(oldFile.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            MP3Service newMP3File = new MP3JAudioTaggerServiceImpl(newFile.getAbsolutePath(), false);
+            newMP3File.setTag(mp3File.getTag());
+            // set rating to WMP
+            int rating = newMP3File.getRating();
+            newMP3File.setRating(rating);
+            newMP3File.commit();
+        }
     }
 
     public static boolean containsFrench(String s) {
