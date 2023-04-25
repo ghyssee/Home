@@ -51,9 +51,11 @@ public class MP3Scanner extends BatchJobV2 {
                     "Default output file is <current directory>/" + DEFAULT_FILE}),
             new ParamTO("-indent", new String[] {"Number of characters to append after a new level", "DEFAULT is " + String.valueOf(INDENT)})};
     private static String timeStamp = new SimpleDateFormat("yyyyMM.dd.HH.mm.ss").format(new java.util.Date());
-    private static String ROOT = "c:\\My Data\\tmp\\Java\\MP3Processor\\Test\\Ultratop 50 20200104 04 Januari 2020.20230424";
+    private static String ROOT = "c:\\My Data\\tmp\\Java\\MP3Processor\\test\\Ultratop 50 20200104 04 Januari 2020";
     private static String ROOT2 = "t:\\My Music\\iPod\\Ultratop 50 20210102 02 Januari 2021";
     private static final boolean OVERWRITE = true;
+    private static final String BACKUP = Setup.getInstance().getFullPath(Constants.Path.TMP) + File.separator + "Backup";
+    private static final String MP3VAL = "C:\\My Programs\\mp3val\\mp3val.exe";
 
     public static void main(String args[]) {
 
@@ -77,8 +79,10 @@ public class MP3Scanner extends BatchJobV2 {
 
         public static void start() throws MP3Exception {
             MyFileWriter myFile = null;
+            String logFile = Setup.getInstance().getFullPath(Constants.Path.NEW) +
+                    File.separator + "MP3Scanner." + timeStamp + ".log";
             try {
-                myFile = new MyFileWriter("c:\\My Data\\tmp\\MP3Scanner.log", false);
+                myFile = new MyFileWriter(logFile, false);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -97,7 +101,7 @@ public class MP3Scanner extends BatchJobV2 {
 
 
 
-    private static void checkFile(String fileToCheck, ArrayList<String> warnings)  {
+    private static void checkFile(String fileToCheck, ArrayList<String> warnings, String album)  {
         //File myFile = new File("c:\\My Data\\tmp\\Backup\\Ultratop 50 20200104 04 Januari 2020.20230424\\Test.mp3");
         StringBuffer sb = validateFile(fileToCheck, false);
         String newline = System.getProperty("line.separator");
@@ -105,15 +109,22 @@ public class MP3Scanner extends BatchJobV2 {
         String[] array = sb.toString().split(newline);
         for (String line : array) {
             if (line.startsWith("WARNING:")){
-                addWarning(warnings, "WARNING found: fixing file");
-                fixFile(fileToCheck, warnings);
+                addWarning(warnings, "mp3val: WARNING found: fixing file");
+                fixFile(fileToCheck, warnings, album);
             }
         }
     }
 
 
-    private static void fixFile(String file, ArrayList<String> warnings) {
-        String BACKUP_DIR = "c:\\My Data\\tmp\\Backup\\back";
+    private static void fixFile(String file, ArrayList<String> warnings, String album) {
+        String BACKUP_DIR = BACKUP + File.separator
+            + MP3Helper.getInstance().stripFilename(album) + "." + timeStamp;
+        try {
+            FileUtils.mkdir(new File(BACKUP_DIR), true);
+        } catch (IOException e) {
+            addWarning(warnings, "There was a problem creating " + BACKUP_DIR);
+            throw new RuntimeException(e);
+        }
         String newline = System.getProperty("line.separator");
         StringBuffer sb = validateFile(file, true);
         log.info(sb);
@@ -121,7 +132,6 @@ public class MP3Scanner extends BatchJobV2 {
         boolean fixed = false;
         for (String line : array) {
             if (line.startsWith("FIXED:")) {
-                addWarning(warnings, "FIXED file");
                 fixed = true;
                 File backup = new File(file + ".bak");
                 if (backup.exists()){
@@ -149,7 +159,7 @@ public class MP3Scanner extends BatchJobV2 {
         File myFile = new File("c:\\My Data\\tmp\\Backup\\Ultratop 50 20200104 04 Januari 2020.20230424\\Test.mp3");
         // Execute command
         List<String> params = new ArrayList();
-        params.add("C:\\My Programs\\Personal\\mp3val\\mp3val.exe");
+        params.add(MP3VAL);
         if (fix) {
             params.add("-f");
         }
@@ -217,16 +227,17 @@ public class MP3Scanner extends BatchJobV2 {
                         //saveMP3(mp3File);
                     }
                     if (mp3File.isWarning()) {
-                        myFile.append(StringUtils.repeat('=', 100));
-                        myFile.append("Processing " + fileName);
-                        myFile.append("Location: " + aFile.getParent().toString());
+                        printHeader(myFile, aFile);
                     }
                     ArrayList<String> warnings = mp3File.getWarnings();
                     for (String warningMessage : warnings){
                         myFile.append(warningMessage);
                     }
                     warnings.clear();
-                    checkFile(aFile.toString(), warnings);
+                    checkFile(aFile.toString(), warnings, mp3File.getAlbum());
+                    if (warnings.size() > 0 && !mp3File.isWarning()){
+                        printHeader(myFile, aFile);
+                    }
                     for (String warningMessage : warnings){
                         myFile.append(warningMessage);
                     }
@@ -258,12 +269,18 @@ public class MP3Scanner extends BatchJobV2 {
         }
     }
 
+    private static void printHeader(MyFileWriter myFile, Path aFile) throws IOException {
+        myFile.append(StringUtils.repeat('=', 100));
+        myFile.append("Processing " + aFile.getFileName().toString());
+        myFile.append("Location: " + aFile.getParent().toString());
+    }
+
     private static void saveMP3(MP3Service mp3File) throws IOException, TagException, CannotReadException, InvalidAudioFrameException, ReadOnlyFileException, MP3Exception {
         if (OVERWRITE){
             File oldFile = new File(mp3File.getFile());
             String strippedAlbum = MP3Helper.getInstance().stripFilename(mp3File.getAlbum());
-            File destinationDir = new File(Setup.getInstance().getFullPath(Constants.Path.TMP) + File.separator + "Backup" +
-                    File.separator + MP3Helper.getInstance().stripFilename(strippedAlbum) + "." + timeStamp);
+            File destinationDir = new File(BACKUP + File.separator +
+                    MP3Helper.getInstance().stripFilename(strippedAlbum) + "." + timeStamp);
             FileUtils.mkdir(destinationDir, true);
             File newFile = new File(destinationDir.getAbsolutePath() + File.separator + File.separator + oldFile.getName());
             Files.copy(oldFile.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
