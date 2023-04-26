@@ -57,6 +57,8 @@ public interface Constants {
         String MUSIC_LISTS = "musicList";
         String MP3PRETTIFIER = "mp3PrettifierConfigPath";
         String OUTPUT = "configOutput";
+
+        String MP3SCANNER = "mp3scanner";
     }
 
     interface JSON {

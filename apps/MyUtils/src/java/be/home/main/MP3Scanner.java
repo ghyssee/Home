@@ -7,19 +7,13 @@ import be.home.domain.model.MP3Helper;
 import be.home.domain.model.service.MP3Exception;
 import be.home.domain.model.service.MP3JAudioTaggerServiceImpl;
 import be.home.domain.model.service.MP3Service;
-import be.home.main.tools.ZipFiles;
-import be.home.model.ConfigTO;
-import be.home.model.ParamTO;
-import be.home.common.logging.Log4GE;
 import be.home.common.main.BatchJobV2;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.util.FileUtils;
 import org.jaudiotagger.audio.exceptions.CannotReadException;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
-import org.jaudiotagger.audio.mp3.MP3File;
 import org.jaudiotagger.tag.TagException;
 
 import java.io.*;
@@ -28,7 +22,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringJoiner;
 import java.util.regex.Pattern;
 
 /**
@@ -39,31 +32,18 @@ public class MP3Scanner extends BatchJobV2 {
     private static final String VERSION = "V1.0";
 
     private static final Logger log = getMainLog(MP3Scanner.class);
-    public static Log4GE log4GE;
-    public static ConfigTO.Config config;
-    private static final int BASE = 0;
-    private static final int OUTPUT = 1;
-    private static final int INDENT_ID = 2;
-    private static final String DEFAULT_FILE = "dirlist.txt";
-    private static int INDENT = 5;
-    private static ParamTO PARAMS [] = {new ParamTO("-base", new String[] {"This is the base directory to start the scanning", "of files and folders"}, ParamTO.REQUIRED),
-            new ParamTO("-output", new String[] {"This is the output file to which the result will be written",
-                    "Default output file is <current directory>/" + DEFAULT_FILE}),
-            new ParamTO("-indent", new String[] {"Number of characters to append after a new level", "DEFAULT is " + String.valueOf(INDENT)})};
     private static String timeStamp = new SimpleDateFormat("yyyyMM.dd.HH.mm.ss").format(new java.util.Date());
     private static String ROOT = "c:\\My Data\\tmp\\Java\\MP3Processor\\test\\Ultratop 50 20200104 04 Januari 2020";
     private static String ROOT2 = "t:\\My Music\\iPod\\Ultratop 50 20210102 02 Januari 2021";
     private static final boolean OVERWRITE = true;
     private static final String BACKUP = Setup.getInstance().getFullPath(Constants.Path.TMP) + File.separator + "Backup";
-    private static final String MP3VAL = "C:\\My Programs\\mp3val\\mp3val.exe";
+    private static final String MP3VAL = "C:\\My Programs\\Personal\\mp3val\\mp3val.exe";
 
     public static void main(String args[]) {
 
         MP3Scanner instance = new MP3Scanner();
         instance.printHeader("MP3Scanner " + VERSION, "=");
-        //Map <String,String> params = instance.validateParams(args, PARAMS);
         instance.printHeader("MP3Scanner: ", "");
-        //instance.start(instance.getParam(PARAMS[BASE].getId(), params), instance.getParam(PARAMS[OUTPUT].getId(), params), instance.getParam(PARAMS[INDENT_ID].getId(), params));
         try {
             instance.start();
         } catch (MP3Exception e) {
@@ -76,10 +56,9 @@ public class MP3Scanner extends BatchJobV2 {
 
     }
 
-
-        public static void start() throws MP3Exception {
+        public void start() throws MP3Exception {
             MyFileWriter myFile = null;
-            String logFile = Setup.getInstance().getFullPath(Constants.Path.NEW) +
+            String logFile = Setup.getInstance().getFullPath(Constants.Path.MP3SCANNER) +
                     File.separator + "MP3Scanner." + timeStamp + ".log";
             try {
                 myFile = new MyFileWriter(logFile, false);
@@ -94,14 +73,14 @@ public class MP3Scanner extends BatchJobV2 {
             }
         }
 
-    private static void addWarning(ArrayList<String> warnings, String message){
+    private void addWarning(ArrayList<String> warnings, String message){
         warnings.add(message);
         log.warn(message);
     }
 
 
 
-    private static void checkFile(String fileToCheck, ArrayList<String> warnings, String album)  {
+    private void checkFile(String fileToCheck, ArrayList<String> warnings, String album)  {
         //File myFile = new File("c:\\My Data\\tmp\\Backup\\Ultratop 50 20200104 04 Januari 2020.20230424\\Test.mp3");
         StringBuffer sb = validateFile(fileToCheck, false);
         String newline = System.getProperty("line.separator");
@@ -116,7 +95,7 @@ public class MP3Scanner extends BatchJobV2 {
     }
 
 
-    private static void fixFile(String file, ArrayList<String> warnings, String album) {
+    private void fixFile(String file, ArrayList<String> warnings, String album) {
         String BACKUP_DIR = BACKUP + File.separator
             + MP3Helper.getInstance().stripFilename(album) + "." + timeStamp;
         try {
@@ -155,7 +134,7 @@ public class MP3Scanner extends BatchJobV2 {
         }
     }
 
-    private static StringBuffer validateFile(String file, boolean fix)  {
+    private StringBuffer validateFile(String file, boolean fix)  {
         File myFile = new File("c:\\My Data\\tmp\\Backup\\Ultratop 50 20200104 04 Januari 2020.20230424\\Test.mp3");
         // Execute command
         List<String> params = new ArrayList();
@@ -194,7 +173,7 @@ public class MP3Scanner extends BatchJobV2 {
         return sb;
     }
 
-    private static final class ProcessFile extends SimpleFileVisitor<Path> {
+    private final class ProcessFile extends SimpleFileVisitor<Path> {
         private MyFileWriter myFile = null;
         private final PathMatcher matcher;
 
@@ -224,7 +203,7 @@ public class MP3Scanner extends BatchJobV2 {
                 try {
                     MP3Service mp3File = new MP3JAudioTaggerServiceImpl(aFile.toString());
                     if (mp3File.isSave()){
-                        //saveMP3(mp3File);
+                        saveMP3(mp3File);
                     }
                     if (mp3File.isWarning()) {
                         printHeader(myFile, aFile);
@@ -244,7 +223,7 @@ public class MP3Scanner extends BatchJobV2 {
                 }
                 catch (MP3Exception ex){
                     log.info(ex.getMessage());
-                    /*
+
                 } catch (TagException e) {
                     e.printStackTrace();
                 } catch (CannotReadException e) {
@@ -253,7 +232,7 @@ public class MP3Scanner extends BatchJobV2 {
                     e.printStackTrace();
                 } catch (ReadOnlyFileException e) {
                     e.printStackTrace();
-                    */
+
                 }
 
             }
@@ -269,13 +248,13 @@ public class MP3Scanner extends BatchJobV2 {
         }
     }
 
-    private static void printHeader(MyFileWriter myFile, Path aFile) throws IOException {
+    private void printHeader(MyFileWriter myFile, Path aFile) throws IOException {
         myFile.append(StringUtils.repeat('=', 100));
         myFile.append("Processing " + aFile.getFileName().toString());
         myFile.append("Location: " + aFile.getParent().toString());
     }
 
-    private static void saveMP3(MP3Service mp3File) throws IOException, TagException, CannotReadException, InvalidAudioFrameException, ReadOnlyFileException, MP3Exception {
+    private void saveMP3(MP3Service mp3File) throws IOException, TagException, CannotReadException, InvalidAudioFrameException, ReadOnlyFileException, MP3Exception {
         if (OVERWRITE){
             File oldFile = new File(mp3File.getFile());
             String strippedAlbum = MP3Helper.getInstance().stripFilename(mp3File.getAlbum());
@@ -301,7 +280,7 @@ public class MP3Scanner extends BatchJobV2 {
         }
     }
 
-    public static boolean containsFrench(String s) {
+    public boolean containsFrench(String s) {
         Pattern frenchPattern = Pattern.compile("(?i)[çœÁÉÍÓÚÝáéíóúýÄËÏÖÜäëïöüÿÀÈÌÒÙàèìòùÂÊÎÔÛâêîôûÅå]");
         return frenchPattern.matcher(s).find();
     }
