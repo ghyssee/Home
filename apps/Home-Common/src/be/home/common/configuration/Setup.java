@@ -1,11 +1,11 @@
 package be.home.common.configuration;
 
 import be.home.common.exceptions.ApplicationException;
+import be.home.common.utils.FileUtils;
 import be.home.common.utils.JSONUtils;
 import be.home.common.utils.NetUtils;
 import be.home.common.utils.WinUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.core.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -65,14 +65,7 @@ public class Setup {
         if (StringUtils.isNotBlank(path)){
             path = replaceEnvironmentVariables(path);
         }
-        File file = new File(path);
-        if (!file.exists()){
-            try {
-                FileUtils.mkdir(file, true);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        FileUtils.checkDirectory(path);
         return path;
 
     }

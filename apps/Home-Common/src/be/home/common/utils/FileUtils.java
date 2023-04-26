@@ -3,8 +3,6 @@ package be.home.common.utils;
 import be.home.common.exceptions.ApplicationException;
 import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.net.URLEncoder;
@@ -22,7 +20,6 @@ import static java.nio.file.FileVisitOption.FOLLOW_LINKS;
 
 public class FileUtils {
 
-	private static final Logger log = LogManager.getLogger();
     public static final boolean REMOVE_EMPTY_LINES = true;
     public static final String UTF8_BOM = "\uFEFF";
 
@@ -234,12 +231,11 @@ public class FileUtils {
 		return new InputStreamReader(new BOMInputStream(inputStream), StandardCharsets.UTF_8);
 	}
 
-	public static void checkDirectory(String directory) throws IOException {
+	public static void checkDirectory(String directory)  {
 		Path pathToFile = Paths.get(directory);
 		if (!Files.exists(pathToFile)) {
 			try {
 				Files.createDirectories(pathToFile);
-				log.info("Creating directory " + directory);
 			} catch (IOException e) {
 				throw new ApplicationException("There was a problem creating the directory " + directory);
 			}

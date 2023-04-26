@@ -2,6 +2,7 @@ package be.home.main;
 
 import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
+import be.home.common.exceptions.ApplicationException;
 import be.home.common.utils.MyFileWriter;
 import be.home.domain.model.MP3Helper;
 import be.home.domain.model.service.MP3Exception;
@@ -33,7 +34,7 @@ public class MP3Scanner extends BatchJobV2 {
 
     private static final Logger log = getMainLog(MP3Scanner.class);
     private static String timeStamp = new SimpleDateFormat("yyyyMM.dd.HH.mm.ss").format(new java.util.Date());
-    private static String ROOT = "c:\\My Data\\tmp\\Java\\MP3Processor\\test\\Ultratop 50 20200104 04 Januari 2020";
+    private static String ROOT = "c:\\My Data\\tmp\\Java\\MP3Processor\\test\\Ultratop 50 20200201 01 Februari 2020";
     private static String ROOT2 = "t:\\My Music\\iPod\\Ultratop 50 20210102 02 Januari 2021";
     private static final boolean OVERWRITE = true;
     private static final String BACKUP = Setup.getInstance().getFullPath(Constants.Path.TMP) + File.separator + "Backup";
@@ -90,6 +91,7 @@ public class MP3Scanner extends BatchJobV2 {
             if (line.startsWith("WARNING:")){
                 addWarning(warnings, "mp3val: WARNING found: fixing file");
                 fixFile(fileToCheck, warnings, album);
+                break;
             }
         }
     }
@@ -98,12 +100,7 @@ public class MP3Scanner extends BatchJobV2 {
     private void fixFile(String file, ArrayList<String> warnings, String album) {
         String BACKUP_DIR = BACKUP + File.separator
             + MP3Helper.getInstance().stripFilename(album) + "." + timeStamp;
-        try {
-            FileUtils.mkdir(new File(BACKUP_DIR), true);
-        } catch (IOException e) {
-            addWarning(warnings, "There was a problem creating " + BACKUP_DIR);
-            throw new RuntimeException(e);
-        }
+        be.home.common.utils.FileUtils.checkDirectory(BACKUP_DIR);
         String newline = System.getProperty("line.separator");
         StringBuffer sb = validateFile(file, true);
         log.info(sb);
@@ -115,14 +112,13 @@ public class MP3Scanner extends BatchJobV2 {
                 File backup = new File(file + ".bak");
                 if (backup.exists()){
                     File destinationFile = new File(BACKUP_DIR + File.separator + backup.getName());
+                    be.home.common.utils.FileUtils.checkDirectory(BACKUP_DIR);
                     try {
-                        FileUtils.mkdir(new File(BACKUP_DIR), true);
                         Files.move(backup.toPath(), destinationFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                        addWarning(warnings, "File moved to " + destinationFile.getAbsolutePath());
                     } catch (IOException e) {
-                        addWarning(warnings, "There was a problem moving the file to " + destinationFile.getAbsolutePath());
-                        throw new RuntimeException(e);
+                        throw new ApplicationException("There was a problem moving the file " + backup.toString(), e);
                     }
+                    addWarning(warnings, "File fixed + moved to " + destinationFile.getAbsolutePath());
                 }
                 else {
                     addWarning(warnings, "No Backup found!");
@@ -151,7 +147,7 @@ public class MP3Scanner extends BatchJobV2 {
         try {
             process = processBuilder.start();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new ApplicationException("There was a problem while running the program " + MP3VAL, e);
         }
         InputStream is = process.getInputStream();
         StringBuffer sb = new StringBuffer();
@@ -167,7 +163,7 @@ public class MP3Scanner extends BatchJobV2 {
         try {
             exitCode = process.waitFor();
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            throw new ApplicationException("There was a problem getting exit code while running program " + MP3VAL, e);
         }
         log.info("Exited with " + exitCode);
         return sb;
@@ -232,9 +228,7 @@ public class MP3Scanner extends BatchJobV2 {
                     e.printStackTrace();
                 } catch (ReadOnlyFileException e) {
                     e.printStackTrace();
-
                 }
-
             }
 
             return FileVisitResult.CONTINUE;
@@ -242,7 +236,7 @@ public class MP3Scanner extends BatchJobV2 {
 
         @Override  public FileVisitResult preVisitDirectory(
                 Path aDir, BasicFileAttributes aAttrs
-        ) throws IOException {
+        )  {
             //System.out.println("Processing directory:" + aDir);
             return FileVisitResult.CONTINUE;
         }
