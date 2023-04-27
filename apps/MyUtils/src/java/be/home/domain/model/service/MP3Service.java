@@ -56,6 +56,8 @@ public interface MP3Service {
     public void cleanupTags();
     public void clearAlbumImage();
 
+    public boolean isCleanable(String value);
+
     public void commit() throws MP3Exception;
     public void cleanupTag(String frameId);
 

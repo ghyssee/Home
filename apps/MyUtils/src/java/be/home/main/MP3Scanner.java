@@ -59,14 +59,18 @@ public class MP3Scanner extends BatchJobV2 {
 
         public void start() throws MP3Exception {
             MyFileWriter myFile = null;
+            MyFileWriter mp3PRoblemFile = null;
             String logFile = Setup.getInstance().getFullPath(Constants.Path.MP3SCANNER) +
                     File.separator + "MP3Scanner." + timeStamp + ".log";
+            String problemFile = Setup.getInstance().getFullPath(Constants.Path.MP3SCANNER) +
+                    File.separator + "MP3Problems." + timeStamp + ".txt";
             try {
                 myFile = new MyFileWriter(logFile, false);
+                mp3PRoblemFile = new MyFileWriter(problemFile, false);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            FileVisitor<Path> fileProcessor = new ProcessFile(myFile);
+            FileVisitor<Path> fileProcessor = new ProcessFile(myFile, mp3PRoblemFile);
             try {
                 Files.walkFileTree(Paths.get(ROOT), fileProcessor);
             } catch (IOException e) {
@@ -81,7 +85,7 @@ public class MP3Scanner extends BatchJobV2 {
 
 
 
-    private void checkFile(String fileToCheck, ArrayList<String> warnings, String album)  {
+    private void checkFile(String fileToCheck, ArrayList<String> warnings, String album, MyFileWriter mp3ProblemFile) throws IOException {
         //File myFile = new File("c:\\My Data\\tmp\\Backup\\Ultratop 50 20200104 04 Januari 2020.20230424\\Test.mp3");
         StringBuffer sb = validateFile(fileToCheck, false);
         String newline = System.getProperty("line.separator");
@@ -90,14 +94,14 @@ public class MP3Scanner extends BatchJobV2 {
         for (String line : array) {
             if (line.startsWith("WARNING:")){
                 addWarning(warnings, "mp3val: WARNING found: fixing file");
-                fixFile(fileToCheck, warnings, album);
+                fixFile(fileToCheck, warnings, album, mp3ProblemFile);
                 break;
             }
         }
     }
 
 
-    private void fixFile(String file, ArrayList<String> warnings, String album) {
+    private void fixFile(String file, ArrayList<String> warnings, String album, MyFileWriter mp3ProblemFile) throws IOException {
         String BACKUP_DIR = BACKUP + File.separator
             + MP3Helper.getInstance().stripFilename(album) + "." + timeStamp;
         be.home.common.utils.FileUtils.checkDirectory(BACKUP_DIR);
@@ -121,11 +125,13 @@ public class MP3Scanner extends BatchJobV2 {
                     addWarning(warnings, "File fixed + moved to " + destinationFile.getAbsolutePath());
                 }
                 else {
+                    mp3ProblemFile.append(file);
                     addWarning(warnings, "No Backup found!");
                 }
             }
         }
         if (!fixed) {
+            mp3ProblemFile.append(file);
             addWarning(warnings, "Problem fixing " + file);
         }
     }
@@ -172,9 +178,11 @@ public class MP3Scanner extends BatchJobV2 {
     private final class ProcessFile extends SimpleFileVisitor<Path> {
         private MyFileWriter myFile = null;
         private final PathMatcher matcher;
+        private MyFileWriter mp3ProblemFile = null;
 
-        public ProcessFile(MyFileWriter myFile) throws MP3Exception {
+        public ProcessFile(MyFileWriter myFile, MyFileWriter mp3ProblemFile) throws MP3Exception {
             this.myFile = myFile;
+            this.mp3ProblemFile = mp3ProblemFile;
             matcher = FileSystems.getDefault()
                     .getPathMatcher("regex:.*(?i:mp3)");
         }
@@ -209,7 +217,7 @@ public class MP3Scanner extends BatchJobV2 {
                         myFile.append(warningMessage);
                     }
                     warnings.clear();
-                    checkFile(aFile.toString(), warnings, mp3File.getAlbum());
+                    checkFile(aFile.toString(), warnings, mp3File.getAlbum(), mp3ProblemFile);
                     if (warnings.size() > 0 && !mp3File.isWarning()){
                         printHeader(myFile, aFile);
                     }

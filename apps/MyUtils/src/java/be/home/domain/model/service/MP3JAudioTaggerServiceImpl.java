@@ -12,10 +12,7 @@ import org.jaudiotagger.audio.mp3.MP3File;
 import org.jaudiotagger.tag.*;
 
 import org.jaudiotagger.tag.id3.*;
-import org.jaudiotagger.tag.id3.framebody.AbstractID3v2FrameBody;
-import org.jaudiotagger.tag.id3.framebody.FrameBodyDeprecated;
-import org.jaudiotagger.tag.id3.framebody.FrameBodyPOPM;
-import org.jaudiotagger.tag.id3.framebody.FrameBodyUnsupported;
+import org.jaudiotagger.tag.id3.framebody.*;
 import org.jaudiotagger.tag.reference.ID3V2Version;
 
 import java.io.IOException;
@@ -296,10 +293,8 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         // that's why we use frame to alter genre
         // update: use setWriteMp3GenresAsText to prevent that genre is replaced by id
         // Ex. Pop = 13
-        // TOTEST
         TagOptionSingleton.getInstance().setWriteMp3GenresAsText(true);
         this.tag.deleteField(FieldKey.GENRE);
-        //this.tag.deleteField(ID3v24FieldKey.GENRE);
         if (genre != null) {
             try {
                 this.tag.addField(FieldKey.GENRE, genre);
@@ -307,16 +302,6 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 throw new MP3Exception(e);
             }
         }
-/*
-        this.tag.deleteField(FieldKey.GENRE);
-        if (genre != null){
-            ID3v23Tag v23Tag = new ID3v23Tag();
-            ID3v23Frame frame = v23Tag.createFrame(ID3v24Frames.FRAME_ID_GENRE);
-            FrameBodyTCON framebody = (FrameBodyTCON) frame.getBody();
-            framebody.setText(genre);
-            this.tag.addFrame(frame);
-        }
-*/
     }
 
     @Override
@@ -491,13 +476,25 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         cleanupTag(ID3v24Frames.FRAME_ID_URL_PAYMENT); // WPAY
         cleanupTag(ID3v24Frames.FRAME_ID_URL_PUBLISHERS); // WPUB
         cleanupTag(ID3v24Frames.FRAME_ID_URL_OFFICIAL_RADIO); // WORS
+        cleanupTag(ID3v24Frames.FRAME_ID_PUBLISHER); // TPUB
         cleanupTag(ID3v24Frames.FRAME_ID_RADIO_NAME); // TRSN
-        cleanupTag(ID3v24Frames.FRAME_ID_MOOD); // TMOD
         cleanupTag(ID3v24Frames.FRAME_ID_RADIO_OWNER); // TRSO
+        cleanupTag(ID3v24Frames.FRAME_ID_MOOD); // TMOD
         cleanupTag(ID3v24Frames.FRAME_ID_BPM); // TBPM
         cleanupTag(ID3v24Frames.FRAME_ID_COMPOSER_SORT_ORDER_ITUNES); // TSOC
         cleanupTag(ID3v24Frames.FRAME_ID_ALBUM_ARTIST_SORT_ORDER_ITUNES); // TSOC
         cleanupTag(ID3v24Frames.FRAME_ID_COMPOSER); // TCOM
+        cleanupTag(ID3v24Frames.FRAME_ID_COPYRIGHTINFO); // TCOP
+        cleanupTag(ID3v24Frames.FRAME_ID_COMPOSER_SORT_ORDER_ITUNES); // TSOC
+        cleanupTag(ID3v24Frames.FRAME_ID_ALBUM_SORT_ORDER); // TSOA
+        cleanupTag(ID3v24Frames.FRAME_ID_ARTIST_SORT_ORDER); // TSO9
+        cleanupTag(ID3v24Frames.FRAME_ID_MUSIC_CD_ID); // MCDI
+        cleanupTag(ID3v24Frames.FRAME_ID_COMMERCIAL_FRAME); // COMR
+        cleanupTag(ID3v24Frames.FRAME_ID_FILE_OWNER); // TOWN
+        cleanupTag(ID3v24Frames.FRAME_ID_FILE_TYPE); // TFLT
+        cleanupTag(ID3v24Frames.FRAME_ID_CONDUCTOR); // TPE3
+        cleanupTag(ID3v24Frames.FRAME_ID_HW_SW_SETTINGS); // TSSE
+        cleanupTag(ID3v24Frames.FRAME_ID_ISRC); // TSRC
     }
 
     public void cleanupTag(String frameId) {
@@ -509,7 +506,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 tagField = tags.get(0);
                 AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
                 value = frame.getContent();
-                if (value != null && value.compareToIgnoreCase(TAG_TO_DELETE) == 0) {
+                if (isCleanable(value)) {
                     //tag.removeFrame(frameId);
                     save = true;
                     addWarning("Cleaning tag " + frameId);
@@ -517,6 +514,35 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 }
             }
         }
+    }
+
+    private boolean isTagExcludedForCleanup(FieldKey fieldKey) {
+        ArrayList<FieldKey> excludedCleanupList = new <String> ArrayList();
+        excludedCleanupList.add(FieldKey.ARTIST);
+        excludedCleanupList.add(FieldKey.ALBUM);
+        excludedCleanupList.add(FieldKey.ALBUM_ARTIST);
+        excludedCleanupList.add(FieldKey.TITLE);
+        for (FieldKey excludedKey : excludedCleanupList){
+            if (excludedKey != null && excludedKey == fieldKey) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isCleanable(String value){
+        ArrayList<String> cleanupList = new <String> ArrayList();
+        cleanupList.add(TAG_TO_DELETE);
+        cleanupList.add("mSm © 2021 Productions BV");
+        cleanupList.add("Salvatoro @ 2021");
+        cleanupList.add("Salvatoro / mSm \\ Scorpio");
+        cleanupList.add("Scorpio");
+        for (String cleanupValue : cleanupList){
+            if (value != null && value.compareToIgnoreCase(cleanupValue) == 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void clearAlbumImage() {
@@ -646,6 +672,53 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         return wrongFrame;
 
     }
+
+    private boolean isCustomTagRemovable(String value){
+        ArrayList<String> cleanupList = new <String> ArrayList();
+        cleanupList.add("ARTISTS");
+        for (String cleanupValue : cleanupList){
+            if (value != null && value.compareToIgnoreCase(cleanupValue) == 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+    private void checkCustomTags()  {
+        List<TagField> customTags = this.tag.getFields(ID3v24Frames.FRAME_ID_USER_DEFINED_INFO);
+        List<TagField> customTagsToKeep = new ArrayList<TagField>();
+        boolean saveCustomTags = false;
+        if (customTags != null) {
+            for (TagField tagField : customTags){
+                AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
+                FrameBodyTXXX frameBody = (FrameBodyTXXX) frame.getBody();
+                String description = frameBody.getDescription();
+                String value = frameBody.getText();
+                if (isCustomTagRemovable(description)){
+                    addWarning("Delete Custom Tag: " + description + "=" + value);
+                    saveCustomTags = true;
+                    save = true;
+                }
+                else {
+                    addWarning("Custom Tag found: " + description + "=" + value);
+                    customTagsToKeep.add(tagField);
+                }
+            }
+        }
+        if (saveCustomTags){
+            this.tag.deleteField(ID3v24Frames.FRAME_ID_USER_DEFINED_INFO);
+            for (TagField tagField : customTagsToKeep){
+                try {
+                    this.tag.addField(tagField);
+                } catch (FieldDataInvalidException e) {
+                    AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
+                    FrameBodyTXXX frameBody = (FrameBodyTXXX) frame.getBody();
+                    addWarning("There was a problem saving custom tag " + frameBody.getDescription() +
+                            "=" + frameBody.getText());
+                }
+            }
+        }
+    }
+
     public void analyze() {
         /* there is a problem if tag is ID3v24, and the year tag is TYER instead of TDOR,
            the year is not fetched. This is a way to convert frame
@@ -688,6 +761,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
             }
         }
         cleanupTags();
+        checkCustomTags();
         /*
         while(tagFieldIterator.hasNext()) {
             TagField element = tagFieldIterator.next();

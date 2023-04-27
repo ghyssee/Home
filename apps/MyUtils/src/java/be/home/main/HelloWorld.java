@@ -340,7 +340,8 @@ private static void TestMovieFile(){
     }
 
     private static void testJAudioTagger(){
-        File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\07 Test Comment.mp3");
+        // File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\02 Test Double Artist TXXX.mp3");
+        File file = new File("C:\\My Data\\tmp\\Java\\MP3Processor\\Test\\VBRToTest\\03 Mighty Dub Katz - Magic Carpet Ride.mp3");
         //File file = new File("C:\\Temp\\0\\Ultratop 50 20200104 04 Januari 2020\\07 The Weeknd - Blinding Lights.mp3");
         File newFile = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\new.mp3");
        // TagOptionSingleton.getInstance().setOriginalSavedAfterAdjustingID3v2Padding(false);
@@ -354,6 +355,7 @@ private static void TestMovieFile(){
                 System.out.println(mp3File.getComment());
                 System.out.println(mp3File.getArtist());
                 System.out.println(mp3File.getUrl());
+                System.out.println("Is Cleanable: " + mp3File.isCleanable("mSm © 2021 Productions BV"));
                 //mp3File.setArtist("Kings of Leon");
                 //mp3File.setTitle("On The Fly");
                 //mp3File.setCompilation(true);
@@ -378,62 +380,6 @@ private static void TestMovieFile(){
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private static void testJAudioTaggerOld(){
-        MP3File mp3File = null;
-        try {
-            File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\01 Test.mp3");
-            File newFile = new File("C:\\My Data\\tmp\\Java\\MP3Processor\\new" + File.separator + file.getName());
-            Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            mp3File = new MP3File(newFile.getAbsolutePath());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (TagException e) {
-            e.printStackTrace();
-        } catch (ReadOnlyFileException e) {
-            e.printStackTrace();
-        } catch (CannotReadException e) {
-            e.printStackTrace();
-        } catch (InvalidAudioFrameException e) {
-            e.printStackTrace();
-        }
-        //File fileToSave = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\11 New.mp3");
-        //try {
-            ID3v24Tag tag = mp3File.getID3v2TagAsv24();
-            List<TagField> tags = tag.getFrame(ID3v24Frames.FRAME_ID_URL_SOURCE_WEB);
-            TagField tmp = null;
-            if (tags != null && tags.size() > 0) {
-                tmp = tags.get(0);
-                System.out.println(tmp.getId());
-            }
-            tags = tag.getFrame(ID3v24Frames.FRAME_ID_ARTIST);
-            tmp = tags.get(0);
-            ID3v24Frame frame = (ID3v24Frame) tmp;
-            String content = frame.getContent();
-            System.out.println(content);
-             /*
-            tag.setField(FieldKey.ARTIST,"Kings of Leon");
-            tag.deleteField(FieldKey.DISC_NO);
-            tag.setField(FieldKey.IS_COMPILATION,"1");
-            tag.setField(FieldKey.TITLE,"Test");
-            tag.setField(FieldKey.TRACK,"81");
-            tag.setField(FieldKey.YEAR,"2022");
-            System.out.println(tag.getFirst(FieldKey.RATING));
-            System.out.println(mp3File.getMP3AudioHeader().getTrackLengthAsString());
-            System.out.println(mp3File.getMP3AudioHeader().getPreciseTrackLength());
-            tag.deleteField(FieldKey.RATING);
-            tag.addField(FieldKey.RATING,"255");
-            //tag.setField(FieldKey.RATING,"50");
-            mp3File.setID3v2Tag(tag);
-            mp3File.save();
-            */
-        //} catch (IOException e) {
-        //    e.printStackTrace();
-        //} catch (TagException e) {
-        //    e.printStackTrace();
-        //}
-
     }
 
         private static void test() throws IOException, NoSuchFieldException, IllegalAccessException, SAXException, ParserConfigurationException, DocumentException {
