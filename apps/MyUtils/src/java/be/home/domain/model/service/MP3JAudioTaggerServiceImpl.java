@@ -18,12 +18,16 @@ import org.jaudiotagger.tag.reference.ID3V2Version;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static be.home.common.logging.LoggingConfiguration.getMainLog;
 
 public class MP3JAudioTaggerServiceImpl implements MP3Service {
 
     private static final Logger log = getMainLog(MP3TagChecker.class);
+
+    final String GENRE_X = "GENRE_X";
+
     MP3File mp3File;
     Tag tag;
     ID3v24Tag idv24Tag;
@@ -509,7 +513,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 if (isCleanable(value)) {
                     //tag.removeFrame(frameId);
                     save = true;
-                    addWarning("Cleaning tag " + frameId);
+                    addWarning("Cleaning tag " + frameId + " (value=" + value + ")");
                     tag.deleteField(frameId);
                 }
             }
@@ -532,13 +536,12 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
 
     public boolean isCleanable(String value){
         ArrayList<String> cleanupList = new <String> ArrayList();
-        cleanupList.add(TAG_TO_DELETE);
-        cleanupList.add("mSm © 2021 Productions BV");
-        cleanupList.add("Salvatoro @ 2021");
-        cleanupList.add("Salvatoro / mSm \\ Scorpio");
-        cleanupList.add("Scorpio");
+        cleanupList.add("^RJ/SNWTJE");
+        cleanupList.add("mSm ?. ?[0-9]{1,4} ?Productions BV");
+        cleanupList.add("(.*)Salvatoro(.*)");
+        cleanupList.add("(.*)Scorpio(.*)");
         for (String cleanupValue : cleanupList){
-            if (value != null && value.compareToIgnoreCase(cleanupValue) == 0) {
+            if ( Pattern.matches(cleanupValue.toUpperCase(), value.toUpperCase())) {
                 return true;
             }
         }
@@ -561,29 +564,35 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
 
     }
 
-    public void removeMultipleValues(FieldKey fieldKey){
+    private void removeMultipleValues(FieldKey fieldKey){
         if (this.tag.getAll(fieldKey).size()> 1) {
-            addWarning("Deleting Multiple values for " + fieldKey.name());
-            String val = this.tag.getFirst(fieldKey);
-            this.tag.deleteField(fieldKey);
-            try {
-                this.tag.setField(fieldKey, val);
-                save = true;
-                addWarning("Multiple values successfully deleted");
-            } catch (FieldDataInvalidException e) {
-                throw new RuntimeException(e);
+            if (fieldKey != FieldKey.COMMENT) {
+                addWarning("Deleting Multiple values for " + fieldKey.name());
+                String val = this.tag.getFirst(fieldKey);
+                this.tag.deleteField(fieldKey);
+                try {
+                    this.tag.setField(fieldKey, val);
+                    save = true;
+                    addWarning("Multiple values successfully deleted");
+                } catch (FieldDataInvalidException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            else {
+                // Skipping Multiple Comment value for now. Not sure what to do with iTunes Comments
+                addWarning("Multiple Comment Field Values found");
             }
         }
     }
 
-    public void removeEmptyField(FieldKey fieldKey){
+    private void removeEmptyField(FieldKey fieldKey){
         if (this.tag.hasField(fieldKey)) {
-            String value = this.tag.getFirst(fieldKey);
-            if (StringUtils.isBlank(value)){
-                addWarning("Deleting empty value for " + fieldKey.name());
-                this.tag.deleteField(fieldKey);
-                save = true;
-            }
+                String value = this.tag.getFirst(fieldKey);
+                if (StringUtils.isBlank(value)) {
+                    addWarning("Deleting empty value for " + fieldKey.name());
+                    this.tag.deleteField(fieldKey);
+                    save = true;
+                }
         }
     }
 
@@ -673,17 +682,45 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
 
     }
 
+    private boolean checkCustomTagGenreX(String description, String value) throws MP3Exception {
+        if (description != null && description.compareToIgnoreCase(GENRE_X) == 0) {
+            String genre = this.getGenre();
+            if (StringUtils.isBlank(genre)){
+                addWarning ("Custom Genre found, no default genre filled in. Setting genre to " + value);
+                this.setGenre(value);
+            }
+            else {
+                addWarning ("Custom Genre found, but default genre is filled in. Custom: " + value + " => Default Genre: " + genre);
+            }
+            return true;
+        }
+        return false;
+    }
+
     private boolean isCustomTagRemovable(String value){
         ArrayList<String> cleanupList = new <String> ArrayList();
         cleanupList.add("ARTISTS");
+        cleanupList.add("DISCID");
+        /* removing DISCOGS tags
+           MP3s can be tagged with CUSTOM discogs tags via a plugin
+           For now, we remove the discogs custom tags
+         */
+        cleanupList.add("^DISCOGS(.*)");
+        /* Music Brainz Custom tags */
+        cleanupList.add("^MUSICBRAINZ(.*)");
+
+        cleanupList.add("^COUNTRY");
+        cleanupList.add("^NOTES");
+        cleanupList.add("^RATING");
+
         for (String cleanupValue : cleanupList){
-            if (value != null && value.compareToIgnoreCase(cleanupValue) == 0) {
+            if ( Pattern.matches(cleanupValue.toUpperCase(), value.toUpperCase())) {
                 return true;
             }
         }
         return false;
     }
-    private void checkCustomTags()  {
+    private void checkCustomTags() throws MP3Exception {
         List<TagField> customTags = this.tag.getFields(ID3v24Frames.FRAME_ID_USER_DEFINED_INFO);
         List<TagField> customTagsToKeep = new ArrayList<TagField>();
         boolean saveCustomTags = false;
@@ -694,6 +731,11 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 String description = frameBody.getDescription();
                 String value = frameBody.getText();
                 if (isCustomTagRemovable(description)){
+                    addWarning("Delete Custom Tag: " + description + "=" + value);
+                    saveCustomTags = true;
+                    save = true;
+                }
+                else if (checkCustomTagGenreX(description, value)){
                     addWarning("Delete Custom Tag: " + description + "=" + value);
                     saveCustomTags = true;
                     save = true;
@@ -748,20 +790,21 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 }
             }
         }
-        /* check for multple values in a field */
+        /* check for multiple values in a field */
         for (FieldKey checkKey : FieldKey.values()){
             // skipping COMMENT for now. Not sure what to do with ITUNES Comments
-            if (checkKey != FieldKey.COMMENT) {
                 removeMultipleValues(checkKey);
-            }
-            // don't remove empty comment fields. Tag is most of the time added in mp3file
-            // to be investigated further
             if (checkKey != FieldKey.COMMENT) {
                 removeEmptyField(checkKey);
             }
         }
         cleanupTags();
-        checkCustomTags();
+        try {
+            checkCustomTags();
+        } catch (MP3Exception e) {
+            // this should never occur
+            throw new RuntimeException(e);
+        }
         /*
         while(tagFieldIterator.hasNext()) {
             TagField element = tagFieldIterator.next();

@@ -7,8 +7,6 @@ import java.util.ArrayList;
 
 public interface MP3Service {
 
-    final String TAG_TO_DELETE = "RJ/SNWTJE";
-
     public String getArtist();
     public String getTitle();
     public String getTrack();

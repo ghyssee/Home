@@ -341,7 +341,7 @@ private static void TestMovieFile(){
 
     private static void testJAudioTagger(){
         // File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\02 Test Double Artist TXXX.mp3");
-        File file = new File("C:\\My Data\\tmp\\Java\\MP3Processor\\Test\\VBRToTest\\03 Mighty Dub Katz - Magic Carpet Ride.mp3");
+        File file = new File("C:\\My Data\\tmp\\Java\\MP3Processor\\Test\\TXXX Frames\\14 Shawn Christopher - Make My Love.mp3");
         //File file = new File("C:\\Temp\\0\\Ultratop 50 20200104 04 Januari 2020\\07 The Weeknd - Blinding Lights.mp3");
         File newFile = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\new.mp3");
        // TagOptionSingleton.getInstance().setOriginalSavedAfterAdjustingID3v2Padding(false);
