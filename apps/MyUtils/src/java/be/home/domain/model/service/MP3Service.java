@@ -33,6 +33,12 @@ public interface MP3Service {
     public String getGenre();
     public ArrayList<String> getWarnings();
 
+    public boolean REMOVE_LENGTH_TAG = true;
+    // sometimes, a TLEN tag is added to contain the length of the song
+    // But we get that duration on another way, so we remove this tag
+    public boolean REMOVE_EMPTY_COMMENT = false;
+
+
     public int getDuration();
 
     public boolean hasTag();

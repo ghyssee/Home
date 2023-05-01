@@ -9,6 +9,7 @@ import org.jaudiotagger.audio.exceptions.CannotReadException;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.audio.mp3.MP3File;
+import org.jaudiotagger.tag.id3.AbstractID3v2Tag;
 import org.jaudiotagger.tag.*;
 
 import org.jaudiotagger.tag.id3.*;
@@ -46,6 +47,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
     ) throws MP3Exception {
 
         TagOptionSingleton.getInstance().setId3v2PaddingWillShorten(true);
+//        TagOptionSingleton.getInstance().setOriginalSavedAfterAdjustingID3v2Padding(true);
         TagOptionSingleton.getInstance().setID3V2Version(ID3V2Version.ID3_V24);
         TagOptionSingleton.getInstance().setRemoveTrailingTerminatorOnWrite(true);
         try {
@@ -499,6 +501,14 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         cleanupTag(ID3v24Frames.FRAME_ID_CONDUCTOR); // TPE3
         cleanupTag(ID3v24Frames.FRAME_ID_HW_SW_SETTINGS); // TSSE
         cleanupTag(ID3v24Frames.FRAME_ID_ISRC); // TSRC
+        if (REMOVE_LENGTH_TAG){
+            if (this.tag.hasField(ID3v24Frames.FRAME_ID_LENGTH)) {
+                save = true;
+                addWarning("Cleaning Length tag " + ID3v24Frames.FRAME_ID_LENGTH +
+                        " (value=" + this.tag.getFirst(ID3v24Frames.FRAME_ID_LENGTH) + ")");
+                this.tag.deleteField(ID3v24Frames.FRAME_ID_LENGTH);
+            }
+        }
     }
 
     public void cleanupTag(String frameId) {
@@ -515,6 +525,57 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                     save = true;
                     addWarning("Cleaning tag " + frameId + " (value=" + value + ")");
                     tag.deleteField(frameId);
+                }
+            }
+        }
+    }
+
+    public void cleanComment(){
+        List<TagField> tags = this.tag.getFields(FieldKey.COMMENT);
+        List<TagField> commentTagsToKeep = new ArrayList<TagField>();
+        boolean saveCommentTag = false;
+        if (tags != null) {
+            if (tags.size() > 0) {
+                for (TagField tagField : tags) {
+                    AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
+                    FrameBodyCOMM frameBody = (FrameBodyCOMM) frame.getBody();
+                    String description = frameBody.getDescription();
+                    List<String> values = frameBody.getValues();
+                    if (isCustomTagRemovable(description)) {
+                        addWarning("Delete Comment Tag: " + description + "=" + values.toString());
+                        saveCommentTag = true;
+                        save = true;
+                    } else if (StringUtils.isBlank(frameBody.getText())){
+                        // empty Comment tag found. Skipping this for now
+                        // needs to be investigated further
+                        if (REMOVE_EMPTY_COMMENT || this.save){
+                            // delete empty tag if there are other errors found
+                            addWarning("Empty Comment Tag deleted: " + frameBody.getLongDescription().trim() + "=" + values.toString());
+                            saveCommentTag = true;
+                            save = true;
+                        }
+                    } else {
+                        addWarning("Comment Tag found: " + description + "=" + values.toString());
+                        commentTagsToKeep.add(tagField);
+                    }
+                }
+            }
+            else {
+                // comment tag found, but is empty. Skipping for now
+                // candidate for removal
+            }
+            if (saveCommentTag) {
+                this.tag.deleteField(FieldKey.COMMENT);
+                for (TagField tagField : commentTagsToKeep) {
+                    try {
+                        this.tag.addField(tagField);
+                    } catch (FieldDataInvalidException e) {
+                        AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
+                        FrameBodyCOMM frameBody = (FrameBodyCOMM) frame.getBody();
+                        List<String> values = frameBody.getValues();
+                        addWarning("There was a problem saving custom tag " + frameBody.getDescription() +
+                                "=" + values.toString());
+                    }
                 }
             }
         }
@@ -552,13 +613,22 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         this.tag.deleteArtworkField();
     }
 
+    private void clearLanguage() {
+        if (this.tag.hasField(FieldKey.LANGUAGE)) {
+            addWarning("Language Tag deleted: Value = " + this.tag.getFirst(FieldKey.LANGUAGE));
+            this.tag.deleteField(FieldKey.LANGUAGE);
+            this.save = true;
+        }
+    }
+
     public void commit() throws MP3Exception {
         this.mp3File.setID3v2Tag((AbstractID3v2Tag) tag);
         try {
             this.mp3File.save();
         } catch (IOException e) {
             throw new MP3Exception(e);
-        } catch (TagException e) {
+        }
+        catch (TagException e) {
             throw new MP3Exception(e);
         }
 
@@ -708,10 +778,113 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         cleanupList.add("^DISCOGS(.*)");
         /* Music Brainz Custom tags */
         cleanupList.add("^MUSICBRAINZ(.*)");
-
         cleanupList.add("^COUNTRY");
         cleanupList.add("^NOTES");
         cleanupList.add("^RATING");
+        cleanupList.add("^AccurateRip(.*)");
+        cleanupList.add("^PZTagEditor(.*)");
+        cleanupList.add("^replaygain(.*)");
+        cleanupList.add("^major_brand");
+        cleanupList.add("^minor_version");
+        cleanupList.add("^compatible_brands");
+        cleanupList.add("^Rip date");
+        cleanupList.add("^Catalog(.*)");
+        cleanupList.add("^UPC");
+        cleanupList.add("^FeeAgency");
+        cleanupList.add("^XFade");
+        cleanupList.add("^SongType");
+        cleanupList.add("^Overlay");
+        cleanupList.add("^SongRights");
+        cleanupList.add("^Source");
+        cleanupList.add("^Ripping tool");
+        cleanupList.add("^Release(.*)");
+        cleanupList.add("^Supplier");
+        cleanupList.add("^ITUNES(.*)");
+        cleanupList.add("^SETSUBTITLE");
+        cleanupList.add("^(.*)date");
+        cleanupList.add("^GN_ExtData");
+        cleanupList.add("^Purchase Date");
+        cleanupList.add("^GN_ExtData");
+        cleanupList.add("^Content Rating");
+        cleanupList.add("^iTunMOVI");
+        cleanupList.add("^Media(.*)");
+        cleanupList.add("^Play Gap");
+        cleanupList.add("^TOTALTRACKS");
+        cleanupList.add("^COVER(.*)");
+        cleanupList.add("^TPW");
+        cleanupList.add("^UPLOADER");
+        cleanupList.add("^BARCODE");
+        cleanupList.add("^PMEDIA");
+        cleanupList.add("^Provider");
+        cleanupList.add("^album(.*)");
+        cleanupList.add("^(.*)artist(.*)");
+        cleanupList.add("^Track(.*)");
+        cleanupList.add("^MusicMatch(.*)");
+        cleanupList.add("^Credits");
+        cleanupList.add("^Aan ?Geboden ?Door");
+        cleanupList.add("^Work");
+        cleanupList.add("^comment");
+        cleanupList.add("^INFO");
+        cleanupList.add("^AMGID");
+        cleanupList.add("^Engineer");
+        cleanupList.add("^Encoder");
+        cleanupList.add("^ENCODED?(.*)");
+        cleanupList.add("^HISTORY");
+        cleanupList.add("^WEBSTORE");
+        cleanupList.add("^ENCODINGTIME");
+        cleanupList.add("^Year");
+        cleanupList.add("^Language");
+        cleanupList.add("^Related");
+        cleanupList.add("^iTunSMPB");
+        cleanupList.add("^Style");
+        cleanupList.add("^Tagging time");
+        cleanupList.add("^PLine");
+        cleanupList.add("^CT_GAPLESS_DATA");
+        cleanupList.add("^CDDB(.*)");
+        cleanupList.add("^last_played_timestamp");
+        cleanupList.add("^added_timestamp");
+        cleanupList.add("^play_count");
+        cleanupList.add("^first_played_timestamp");
+        cleanupList.add("^User defined text information");
+        cleanupList.add("^Mp3gain(.*)");
+        cleanupList.add("^ZN");
+        cleanupList.add("^fBPM(.*)");
+        cleanupList.add("^EpisodeID");
+        cleanupList.add("^audiodata(.*)");
+        cleanupList.add("^canseekontime");
+        cleanupList.add("^framerate");
+        cleanupList.add("^pmsg");
+        cleanupList.add("^EpisodeID");
+        cleanupList.add("^purl");
+        cleanupList.add("^starttime");
+        cleanupList.add("^totaldata(.*)");
+        cleanupList.add("^totalduration");
+        cleanupList.add("^totaldisc(.*)");
+        cleanupList.add("^totaltrack(.*)");
+        cleanupList.add("^videodata(.*)");
+        cleanupList.add("^width");
+        cleanupList.add("^duration");
+        cleanupList.add("^height");
+        cleanupList.add("^bytelength");
+        cleanupList.add("^sourcedata");
+        cleanupList.add("^ORGANIZATION");
+        cleanupList.add("^T?V?EPISODE(.*)");
+        cleanupList.add("^Key");
+        cleanupList.add("^OrigDate");
+        cleanupList.add("^OrigTime");
+        cleanupList.add("^TimeReference");
+        cleanupList.add("^Language(.*)");
+        cleanupList.add("^EnergyLevel");
+        cleanupList.add("^PERFORMER");
+        cleanupList.add("^RIPPER");
+        cleanupList.add("^SPDY");
+        /* COMMENT descriptions */
+        cleanupList.add("^iTunPGAP");
+        cleanupList.add("^PLine");
+        cleanupList.add("^iTunNORM");
+        cleanupList.add("^MUSICMATCH_MOOD");
+        cleanupList.add("^ITUNES_CD(.*)");
+        /* end comment descriptions */
 
         for (String cleanupValue : cleanupList){
             if ( Pattern.matches(cleanupValue.toUpperCase(), value.toUpperCase())) {
@@ -761,11 +934,38 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         }
     }
 
+    public void clearID3v23SpecificTag(AbstractID3v2Tag tag, String idToRemove) {
+        if (tag.hasFrame(idToRemove)){
+            addWarning("Remove ID3v23 tag: " + idToRemove);
+            this.tag.deleteField(idToRemove);
+            this.save = true;
+        }
+    }
+
+    public void clearID3v24SpecificTag(AbstractID3v2Tag tag, String idToRemove) {
+        if (tag.hasFrame(idToRemove)){
+            addWarning("Remove ID3v24 tag: " + idToRemove);
+            this.tag.deleteField(idToRemove);
+            this.save = true;
+        }
+    }
     public void analyze() {
         /* there is a problem if tag is ID3v24, and the year tag is TYER instead of TDOR,
            the year is not fetched. This is a way to convert frame
          */
         AbstractID3v2Tag tag = this.mp3File.getID3v2Tag();
+
+        /* remove ID3V23 specific frames */
+
+        clearID3v23SpecificTag(tag, ID3v23Frames.FRAME_ID_V3_TDAT);
+        clearID3v23SpecificTag(tag, ID3v23Frames.FRAME_ID_V3_INVOLVED_PEOPLE);
+        clearID3v23SpecificTag(tag, ID3v23Frames.FRAME_ID_V3_TORY);
+
+        /* remove ID3V24 specific frames */
+
+        clearID3v24SpecificTag(tag, ID3v24Frames.FRAME_ID_INVOLVED_PEOPLE);
+        clearID3v24SpecificTag(tag, ID3v24Frames. FRAME_ID_ORIGINAL_RELEASE_TIME);
+
         if (this.tag instanceof ID3v23Tag){
             if (tag instanceof ID3v24Tag ) {
                 if (convertInvalidFID3v2frame(tag, ID3v24Frames.FRAME_ID_YEAR, ID3v23Frames.FRAME_ID_V3_TYER, FieldKey.YEAR)) {
@@ -805,6 +1005,8 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
             // this should never occur
             throw new RuntimeException(e);
         }
+        clearLanguage();
+        cleanComment();
         /*
         while(tagFieldIterator.hasNext()) {
             TagField element = tagFieldIterator.next();
