@@ -341,7 +341,7 @@ private static void TestMovieFile(){
 
     private static void testJAudioTagger(){
         // File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\02 Test Double Artist TXXX.mp3");
-        File file = new File("C:\\My Data\\tmp\\Java\\MP3Processor\\Test\\TXXX Frames\\14 Shawn Christopher - Make My Love.mp3");
+        File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\ProblemTAgRename\\118 Unknown ID3v24 Frame.mp3");
         //File file = new File("C:\\Temp\\0\\Ultratop 50 20200104 04 Januari 2020\\07 The Weeknd - Blinding Lights.mp3");
         File newFile = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\new.mp3");
        // TagOptionSingleton.getInstance().setOriginalSavedAfterAdjustingID3v2Padding(false);
@@ -363,7 +363,7 @@ private static void TestMovieFile(){
                // mp3File.setRating(4);
                 //mp3File.setDisc("1");
                 //mp3File.setArtist("David Guetta & MORTEN Feat. Raye");
-                System.out.println("old genre: " + mp3File.getGenre());
+                //System.out.println("old genre: " + mp3File.getGenre());
                 //mp3File.setTrack("100");
                 //mp3File.setGenre("Test");
                 //mp3File.setAlbumArtist("Various ArtistsXXX");

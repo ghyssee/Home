@@ -17,8 +17,7 @@ import org.jaudiotagger.tag.id3.framebody.*;
 import org.jaudiotagger.tag.reference.ID3V2Version;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import static be.home.common.logging.LoggingConfiguration.getMainLog;
@@ -936,7 +935,8 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
 
     public void clearID3v23SpecificTag(AbstractID3v2Tag tag, String idToRemove) {
         if (tag.hasFrame(idToRemove)){
-            addWarning("Remove ID3v23 tag: " + idToRemove);
+            addWarning("Remove ID3v23 tag: " + idToRemove +
+            " value=(" + tag.getFirst(idToRemove) + ")");
             this.tag.deleteField(idToRemove);
             this.save = true;
         }
@@ -944,14 +944,49 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
 
     public void clearID3v24SpecificTag(AbstractID3v2Tag tag, String idToRemove) {
         if (tag.hasFrame(idToRemove)){
-            addWarning("Remove ID3v24 tag: " + idToRemove);
+            addWarning("Remove ID3v24 tag: " + idToRemove +
+                    " value=(" + tag.getFirst(idToRemove) + ")");
             this.tag.deleteField(idToRemove);
             this.save = true;
         }
     }
+
+    private void deleteInvalidFrame(String error, String id){
+        addWarning(error + id);
+        this.tag.deleteField(id);
+        this.save = true;
+    }
+
+    public void clearInvalidFrame() {
+        Map id3v24map = ID3v24Frames.getInstanceOf().getIdToValueMap();
+        Map id3v23map = ID3v23Frames.getInstanceOf().getIdToValueMap();
+        Iterator<TagField> it = this.tag.getFields();
+        while(it.hasNext()){
+            TagField field = it.next();
+
+            /* remove ids that are not an id23v23 or id23v24 tag */
+            if (id3v24map.get(field.getId()) == null
+               && id3v23map.get(field.getId()) == null) {
+                deleteInvalidFrame("Unknown frame found: " , field.getId());
+            }
+            else if (this.tag instanceof ID3v23Tag) {
+                /* remove non id23v23 frames */
+                if (id3v23map.get(field.getId()) == null) {
+                    deleteInvalidFrame("non id3v23 frame found: " , field.getId());
+                }
+            }
+            else if (this.tag instanceof ID3v24Tag) {
+                    /* remove non id23v24 frames */
+                    if (id3v24map.get(field.getId()) == null) {
+                        deleteInvalidFrame("non id3v24 frame found: " , field.getId());
+                    }
+            }
+        }
+    }
+
     public void analyze() {
         /* there is a problem if tag is ID3v24, and the year tag is TYER instead of TDOR,
-           the year is not fetched. This is a way to convert frame
+           the year is not fetched. This is a way to convert frame{
          */
         AbstractID3v2Tag tag = this.mp3File.getID3v2Tag();
 
@@ -965,6 +1000,10 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
 
         clearID3v24SpecificTag(tag, ID3v24Frames.FRAME_ID_INVOLVED_PEOPLE);
         clearID3v24SpecificTag(tag, ID3v24Frames. FRAME_ID_ORIGINAL_RELEASE_TIME);
+        clearID3v24SpecificTag(tag, ID3v24Frames.FRAME_ID_MOOD);
+        clearID3v24SpecificTag(tag, ID3v24Frames.FRAME_ID_MUSICIAN_CREDITS);
+        clearID3v24SpecificTag(tag, ID3v24Frames.FRAME_ID_SET_SUBTITLE);
+        clearID3v24SpecificTag(tag, ID3v24Frames.FRAME_ID_TAGGING_TIME);
 
         if (this.tag instanceof ID3v23Tag){
             if (tag instanceof ID3v24Tag ) {
@@ -1006,7 +1045,17 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
             throw new RuntimeException(e);
         }
         clearLanguage();
-        cleanComment();
+        clearInvalidFrame();
+        /* this should always be the last test
+        it is only cleared when there are changes to be saved, unless switch to clean comment is set to true
+        */
+        if (this.mp3File.getID3v2Tag().getEmptyFrameBytes() > 0){
+            this.save = true;
+            addWarning("Empty Frame Bytes found. Saving the file...");
+        }
+
+       cleanComment();
+
         /*
         while(tagFieldIterator.hasNext()) {
             TagField element = tagFieldIterator.next();
