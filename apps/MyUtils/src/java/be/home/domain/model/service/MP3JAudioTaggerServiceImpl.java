@@ -616,6 +616,16 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         cleanupList.add("mSm ?. ?[0-9]{1,4} ?Productions BV");
         cleanupList.add("(.*)Salvatoro(.*)");
         cleanupList.add("(.*)Scorpio(.*)");
+        cleanupList.add("(.*)www.SongsLover.pk");
+        cleanupList.add("(.*)www.MzHipHop.Me");
+        cleanupList.add("(.*)www.MustJam.com");
+        cleanupList.add("(.*)RnBXclusive.se(.*)");
+        cleanupList.add("(.*)URBANMUSiCDAiLY.NET(.*)");
+        cleanupList.add("^\\.$");
+        cleanupList.add("Eddie2011");
+
+
+
         for (String cleanupValue : cleanupList){
             if ( Pattern.matches(cleanupValue.toUpperCase(), value.toUpperCase())) {
                 return true;
@@ -837,7 +847,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         cleanupList.add("^PZTagEditor(.*)");
         cleanupList.add("^RATING");
         cleanupList.add("^replaygain(.*)");
-        cleanupList.add("^Release(.*)");
+        cleanupList.add("^(.*)Release(.*)");
         cleanupList.add("^Rip date");
         cleanupList.add("^Ripping tool");
         cleanupList.add("^SETSUBTITLE");
@@ -903,9 +913,28 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         cleanupList.add("^LABEL");
         cleanupList.add("^EXPLICIT");
         cleanupList.add("^SOURCEID");
-        /* COMMENT descriptions */
+
         cleanupList.add("^PLine");
         cleanupList.add("^MUSICMATCH_MOOD");
+        cleanupList.add("^TITLE");
+        cleanupList.add("^Songs-DB_Preference");
+        cleanupList.add("^LABELNO");
+
+        /* COMMENT descriptions */
+        cleanupList.add("(.*)www.SongsLover.pk");
+        cleanupList.add("(.*)www.MzHipHop.Me");
+        cleanupList.add("(.*)www.MustJam.com");
+        cleanupList.add("(.*)RnBXclusive.se(.*)");
+        cleanupList.add("(.*)URBANMUSiCDAiLY.NET(.*)");
+        cleanupList.add("^\\.$");
+        cleanupList.add("Eddie2011");
+        cleanupList.add("^DMC$");
+        cleanupList.add("^Aaa$");
+        cleanupList.add("^(.*)www.israbox.com");
+        cleanupList.add("^(.*)www.updatedmp3s.com(.*)");
+        cleanupList.add("^http://(.*)");
+
+
         /* end comment descriptions */
 
         for (String cleanupValue : cleanupList){

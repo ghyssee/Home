@@ -206,7 +206,7 @@ public class MP3Scanner extends BatchJobV2 {
                     }
                 }
                 try {
-                    MP3Service mp3File = new MP3JAudioTaggerServiceImpl(aFile.toString());
+                    MP3Service mp3File = new MP3JAudioTaggerServiceImpl(aFile.toString(), true);
                     if (mp3File.isSave()){
                         saveMP3(mp3File);
                     }
