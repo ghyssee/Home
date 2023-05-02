@@ -237,30 +237,6 @@ private static void TestMovieFile(){
         return item.getSong();
     }
 
-    private static void updateMP3(){
-        MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSONWithCode(Constants.JSON.MP3SETTINGS, MP3Settings.class);
-        Mp3File mp3file = null;
-        MP3Utils mp3Utils = new MP3Utils();
-        String file = "C:\\My Data\\tmp\\Java\\MP3Processor\\Test\\test.mp3";
-        //String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\test.mp3";
-        //String file = "c:\\My Data\\tmp\\Java\\MP3Processor\\_test\\108 Di-Rect - Hungry For Love.mp3";
-        try {
-            mp3file = new Mp3File(file);
-            ID3v2 id3v2Tag = MP3Utils.getId3v2Tag(mp3file);
-            //id3v2Tag.setTitle("test2");
-            //id3v2Tag.setArtist("Axwell Λ Ingrosso");
-            String myString = "Test";
-            String newFile = file + ".MP3";
-            int i = mp3Utils.convertRating(mp3Utils.getRating(id3v2Tag));
-            System.out.println("Rating: " + i);
-            System.out.println("Duration: " + MP3Utils.getDuration(mp3file));
-                //mp3file.save(newFile);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
     private static void fileNotFound(){
         AlbumError albumErrors = (AlbumError) JSONUtils.openJSONWithCode(Constants.JSON.ALBUMERRORS, AlbumError.class);
         MP3Settings mp3Settings = (MP3Settings) JSONUtils.openJSONWithCode(Constants.JSON.MP3SETTINGS, MP3Settings.class);
@@ -341,7 +317,7 @@ private static void TestMovieFile(){
 
     private static void testJAudioTagger(){
         // File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\02 Test Double Artist TXXX.mp3");
-        File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\ProblemTAgRename\\118 Unknown ID3v24 Frame.mp3");
+        File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\TestCases\\09 Double Track Double Disc Album Art.mp3");
         //File file = new File("C:\\Temp\\0\\Ultratop 50 20200104 04 Januari 2020\\07 The Weeknd - Blinding Lights.mp3");
         File newFile = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\new.mp3");
        // TagOptionSingleton.getInstance().setOriginalSavedAfterAdjustingID3v2Padding(false);
@@ -352,27 +328,28 @@ private static void TestMovieFile(){
             try {
                 mp3File = new MP3JAudioTaggerServiceImpl(newFile.getAbsolutePath());
                 System.out.println("year: " + mp3File.getYear());
+                System.out.println("Duration: " + mp3File.getDuration());
                 System.out.println(mp3File.getComment());
                 System.out.println(mp3File.getArtist());
                 System.out.println(mp3File.getUrl());
                 System.out.println("Is Cleanable: " + mp3File.isCleanable("mSm © 2021 Productions BV"));
-                //mp3File.setArtist("Kings of Leon");
+                //mp3File.setArtist("Kings Of Leon");
                 //mp3File.setTitle("On The Fly");
                 //mp3File.setCompilation(true);
                 //mp3File.setYear("2022");
-               // mp3File.setRating(4);
+                //mp3File.setRating(4);
                 //mp3File.setDisc("1");
-                //mp3File.setArtist("David Guetta & MORTEN Feat. Raye");
-                //System.out.println("old genre: " + mp3File.getGenre());
                 //mp3File.setTrack("100");
-                //mp3File.setGenre("Test");
-                //mp3File.setAlbumArtist("Various ArtistsXXX");
                 //mp3File.clearAlbumImage();
+                //mp3File.setGenre("Pop");
+                //mp3File.setAlbum("Test Album");
+                //mp3File.setAlbumArtist("Various ArtistsXXX");
+               // mp3File.clearAlbumImage();
                 System.out.println(mp3File.getRatingAsString());
                 System.out.println(mp3File.getAudioSourceUrl());
                 //mp3File.cleanupTags();
                 System.out.println(mp3File.getDuration());
-                //mp3File.analyze();
+                mp3File.analyze();
                 mp3File.commit();
             } catch (MP3Exception e) {
                 e.printStackTrace();

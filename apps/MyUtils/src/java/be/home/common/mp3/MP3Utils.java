@@ -8,7 +8,6 @@ import org.apache.commons.lang3.StringUtils;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -158,55 +157,6 @@ public class MP3Utils {
 
         }
 
-        //id3v2Tag.getFrameSets().putAll(id3v2.getFrameSets());
-        /*
-        id3v2Tag.setAlbumImage(id3v2.getAlbumImage(), id3v2.getAlbumImageMimeType());
-        if (!StringUtils.isBlank(id3v2Tag.getComment())){
-            id3v2Tag.clearFrameSet(AbstractID3v2Tag.ID_COMMENT);
-            id3v2Tag.setComment(id3v2.getComment());
-        }
-        id3v2Tag.setAlbum(id3v2.getAlbum());
-        id3v2Tag.setAlbumArtist(id3v2.getAlbumArtist());
-        id3v2Tag.setArtist(id3v2.getArtist());
-        id3v2Tag.setArtistUrl(id3v2.getArtistUrl());
-        id3v2Tag.setAudiofileUrl(id3v2.getAudiofileUrl());
-        id3v2Tag.ClearAudioSourceUrl(id3v2.getAudioSourceUrl());
-        try {
-            id3v2Tag.setBPM(id3v2.getBPM());
-        }
-        catch (NumberFormatException ex){
-            // ignore this error
-        }
-        id3v2Tag.setChapters(id3v2.getChapters());
-        id3v2Tag.setChapterTOC(id3v2.getChapterTOC());
-        id3v2Tag.setCommercialUrl(id3v2.getCommercialUrl());
-        id3v2Tag.setCompilation(id3v2.isCompilation());
-        id3v2Tag.setComposer(id3v2.getComposer());
-        id3v2Tag.setCopyright(id3v2.getCopyright());
-        id3v2Tag.setDate(id3v2.getDate());
-        id3v2Tag.setEncoder(id3v2.getEncoder());
-        id3v2Tag.setGenre(id3v2.getGenre());
-        try {
-            id3v2Tag.setGenreDescription(id3v2.getGenreDescription());
-        }
-        catch (Exception e) {
-            // do nothing
-        }
-        id3v2Tag.setGrouping(id3v2.getGrouping());
-        id3v2Tag.setItunesComment(id3v2.getItunesComment());
-        id3v2Tag.setKey(id3v2.getKey());
-        id3v2Tag.setOriginalArtist(id3v2.getOriginalArtist());
-        id3v2Tag.setPadding(id3v2.getPadding());
-        id3v2Tag.setPartOfSet(id3v2.getPartOfSet());
-        id3v2Tag.setPaymentUrl(id3v2.getPaymentUrl());
-        id3v2Tag.setPublisher(id3v2.getPublisher());
-        id3v2Tag.setPublisherUrl(id3v2.getPublisherUrl());
-        id3v2Tag.setRadiostationUrl(id3v2.getRadiostationUrl());
-        id3v2Tag.setTitle(id3v2.getTitle());
-        id3v2Tag.setTrack(id3v2.getTrack());
-        id3v2Tag.setUrl(id3v2.getUrl());
-        id3v2Tag.setYear(id3v2.getYear());
-        */
         mp3File.setId3v2Tag(id3v2Tag);
 
         return id3v2Tag;
@@ -251,7 +201,7 @@ public class MP3Utils {
         return stars;
     }
 
-    public int getRating(ID3v2 id3v2Tag){
+    public int getRatingOld(ID3v2 id3v2Tag){
         int rating = 0;
         ID3v2FrameSet frameSet = id3v2Tag.getFrameSets().get("POPM");
         if (frameSet != null) {
@@ -276,28 +226,7 @@ public class MP3Utils {
         return rating;
     }
 
-    public int getRating2(ID3v2 id3v2Tag){
-        int rating = 0;
-        ID3v2FrameSet frameSet = id3v2Tag.getFrameSets().get("POPM");
-        if (frameSet != null) {
-            ID3v2Frame frame = frameSet.getFrames().get(0);
-            byte[] array = frame.getData();
-            if (array.length > 6){
-                if (array[array.length-1] == 0 && array[array.length-2] == 0 && array[array.length-3] == 0
-                        && array[array.length-4] == 0 && array[array.length-6] == 0){
-                    byte rat = array[array.length - 5];
-                    rating = rat & 0xFF; // mask off the sign bits
-                }
-                else if (array[array.length-2] == 0){
-                    byte rat = array[array.length - 1];
-                    rating = rat & 0xFF; // mask off the sign bits
-                }
-            }
-        }
-        return rating;
-    }
-
-    public static long getDuration(Mp3File mp3File) {
+    public static long getDurationOld(Mp3File mp3File) {
         BigDecimal d = new BigDecimal(mp3File.getEndOffset());
         d = d.subtract(new BigDecimal(mp3File.getStartOffset()));
         d = d.multiply(new BigDecimal(8));
@@ -322,23 +251,5 @@ public class MP3Utils {
         //long secs = (long) (Math.round((d / kbps)));
         d = d.divide(kbps, 4, RoundingMode.HALF_UP);
         return d.longValue();
-    }
-
-    public long getDuration2(Mp3File mp3File) {
-        double d = 8 * (mp3File.getEndOffset() - mp3File.getStartOffset());
-        long lenth = mp3File.getLength() / mp3File.getEndOffset();
-        if (lenth >= 1){
-            d = 8 * (mp3File.getLength() - mp3File.getStartOffset());
-        }
-        double kbps = 0;
-        if (mp3File.isVbr()) {
-            //kbps = (mp3File.getBitrate() - 0.5) * 1000;
-            kbps = (mp3File.getBitrate()) * 1000;
-        } else {
-            kbps = (mp3File.getBitrate()) * 1000;
-        }
-        //long secs = (long) (Math.round((d / kbps)));
-        long secs = (long) (d / kbps);
-        return secs;
     }
 }
