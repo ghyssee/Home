@@ -38,6 +38,165 @@ public interface MP3Service {
     // But we get that duration on another way, so we remove this tag
     public boolean REMOVE_EMPTY_COMMENT = false;
 
+    public ArrayList<String> customTags = new ArrayList<String>() {
+        {
+            add("^DISCOGS(.*)");
+            /* Music Brainz Custom tags */
+            add("^MUSICBRAINZ(.*)");
+
+            add("^Aan ?Geboden ?Door");
+            add("^AccurateRip(.*)");
+            add("^album(.*)");
+            add("^AMGID");
+            add("^(.*)artist(.*)");
+            add("^BARCODE");
+            add("^Catalog(.*)");
+            add("^CDDB(.*)");
+            add("^comment");
+            add("^compatible_brands");
+            add("^Content Rating");
+            add("^COUNTRY");
+            add("^COVER(.*)");
+            add("^Credits");
+            add("^(.*)date");
+            add("DISCID");
+            add("^FeeAgency");
+            add("^fBPM(.*)");
+            add("^framerate");
+            add("^GN_ExtData");
+            add("^HISTORY");
+            add("^INFO");
+            add("^ITUNES(.*)");
+            add("^iTunMOVI");
+            add("^iTunNORM");
+            add("^iTunPGAP");
+            add("^iTunSMPB");
+            add("^major_brand");
+            add("^Media(.*)");
+            add("^minor_version");
+            add("^MusicMatch(.*)");
+            add("^NOTES");
+            add("^Overlay");
+            add("^Play Gap");
+            add("^PMEDIA");
+            add("^Provider");
+            add("^Purchase Date");
+            add("^PZTagEditor(.*)");
+            add("^RATING");
+            add("^replaygain(.*)");
+            add("^(.*)Release(.*)");
+            add("^Rip date");
+            add("^Ripping tool");
+            add("^SETSUBTITLE");
+            add("^SongRights");
+            add("^SongType");
+            add("^Source(.*)");
+            add("^Supplier");
+            add("^TOTALTRACKS");
+            add("^TPW");
+            add("^Track(.*)");
+            add("^UPC");
+            add("^UPLOADER");
+            add("^User defined text information");
+            add("^Work");
+            add("^XFade");
+            add("^ZN");
+
+            add("^Engineer");
+            add("^Encoder");
+            add("^ENCODED?(.*)");
+            add("^WEBSTORE");
+            add("^ENCODINGTIME");
+            add("^Year");
+            add("^Language");
+            add("^Related");
+            add("^Style");
+            add("^Tagging time");
+            add("^PLine");
+            add("^CT_GAPLESS_DATA");
+            add("^last_played_timestamp");
+            add("^added_timestamp");
+            add("^play_count");
+            add("^first_played_timestamp");
+            add("^Mp3gain(.*)");
+            add("^EpisodeID");
+            add("^audiodata(.*)");
+            add("^canseekontime");
+            add("^pmsg");
+            add("^EpisodeID");
+            add("^purl");
+            add("^starttime");
+            add("^totaldata(.*)");
+            add("^totalduration");
+            add("^totaldisc(.*)");
+            add("^totaltrack(.*)");
+            add("^videodata(.*)");
+            add("^width");
+            add("^duration");
+            add("^height");
+            add("^bytelength");
+            add("^sourcedata");
+            add("^ORGANIZATION");
+            add("^T?V?EPISODE(.*)");
+            add("^Key");
+            add("^OrigDate");
+            add("^OrigTime");
+            add("^TimeReference");
+            add("^Language(.*)");
+            add("^EnergyLevel");
+            add("^PERFORMER");
+            add("^RIPPER");
+            add("^SPDY");
+            add("^LABEL");
+            add("^EXPLICIT");
+            add("^PLine");
+            add("^MUSICMATCH_MOOD");
+            add("^TITLE");
+            add("^Songs-DB_Preference");
+            add("^LABELNO");
+        }
+    };
+
+    public ArrayList<String> cleanupWords = new ArrayList<String>() {
+        {
+            add("^RJ/SNWTJE");
+            add("mSm ?. ?[0-9]{1,4} ?Productions BV");
+            add("(.*)Salvatoro(.*)");
+            add("(.*)Scorpio(.*)");
+            add("(.*)www.SongsLover.pk");
+            add("(.*)www.MzHipHop.Me");
+            add("(.*)www.MustJam.com");
+            add("(.*)RnBXclusive.se(.*)");
+            add("(.*)URBANMUSiCDAiLY.NET(.*)");
+            add("^Digital Media");
+
+            /* COMMENT descriptions */
+            add("(.*)www.SongsLover.pk");
+            add("(.*)www.MzHipHop.Me");
+            add("(.*)www.MustJam.com");
+            add("(.*)RnBXclusive.se(.*)");
+            add("(.*)URBANMUSiCDAiLY.NET(.*)");
+            add("^\\.$");
+            add("Eddie2011");
+            add("^DMC$");
+            add("^Aaa$");
+            add("^(.*)www.israbox.com");
+            add("^(.*)www.updatedmp3s.com(.*)");
+            add("^http://(.*)");
+        }
+    };
+
+    public ArrayList<String> excludeWords = new ArrayList<String>() {
+        {
+            /* when these words are found in one of the non standard tagss, it's not considered as a warning */
+            add("^Telstar");
+            add("^Copyright(.*)");
+            add("^Credits(.*)");
+            add("^Sony Music Entertainment");
+            add("^Lavf5(.*)");
+            add("^iTunes(.*)");
+        }
+    };
 
     public int getDuration();
 
