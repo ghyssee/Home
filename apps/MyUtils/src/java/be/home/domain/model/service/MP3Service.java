@@ -31,6 +31,7 @@ public interface MP3Service {
     public String getRadiostationUrl();
     public String getDiscTotal();
     public String getGenre();
+    public String getBPM();
     public ArrayList<String> getWarnings();
 
     public boolean REMOVE_LENGTH_TAG = true;
@@ -159,6 +160,7 @@ public interface MP3Service {
 
     public ArrayList<String> cleanupWords = new ArrayList<String>() {
         {
+            add("^http\\://(.*)");
             add("^RJ/SNWTJE");
             add("mSm ?. ?[0-9]{1,4} ?Productions BV");
             add("(.*)Salvatoro(.*)");
@@ -175,6 +177,7 @@ public interface MP3Service {
             add("^Fair$");
             add("^Excellent$");
             add("^Very Good$");
+            add("^AverageLevel(.*)");
 
             /* COMMENT descriptions */
             add("(.*)www.SongsLover.pk");
@@ -188,7 +191,6 @@ public interface MP3Service {
             add("^Aaa$");
             add("^(.*)www.israbox.com");
             add("^(.*)www.updatedmp3s.com(.*)");
-            add("^http\\://(.*)");
             add("(.*)MediaClassPrimaryID(.*)");
             add("(.*)MediaClassSecondaryID(.*)");
             add("(.*)vk.com(.*)");
@@ -210,7 +212,7 @@ public interface MP3Service {
             add("^Sony Music Entertainment");
             add("^Lavf5(.*)");
             add("^iTunes(.*)");
-            add("(.*)Ashampoo Music(.*");
+            add("(.*)Ashampoo Music(.*)");
             add("^Polydor");
             add("^Audiograbber(.*)");
             add("^lame(.*)");
@@ -260,7 +262,7 @@ public interface MP3Service {
             add("(.*)B\\.? Koning(.*)");
             add("(.*)K\\.? MacColl(.*)");
             add("(.*)K\\.? MacColl(.*)");
-            add("(.*)Taylor Swift(.*");
+            add("(.*)Taylor Swift(.*)");
             add("^You have the bravest heart(.*)");
             add("^I know you told me not to ask where you have been(.*)");
             add("^I still regret I turned my back on you(.*)");
@@ -286,6 +288,7 @@ public interface MP3Service {
     public void setCompilation(boolean compilation) throws MP3Exception;
     public void setDiscTotal(String discTotal) throws MP3Exception;
     public void setGenre(String grenre) throws MP3Exception;
+    public void setBPM(String bpm) throws MP3Exception;
     public void cleanupTags();
     public void clearAlbumImage();
 

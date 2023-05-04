@@ -4,6 +4,7 @@ import be.home.common.mp3.MP3Utils;
 import be.home.common.utils.FileUtils;
 import be.home.main.mezzmo.MP3TagChecker;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.logging.log4j.Logger;
 import org.jaudiotagger.audio.exceptions.CannotReadException;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
@@ -17,6 +18,8 @@ import org.jaudiotagger.tag.id3.framebody.*;
 import org.jaudiotagger.tag.reference.ID3V2Version;
 
 import java.io.IOException;
+import java.math.BigInteger;
+import java.time.Year;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -268,6 +271,11 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
     }
 
     @Override
+    public String getBPM() {
+        String bpm = tag.getFirst(FieldKey.BPM);
+        return bpm;
+    }
+    @Override
     public void setArtist(String artist) throws MP3Exception {
         deleteField(FieldKey.ARTIST);
         if (StringUtils.isNotBlank(artist)) {
@@ -466,6 +474,18 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         }
     }
 
+    @Override
+    public void setBPM(String bpm) throws MP3Exception {
+        deleteField(FieldKey.BPM);
+        if (StringUtils.isNotBlank(bpm)) {
+            try {
+                this.tag.addField(FieldKey.BPM, bpm);
+            } catch (FieldDataInvalidException e) {
+                throw new MP3Exception(e);
+            }
+
+        }
+    }
     private void ClearAudioSourceUrl() {
         // WOAS
         cleanupTag(ID3v24Frames.FRAME_ID_URL_SOURCE_WEB);
@@ -502,9 +522,17 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 add(FieldKey.YEAR);
                 add(FieldKey.DISC_NO);
                 add(FieldKey.RATING);
+                add(FieldKey.BPM);
             }
         };
-
+        // Exclude PRIV tags from the cleanup Procedure. There is a seperate cleanup for Private Tags
+        if (frameId.equalsIgnoreCase(ID3v24Frames.FRAME_ID_PRIVATE)){
+            return true;
+        }
+        // Exclude UFID tags from the cleanup Procedure. There is a seperate cleanup for UFID Tags
+        if (frameId.equalsIgnoreCase(ID3v24Frames.FRAME_ID_UNIQUE_FILE_ID)){
+            return true;
+        }
         for (FieldKey fieldKey : tagsToExcludeForCleanup){
             String excludedFrameId = "";
             if (tag instanceof ID3v24Tag){
@@ -522,6 +550,129 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         return false;
 
     }
+
+    private boolean validYear(String year) {
+        try {
+            int iYear = Integer.parseInt(year);
+            if (iYear <= 1900 || iYear > Year.now().getValue()) {
+                return false;
+            }
+        } catch (NumberFormatException ex) {
+                return false;
+        }
+        return true;
+    }
+
+    private void CheckYear() throws MP3Exception {
+        String year = getYear();
+        if (StringUtils.isBlank(year)){
+            addWarning("YEAR is empty");
+        }
+        else {
+            if (!validYear(year)){
+                String subYear = year.substring(0, 4);
+                if (validYear(subYear)) {
+                    // save year with correct format
+                    setYear(subYear);
+                    addWarning("YEAR had an incorrect format: Old Format: " + year +
+                            " => new format: " + subYear);
+                    this.save = true;
+                }
+                else {
+                    addWarning("YEAR is invalid: " + year);
+                }
+            }
+        }
+    }
+
+    private void cleanupPrivateTags() {
+
+        // Tag PRIV: no FieldKey for this tag, but code is the same for ID3v23 and ID3v24
+        List<TagField> tagFields = this.tag.getFields(ID3v24Frames.FRAME_ID_PRIVATE);
+        List<TagField> tagFieldsToKeep = new ArrayList();
+        boolean saveTag = false;
+        if (tagFields != null && tagFields.size() > 0){
+            for (TagField tagField : tagFields){
+                AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
+                FrameBodyPRIV frameBody = (FrameBodyPRIV) frame.getBody();
+                String owner = frameBody.getOwner();
+                byte[] data = frameBody.getData();
+                if (isCleanable(owner)){
+                    addWarning ("Cleanup of Private Frame: Owner=" + owner + " / " + "Data=" + be.home.common.utils.StringUtils.toHex(data));
+                    saveTag = true;
+                }
+                else {
+                    addWarning ("Private Frame: Owner=" + owner + " / " + "Data=" + String.valueOf(data));
+                    tagFieldsToKeep.add(tagField);
+                }
+            }
+            if (saveTag) {
+                this.save = true;
+                this.tag.deleteField(ID3v24Frames.FRAME_ID_PRIVATE);
+                for (TagField tagField : tagFieldsToKeep) {
+                    try {
+                        this.tag.addField(tagField);
+                    } catch (FieldDataInvalidException e) {
+                        AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
+                        FrameBodyPRIV frameBody = (FrameBodyPRIV) frame.getBody();
+                        addWarning("There was a problem saving custom tag " + frameBody.getOwner());
+                    }
+                }
+            }
+        }
+    }
+
+    private void cleanupUFIDTags() {
+
+        // Tag PRIV: no FieldKey for this tag, but code is the same for ID3v23 and ID3v24
+        List<TagField> tagFields = this.tag.getFields(ID3v24Frames.FRAME_ID_UNIQUE_FILE_ID);
+        List<TagField> tagFieldsToKeep = new ArrayList();
+        boolean saveTag = false;
+        if (tagFields != null && tagFields.size() > 0){
+            for (TagField tagField : tagFields){
+                AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
+                FrameBodyUFID frameBody = (FrameBodyUFID) frame.getBody();
+                String owner = frameBody.getOwner();
+                byte[] data = frameBody.getUniqueIdentifier();
+                if (isCleanable(owner)){
+                    addWarning ("Cleanup of UFID Frame: Owner=" + owner + " / " + "Data=" + be.home.common.utils.StringUtils.toHex(data));
+                    saveTag = true;
+                }
+                else {
+                    addWarning ("UFID Frame: Owner=" + owner + " / " + "Data=" + String.valueOf(data));
+                    tagFieldsToKeep.add(tagField);
+                }
+            }
+            if (saveTag) {
+                this.save = true;
+                this.tag.deleteField(ID3v24Frames.FRAME_ID_UNIQUE_FILE_ID);
+                for (TagField tagField : tagFieldsToKeep) {
+                    try {
+                        this.tag.addField(tagField);
+                    } catch (FieldDataInvalidException e) {
+                        AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
+                        FrameBodyPRIV frameBody = (FrameBodyPRIV) frame.getBody();
+                        addWarning("There was a problem saving custom tag " + frameBody.getOwner());
+                    }
+                }
+            }
+        }
+    }
+
+    private void checkBPM() throws MP3Exception {
+        String bpm = getBPM();
+        if (StringUtils.isNotBlank(bpm)){
+            try {
+                int iBPM = Integer.parseInt(bpm);
+            }
+            catch (NumberFormatException ex){
+                addWarning("BPM: Delete Invalid value: " + bpm);
+                this.save = true;
+                setBPM(null);
+            }
+        }
+    }
+
     @Override
     public void cleanupTags() {
 
@@ -615,8 +766,9 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                         } else {
                             // show value unless it contains specific words
                             if (!isExcludedWord(value)) {
-                                addWarning("Value found for tag: " + frameId + " " + getDescription(this.tag, frameId) +
-                                        " (value=" + value + ")");
+                                // do not show values of BPM
+                                    addWarning("Value found for tag: " + frameId + " " + getDescription(this.tag, frameId) +
+                                            " (value=" + value + ")");
                             }
                         }
                     }
@@ -677,20 +829,6 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 }
             }
         }
-    }
-
-    private boolean isTagExcludedForCleanup(FieldKey fieldKey) {
-        ArrayList<FieldKey> excludedCleanupList = new <String> ArrayList();
-        excludedCleanupList.add(FieldKey.ARTIST);
-        excludedCleanupList.add(FieldKey.ALBUM);
-        excludedCleanupList.add(FieldKey.ALBUM_ARTIST);
-        excludedCleanupList.add(FieldKey.TITLE);
-        for (FieldKey excludedKey : excludedCleanupList){
-            if (excludedKey != null && excludedKey == fieldKey) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public boolean isCleanable(String value){
@@ -1028,6 +1166,8 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 }
             }
         }
+        cleanupPrivateTags();
+        cleanupUFIDTags();
         /* check for multiple values in a field */
         cleanCustomizedComments();
         for (FieldKey checkKey : FieldKey.values()){
@@ -1039,6 +1179,8 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         }
         try {
             checkCustomTags();
+            CheckYear();
+            checkBPM();
         } catch (MP3Exception e) {
             // this should never occur
             throw new RuntimeException(e);
