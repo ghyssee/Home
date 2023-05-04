@@ -1043,9 +1043,9 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
             // this should never occur
             throw new RuntimeException(e);
         }
-        cleanupTags();
         clearLanguage();
         clearInvalidFrame();
+        cleanupTags();
         /* this should always be the last test
         it is only cleared when there are changes to be saved, unless switch to clean comment is set to true
         */

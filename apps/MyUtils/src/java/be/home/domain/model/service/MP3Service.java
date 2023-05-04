@@ -169,6 +169,12 @@ public interface MP3Service {
             add("(.*)RnBXclusive.se(.*)");
             add("(.*)URBANMUSiCDAiLY.NET(.*)");
             add("^Digital Media");
+            add("(.*)Pirate Shovon(.*)");
+            add("^Poor$");
+            add("^Good$");
+            add("^Fair$");
+            add("^Excellent$");
+            add("^Very Good$");
 
             /* COMMENT descriptions */
             add("(.*)www.SongsLover.pk");
@@ -182,7 +188,16 @@ public interface MP3Service {
             add("^Aaa$");
             add("^(.*)www.israbox.com");
             add("^(.*)www.updatedmp3s.com(.*)");
-            add("^http://(.*)");
+            add("^http\\://(.*)");
+            add("(.*)MediaClassPrimaryID(.*)");
+            add("(.*)MediaClassSecondaryID(.*)");
+            add("(.*)vk.com(.*)");
+            add("^DIG$");
+            add("(.*)www.torrentazos.com(.*)");
+            add("(.*)PeakValue(.*)");
+            add("(.*)ftn2Day.Nl(.*)");
+            add("^Spread The Love");
+            add("^Enjoy!");
         }
     };
 
@@ -195,6 +210,61 @@ public interface MP3Service {
             add("^Sony Music Entertainment");
             add("^Lavf5(.*)");
             add("^iTunes(.*)");
+            add("(.*)Ashampoo Music(.*");
+            add("^Polydor");
+            add("^Audiograbber(.*)");
+            add("^lame(.*)");
+            add("^Judith");
+            add("^RCA(.*)");
+            add("^Island(.*)");
+            add("(.*)Ella Yelich-O'connor(.*)");
+            add("(.*)Jack Antonoff(.*)");
+            add("(.*)Joel Little(.*)");
+            add("^Tag&Rename(.*)");
+            add("(.*)FreeRIP(.*)");
+            add("^Sony(.*)");
+            add("^Syco Music (.*)");
+            add("^Epic(.*)");
+            add("(.*)James Harris(.*)");
+            add("(.*)Michael Jackson(.*)");
+            add("(.*)Terry Lewis(.*)");
+            add("(.*)Rod Temperton(.*)");
+            add("(.*)Concept(.*)");
+            add("(.*)R\\.? Kelly(.*)");
+            add("(.*)Regoli Music(.*)");
+            add("^Columbia(.*)");
+            add("^Interscope(.*)");
+            add("^Big Machine Records(.*)");
+            add("^Universal(.*)");
+            add("^Arista(.*)");
+            add("^Big Machine Records(.*)");
+            add("(.*)Curtis Mayfields(.*)");
+            add("(.*)Toni Braxton(.*)");
+            add("(.*)Ivan Mathias(.*)");
+            add("(.*)Pharrell Williams(.*)");
+            add("(.*)Keri Lewis(.*)");
+            add("(.*)Babyface(.*)");
+            add("(.*)R\\.?(egie?)? Penxten(.*)");
+            add("(.*)Thomas Gunther(.*)");
+            add("(.*)Wim Claes(.*)");
+            add("(.*)T\\.? Reznikov(.*)");
+            add("(.*)M\\.? Delgado(.*)");
+            add("(.*)T\\.? Reznikov(.*)");
+            add("(.*)L\\.? Powell(.*)");
+            add("(.*)G\\.? Verhulst(.*)");
+            add("(.*)D\\.? Verbiest(.*)");
+            add("(.*)Peter Vanlaet(.*)");
+            add("(.*)Herman Van Molle(.*)");
+            add("(.*)K\\.? MacColl(.*)");
+            add("(.*)T\\.? Dice(.*)");
+            add("(.*)B\\.? Koning(.*)");
+            add("(.*)K\\.? MacColl(.*)");
+            add("(.*)K\\.? MacColl(.*)");
+            add("(.*)Taylor Swift(.*");
+            add("^You have the bravest heart(.*)");
+            add("^I know you told me not to ask where you have been(.*)");
+            add("^I still regret I turned my back on you(.*)");
+
         }
     };
 
