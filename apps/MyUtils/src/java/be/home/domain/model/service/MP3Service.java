@@ -41,6 +41,8 @@ public interface MP3Service {
 
     public ArrayList<String> customTags = new ArrayList<String>() {
         {
+            // is used for cleanup of Custom Tags + Custom Comments
+
             add("^DISCOGS(.*)");
             /* Music Brainz Custom tags */
             add("^MUSICBRAINZ(.*)");
@@ -102,6 +104,7 @@ public interface MP3Service {
             add("^Work");
             add("^XFade");
             add("^ZN");
+            add("Link van(.*)");
 
             add("^Engineer");
             add("^Encoder");
@@ -155,11 +158,13 @@ public interface MP3Service {
             add("^TITLE");
             add("^Songs-DB_Preference");
             add("^LABELNO");
+
         }
     };
 
     public ArrayList<String> cleanupWords = new ArrayList<String>() {
         {
+            // used for other FRAMES like PRIVATE, ENCODED BY, COMPOSER, URL, ...
             add("^http\\://(.*)");
             add("^RJ/SNWTJE");
             add("mSm ?. ?[0-9]{1,4} ?Productions BV");
@@ -178,6 +183,9 @@ public interface MP3Service {
             add("^Excellent$");
             add("^Very Good$");
             add("^AverageLevel(.*)");
+            add("^RUnderground.ru(.*)");
+            add("^Warner Bros(.*)");
+            add("^WM/Mood(.*)");
 
             /* COMMENT descriptions */
             add("(.*)www.SongsLover.pk");
@@ -189,6 +197,7 @@ public interface MP3Service {
             add("Eddie2011");
             add("^DMC$");
             add("^Aaa$");
+            add("^(.*)flacless.com(.*)");
             add("^(.*)www.israbox.com");
             add("^(.*)www.updatedmp3s.com(.*)");
             add("(.*)MediaClassPrimaryID(.*)");
@@ -210,6 +219,7 @@ public interface MP3Service {
             add("^Copyright(.*)");
             add("^Credits(.*)");
             add("^Sony Music Entertainment");
+            add("^Kontor Records");
             add("^Lavf5(.*)");
             add("^iTunes(.*)");
             add("(.*)Ashampoo Music(.*)");

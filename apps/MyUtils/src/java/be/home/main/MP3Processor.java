@@ -351,7 +351,7 @@ public class MP3Processor extends BatchJobV2 {
         Files.copy(originalFile.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
         try {
-            MP3Service mp3File = new MP3JAudioTaggerServiceImpl(newFile.getAbsolutePath());
+            MP3Service mp3File = new MP3JAudioTaggerServiceImpl(newFile.getAbsolutePath(), true);
             System.out.println("Track: " + mp3File.getTrack());
             System.out.println("NEW Track: " + MP3Helper.getInstance().formatTrack(album, track.track, index));
             System.out.println(StringUtils.repeat('=', 100));
