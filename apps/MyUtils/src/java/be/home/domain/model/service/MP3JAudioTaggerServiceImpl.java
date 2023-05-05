@@ -525,14 +525,19 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 add(FieldKey.BPM);
             }
         };
-        // Exclude PRIV tags from the cleanup Procedure. There is a seperate cleanup for Private Tags
+        // Exclude PRIV tags from the cleanup Procedure. There is a separate cleanup for Private Tags
         if (frameId.equalsIgnoreCase(ID3v24Frames.FRAME_ID_PRIVATE)){
             return true;
         }
-        // Exclude UFID tags from the cleanup Procedure. There is a seperate cleanup for UFID Tags
+        // Exclude UFID tags from the cleanup Procedure. There is a separate cleanup for UFID Tags
         if (frameId.equalsIgnoreCase(ID3v24Frames.FRAME_ID_UNIQUE_FILE_ID)){
             return true;
         }
+        // Exclude TXXX tags from the cleanup Procedure. There is a separate cleanup for Custom Tags
+        if (frameId.equalsIgnoreCase(ID3v24Frames.FRAME_ID_USER_DEFINED_INFO)){
+            return true;
+        }
+
         for (FieldKey fieldKey : tagsToExcludeForCleanup){
             String excludedFrameId = "";
             if (tag instanceof ID3v24Tag){
