@@ -1,2 +1,11 @@
-package be.home.common.utils;public class StringUtils {
+package be.home.common.utils;
+
+import java.math.BigInteger;
+
+public class StringUtils {
+
+    public static String toHex(byte[] bytes) {
+        BigInteger bi = new BigInteger(1, bytes);
+        return String.format("%0" + (bytes.length << 1) + "X", bi);
+    }
 }
