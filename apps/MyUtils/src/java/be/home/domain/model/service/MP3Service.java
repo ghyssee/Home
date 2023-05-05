@@ -41,11 +41,12 @@ public interface MP3Service {
 
     public ArrayList<String> customTags = new ArrayList<String>() {
         {
-            // is used for cleanup of Custom Tags + Custom Comments
+            // is used for cleanup of Custom Tags + Custom Comment Tags
 
             add("^DISCOGS(.*)");
             /* Music Brainz Custom tags */
             add("^MUSICBRAINZ(.*)");
+            add("^WAVELIST(.*)");
 
             add("^Aan ?Geboden ?Door");
             add("^AccurateRip(.*)");
@@ -164,9 +165,13 @@ public interface MP3Service {
 
     public ArrayList<String> cleanupWords = new ArrayList<String>() {
         {
-            // used for other FRAMES like PRIVATE, ENCODED BY, COMPOSER, URL, ...
+            // used for other FRAMES like PRIVATE, ENCODED BY, COMPOSER, MEDIATYPE, URL, ...
+            // also used for COMMENT tags for the content (not customized comment descriptors)
             add("^http\\://(.*)");
             add("^RJ/SNWTJE");
+            add("^(.*)DJ Bert(.*)");
+            add("(.*)www.mediahuman.com(.*)");
+            add("^Pop$");
             add("mSm ?. ?[0-9]{1,4} ?Productions BV");
             add("(.*)Salvatoro(.*)");
             add("(.*)Scorpio(.*)");
@@ -186,6 +191,7 @@ public interface MP3Service {
             add("^RUnderground.ru(.*)");
             add("^Warner Bros(.*)");
             add("^WM/Mood(.*)");
+            add("^PMEDIA");
 
             /* COMMENT descriptions */
             add("(.*)www.SongsLover.pk");
@@ -214,7 +220,8 @@ public interface MP3Service {
 
     public ArrayList<String> excludeWords = new ArrayList<String>() {
         {
-            /* when these words are found in one of the non standard tagss, it's not considered as a warning */
+            /* when these words are found in one of the non standard tags, it's not considered as a warning */
+            /* also used for comments that should not be deleted an not shown as warning */
             add("^Telstar");
             add("^Copyright(.*)");
             add("^Credits(.*)");
@@ -276,6 +283,11 @@ public interface MP3Service {
             add("^You have the bravest heart(.*)");
             add("^I know you told me not to ask where you have been(.*)");
             add("^I still regret I turned my back on you(.*)");
+            add("(.*)eurovision(.*)");
+            add("^Now!");
+            add("(.*)Them[a|e] song(.*)");
+            add("^Official(.*)");
+            add("(.*)Liefde voor Muziek(.*)");
 
         }
     };

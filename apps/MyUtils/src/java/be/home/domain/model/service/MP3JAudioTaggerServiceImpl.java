@@ -4,12 +4,12 @@ import be.home.common.mp3.MP3Utils;
 import be.home.common.utils.FileUtils;
 import be.home.main.mezzmo.MP3TagChecker;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateUtils;
 import org.apache.logging.log4j.Logger;
 import org.jaudiotagger.audio.exceptions.CannotReadException;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.audio.mp3.MP3File;
+import org.jaudiotagger.tag.datatype.AbstractDataType;
 import org.jaudiotagger.tag.id3.AbstractID3v2Tag;
 import org.jaudiotagger.tag.*;
 
@@ -18,7 +18,6 @@ import org.jaudiotagger.tag.id3.framebody.*;
 import org.jaudiotagger.tag.reference.ID3V2Version;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.time.Year;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -523,6 +522,8 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 add(FieldKey.DISC_NO);
                 add(FieldKey.RATING);
                 add(FieldKey.BPM);
+                add(FieldKey.ISRC);
+                add(FieldKey.COMMENT);
             }
         };
         // Exclude PRIV tags from the cleanup Procedure. There is a separate cleanup for Private Tags
@@ -530,26 +531,30 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
             return true;
         }
         // Exclude UFID tags from the cleanup Procedure. There is a separate cleanup for UFID Tags
-        if (frameId.equalsIgnoreCase(ID3v24Frames.FRAME_ID_UNIQUE_FILE_ID)){
+        else if (frameId.equalsIgnoreCase(ID3v24Frames.FRAME_ID_UNIQUE_FILE_ID)){
             return true;
         }
-        // Exclude TXXX tags from the cleanup Procedure. There is a separate cleanup for Custom Tags
-        if (frameId.equalsIgnoreCase(ID3v24Frames.FRAME_ID_USER_DEFINED_INFO)){
+        // Exclude TXXX tags from the cleanup Procedure. There is a separate cleanup for TXXX Tags
+       else if (frameId.equalsIgnoreCase(ID3v24Frames.FRAME_ID_USER_DEFINED_INFO)){
             return true;
         }
-
-        for (FieldKey fieldKey : tagsToExcludeForCleanup){
-            String excludedFrameId = "";
-            if (tag instanceof ID3v24Tag){
-                ID3v24FieldKey id3FieldKey = ID3v24Frames.getInstanceOf().getId3KeyFromGenericKey(fieldKey);
-                excludedFrameId = id3FieldKey.getFrameId();
-            }
-            else {
-                ID3v23FieldKey id3FieldKey = ID3v23Frames.getInstanceOf().getId3KeyFromGenericKey(fieldKey);
-                excludedFrameId = id3FieldKey.getFrameId();
-            }
-            if (excludedFrameId.equalsIgnoreCase(frameId)){
-                return true;
+        // Exclude MCDI tags from the cleanup Procedure. There is a separate cleanup for MCDI Tags
+        else if (frameId.equalsIgnoreCase(ID3v24Frames.FRAME_ID_MUSIC_CD_ID)){
+            return true;
+        }
+        else {
+            for (FieldKey fieldKey : tagsToExcludeForCleanup) {
+                String excludedFrameId = "";
+                if (tag instanceof ID3v24Tag) {
+                    ID3v24FieldKey id3FieldKey = ID3v24Frames.getInstanceOf().getId3KeyFromGenericKey(fieldKey);
+                    excludedFrameId = id3FieldKey.getFrameId();
+                } else {
+                    ID3v23FieldKey id3FieldKey = ID3v23Frames.getInstanceOf().getId3KeyFromGenericKey(fieldKey);
+                    excludedFrameId = id3FieldKey.getFrameId();
+                }
+                if (excludedFrameId.equalsIgnoreCase(frameId)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -664,6 +669,45 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         }
     }
 
+    private void cleanupTSRC() {
+        // TSRC - The 'ISRC' frame should contain the International Standard Recording Code (ISRC) (12 characters).
+        List<TagField> tagFields = this.tag.getFields(FieldKey.ISRC);
+        boolean saveTag = false;
+        if (tagFields != null && tagFields.size() > 0){
+            for (TagField tagField : tagFields){
+                AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
+                FrameBodyTSRC frameBody = (FrameBodyTSRC) frame.getBody();
+                String value = frameBody.getFirstTextValue();
+                addWarning ("Cleanup of TSRC Frame: Value=" + value);
+                saveTag = true;
+            }
+            if (saveTag) {
+                this.save = true;
+                this.tag.deleteField(getTagCode(FieldKey.ISRC));
+            }
+        }
+    }
+    private void cleanupMCDI() {
+
+        // Tag MCDI: no FieldKey for this tag, but code is the same for ID3v23 and ID3v24
+        List<TagField> tagFields = this.tag.getFields(ID3v24Frames.FRAME_ID_MUSIC_CD_ID);
+        List<TagField> tagFieldsToKeep = new ArrayList();
+        boolean saveTag = false;
+        if (tagFields != null && tagFields.size() > 0){
+            for (TagField tagField : tagFields){
+                AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
+                FrameBodyMCDI frameBody = (FrameBodyMCDI) frame.getBody();
+                AbstractDataType ab = frameBody.getObject("Data");
+                String data = be.home.common.utils.StringUtils.toHex((byte[]) ab.getValue());
+                addWarning ("Cleanup of MCDI Frame:  Data=" + data);
+                saveTag = true;
+            }
+            if (saveTag) {
+                this.save = true;
+                this.tag.deleteField(ID3v24Frames.FRAME_ID_MUSIC_CD_ID);
+            }
+        }
+    }
     private void checkBPM() throws MP3Exception {
         String bpm = getBPM();
         if (StringUtils.isNotBlank(bpm)){
@@ -702,54 +746,6 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
             }
         }
     }
-    public void cleanupTagsOld() {
-        cleanupTag(ID3v24Frames.FRAME_ID_URL_SOURCE_WEB); // WOAS
-        cleanupTag(ID3v24Frames.FRAME_ID_COMMENT); // COMM
-        cleanupTag(ID3v24Frames.FRAME_ID_USER_DEFINED_URL); // WXXX
-        cleanupTag(ID3v24Frames.FRAME_ID_ENCODEDBY); // TENC
-        cleanupTag(ID3v24Frames.FRAME_ID_INITIAL_KEY); // TKEY
-        cleanupTag(ID3v24Frames.FRAME_ID_UNSYNC_LYRICS); // USLT
-        cleanupTag(ID3v24Frames.FRAME_ID_URL_SOURCE_WEB); // WOAS
-        cleanupTag(ID3v24Frames.FRAME_ID_URL_FILE_WEB);  // WOAF
-        cleanupTag(ID3v24Frames.FRAME_ID_URL_ARTIST_WEB); // WOAR
-        cleanupTag(ID3v24Frames.FRAME_ID_URL_COMMERCIAL); // WCOM
-        cleanupTag(ID3v24Frames.FRAME_ID_URL_PAYMENT); // WPAY
-        cleanupTag(ID3v24Frames.FRAME_ID_URL_PUBLISHERS); // WPUB
-        cleanupTag(ID3v24Frames.FRAME_ID_URL_OFFICIAL_RADIO); // WORS
-        cleanupTag(ID3v24Frames.FRAME_ID_PUBLISHER); // TPUB
-        cleanupTag(ID3v24Frames.FRAME_ID_RADIO_NAME); // TRSN
-        cleanupTag(ID3v24Frames.FRAME_ID_RADIO_OWNER); // TRSO
-        cleanupTag(ID3v24Frames.FRAME_ID_MOOD); // TMOD
-        cleanupTag(ID3v24Frames.FRAME_ID_BPM); // TBPM
-        cleanupTag(ID3v24Frames.FRAME_ID_COMPOSER_SORT_ORDER_ITUNES); // TSOC
-        cleanupTag(ID3v24Frames.FRAME_ID_ALBUM_ARTIST_SORT_ORDER_ITUNES); // TSOC
-        cleanupTag(ID3v24Frames.FRAME_ID_COMPOSER); // TCOM
-        cleanupTag(ID3v24Frames.FRAME_ID_COPYRIGHTINFO); // TCOP
-        cleanupTag(ID3v24Frames.FRAME_ID_COMPOSER_SORT_ORDER_ITUNES); // TSOC
-        cleanupTag(ID3v24Frames.FRAME_ID_ALBUM_SORT_ORDER); // TSOA
-        cleanupTag(ID3v24Frames.FRAME_ID_ARTIST_SORT_ORDER); // TSO9
-        cleanupTag(ID3v24Frames.FRAME_ID_MUSIC_CD_ID); // MCDI
-        cleanupTag(ID3v24Frames.FRAME_ID_COMMERCIAL_FRAME); // COMR
-        cleanupTag(ID3v24Frames.FRAME_ID_FILE_OWNER); // TOWN
-        cleanupTag(ID3v24Frames.FRAME_ID_FILE_TYPE); // TFLT
-        cleanupTag(ID3v24Frames.FRAME_ID_CONDUCTOR); // TPE3
-        cleanupTag(ID3v24Frames.FRAME_ID_HW_SW_SETTINGS); // TSSE
-        cleanupTag(ID3v24Frames.FRAME_ID_ISRC); // TSRC
-        cleanupTag(ID3v24Frames.FRAME_ID_TITLE_REFINEMENT);
-        cleanupTag(ID3v24Frames.FRAME_ID_UNIQUE_FILE_ID);
-        if (REMOVE_LENGTH_TAG){
-            String tagCode = ID3v23Frames.FRAME_ID_V3_LENGTH;
-            if (this.tag instanceof ID3v24Tag){
-                tagCode = ID3v24Frames.FRAME_ID_LENGTH;
-            }
-            if (this.tag.hasField(tagCode)) {
-                save = true;
-                addWarning("Cleaning Length tag " + tagCode +
-                        " (value=" + this.tag.getFirst(tagCode) + ")");
-                this.tag.deleteField(tagCode);
-            }
-        }
-    }
 
     public void cleanupTag(String frameId) {
         if (this.tag != null) {
@@ -761,7 +757,10 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
                 if (!frame.isBinary()) {
                     value = frame.getContent();
-                    if (StringUtils.isNotBlank(value)) {
+                    if (frame.getBody() instanceof FrameBodyUnsupported){
+                        addWarning("Unsupoorted Frame: " + frame.getId());
+                    }
+                    else if (StringUtils.isNotBlank(value)) {
                         if (isCleanable(value)) {
                             //tag.removeFrame(frameId);
                             save = true;
@@ -781,6 +780,14 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 else {
                     addWarning("Binary frame found: : " + frameId + " " + getDescription(this.tag, frameId));
                 }
+            }
+        }
+    }
+
+    private void cleanEmptyComment(){
+        if (this.tag.hasField(FieldKey.COMMENT)  && this.save){
+            if (StringUtils.isBlank(getComment())){
+                addWarning("Empty Comment Tag deleted when there is something to save");
             }
         }
     }
@@ -810,8 +817,20 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                             save = true;
                         }
                     } else {
-                        //addWarning("Comment Tag found: " + description + "=" + values.toString());
-                        commentTagsToKeep.add(tagField);
+                        if (!isExcludedWord(frameBody.getText())){
+                            if (isCleanable(frameBody.getText())){
+                                saveCommentTag = true;
+                                save = true;
+                                addWarning("Comment Tag Deleted: " + description + "=" + values.toString());
+                            }
+                            else {
+                                addWarning("Comment Tag found: " + description + "=" + values.toString());
+                                commentTagsToKeep.add(tagField);
+                            }
+                        }
+                        else {
+                            commentTagsToKeep.add(tagField);
+                        }
                     }
                 }
             }
@@ -859,14 +878,6 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         this.tag.deleteArtworkField();
     }
 
-    private void clearLanguage() {
-        if (this.tag.hasField(FieldKey.LANGUAGE)) {
-            addWarning("Language Tag deleted: Value = " + this.tag.getFirst(FieldKey.LANGUAGE));
-            this.tag.deleteField(FieldKey.LANGUAGE);
-            this.save = true;
-        }
-    }
-
     public void commit() throws MP3Exception {
         this.mp3File.setID3v2Tag((AbstractID3v2Tag) tag);
         try {
@@ -878,6 +889,14 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
             throw new MP3Exception(e);
         }
 
+    }
+
+    private void clearLanguage() {
+        if (this.tag.hasField(FieldKey.LANGUAGE)) {
+            addWarning("Language Tag deleted: Value = " + this.tag.getFirst(FieldKey.LANGUAGE));
+            this.tag.deleteField(FieldKey.LANGUAGE);
+            this.save = true;
+        }
     }
 
     private void removeMultipleValues(FieldKey fieldKey){
@@ -1068,18 +1087,9 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         }
     }
 
-    public void clearID3v23SpecificTag(AbstractID3v2Tag tag, String idToRemove) {
+    public void clearID3SpecificTag(AbstractID3v2Tag tag, String idToRemove, String tagType) {
         if (tag != null && tag.hasFrame(idToRemove)){
-            addWarning("Remove ID3v23 tag: " + idToRemove +
-            " value=(" + tag.getFirst(idToRemove) + ")");
-            this.tag.deleteField(idToRemove);
-            this.save = true;
-        }
-    }
-
-    public void clearID3v24SpecificTag(AbstractID3v2Tag tag, String idToRemove) {
-        if (tag != null && tag.hasFrame(idToRemove)){
-            addWarning("Remove ID3v24 tag: " + idToRemove +
+            addWarning("Remove " + tagType + ": " + idToRemove +
                     " value=(" + tag.getFirst(idToRemove) + ")");
             this.tag.deleteField(idToRemove);
             this.save = true;
@@ -1127,25 +1137,29 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
 
         /* remove ID3V23 specific frames */
 
-        clearID3v23SpecificTag(tag, ID3v23Frames.FRAME_ID_V3_TDAT);
-        clearID3v23SpecificTag(tag, ID3v23Frames.FRAME_ID_V3_INVOLVED_PEOPLE);
-        clearID3v23SpecificTag(tag, ID3v23Frames.FRAME_ID_V3_TORY);
-        clearID3v23SpecificTag(tag, ID3v23Frames.FRAME_ID_V3_EQUALISATION);
-        clearID3v23SpecificTag(tag, ID3v23Frames.FRAME_ID_V3_TIME);
-        clearID3v23SpecificTag(tag, ID3v23Frames.FRAME_ID_V3_TRDA);
-        clearID3v23SpecificTag(tag, ID3v23Frames.FRAME_ID_V3_RELATIVE_VOLUME_ADJUSTMENT);
+        String tagType = "iD3v23";
+
+        clearID3SpecificTag(tag, ID3v23Frames.FRAME_ID_V3_TDAT, tagType);
+        clearID3SpecificTag(tag, ID3v23Frames.FRAME_ID_V3_INVOLVED_PEOPLE, tagType);
+        clearID3SpecificTag(tag, ID3v23Frames.FRAME_ID_V3_TORY, tagType);
+        clearID3SpecificTag(tag, ID3v23Frames.FRAME_ID_V3_EQUALISATION, tagType);
+        clearID3SpecificTag(tag, ID3v23Frames.FRAME_ID_V3_TIME, tagType);
+        clearID3SpecificTag(tag, ID3v23Frames.FRAME_ID_V3_TRDA, tagType);
+        clearID3SpecificTag(tag, ID3v23Frames.FRAME_ID_V3_RELATIVE_VOLUME_ADJUSTMENT, tagType);
 
 
         /* remove ID3V24 specific frames */
+        tagType = "iD3v24";
 
-        clearID3v24SpecificTag(tag, ID3v24Frames.FRAME_ID_INVOLVED_PEOPLE);
-        clearID3v24SpecificTag(tag, ID3v24Frames. FRAME_ID_ORIGINAL_RELEASE_TIME);
-        clearID3v24SpecificTag(tag, ID3v24Frames.FRAME_ID_MOOD);
-        clearID3v24SpecificTag(tag, ID3v24Frames.FRAME_ID_MUSICIAN_CREDITS);
-        clearID3v24SpecificTag(tag, ID3v24Frames.FRAME_ID_SET_SUBTITLE);
-        clearID3v24SpecificTag(tag, ID3v24Frames.FRAME_ID_TAGGING_TIME);
-        clearID3v24SpecificTag(tag, ID3v24Frames.FRAME_ID_EQUALISATION2);
-        clearID3v24SpecificTag(tag, ID3v24Frames.FRAME_ID_TAGGING_TIME);
+        clearID3SpecificTag(tag, ID3v24Frames.FRAME_ID_INVOLVED_PEOPLE, tagType);
+        clearID3SpecificTag(tag, ID3v24Frames. FRAME_ID_ORIGINAL_RELEASE_TIME, tagType);
+        clearID3SpecificTag(tag, ID3v24Frames.FRAME_ID_MOOD, tagType);
+        clearID3SpecificTag(tag, ID3v24Frames.FRAME_ID_MUSICIAN_CREDITS, tagType);
+        clearID3SpecificTag(tag, ID3v24Frames.FRAME_ID_SET_SUBTITLE, tagType);
+        clearID3SpecificTag(tag, ID3v24Frames.FRAME_ID_TAGGING_TIME, tagType);
+        clearID3SpecificTag(tag, ID3v24Frames.FRAME_ID_EQUALISATION2, tagType);
+        clearID3SpecificTag(tag, ID3v24Frames.FRAME_ID_TAGGING_TIME, tagType);
+        clearID3SpecificTag(tag, ID3v24Frames.FRAME_ID_RELEASE_TIME, tagType);
 
         if (this.tag instanceof ID3v23Tag){
             if (tag instanceof ID3v24Tag ) {
@@ -1173,8 +1187,9 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         }
         cleanupPrivateTags();
         cleanupUFIDTags();
+        cleanupMCDI();
+        cleanupTSRC();
         /* check for multiple values in a field */
-        cleanCustomizedComments();
         for (FieldKey checkKey : FieldKey.values()){
             // skipping COMMENT for now. Not sure what to do with ITUNES Comments
                 removeMultipleValues(checkKey);
@@ -1193,14 +1208,15 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         clearLanguage();
         clearInvalidFrame();
         cleanupTags();
-        /* this should always be the last test
-        it is only cleared when there are changes to be saved, unless switch to clean comment is set to true
-        */
         if (this.mp3File.getID3v2Tag() != null && this.mp3File.getID3v2Tag().getEmptyFrameBytes() > 0){
             this.save = true;
             addWarning("Empty Frame Bytes found. Saving the file...");
         }
-
+        /* this should always be the last test
+        it is only cleared when there are changes to be saved, unless switch to clean comment is set to true
+        */
+        cleanCustomizedComments();
+        cleanEmptyComment();
         /*
         while(tagFieldIterator.hasNext()) {
             TagField element = tagFieldIterator.next();

@@ -34,12 +34,12 @@ public class MP3Scanner extends BatchJobV2 {
 
     private static final Logger log = getMainLog(MP3Scanner.class);
     private static String timeStamp = new SimpleDateFormat("yyyyMM.dd.HH.mm.ss").format(new java.util.Date());
-    private static String ROOT = "p:\\Shared\\My Music\\MP3Scanner";
-    private static String ROOT2 = "t:\\My Music\\iPod\\Ultratop 50 20210102 02 Januari 2021";
+    private static String ROOT2 = "p:\\Shared\\My Music\\MP3Scanner";
+    private static String ROOT = "t:\\My Music\\MP3Scanner";
     private static String ROOT3 = "c:\\My Data\\tmp\\Java\\MP3Processor\\test\\Ultratop 50 20200201 01 Februari 2020";
     private static final boolean OVERWRITE = true;
     private static final String BACKUP = Setup.getInstance().getFullPath(Constants.Path.TMP) + File.separator + "Backup";
-    private static final String MP3VAL = "C:\\My Programs\\mp3val\\mp3val.exe";
+    private static final String MP3VAL = "C:\\My Programs\\Personal\\mp3val\\mp3val.exe";
 
     public static void main(String args[]) {
 
