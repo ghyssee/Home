@@ -39,6 +39,9 @@ public interface MP3Service {
     // But we get that duration on another way, so we remove this tag
     public boolean REMOVE_EMPTY_COMMENT = false;
 
+    // remove TSO2 + TSOA tags if found when analyzing mp3
+    public boolean REMOVE_SORT_TAGS = true;
+
     public ArrayList<String> customTags = new ArrayList<String>() {
         {
             /* is used for cleanup of Custom TXXX Tags + Custom Comment Tags
@@ -242,7 +245,7 @@ public interface MP3Service {
             add("^newzbin release");
             add("^www.fb.co(.*)");
             add("^rack:Web Page(.*)");
-            add("^(.*)http\\://)(.*)");
+            add("^(.*)http\\://(.*)");
 
             /* TIT1 Content group description */
             add("^PMEDIA");
@@ -257,6 +260,7 @@ public interface MP3Service {
             add("^video/mp4");
             add("^audio/mp3");
             add("^audio/x-ms-wma");
+            add("^/3");
 
             /* TSSE */
             add("^JS");
@@ -402,7 +406,7 @@ public interface MP3Service {
             add("(.*)Jermaine Scott(.*)");
             add("(.*)Maverick Sabre(.*)");
             add("(.*)Emeli Sand(.*)");
-            add("(.*)Jermaine Jackson.*)");
+            add("(.*)Jermaine Jackson(.*)");
             add("(.*)Andrew Harr(.*)");
             add("(.*)Jessica Cornish(.*)");
             add("(.*)Jordan Stephens(.*)");
@@ -412,12 +416,12 @@ public interface MP3Service {
             add("(.*)Costadinos Contostavlos(.*)");
             add("(.*)Jason Desrouleaux(.*)");
             add("(.*)Tom Barnes(.*)");
-            add("(.*Adele Adkins(.*)");
+            add("(.*)Adele Adkins(.*)");
             add("(.*)Gary Barlow(.*)");
             add("(.*)J.? Rzeznik(.*)");
             add("(.*)Aaron Kamin(.*)");
             add("(.*)Damien Rice(.*)");
-            add("(.*)Edward Christopher.*)");
+            add("(.*)Edward Christopher(.*)");
             add("(.*)James Morrison(.*)");
             add("(.*)Will Young(.*)");
             add("(.*)Stefani Germanotta(.*)");

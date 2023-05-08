@@ -524,6 +524,10 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 add(FieldKey.BPM);
                 add(FieldKey.ISRC);
                 add(FieldKey.COMMENT);
+                add(FieldKey.ALBUM_SORT);
+                add(FieldKey.ALBUM_ARTIST_SORT);
+                add(FieldKey.TITLE_SORT);
+                add(FieldKey.ARTIST_SORT);
             }
         };
         // Exclude PRIV tags from the cleanup Procedure. There is a separate cleanup for Private Tags
@@ -548,6 +552,10 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         }
         // Exclude WXXX tags from the cleanup Procedure. There is a separate cleanup for WXXX Tags
         else if (frameId.equalsIgnoreCase(ID3v24Frames.FRAME_ID_USER_DEFINED_URL)){
+            return true;
+        }
+        // Exclude TSOA tags from the cleanup Procedure. There is a separate cleanup for Sort Tags
+        else if (frameId.equalsIgnoreCase(ID3v24Frames.FRAME_ID_ALBUM_SORT_ORDER)){
             return true;
         }
         else {
@@ -1117,6 +1125,187 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         }
         return false;
     }
+
+    private String getFrameIdFromFieldKey(Tag tag, FieldKey fieldKey){
+        //FieldKey.valueOf(FieldKey.ALBUM_SORT);
+        String frameId = null;
+
+        if (tag instanceof ID3v23Tag) {
+            if (fieldKey.equals(FieldKey.MUSICBRAINZ_ORIGINAL_RELEASE_ID)) {
+                frameId = ID3v23FieldKey.MUSICBRAINZ_ORIGINAL_RELEASEID.getFrameId();
+            }
+             else if (fieldKey.equals(FieldKey.MUSICBRAINZ_WORK_PART_LEVEL1)){
+                    frameId = ID3v23FieldKey.MUSICBRAINZ_WORK_PART_LEVEL1_ID.getFrameId();
+             }
+            else if (fieldKey.equals(FieldKey.MUSICBRAINZ_WORK_PART_LEVEL2)){
+                frameId = ID3v23FieldKey.MUSICBRAINZ_WORK_PART_LEVEL2_ID.getFrameId();
+            }
+            else if (fieldKey.equals(FieldKey.MUSICBRAINZ_WORK_PART_LEVEL3)){
+                frameId = ID3v23FieldKey.MUSICBRAINZ_WORK_PART_LEVEL3_ID.getFrameId();
+            }
+            else if (fieldKey.equals(FieldKey.MUSICBRAINZ_WORK_PART_LEVEL4)){
+                frameId = ID3v23FieldKey.MUSICBRAINZ_WORK_PART_LEVEL4_ID.getFrameId();
+            }
+            else if (fieldKey.equals(FieldKey.MUSICBRAINZ_WORK_PART_LEVEL5)){
+                frameId = ID3v23FieldKey.MUSICBRAINZ_WORK_PART_LEVEL5_ID.getFrameId();
+            }
+            else if (fieldKey.equals(FieldKey.MUSICBRAINZ_WORK_PART_LEVEL6)){
+                frameId = ID3v23FieldKey.MUSICBRAINZ_WORK_PART_LEVEL6_ID.getFrameId();
+            }
+            else if (fieldKey.equals(FieldKey.MUSICBRAINZ_WORK_PART_LEVEL1_TYPE)){
+                frameId = ID3v23FieldKey.WORK_PART_LEVEL5_TYPE.getFrameId();
+            }
+            else if (fieldKey.equals(FieldKey.MUSICBRAINZ_WORK_PART_LEVEL2_TYPE)){
+                frameId = ID3v23FieldKey.WORK_PART_LEVEL2_TYPE.getFrameId();
+            }
+            else if (fieldKey.equals(FieldKey.MUSICBRAINZ_WORK_PART_LEVEL3_TYPE)){
+                frameId = ID3v23FieldKey.WORK_PART_LEVEL3_TYPE.getFrameId();
+            }
+            else if (fieldKey.equals(FieldKey.MUSICBRAINZ_WORK_PART_LEVEL4_TYPE)){
+                frameId = ID3v23FieldKey.WORK_PART_LEVEL4_TYPE.getFrameId();
+            }
+            else if (fieldKey.equals(FieldKey.MUSICBRAINZ_WORK_PART_LEVEL5_TYPE)){
+                frameId = ID3v23FieldKey.WORK_PART_LEVEL5_TYPE.getFrameId();
+            }
+            else if (fieldKey.equals(FieldKey.MUSICBRAINZ_WORK_PART_LEVEL6_TYPE)){
+                frameId = ID3v23FieldKey.WORK_PART_LEVEL6_TYPE.getFrameId();
+            }
+            else {
+                frameId = ID3v23FieldKey.valueOf(fieldKey.name()).getFrameId();
+            }
+        }
+        else if (tag instanceof ID3v24Tag) {
+            if (fieldKey.equals(FieldKey.INVOLVEDPEOPLE)){
+                frameId = ID3v24FieldKey.INVOLVED_PEOPLE.getFrameId();
+            }
+            else if (fieldKey.equals(FieldKey.MUSICBRAINZ_ORIGINAL_RELEASE_ID)){
+                frameId = ID3v24FieldKey.MUSICBRAINZ_ORIGINAL_RELEASEID.getFrameId();
+            }
+            else if (fieldKey.equals(FieldKey.MUSICBRAINZ_WORK_PART_LEVEL1)){
+                frameId = ID3v24FieldKey.MUSICBRAINZ_WORK_PART_LEVEL1_ID.getFrameId();
+            }
+            else if (fieldKey.equals(FieldKey.MUSICBRAINZ_WORK_PART_LEVEL2)){
+                frameId = ID3v24FieldKey.MUSICBRAINZ_WORK_PART_LEVEL2_ID.getFrameId();
+            }
+            else if (fieldKey.equals(FieldKey.MUSICBRAINZ_WORK_PART_LEVEL3)){
+                frameId = ID3v24FieldKey.MUSICBRAINZ_WORK_PART_LEVEL3_ID.getFrameId();
+            }
+            else if (fieldKey.equals(FieldKey.MUSICBRAINZ_WORK_PART_LEVEL4)){
+                frameId = ID3v24FieldKey.MUSICBRAINZ_WORK_PART_LEVEL4_ID.getFrameId();
+            }
+            else if (fieldKey.equals(FieldKey.MUSICBRAINZ_WORK_PART_LEVEL5)){
+                frameId = ID3v24FieldKey.MUSICBRAINZ_WORK_PART_LEVEL5_ID.getFrameId();
+            }
+            else if (fieldKey.equals(FieldKey.MUSICBRAINZ_WORK_PART_LEVEL6)){
+                frameId = ID3v24FieldKey.MUSICBRAINZ_WORK_PART_LEVEL6_ID.getFrameId();
+            }
+            else if (fieldKey.equals(FieldKey.MUSICBRAINZ_WORK_PART_LEVEL1_TYPE)){
+                frameId = ID3v24FieldKey.WORK_PART_LEVEL5_TYPE.getFrameId();
+            }
+            else if (fieldKey.equals(FieldKey.MUSICBRAINZ_WORK_PART_LEVEL2_TYPE)){
+                frameId = ID3v24FieldKey.WORK_PART_LEVEL2_TYPE.getFrameId();
+            }
+            else if (fieldKey.equals(FieldKey.MUSICBRAINZ_WORK_PART_LEVEL3_TYPE)){
+                frameId = ID3v24FieldKey.WORK_PARTOF_LEVEL3_TYPE.getFrameId();
+            }
+            else if (fieldKey.equals(FieldKey.MUSICBRAINZ_WORK_PART_LEVEL4_TYPE)){
+                frameId = ID3v24FieldKey.WORK_PART_LEVEL4_TYPE.getFrameId();
+            }
+            else if (fieldKey.equals(FieldKey.MUSICBRAINZ_WORK_PART_LEVEL5_TYPE)){
+                frameId = ID3v24FieldKey.WORK_PART_LEVEL5_TYPE.getFrameId();
+            }
+            else if (fieldKey.equals(FieldKey.MUSICBRAINZ_WORK_PART_LEVEL6_TYPE)){
+                frameId = ID3v24FieldKey.WORK_PART_LEVEL6_TYPE.getFrameId();
+            }
+            else {
+                frameId = ID3v24FieldKey.valueOf(fieldKey.name()).getFrameId();
+            }
+        }
+        return frameId;
+
+    }
+
+    private void checkSortTag(Tag tag, String frameId) {
+        List<TagField> customTags = null;
+        String description = null;
+        String value = null;
+        if (tag.hasField(frameId)) {
+            customTags = this.tag.getFields(frameId);
+            if (customTags != null) {
+                for (TagField tagField : customTags) {
+                    AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
+                    AbstractTagFrameBody frameBody = frame.getBody();
+                    if (frameBody instanceof FrameBodyTSOA){
+                        FrameBodyTSOA frameBodyTSOA = (FrameBodyTSOA) frame.getBody();
+                        value = frameBodyTSOA.getText();
+                    }
+                    else if (frameBody instanceof FrameBodyTSO2) {
+                        FrameBodyTSO2 frameBodyTSO2 = (FrameBodyTSO2) frame.getBody();
+                        value = frameBodyTSO2.getText();
+                    }
+                    else if (frameBody instanceof FrameBodyTSOT) {
+                        FrameBodyTSOT frameBodyTSOT = (FrameBodyTSOT) frame.getBody();
+                        value = frameBodyTSOT.getText();
+                    }
+                    else if (frameBody instanceof FrameBodyTSOP) {
+                        FrameBodyTSOP frameBodyTSOP = (FrameBodyTSOP) frame.getBody();
+                        value = frameBodyTSOP.getText();
+                    }
+                    description = frameId + " " + getDescription(this.tag, frameId) +
+                            " - value = " + value;
+                }
+                if (REMOVE_SORT_TAGS) {
+                    this.save = true;
+                    this.tag.deleteField(frameId);
+                    description = "Delete Tag: " + description;
+                } else {
+                    description = "Tag found: " + description;
+                }
+                addWarning(description);
+            }
+        }
+    }
+
+    public void checkSortTags ()  {
+        // clean TSOA + TSO2 tags
+        String frameId = getFrameIdFromFieldKey(this.tag, FieldKey.ALBUM_SORT);
+        checkSortTag(this.tag, frameId);
+        frameId = getFrameIdFromFieldKey(this.tag, FieldKey.ALBUM_ARTIST_SORT);
+        checkSortTag(this.tag, frameId);
+        frameId = getFrameIdFromFieldKey(this.tag, FieldKey.TITLE_SORT);
+        checkSortTag(this.tag, frameId);
+        frameId = getFrameIdFromFieldKey(this.tag, FieldKey.ARTIST_SORT);
+        checkSortTag(this.tag, frameId);
+    }
+
+    public void checkRVA () {
+        // clean RVAD + RVA2 tags
+        String frameId = null;
+
+        if (this.tag instanceof ID3v24Tag) {
+            frameId = ID3v24Frames.FRAME_ID_RELATIVE_VOLUME_ADJUSTMENT2;
+        } else {
+            frameId = ID3v23Frames.FRAME_ID_V3_RELATIVE_VOLUME_ADJUSTMENT;
+        }
+        if (this.tag.hasField(frameId)) {
+            List<TagField> tagFields = this.tag.getFields(frameId);
+            boolean saveTag = false;
+            if (tagFields != null && tagFields.size() > 0) {
+                for (TagField tagField : tagFields) {
+                    AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
+                    AbstractTagFrameBody frameBody = (AbstractTagFrameBody) frame.getBody();
+                    //FrameBodyRVA2 frameBody = (FrameBodyRVA2) frame.getBody();
+                    AbstractDataType ab = frameBody.getObject("Data");
+                    String data = be.home.common.utils.StringUtils.toHex((byte[]) ab.getValue());
+                    addWarning("Cleanup of RVAD/RVA2 Frame:  Data=" + data);
+                    saveTag = true;
+                }
+                this.save = true;
+                this.tag.deleteField(frameId);
+            }
+        }
+    }
+
     private void checkCustomTags() throws MP3Exception {
         // cleans customized TXXX frames, like TXXX:compatible_brands
         // it does not check the value, only the description
@@ -1264,6 +1453,8 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         cleanupTSRC();
         cleanupGEOB();
         cleanupWXXX();
+        checkSortTags();
+        checkRVA();
         /* check for multiple values in a field */
         for (FieldKey checkKey : FieldKey.values()){
             // skipping COMMENT for now. Not sure what to do with ITUNES Comments
