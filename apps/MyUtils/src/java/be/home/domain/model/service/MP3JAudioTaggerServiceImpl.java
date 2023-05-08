@@ -997,7 +997,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 }
             }
             else {
-                // Skipping Multiple Comment value for now. Not sure what to do with iTunes Comments
+                // Skipping Multiple Comment value for now. There is a specific cleanup for comments
                 addWarning("Multiple Comment Field Values found");
             }
         }
@@ -1407,8 +1407,6 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         clearID3SpecificTag(tag, ID3v23Frames.FRAME_ID_V3_EQUALISATION, tagType);
         clearID3SpecificTag(tag, ID3v23Frames.FRAME_ID_V3_TIME, tagType);
         clearID3SpecificTag(tag, ID3v23Frames.FRAME_ID_V3_TRDA, tagType);
-        clearID3SpecificTag(tag, ID3v23Frames.FRAME_ID_V3_RELATIVE_VOLUME_ADJUSTMENT, tagType);
-
 
         /* remove ID3V24 specific frames */
         tagType = "iD3v24";
@@ -1457,7 +1455,6 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         checkRVA();
         /* check for multiple values in a field */
         for (FieldKey checkKey : FieldKey.values()){
-            // skipping COMMENT for now. Not sure what to do with ITUNES Comments
                 removeMultipleValues(checkKey);
             if (checkKey != FieldKey.COMMENT) {
                 removeEmptyField(checkKey);
