@@ -317,7 +317,7 @@ private static void TestMovieFile(){
 
     private static void testJAudioTagger(){
         // File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\02 Test Double Artist TXXX.mp3");
-        File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\TestCases\\19 MCDI.mp3");
+        File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\TestCases\\06 TSSE.mp3");
         File newFile = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\new.mp3");
        // TagOptionSingleton.getInstance().setOriginalSavedAfterAdjustingID3v2Padding(false);
        // TagOptionSingleton.getInstance().setRemoveTrailingTerminatorOnWrite(true);

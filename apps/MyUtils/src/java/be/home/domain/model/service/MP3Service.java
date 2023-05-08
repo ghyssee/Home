@@ -41,12 +41,15 @@ public interface MP3Service {
 
     public ArrayList<String> customTags = new ArrayList<String>() {
         {
-            // is used for cleanup of Custom Tags + Custom Comment Tags
+            /* is used for cleanup of Custom TXXX Tags + Custom Comment Tags
+               + Private Tags. ex. TXXX:MUSICBRAINZ, ...
+             */
 
             add("^DISCOGS(.*)");
             /* Music Brainz Custom tags */
             add("^MUSICBRAINZ(.*)");
             add("^WAVELIST(.*)");
+            add("^RECORD LABEL(.)");
 
             add("^Aan ?Geboden ?Door");
             add("^AccurateRip(.*)");
@@ -160,24 +163,51 @@ public interface MP3Service {
             add("^Songs-DB_Preference");
             add("^LABELNO");
 
+            /* private frames owners */
+            add("^Google/StoreId(.*)");
+            add("^Google/StoreLabelCode(.*)");
+            add("^Google/UITS(.*)");
+            add("^WM/Mood(.*)");
+            add("^WM/UniqueFileIdentifier(.*)");
+            add("WM/MediaClassPrimaryID(.*)");
+            add("WM/MediaClassSecondaryID(.*)");
+            add("http\\://www.cdtag.com(.*)");
+            add("^PeakValue");
+            add("^AverageLevel");
+            add("^WM/Provider(.*)");
+            add("^WM/WMContentID(.*)");
+            add("^WM/WMCollectionID(.*)");
+            add("^WM/WMCollectionGroupID(.*)");
+            add("^www.amazon.com(.*)");
+
+            /* end private frame owners */
+
         }
     };
 
     public ArrayList<String> cleanupWords = new ArrayList<String>() {
         {
-            // used for other FRAMES like PRIVATE, ENCODED BY, COMPOSER, MEDIATYPE, URL, ...
+            // used for other FRAMES like PRIVATE, ENCODED BY, COMPOSER,
+            // TXXX, MEDIATYPE, URL, ...
             // also used for COMMENT tags for the content (not customized comment descriptors)
             add("^http\\://(.*)");
-            add("^RJ/SNWTJE");
+            add("^D?RJ/SNWTJE");
+            add("^gortha_ii@ferialaw.com(.*)");
+
             add("^(.*)DJ Bert(.*)");
             add("(.*)www.mediahuman.com(.*)");
+            add("(.*)www.universalmusic.nl(.*)");
             add("^Pop$");
+            add("^Fireman$");
+            add("^reserved$");
+
             add("mSm ?. ?[0-9]{1,4} ?Productions BV");
             add("(.*)Salvatoro(.*)");
             add("(.*)Scorpio(.*)");
             add("(.*)www.SongsLover.pk");
             add("(.*)www.MzHipHop.Me");
             add("(.*)www.MustJam.com");
+            add("(.*)www.pirates4all.com(.*)");
             add("(.*)RnBXclusive.se(.*)");
             add("(.*)URBANMUSiCDAiLY.NET(.*)");
             add("^Digital Media");
@@ -190,10 +220,63 @@ public interface MP3Service {
             add("^AverageLevel(.*)");
             add("^RUnderground.ru(.*)");
             add("^Warner Bros(.*)");
-            add("^WM/Mood(.*)");
+
+            /* TENC encoded by */
+            add("^allsoundtracks.com(.*)");
+            add("^primemusic.ru(.*)");
+            add("^(.*)Oldskoolscouse(.*)");
+            add("^Oz$");
+            add("^Ripped by(.*)");
+
+            /* TMED */
+            add("^(ANA|DIG|\\(?CD/DD\\)?|CD \\(?Lossless\\)?) >> (.*)");
+
+            /* TCOP */
+            add("^Òîëüêî(.*)");
+
+            /* WXXX */
+            add("^h?ttp://(.*)");
+            add("^\\?,O\\?(.*)");
+            add("^\u0014C\u0007(.*)");
+            add("^www?.virginr(.*)");
+            add("^newzbin release");
+            add("^www.fb.co(.*)");
+            add("^rack:Web Page(.*)");
+            add("^(.*)http\\://)(.*)");
+
+            /* TIT1 Content group description */
             add("^PMEDIA");
 
+            /* Publisher */
+            add("^Tv Various");
+            add("^Domino");
+            add("^Alliance");
+            add("^Collectables");
+
+            /* TFLT File type */
+            add("^video/mp4");
+            add("^audio/mp3");
+            add("^audio/x-ms-wma");
+
+            /* TSSE */
+            add("^JS");
+            add("^Audio$");
+            add("^MediaMonkey(.*)");
+
+            /* composer */
+            add("(.*)Janis Ian(.*)");
+            add("^Batt(.*)");
+            add("^Gorillaz(.*)");
+
+            /* TOWN */
+            add("^(.*drOhimself)(.*)");
+
             /* COMMENT descriptions */
+            add("^00000000(.*)");
+            add("^Track(.*)");
+            add("^*(.*)Mp3Friends(.*)");
+            add("(.*)DJ.lexus(.*)");
+            add("^ejdE10");
             add("(.*)www.SongsLover.pk");
             add("(.*)www.MzHipHop.Me");
             add("(.*)www.MustJam.com");
@@ -206,8 +289,6 @@ public interface MP3Service {
             add("^(.*)flacless.com(.*)");
             add("^(.*)www.israbox.com");
             add("^(.*)www.updatedmp3s.com(.*)");
-            add("(.*)MediaClassPrimaryID(.*)");
-            add("(.*)MediaClassSecondaryID(.*)");
             add("(.*)vk.com(.*)");
             add("^DIG$");
             add("(.*)www.torrentazos.com(.*)");
@@ -225,10 +306,11 @@ public interface MP3Service {
             add("^Telstar");
             add("^Copyright(.*)");
             add("^Credits(.*)");
-            add("^Sony Music Entertainment");
+            add("^(.*)Sony Music Entertainment(.*)");
             add("^Kontor Records");
             add("^Lavf5(.*)");
             add("^iTunes(.*)");
+            add("^Exact Audio Copy(.*)");
             add("(.*)Ashampoo Music(.*)");
             add("^Polydor");
             add("^Audiograbber(.*)");
@@ -253,10 +335,9 @@ public interface MP3Service {
             add("(.*)Regoli Music(.*)");
             add("^Columbia(.*)");
             add("^Interscope(.*)");
-            add("^Big Machine Records(.*)");
+            add("^(.*)Big Machine Records(.*)");
             add("^Universal(.*)");
             add("^Arista(.*)");
-            add("^Big Machine Records(.*)");
             add("(.*)Curtis Mayfields(.*)");
             add("(.*)Toni Braxton(.*)");
             add("(.*)Ivan Mathias(.*)");
@@ -289,6 +370,238 @@ public interface MP3Service {
             add("^Official(.*)");
             add("(.*)Liefde voor Muziek(.*)");
 
+            /* TOPE */
+            add("^(.*)Samuel Barber(.*)");
+            add("^(.*) The Knack(.*)");
+
+            /* TSSE */
+            add("(.*)-b=\"[0-9]{1,3}\" -freq=\"[0-9]{1,6}\"");
+
+            /* publisher */
+            add("^Now!? Music(.*)");
+            add("^EMI TV(.*)");
+            add("^Photo Finish Records(.*)");
+
+            /* encode by */
+            add("^Online Media Technologies(.*)");
+            add("^NetStream AudioLab(.*)");
+
+            /* Composer */
+
+            add("(.*)Elton John(.*)");
+            add("(.*)Elton John(.*)");
+            add("(.*)Elton John(.*)");
+            add("(.*)Elton John(.*)");
+            add("(.*)Elton John(.*)");
+            add("(.*)Elton John(.*)");
+            add("(.*)Elton John(.*)");
+            add("(.*)Elton John(.*)");
+            add("(.*)A.? Graham(.*)");
+            add("(.*)Yoo Gun-Hyung(.*)");
+            add("(.*)Timothy McKenzie(.*)");
+            add("(.*)Jermaine Scott(.*)");
+            add("(.*)Maverick Sabre(.*)");
+            add("(.*)Emeli Sand(.*)");
+            add("(.*)Jermaine Jackson.*)");
+            add("(.*)Andrew Harr(.*)");
+            add("(.*)Jessica Cornish(.*)");
+            add("(.*)Jordan Stephens(.*)");
+            add("(.*)Isaac Mahmood Noell(.*)");
+            add("(.*)Polina Goudieva(.*)");
+            add("(.*)Leona Lewis(.*)");
+            add("(.*)Costadinos Contostavlos(.*)");
+            add("(.*)Jason Desrouleaux(.*)");
+            add("(.*)Tom Barnes(.*)");
+            add("(.*Adele Adkins(.*)");
+            add("(.*)Gary Barlow(.*)");
+            add("(.*)J.? Rzeznik(.*)");
+            add("(.*)Aaron Kamin(.*)");
+            add("(.*)Damien Rice(.*)");
+            add("(.*)Edward Christopher.*)");
+            add("(.*)James Morrison(.*)");
+            add("(.*)Will Young(.*)");
+            add("(.*)Stefani Germanotta(.*)");
+            add("(.*)Brian Higgins(.*)");
+            add("(.*)Tebey Ottoh(.*)");
+            add("(.*)Alex Smith(.*)");
+            add("(.*)Brett James(.*)");
+            add("(.*)Christina Perri(.*)");
+            add("(.*)Carl Falk(.*)");
+            add("(.*)John Deacon(.*)");
+            add("(.*)Robert Williams(.*)");
+            add("(.*)Tom Odell(.*)");
+            add("(.*)Cian Ducrot(.*)");
+
+
+            add("(.*)Steve Mac(.*)");
+            add("(.*)Boris Daenen(.*)");
+            add("(.*)David Guetta(.*)");
+            add("(.*)Rune Reilly Koelschn(.*)");
+            add("(.*)Josh Bruce(.*)");
+            add("(.*)Louis Bell(.*)");
+            add("(.*)Ozedikus(.*)");
+            add("(.*)Tom Grennan(.*)");
+            add("(.*)Jorja Douglas(.*)");
+            add("(.*)Cat Burns(.*)");
+            add("(.*)Rosa Linn(.*)");
+            add("(.*)Grace Barker(.*)");
+            add("(.*)Marlon Roudette(.*)");
+
+            add("(.*)Elton John(.*)");
+            add("(.*)Tymofii Muzychuk(.*)");
+            add("(.*)Damiano David(.*)");
+            add("(.*)Sigrid Solbakk Raabe(.*)");
+            add("(.*)Madonna(.*)");
+            add("(.*)Dave Bayley(.*)");
+            add("(.*)Paolo Nutini(.*)");
+            add("(.*)Mikkel S?.? ?Eriksen(.*)");
+            add("(.*)Jonah Shy(.*)");
+            add("(.*)James Abrahart(.*)");
+            add("(.*)Christian (\"?Bloodshy\"? )?Karlsson(.*)");
+            add("(.*)Ida Botten(.*)");
+            add("(.*)Kane Welsh(.*)");
+            add("(.*)Ben Langmaid(.*)");
+            add("(.*)Alyssa Stephens(.*)");
+            add("(.*)Camila Cabello(.*)");
+            add("(.*)Becky Hill(.*)");
+            add("(.*)Charles B?.? ?Simmons(.*)");
+            add("(.*)George Ezra(.*)");
+            add("^Clarence Coffee Jr(.*)");
+            add("^Max Martin");
+            add("^(.*)P?nk(.*)");
+            add("^Deborah Harry");
+            add("^Steven Tyler");
+            add("^Desmond Child");
+            add("^John Robinson Reid");
+            add("^Dan Dare");
+            add("^Sam Smith");
+            add("^Mark Ronson");
+            add("^Iain James");
+            add("^Lady GaGa");
+            add("^Dolly Parton");
+            add("^(.*)Fridolin Walcher(.*)");
+            add("^(.*)Mike Posner(.*)");
+            add("^(.*)Jess Glynne(.*)");
+            add("^(.*)George Reid(.*)");
+            add("^(.*)Abel Tesfaye(.*)");
+            add("^(.*)Edward Drewett(.*)");
+            add("^(.*)Bruno Mars(.*)");
+            add("^(.*)Wayne Hector(.*)");
+            add("^(.*)Fleur East(.*)");
+            add("^(.*)Omar Pasley(.*)");
+            add("^(.*)Brandy Norwood(.*)");
+            add("^(.*)Adam Levine(.*)");
+            add("^(.*)Zara Lawson(.*)");
+            add("^(.*)Calvin Harris(.*)");
+            add("^(.*)Henry Smithson(.*)");
+            add("^(.*)Justin Bieber(.*)");
+            add("^(.*)Martina Sorbara(.*)");
+            add("^(.*)Elle King(.*)");
+            add("^(.*)Bebe Rexha(.*)");
+            add("^(.*)Alan Walker(.*)");
+            add("^(.*)Thomas Pentz(.*)");
+            add("^(.*)Alex Schwartz(.*)");
+            add("^(.*)Demi Lovato(.*)");
+            add("^(.*)David J Wolinski(.*)");
+            add("^(.*)David Zowie(.*)");
+            add("^(.*)Stevie Wonder(.*)");
+            add("^(.*)Patrick Okogwu(.*)");
+            add("^(.*)Berry Gordy(.*)");
+            add("^(.*)Martin Solveig(.*)");
+            add("^(.*)Tove Lo(.*)");
+            add("^(.*)Calvin Harris(.*)");
+            add("^(.*)Simon Aldred(.*)");
+            add("^(.*)Craig David(.*)");
+            add("^(.*)Ricky Hawk(.*)");
+            add("^(.*)Tony Fadd(.*)");
+            add("^(.*)Theron Thomas(.*)");
+            add("^(.*)Karl Wilson(.*)");
+            add("^(.*)Priscilla Rene(.*)");
+            add("^(.*)Olly Murs(.*)");
+            add("^(.*)Sam Smith(.*)");
+            add("^(.*)Iggy Azalea(.*)");
+            add("^(.*)Maxwell Ansah(.*)");
+            add("^(.*)Conrad Sewell(.*)");
+            add("^(.*)Peter Svensson(.*)");
+            add("^(.*)Eric Frederic(.*)");
+            add("^(.*)Nicholas Furlong(.*)");
+            add("^(.*)Erick Orrosquieta(.*)");
+            add("^(.*)Nicholas Petricca(.*)");
+            add("^(.*)Meghan Trainor(.*)");
+            add("^(.*)Olajide Olatunji(.*)");
+            add("^(.*)Wayne Hector(.*)");
+            add("^(.*)Kara DioGuardi(.*)");
+            add("^(.*)Max Martin(.*)");
+            add("^(.*)Danny Parker(.*)");
+            add("^(.*)Thomas Barnes(.*)");
+            add("^(.*)Lukasz Gottwald(.*)");
+            add("^(.*)R.? Tedder(.*)");
+            add("^(.*)Marc Williams(.*)");
+            add("^(.*)Tiffany Amber(.*)");
+            add("^(.*)Sia Furler(.*)");
+            add("^(.*)Starley Hope(.*)");
+            add("^(.*)Devon Gallaspy(.*)");
+            add("^(.*)Danjahandz(.*)");
+            add("^(.*)Robin Fredriksson(.*)");
+            add("^(.*)James Napier(.*)");
+            add("^(.*)Lance Ferguson(.*)");
+            add("^(.*)Tim Bergling(.*)");
+            add("^(.*)Perrie Edwards(.*)");
+            add("^(.*)Darren Martyn(.*)");
+            add("^(.*)Sebastian Ingrosso(.*)");
+            add("^(.*)Darren Foremane(.*)");
+            add("^(.*)Sandy Vee(.*)");
+            add("^(.*)Sean Waugaman(.*)");
+            add("^(.*)Adam Wiles(.*)");
+            add("^(.*)Emily Warren(.*)");
+            add("^(.*)Lou Reed(.*)");
+            add("^(.*)Ralph Middlebrooks(.*)");
+            add("^(.*)J.? Perry(.*)");
+            add("^(.*)Erik Schrody(.*)");
+            add("^(.*)Benito Benites(.*)");
+            add("^(.*)Thomas Callaway(.*)");
+            add("^(.*)Erick More Morillo(.*)");
+            add("^(.*)Ester Dean(.*)");
+            add("^(.*)L.? Springsteen(.*)");
+            add("^(.*)Rob Davis(.*)");
+            add("^(.*)Ayalah Bentovim(.*)");
+            add("^(.*)Hurby(.*)Azor(.*)");
+            add("^(.*)Casio Ware(.*)");
+            add("^(.*)Jim Vallance(.*)");
+            add("^(.*)Leroy Damien(.*)");
+            add("^(.*)Linda Perry(.*)");
+            add("^(.*)RedOne(.*)");
+            add("^(.*)Timothy Cox(.*)");
+            add("^(.*)Kevin O'Toole(.*)");
+            add("^(.*)S.? Ferguson(.*)");
+            add("^(.*)Andr(.*)Benjamin(.*)");
+            add("^(.*)Justin Timberlake(.*)");
+            add("^(.*)Dua Lipa(.*)");
+            add("^(.*)Eric Prydz(.*)");
+            add("^(.*)Lawrence Smith(.*)");
+            add("^(.*)Andre Benjamin(.*)");
+            add("^(.*)Jadan Andino(.*)");
+            add("^(.*)Enrique Elias Garcia(.*)");
+            add("^(.*)Lukasz Gottwald(.*)");
+            add("^(.*)Jacky Arconte(.*)");
+            add("^(.*)Althea Forrest(.*)");
+            add("^(.*)Antonio Romero Monge(.*)");
+            add("^(.*)A.? Taylor(.*)");
+            add("^(.*)George Merrill(.*)");
+            add("^(.*)Robert Van Leeuwen(.*)");
+            add("^(.*)D.? Pitchford(.*)");
+            add("^(.*)Rights Reserved(.*)");
+            add("^(.*)Stephen Coy(.*)");
+            add("^(.*)Cathal Smyth(.*)");
+            add("^(.*)Paul Jabara(.*)");
+            add("^(.*)James Hargreavesh(.*)");
+            add("^(.*)Prince Rogers Nelson(.*)");
+            add("^(.*)Franke Previte(.*)");
+            add("^(.*)Franke Previte(.*)");
+            add("^(.*)Franke Previte(.*)");
+            add("^(.*)Franke Previte(.*)");
+            add("^(.*)Franke Previte(.*)");
+
         }
     };
 
@@ -320,6 +633,7 @@ public interface MP3Service {
     public void cleanupTag(String frameId);
 
     public boolean isWarning();
+
 
     public boolean isSave();
 

@@ -542,6 +542,14 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         else if (frameId.equalsIgnoreCase(ID3v24Frames.FRAME_ID_MUSIC_CD_ID)){
             return true;
         }
+        // Exclude GEOB tags from the cleanup Procedure. There is a separate cleanup for GEOB Tags
+        else if (frameId.equalsIgnoreCase(ID3v24Frames.FRAME_ID_GENERAL_ENCAPS_OBJECT)){
+            return true;
+        }
+        // Exclude WXXX tags from the cleanup Procedure. There is a separate cleanup for WXXX Tags
+        else if (frameId.equalsIgnoreCase(ID3v24Frames.FRAME_ID_USER_DEFINED_URL)){
+            return true;
+        }
         else {
             for (FieldKey fieldKey : tagsToExcludeForCleanup) {
                 String excludedFrameId = "";
@@ -607,12 +615,12 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 FrameBodyPRIV frameBody = (FrameBodyPRIV) frame.getBody();
                 String owner = frameBody.getOwner();
                 byte[] data = frameBody.getData();
-                if (isCleanable(owner)){
+                if (isCustomTagRemovable(owner)){
                     addWarning ("Cleanup of Private Frame: Owner=" + owner + " / " + "Data=" + be.home.common.utils.StringUtils.toHex(data));
                     saveTag = true;
                 }
                 else {
-                    addWarning ("Private Frame: Owner=" + owner + " / " + "Data=" + String.valueOf(data));
+                    addWarning ("Private Frame: Owner=" + owner + " / " + "Data=" + be.home.common.utils.StringUtils.toHex(data));
                     tagFieldsToKeep.add(tagField);
                 }
             }
@@ -669,6 +677,68 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         }
     }
 
+    private void cleanupWXXX() {
+
+        // Tag WXXX: no FieldKey for this tag, but code is the same for ID3v23 and ID3v24
+        List<TagField> tagFields = this.tag.getFields(ID3v24Frames.FRAME_ID_USER_DEFINED_URL);
+        List<TagField> tagFieldsToKeep = new ArrayList();
+        boolean saveTag = false;
+        if (tagFields != null && tagFields.size() > 0){
+            for (TagField tagField : tagFields){
+                AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
+                FrameBodyWXXX frameBody = (FrameBodyWXXX) frame.getBody();
+                String urlLink = frameBody.getUrlLinkWithoutTrailingNulls().replaceAll("(\0|\f)", "");
+                if (isCleanable(urlLink)){
+                    addWarning ("Cleanup of WXXX Frame: URLLink=" + urlLink);
+                    saveTag = true;
+                }
+                else {
+                    addWarning ("WXXX Frame value found: URLLink=" + urlLink);
+                    tagFieldsToKeep.add(tagField);
+                }
+            }
+            if (saveTag) {
+                this.save = true;
+                this.tag.deleteField(ID3v24Frames.FRAME_ID_USER_DEFINED_URL);
+                for (TagField tagField : tagFieldsToKeep) {
+                    try {
+                        this.tag.addField(tagField);
+                    } catch (FieldDataInvalidException e) {
+                        AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
+                        FrameBodyWXXX frameBody = (FrameBodyWXXX) frame.getBody();
+                        addWarning("There was a problem saving WXXX tag " + frameBody.getUrlLinkWithoutTrailingNulls());
+                    }
+                }
+            }
+        }
+    }
+
+    private void cleanupGEOB() {
+        // GEOB General encapsulated datatype
+        String frameId = ID3v24Frames.FRAME_ID_GENERAL_ENCAPS_OBJECT;
+        if (this.tag instanceof ID3v23Tag) {
+            frameId = ID3v23Frames.FRAME_ID_V3_GENERAL_ENCAPS_OBJECT;
+        }
+        List<TagField> tagFields = this.tag.getFields(frameId);
+        boolean saveTag = false;
+        if (tagFields != null && tagFields.size() > 0){
+            for (TagField tagField : tagFields){
+                AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
+                FrameBodyGEOB frameBody = (FrameBodyGEOB) frame.getBody();
+                String description = frameBody.getDescription();
+                AbstractDataType ab = frameBody.getObject("Data");
+                String data = be.home.common.utils.StringUtils.toHex((byte[]) ab.getValue());
+                addWarning ("Cleanup of GEOB Frame: Descriotion=" + description +
+                " value=" + data);
+                saveTag = true;
+            }
+            if (saveTag) {
+                this.save = true;
+                this.tag.deleteField(frameId);
+            }
+        }
+    }
+
     private void cleanupTSRC() {
         // TSRC - The 'ISRC' frame should contain the International Standard Recording Code (ISRC) (12 characters).
         List<TagField> tagFields = this.tag.getFields(FieldKey.ISRC);
@@ -687,6 +757,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
             }
         }
     }
+
     private void cleanupMCDI() {
 
         // Tag MCDI: no FieldKey for this tag, but code is the same for ID3v23 and ID3v24
@@ -1047,6 +1118,8 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         return false;
     }
     private void checkCustomTags() throws MP3Exception {
+        // cleans customized TXXX frames, like TXXX:compatible_brands
+        // it does not check the value, only the description
         List<TagField> customTags = this.tag.getFields(ID3v24Frames.FRAME_ID_USER_DEFINED_INFO);
         List<TagField> customTagsToKeep = new ArrayList<TagField>();
         boolean saveCustomTags = false;
@@ -1189,6 +1262,8 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         cleanupUFIDTags();
         cleanupMCDI();
         cleanupTSRC();
+        cleanupGEOB();
+        cleanupWXXX();
         /* check for multiple values in a field */
         for (FieldKey checkKey : FieldKey.values()){
             // skipping COMMENT for now. Not sure what to do with ITUNES Comments
