@@ -217,6 +217,9 @@ public interface MP3Service {
             add("(.*)www.pirates4all.com(.*)");
             add("(.*)RnBXclusive.se(.*)");
             add("(.*)URBANMUSiCDAiLY.NET(.*)");
+            add("(.*)www.musicasparabaixar.org(.*)");
+            add("(.*)www.t.me(.*)");
+
             add("^Digital Media");
             add("(.*)Pirate Shovon(.*)");
             add("^Poor$");
@@ -261,6 +264,8 @@ public interface MP3Service {
             add("^Alliance");
             add("^Collectables");
             add("^UMe");
+            add("^UMG Records");
+
 
             /* TFLT File type */
             add("^video/mp4");
@@ -277,7 +282,6 @@ public interface MP3Service {
             /* composer */
             add("(.*)Janis Ian(.*)");
             add("^Batt(.*)");
-            add("^Gorillaz(.*)");
             add("^Now.? [0-9]{1,3}(.*)");
             add("^islam(.*)");
 
@@ -343,9 +347,23 @@ public interface MP3Service {
             add("^(.*)Big Machine Records(.*)");
             add("^Universal(.*)");
             add("^Arista(.*)");
+
+            /* USLT Unsychronized lyric */
+            add("^I got my driver's license last week(.*)");
             add("^You have the bravest heart(.*)");
             add("^I know you told me not to ask where you have been(.*)");
             add("^I still regret I turned my back on you(.*)");
+            add("^But somethin' 'bout it still feels strange(.*)");
+            add("^Da, da, da, da, da, da(.*)");
+            add("^Prisoner, prisoner(.*)");
+            add("^I've been going through some things(.*)");
+            add("^Good day in my mind, safe to take a step out(.*)");
+            add("^Loyalty over royalty(.*)");
+            add("^A 40 HP Johnson(.*)");
+            add("^You're just like me only happy(.*)");
+
+            /* end */
+
             add("(.*)eurovision(.*)");
             add("^Now!");
             add("(.*)Them[a|e] song(.*)");
@@ -361,7 +379,7 @@ public interface MP3Service {
 
             /* publisher */
             add("^Now!? Music(.*)");
-            add("^EMI TV(.*)");
+            add("^EMI(.*)");
             add("^Photo Finish Records(.*)");
 
             /* encode by */
@@ -376,39 +394,157 @@ public interface MP3Service {
             /* also used for comments that should not be deleted an not shown as warning */
 
             /* Composer */
-
-            add("(.*)Ella Yelich-O'connor(.*)");
-            add("(.*)Jack Antonoff(.*)");
-            add("(.*)Joel Little(.*)");
-            add("(.*)R\\.? Kelly(.*)");
-            add("(.*)James Harris(.*)");
-            add("(.*)Michael Jackson(.*)");
-            add("(.*)Terry Lewis(.*)");
-            add("(.*)Rod Temperton(.*)");
-            add("(.*)Amerie Rogers(.*)");
-            add("(.*)Curtis Mayfields(.*)");
-            add("(.*)Toni Braxton(.*)");
-            add("(.*)Ivan Mathias(.*)");
-            add("(.*)Pharrell Williams(.*)");
-            add("(.*)Keri Lewis(.*)");
-            add("(.*)Babyface(.*)");
-            add("(.*)R\\.?(egie?)? Penxten(.*)");
-            add("(.*)Thomas Gunther(.*)");
-            add("(.*)Wim Claes(.*)");
-            add("(.*)T\\.? Reznikov(.*)");
-            add("(.*)M\\.? Delgado(.*)");
-            add("(.*)T\\.? Reznikov(.*)");
-            add("(.*)L\\.? Powell(.*)");
-            add("(.*)G\\.? Verhulst(.*)");
-            add("(.*)D\\.? Verbiest(.*)");
-            add("(.*)Peter Vanlaet(.*)");
-            add("(.*)Herman Van Molle(.*)");
-            add("(.*)K\\.? MacColl(.*)");
-            add("(.*)T\\.? Dice(.*)");
-            add("(.*)B\\.? Koning(.*)");
-            add("(.*)K\\.? MacColl(.*)");
-            add("(.*)K\\.? MacColl(.*)");
-            add("(.*)Taylor Swift(.*)");
+            add("Andre Marshall");
+            add("Sean Henriques");
+            add("Rohan Ashley Fuller");
+            add("Henderson//H. Seriki");
+            add("O.? Salinas");
+            add("H.? Seriki");
+            add("J.? Salinas");
+            add("M.? Crooms");
+            add("Faheem Najm");
+            add("Donald Pears");
+            add("Shaffer Smith");
+            add("Daniel Powter");
+            add("Slade");
+            add("Billy Mann");
+            add("KT Tunstall");
+            add("Marti Dodson");
+            add("Tyson Ritter");
+            add("Monty Powell");
+            add("R.? Richard");
+            add("Jeffrey Phillips");
+            add("Chester Jennings");
+            add("M.? S.? Eriksen");
+            add("Josh Alexander");
+            add("Peter Wallace");
+            add("D.? Kulash");
+            add("Hinder");
+            add("Steve McEwan");
+            add("DeAndre Way");
+            add("Carlos McKinney");
+            add("Stacy Ferguson");
+            add("Butch Walker");
+            add("Jeff Blue");
+            add("Tom Higgenson");
+            add("Brian Howes");
+            add("Chris Daughtry");
+            add("Jason Wade");
+            add("Jude Cole");
+            add("Tasleema Yasin");
+            add("LaShawn Daniels");
+            add("Sam Watters");
+            add("Sean Kingston");
+            add("Louis Biancaniello");
+            add("T-Pain");
+            add("Chris Brown");
+            add("Terius Nash");
+            add("Christopher Stewart");
+            add("Alicia Keys");
+            add("Ryan Tedder");
+            add("Martin Johnson");
+            add("Hayley Williams");
+            add("Josh Farro");
+            add("Finger Eleven");
+            add("Richard Marx");
+            add("Nicola Fasano");
+            add("Patrick Gonella");
+            add("Daniel Seraphine");
+            add("Christopher Henderson");
+            add("Jamie Foxx");
+            add("S.? Mescudi");
+            add("D-Way");
+            add("Eriksen");
+            add("Benny Blanco");
+            add("Julian De Martino");
+            add("Katie White");
+            add("Joe King");
+            add("Ben Wysocki");
+            add("Isaac Slade");
+            add("Nickelback");
+            add("Tom Douglas");
+            add("Diane Warren");
+            add("Red One");
+            add("J.? Skaller");
+            add("Aubrey Graham");
+            add("Christopher Stewart");
+            add("K.? Cossom");
+            add("Sly Dunbar");
+            add("Carl Young");
+            add("Robert Warren");
+            add("Ryan Tedder");
+            add("Sam Hollander");
+            add("Steve McEwan");
+            add("Benjamin Levin");
+            add("Dave Haywood");
+            add("Pebe Sebert");
+            add("Joshua Coleman");
+            add("Onika Maraj");
+            add("J.? Cole");
+            add("Dougie Mandagi");
+            add("Martin Johnson");
+            add("Steve Kipner");
+            add("Shane Stevens");
+            add("Tom Douglas");
+            add("Dave Barnes");
+            add("Marc Griffin");
+            add("Peter Munters");
+            add("Tommy Henriksen");
+            add("Nick Bailey");
+            add("Toby Gad");
+            add("Anita McCloud");
+            add("Joel Brentlinger");
+            add("RJ Lange");
+            add("Dan Pritzker");
+            add("Blair Daly");
+            add("Savan Kotecha");
+            add("Tim Pagnotta");
+            add("Ryan Tedder");
+            add("Sara Bareilles");
+            add("Hayley Williams");
+            add("Josh Steely");
+            add("Shimon Moore");
+            add("Paul Sprangers");
+            add("Laura Rogers");
+            add("Lydia Rogers");
+            add("Mark James");
+            add("Jacob Kasher Hindlin");
+            add("Benjamin Levin");
+            add("Jae Choung");
+            add("Virman Coquia");
+            add("Ilie Eduard Marian");
+            add("Janae Ratliff");
+            add("Christopher Gholson");
+            add("Milton James");
+            add("Tony Scales");
+            add("Jordan Witzigreuter");
+            add("Robin Ghosh");
+            add("Vincent Herbert");
+            add("Johnny Hammond");
+            add("Shawn Carter");
+            add("Dewayne Carter");
+            add("Curtis Jackson");
+            add("Jason Bowman");
+            add("Kris Ivory");
+            add("Skyler Gordy");
+            add("Shaffer Smith");
+            add("Nick Van De Wall");
+            add("Eric Judy");
+            add("Allen Pineda");
+            add("Noel Zancanella");
+            add("Colt Ford");
+            add("Ben Hayslip");
+            add("Rhett Akins");
+            add("Jonathan Yip");
+            add("Alex Geringas");
+            add("Noah Beresin");
+            add("Devin Tailes");
+            add("Solana Rowe");
+            add("Charlton Howard");
+            add("Luke Combs");
+            add("Daniel Klein");
+            add("");
+            add("");
 
         }
     };
