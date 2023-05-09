@@ -3,6 +3,8 @@ package be.home.domain.model.service;
 import be.home.common.mp3.MP3Utils;
 import be.home.common.utils.FileUtils;
 import be.home.main.mezzmo.MP3TagChecker;
+import be.home.mezzmo.domain.bo.ComposerBO;
+import be.home.mezzmo.domain.model.json.Composers;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.jaudiotagger.audio.exceptions.CannotReadException;
@@ -528,6 +530,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 add(FieldKey.ALBUM_ARTIST_SORT);
                 add(FieldKey.TITLE_SORT);
                 add(FieldKey.ARTIST_SORT);
+                add(FieldKey.COMPOSER);
             }
         };
         // Exclude PRIV tags from the cleanup Procedure. There is a separate cleanup for Private Tags
@@ -826,6 +829,45 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         }
     }
 
+    private void cleanupComposer(){
+        if (this.tag != null) {
+            String frameId = getFrameIdFromFieldKey(this.tag, FieldKey.COMPOSER);
+            List<TagField> tags = this.tag.getFields(frameId);
+            TagField tagField = null;
+            String value = null;
+            if (tags != null && tags.size() > 0) {
+                tagField = tags.get(0);
+                AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
+                FrameBodyTCOM frameCOM = (FrameBodyTCOM) frame.getBody();
+                value = frame.getContent();
+                if (StringUtils.isNotBlank(value)) {
+                    if (isCleanable(value)) {
+                        //tag.removeFrame(frameId);
+                        save = true;
+                        addWarning("Cleaning tag " + frameId + " " + getDescription(this.tag, frameId) +
+                                " (value=" + value + ")");
+                        tag.deleteField(frameId);
+                    } else {
+                        // show value unless it contains specific words
+                        if (!isExcludedWord(value) && !isExcludedComposer(value)) {
+                            // do not show values of BPM
+                            addWarning("Value found for tag: " + frameId + " " + getDescription(this.tag, frameId) +
+                                    " (value=" + value + ")");
+                        }
+                        else {
+                            log.info("Composer excluded: " + value);
+                        }
+                    }
+                }
+                else {
+                    this.tag.deleteField(frameId);
+                    save = true;
+                    addWarning("Empty COMPOSER frame deleted!");
+                }
+            }
+        }
+    }
+
     public void cleanupTag(String frameId) {
         if (this.tag != null) {
             List<TagField> tags = this.tag.getFields(frameId);
@@ -953,6 +995,21 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         }
         return false;
     }
+
+    public boolean isExcludedComposer(String value){
+        if (this.COMPOSER_EXCLUSION_LIST) {
+            ComposerBO composerBO = ComposerBO.getInstance();
+            for (Composers.Composer composer : composerBO.getComposers()) {
+                String pattern = "(.*)" + composer.getPattern() + "(.*)";
+                if (Pattern.matches("(?s)" + pattern.toUpperCase(), value.toUpperCase())) {
+                    log.info("Composer rule applied: " + pattern);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public void clearAlbumImage() {
         this.tag.deleteArtworkField();
     }
@@ -1445,6 +1502,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 }
             }
         }
+        cleanupComposer();
         cleanupPrivateTags();
         cleanupUFIDTags();
         cleanupMCDI();

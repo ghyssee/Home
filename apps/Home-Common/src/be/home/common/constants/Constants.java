@@ -73,6 +73,8 @@ public interface Constants {
         String ULTRATOP = "ultratop";
         String BACKUP = "backup";
         String ARTISTS = "artists";
+
+        String COMPOSERS = "composers";
         String MULTIARTISTCONFiG = "multiArtistConfig";
         String ARTISTSONGTEST = "artistSongTest";
         String ARTISTSONGRELATIONSHIP = "artistSongRelationship";
