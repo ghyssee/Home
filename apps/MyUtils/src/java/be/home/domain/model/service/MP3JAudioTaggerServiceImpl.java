@@ -592,7 +592,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         return true;
     }
 
-    private void CheckYear() throws MP3Exception {
+    private void checkYear() throws MP3Exception {
         String year = getYear();
         if (StringUtils.isBlank(year)){
             addWarning("YEAR is empty");
@@ -609,6 +609,38 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 }
                 else {
                     addWarning("YEAR is invalid: " + year);
+                }
+            }
+        }
+    }
+
+    private void checkDisc() throws MP3Exception {
+        String frameId = getFrameIdFromFieldKey(this.tag, FieldKey.DISC_NO);
+        if (this.tag.hasField(frameId)) {
+            List<TagField> tagFields = this.tag.getFields(frameId);
+            if (tagFields != null && tagFields.size() > 0) {
+                for (TagField tagField : tagFields) {
+                    AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
+                    FrameBodyTPOS frameBody = (FrameBodyTPOS) frame.getBody();
+                    String disc = frameBody.getText();
+                    if (StringUtils.isBlank(disc) || disc.equals("0")) {
+                        addWarning("Removing empty or ZERO DISC Tag: " + disc);
+                        this.save = true;
+                        deleteField(FieldKey.DISC_NO);
+                    } else {
+                        int discNo = 0;
+                        try {
+                            discNo = Integer.parseInt(disc);
+                            if (discNo == 0) {
+                                addWarning("Removing empty DISC Tag:" + disc);
+                                this.save = true;
+                                deleteField(FieldKey.DISC_NO);
+                            }
+                        } catch (NumberFormatException ex) {
+                            addWarning("Remove Invalid value for disc No: " + disc);
+                            deleteField(FieldKey.DISC_NO);
+                        }
+                    }
                 }
             }
         }
@@ -1520,7 +1552,8 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         }
         try {
             checkCustomTags();
-            CheckYear();
+            checkYear();
+            checkDisc();
             checkBPM();
         } catch (MP3Exception e) {
             // this should never occur
