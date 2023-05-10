@@ -628,17 +628,44 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                         this.save = true;
                         deleteField(FieldKey.DISC_NO);
                     } else {
-                        int discNo = 0;
-                        try {
-                            discNo = Integer.parseInt(disc);
-                            if (discNo == 0) {
-                                addWarning("Removing empty DISC Tag:" + disc);
+                        if (!KEEP_DISC_TOTAL) {
+                            if (frameBody.getText().contains("/")){
+                                this.save = true;
+                                if (frameBody.getDiscNoAsText() == null || frameBody.getDiscNo() == 0){
+                                    addWarning("Removing empty or Invalid DISC Tag:" + disc);
+                                    deleteField(FieldKey.DISC_NO);
+                                }
+                                else {
+                                    addWarning("Removing disc Total:" + disc);
+                                    setDisc(frameBody.getDiscNoAsText());
+                                }
+                            }
+                            else {
+                                if (frameBody.getDiscNoAsText() == null || frameBody.getDiscNo() == 0){
+                                    addWarning("Removing empty or Invalid DISC Tag:" + disc);
+                                    deleteField(FieldKey.DISC_NO);
+                                }
+                            }
+                        }
+                        else {
+                            // check if disc no + disc total are valid
+                            if (frameBody.getDiscNo() == null || frameBody.getDiscNo() == 0){
+                                addWarning("Remove Invalid value for disc No/disc Total: " + disc);
                                 this.save = true;
                                 deleteField(FieldKey.DISC_NO);
                             }
-                        } catch (NumberFormatException ex) {
-                            addWarning("Remove Invalid value for disc No: " + disc);
-                            deleteField(FieldKey.DISC_NO);
+                            if (frameBody.getText().contains("/")){
+                                if (frameBody.getDiscTotalAsText() == null){
+                                    addWarning("Removing invalid DISC Total: " + frameBody.getText());
+                                    this.save = true;
+                                    setDisc(frameBody.getDiscNoAsText());
+                                }
+                                else if (frameBody.getDiscTotal() == 0){
+                                    addWarning("Removing empty DISC Total: " + frameBody.getText());
+                                    this.save = true;
+                                    setDisc(frameBody.getDiscNoAsText());
+                                }
+                            }
                         }
                     }
                 }
@@ -1080,7 +1107,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 try {
                     this.tag.addField(fieldKey, val);
                     save = true;
-                    addWarning("Multiple values successfully deleted");
+                    addWarning("Multiple values successfully deleted + value saved="  + val);
                 } catch (FieldDataInvalidException e) {
                     throw new RuntimeException(e);
                 }

@@ -45,6 +45,9 @@ public interface MP3Service {
     // if enabled, it will check in a composers.json file if the composer is in there, so that it's excluded
     public boolean COMPOSER_EXCLUSION_LIST = true;
 
+    //
+    public boolean KEEP_DISC_TOTAL = false;
+
     public ArrayList<String> customTags = new ArrayList<String>() {
         {
             /* is used for cleanup of Custom TXXX Tags + Custom Comment Tags

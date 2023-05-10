@@ -194,7 +194,7 @@ private static void TestMovieFile(){
     private static void testJAudioTagger() throws IOException {
         //Composers composerFile = (Composers) JSONUtils.openJSONWithCode(Constants.JSON.COMPOSERS, Composers.class);
 
-        File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\TestCases\\17 Composer That Should not be cleaned.mp3");
+        File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\TestCases\\38 Zero Disc Total.mp3");
         File newFile = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\new.mp3");
        // TagOptionSingleton.getInstance().setOriginalSavedAfterAdjustingID3v2Padding(false);
        // TagOptionSingleton.getInstance().setRemoveTrailingTerminatorOnWrite(true);
