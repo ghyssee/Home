@@ -203,8 +203,9 @@ public interface MP3Service {
             add("^D?RJ/SNWTJE");
             add("^drj");
             add("^Team B&J");
-            add("^[0-9]{1,2}");
+            add("^[0-9]{1,2}\\+?\\+?");
             add("^\\. ?\\. ?\\. ?");
+            add("^0{7,7}(.*)");
             add("^\\(Radio Edit\\)");
             add("^gortha_ii@ferialaw.com(.*)");
 
@@ -265,6 +266,7 @@ public interface MP3Service {
             add("^rack:Web Page(.*)");
             add("^(.*)http\\://(.*)");
             add("^Mnm\\.Be");
+            add("^B2H & BUG");
 
             /* TIT1 Content group description */
             add("^PMEDIA");
@@ -276,6 +278,7 @@ public interface MP3Service {
             add("^Collectables");
             add("^UMe");
             add("^UMG Records");
+            add("^ExtremeReleases");
 
 
             /* TFLT File type */
@@ -411,16 +414,103 @@ public interface MP3Service {
 
             /* Composer */
             add("Antonio Stith");
-            add("");
-            add("");
-            add("");
-            add("");
-            add("");
-            add("");
-            add("");
-            add("");
-            add("");
-
+            add("Steve Aoki");
+            add("Ummet Ozcan");
+            add("A.? Bosse");
+            add("Sarah Aarons");
+            add("J.? Reeves");
+            add("D.? Reynolds");
+            add("Sam Butler");
+            add("D.? Zwaaneveld");
+            add("R.? Plasschaert");
+            add("Gers Pardoel");
+            add("M.? Thivaios");
+            add("F.? Laman");
+            add("V. Hanao");
+            add("Gerald Gillum");
+            add("Willem Ardui");
+            add("Troye Sivan Mellet");
+            add("Alisa Ueno");
+            add("Laura Groeseneken");
+            add("Nathaniel Rateliff");
+            add("G.? Tuinfort");
+            add("Luca Pecoraro");
+            add("A.? Bouchenak");
+            add("A.? Irwin");
+            add("Dimitri Thivaios");
+            add("L.? Wolfs");
+            add("Milo Meskens");
+            add("M.? Zoffoli");
+            add("J.? Willemsen");
+            add("Ma.tre Gims");
+            add("Julia Michaels");
+            add("H.? Salonen");
+            add("Nathan Evans");
+            add("Montero Hill");
+            add("Joris Van Rossem");
+            add("Jeffrey Goldford");
+            add("Alex Callier");
+            add("Haris Alagic");
+            add("Zoe Wees");
+            add("Mathieu Terryn");
+            add("Ine Tiolants");
+            add("Natalie Hemby");
+            add("Dimitri Thivaios");
+            add("Olivia Trappeniers");
+            add("Amy Allen");
+            add("James Crawford");
+            add("Tyron Hapi");
+            add("Robin Schulz");
+            add("Max Colombie");
+            add("Armen Paul");
+            add("Meskerem Mees");
+            add("Pommelien Thijs");
+            add("Sam de Jong");
+            add("Anson Long-Seabra");
+            add("Jonathan Vandenbroeck");
+            add("Kali Uchis");
+            add("urora Aksnes");
+            add("Magnus Skylstad");
+            add("Cristina Chiluiza");
+            add("Marco Masis");
+            add("Kygo");
+            add("Dimitri Thivaios");
+            add("Michael Thivaios");
+            add("Olivia Rodrigo");
+            add("Tijs Verwest");
+            add("Montero Hill");
+            add("Alagwu Michael Chigozie");
+            add("Stefan van Leijsen");
+            add("Felix de Laet");
+            add("Valentin Brunel");
+            add("Olivia Trappeniers");
+            add("Mathieu Terryn");
+            add("Alex Callier");
+            add("James Crawford");
+            add("Bob Gaudio");
+            add("Norma Jean Martine");
+            add("Brock Korsan");
+            add("Tino Schmidt");
+            add("Isab.l Usher");
+            add("Linus Wiklund");
+            add("Jaap Reesema");
+            add("Alvaro Soler");
+            add("George Sheppard");
+            add("Robin Schulz");
+            add("Haris Alagic");
+            add("Nathan Evans");
+            add("Joris Van Rossem");
+            add("Montero Hill");
+            add("Dave Evans");
+            add("Armen Paul");
+            add("Jeffrey Goldford");
+            add("Shane Codd");
+            add("Laura Tesoro");
+            add("Shawn Charles");
+            add("Shawn Mendes");
+            add("Tyron Hapi");
+            add("Mart Hoogkamer");
+            add("Amy Allen");
         }
     };
 

@@ -1083,7 +1083,28 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         catch (TagException e) {
             throw new MP3Exception(e);
         }
+    }
 
+    private void cleanupCustomPlayCount(){
+        String frameId = ID3v24Frames.FRAME_ID_PLAY_COUNTER;
+        if (this.tag instanceof ID3v23Tag) {
+            frameId = ID3v23Frames.FRAME_ID_V3_PLAY_COUNTER;
+        }
+        List<TagField> tagFields = this.tag.getFields(frameId);
+        boolean saveTag = false;
+        if (tagFields != null && tagFields.size() > 0){
+            for (TagField tagField : tagFields){
+                AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
+                FrameBodyPCNT frameBody = (FrameBodyPCNT) frame.getBody();
+                long counter = frameBody.getCounter();
+                addWarning ("Cleanup of Play Counter Frame: Value=" + counter);
+                saveTag = true;
+            }
+            if (saveTag) {
+                this.save = true;
+                this.tag.deleteField(frameId);
+            }
+        }
     }
 
     private void clearLanguage() {
@@ -1567,6 +1588,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         cleanupMCDI();
         cleanupTSRC();
         cleanupGEOB();
+        cleanupCustomPlayCount();
         cleanupWXXX();
         checkSortTags();
         checkRVA();
