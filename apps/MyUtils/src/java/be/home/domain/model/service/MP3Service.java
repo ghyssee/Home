@@ -45,6 +45,9 @@ public interface MP3Service {
     // if enabled, it will check in a composers.json file if the composer is in there, so that it's excluded
     public boolean COMPOSER_EXCLUSION_LIST = true;
 
+    // if enabled, Chapter frames will be deleted with cleanup procedure
+    public boolean CLEAN_CHAPTER = true;
+
     //
     public boolean KEEP_DISC_TOTAL = false;
 
@@ -59,6 +62,7 @@ public interface MP3Service {
             add("^MUSICBRAINZ(.*)");
             add("^WAVELIST(.*)");
             add("^RECORD LABEL(.)");
+            add("^TCMP");
 
             add("^Aan ?Geboden ?Door");
             add("^AccurateRip(.*)");
@@ -300,7 +304,7 @@ public interface MP3Service {
             add("^islam(.*)");
 
             /* TOWN */
-            add("^(.*drOhimself)(.*)");
+            add("^(.*)drOhimself(.*)");
 
             /* COMMENT descriptions */
             add("^00000000(.*)");
@@ -409,108 +413,11 @@ public interface MP3Service {
 
     public static ArrayList<String> composers = new ArrayList<String>() {
         {
-            /* when these words are found in one of the non standard tags, it's not considered as a warning */
-            /* also used for comments that should not be deleted an not shown as warning */
+            /* when these words are found in composer tag, it's not considered as a warning
+               This is used by import procedure to insert composers to the composers.json file */
 
             /* Composer */
             add("Antonio Stith");
-            add("Steve Aoki");
-            add("Ummet Ozcan");
-            add("A.? Bosse");
-            add("Sarah Aarons");
-            add("J.? Reeves");
-            add("D.? Reynolds");
-            add("Sam Butler");
-            add("D.? Zwaaneveld");
-            add("R.? Plasschaert");
-            add("Gers Pardoel");
-            add("M.? Thivaios");
-            add("F.? Laman");
-            add("V. Hanao");
-            add("Gerald Gillum");
-            add("Willem Ardui");
-            add("Troye Sivan Mellet");
-            add("Alisa Ueno");
-            add("Laura Groeseneken");
-            add("Nathaniel Rateliff");
-            add("G.? Tuinfort");
-            add("Luca Pecoraro");
-            add("A.? Bouchenak");
-            add("A.? Irwin");
-            add("Dimitri Thivaios");
-            add("L.? Wolfs");
-            add("Milo Meskens");
-            add("M.? Zoffoli");
-            add("J.? Willemsen");
-            add("Ma.tre Gims");
-            add("Julia Michaels");
-            add("H.? Salonen");
-            add("Nathan Evans");
-            add("Montero Hill");
-            add("Joris Van Rossem");
-            add("Jeffrey Goldford");
-            add("Alex Callier");
-            add("Haris Alagic");
-            add("Zoe Wees");
-            add("Mathieu Terryn");
-            add("Ine Tiolants");
-            add("Natalie Hemby");
-            add("Dimitri Thivaios");
-            add("Olivia Trappeniers");
-            add("Amy Allen");
-            add("James Crawford");
-            add("Tyron Hapi");
-            add("Robin Schulz");
-            add("Max Colombie");
-            add("Armen Paul");
-            add("Meskerem Mees");
-            add("Pommelien Thijs");
-            add("Sam de Jong");
-            add("Anson Long-Seabra");
-            add("Jonathan Vandenbroeck");
-            add("Kali Uchis");
-            add("urora Aksnes");
-            add("Magnus Skylstad");
-            add("Cristina Chiluiza");
-            add("Marco Masis");
-            add("Kygo");
-            add("Dimitri Thivaios");
-            add("Michael Thivaios");
-            add("Olivia Rodrigo");
-            add("Tijs Verwest");
-            add("Montero Hill");
-            add("Alagwu Michael Chigozie");
-            add("Stefan van Leijsen");
-            add("Felix de Laet");
-            add("Valentin Brunel");
-            add("Olivia Trappeniers");
-            add("Mathieu Terryn");
-            add("Alex Callier");
-            add("James Crawford");
-            add("Bob Gaudio");
-            add("Norma Jean Martine");
-            add("Brock Korsan");
-            add("Tino Schmidt");
-            add("Isab.l Usher");
-            add("Linus Wiklund");
-            add("Jaap Reesema");
-            add("Alvaro Soler");
-            add("George Sheppard");
-            add("Robin Schulz");
-            add("Haris Alagic");
-            add("Nathan Evans");
-            add("Joris Van Rossem");
-            add("Montero Hill");
-            add("Dave Evans");
-            add("Armen Paul");
-            add("Jeffrey Goldford");
-            add("Shane Codd");
-            add("Laura Tesoro");
-            add("Shawn Charles");
-            add("Shawn Mendes");
-            add("Tyron Hapi");
-            add("Mart Hoogkamer");
-            add("Amy Allen");
         }
     };
 

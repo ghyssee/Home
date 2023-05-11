@@ -561,6 +561,14 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         else if (frameId.equalsIgnoreCase(ID3v24Frames.FRAME_ID_ALBUM_SORT_ORDER)){
             return true;
         }
+        // Exclude CHAP tags from the cleanup Procedure. There is a separate cleanup for CHAP Tags
+        else if (frameId.equalsIgnoreCase(ID3v24Frames.FRAME_ID_CHAPTER)){
+            return true;
+        }
+        // Exclude CHAP tags from the cleanup Procedure. There is a separate cleanup for CHAP Tags
+        else if (frameId.equalsIgnoreCase(ID3v24Frames.FRAME_ID_CHAPTER_TOC)){
+            return true;
+        }
         else {
             for (FieldKey fieldKey : tagsToExcludeForCleanup) {
                 String excludedFrameId = "";
@@ -849,6 +857,55 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
             }
         }
     }
+
+    private void CleanupChapterFrame(String frameId){
+        List<TagField> tagFields = this.tag.getFields(frameId);
+        boolean saveTag = false;
+        if (tagFields != null && tagFields.size() > 0){
+            addWarning ("Chapter Frame found: " + frameId);
+            for (TagField tagField : tagFields) {
+                saveTag = true;
+                AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
+                AbstractTagFrameBody frameBody = frame.getBody();
+                Iterator<? extends AbstractDataType> iterator = null;
+                if (frameBody instanceof FrameBodyCHAP) {
+                    FrameBodyCHAP frameBodyCHAP = (FrameBodyCHAP) frame.getBody();
+                    iterator = frameBodyCHAP.iterator();
+                } else if (frameBody instanceof FrameBodyCTOC) {
+                    FrameBodyCTOC frameBodyCTOC = (FrameBodyCTOC) frame.getBody();
+                    iterator = frameBodyCTOC.iterator();
+                }
+                if (iterator != null){
+                    while (iterator.hasNext()){
+                        AbstractDataType ab = iterator.next();
+                        String id = ab.getIdentifier();
+                        Object value = ab.getValue();
+                        addWarning (id + "=" + value);
+                    }
+                    if (saveTag && CLEAN_CHAPTER) {
+                        this.save = true;
+                        this.tag.deleteField(frameId);
+                        addWarning ("Chapter Frame deleted: " + frameId);
+                    }
+                }
+            }
+        }
+    }
+
+    private void cleanupChapterInfo() {
+
+        // Tag CHAP: no FieldKey for this tag, but code is the same for ID3v23 and ID3v24
+        String frameId = ID3v23Frames.FRAME_ID_V3_CHAPTER;
+        if (this.tag instanceof ID3v24Tag){
+            frameId = ID3v24Frames.FRAME_ID_CHAPTER;
+        }
+        CleanupChapterFrame(frameId);
+
+        // Chapter TOC Frame
+        frameId = ID3v23Frames.FRAME_ID_V3_CHAPTER_TOC;
+        CleanupChapterFrame(frameId);
+    }
+
     private void checkBPM() throws MP3Exception {
         String bpm = getBPM();
         if (StringUtils.isNotBlank(bpm)){
@@ -1586,6 +1643,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         cleanupPrivateTags();
         cleanupUFIDTags();
         cleanupMCDI();
+        cleanupChapterInfo();
         cleanupTSRC();
         cleanupGEOB();
         cleanupCustomPlayCount();
