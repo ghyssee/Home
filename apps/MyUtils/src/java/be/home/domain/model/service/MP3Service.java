@@ -212,6 +212,7 @@ public interface MP3Service {
             add("^0{7,7}(.*)");
             add("^\\(Radio Edit\\)");
             add("^gortha_ii@ferialaw.com(.*)");
+            add("^music never dies(.*)");
 
             add("^(.*)DJ Bert(.*)");
             add("(.*)www.mediahuman.com(.*)");
@@ -283,6 +284,7 @@ public interface MP3Service {
             add("^UMe");
             add("^UMG Records");
             add("^ExtremeReleases");
+            add("^Import");
 
 
             /* TFLT File type */
@@ -366,6 +368,9 @@ public interface MP3Service {
             add("^Universal(.*)");
             add("^Arista(.*)");
 
+            /* TCOP Copyright  */
+            add("(.*)Universal Music(.*)");
+
             /* USLT Unsychronized lyric */
             add("^I got my driver's license last week(.*)");
             add("^You have the bravest heart(.*)");
@@ -382,8 +387,6 @@ public interface MP3Service {
             add("^Hmm \\(If swagg did it, it's depressing\\)(.*)");
             add("^Is there something I don’t know(.*)");
             add("^Such a perfect day(.*)");
-
-
 
             /* end */
 
