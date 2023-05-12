@@ -63,6 +63,11 @@ public interface MP3Service {
             add("^WAVELIST(.*)");
             add("^RECORD LABEL(.)");
             add("^TCMP");
+            add("^Facebook");
+            add("^Skype");
+            add("^Vbox7.com");
+            add("^Youtube.com");
+            add("^ERLPYAAGNIR_FERENEECL_UONDSE");
 
             add("^Aan ?Geboden ?Door");
             add("^AccurateRip(.*)");
@@ -192,6 +197,7 @@ public interface MP3Service {
             add("^WM/WMCollectionID(.*)");
             add("^WM/WMCollectionGroupID(.*)");
             add("^www.amazon.com(.*)");
+            add("^mailto:uits@7digital.com(.*)");
 
             /* end private frame owners */
 
@@ -271,7 +277,7 @@ public interface MP3Service {
             add("^rack:Web Page(.*)");
             add("^(.*)http\\://(.*)");
             add("^Mnm\\.Be");
-            add("^B2H & BUG");
+            add("^B2H(.*)");
 
             /* TIT1 Content group description */
             add("^PMEDIA");
@@ -285,6 +291,7 @@ public interface MP3Service {
             add("^UMG Records");
             add("^ExtremeReleases");
             add("^Import");
+            add("^Legacy");
 
 
             /* TFLT File type */
@@ -343,8 +350,6 @@ public interface MP3Service {
             add("^Telstar");
             add("^Copyright(.*)");
             add("^Credits(.*)");
-            add("^(.*)Sony Music Entertainment(.*)");
-            add("^Kontor Records");
             add("^Lavf5(.*)");
             add("^iTunes(.*)");
             add("^Exact Audio Copy(.*)");
@@ -354,22 +359,14 @@ public interface MP3Service {
             add("^lame(.*)");
             add("^Judith");
             add("^RCA(.*)");
-            add("^Island(.*)");
             add("^Tag&Rename(.*)");
             add("(.*)FreeRIP(.*)");
-            add("^Sony(.*)");
-            add("^Syco Music (.*)");
-            add("^Epic(.*)");
             add("(.*)Concept(.*)");
-            add("(.*)Regoli Music(.*)");
-            add("^Columbia(.*)");
-            add("^Interscope(.*)");
-            add("^(.*)Big Machine Records(.*)");
-            add("^Universal(.*)");
-            add("^Arista(.*)");
 
             /* TCOP Copyright  */
             add("(.*)Universal Music(.*)");
+            add("^(.*)Sony Music Entertainment(.*)");
+            add("^(.*)Big Machine Records(.*)"); // ex. (c) 2012 Big Machine Records, LLC)
 
             /* USLT Unsychronized lyric */
             add("^I got my driver's license last week(.*)");
@@ -387,14 +384,14 @@ public interface MP3Service {
             add("^Hmm \\(If swagg did it, it's depressing\\)(.*)");
             add("^Is there something I don’t know(.*)");
             add("^Such a perfect day(.*)");
+            add("All we ever hear from you is blah blah blah(.*)");
 
             /* end */
 
-            add("(.*)eurovision(.*)");
-            add("^Now!");
-            add("(.*)Them[a|e] song(.*)");
-            add("^Official(.*)");
-            add("(.*)Liefde voor Muziek(.*)");
+            add("(.*)eurovision(.*)"); // comment ex: Ijsland inzending eurovision 2020
+            add("(.*)Them[a|e] song(.*)"); // comment ex: Thema song TV serie  Lisa
+            add("^Official(.*)"); // comment ex: Official Uefa Euro 2020 Song
+            add("(.*)Liefde voor Muziek(.*)"); // comment
 
             /* TOPE */
             add("^(.*)Samuel Barber(.*)");
@@ -404,9 +401,23 @@ public interface MP3Service {
             add("(.*)-b=\"[0-9]{1,3}\" -freq=\"[0-9]{1,6}\"");
 
             /* publisher */
+            add("^Now!");
             add("^Now!? Music(.*)");
             add("^EMI(.*)");
             add("^Photo Finish Records(.*)");
+            add("^Cloud 9 Records(.*)");
+            add("^Sheffield Tunes(.*)");
+            add("^Mostiko(.*)");
+            add("^Kontor Records");
+            add("^Interscope(.*)");
+            add("^Syco Music (.*)");
+            add("^Columbia(.*)");
+            add("(.*)Regoli Music(.*)");
+            add("^Arista(.*)");
+            add("^Universal(.*)"); // Universal Music Group International
+            add("^Sony(.*)"); // Sony International // Sony Bmg
+            add("^Epic(.*)");
+            add("^Island(.*)"); // ex. Island (Universal)
 
             /* encode by */
             add("^Online Media Technologies(.*)");
@@ -421,6 +432,7 @@ public interface MP3Service {
 
             /* Composer */
             add("Antonio Stith");
+
         }
     };
 
