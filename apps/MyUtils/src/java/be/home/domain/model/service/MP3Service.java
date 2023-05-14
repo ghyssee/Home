@@ -68,6 +68,18 @@ public interface MP3Service {
             add("^Vbox7.com");
             add("^Youtube.com");
             add("^ERLPYAAGNIR_FERENEECL_UONDSE");
+            add("^YMP3HASH");
+            add("^TAGGER");
+            add("^WM/MEDIAPRIMARYCLASSID");
+            add("^WM/ENCODINGTIME");
+            add("^TYER");
+            add("^GN/ExtD(.*)");
+            add("^FILEOWNER");
+            add("^WEBSITE");
+            add("^DESCRIPTION");
+            add("^SCRIPT");
+            add("^originalyear");
+            add("^Acoustid(.*)");
 
             add("^Aan ?Geboden ?Door");
             add("^AccurateRip(.*)");
@@ -180,6 +192,13 @@ public interface MP3Service {
             add("^TITLE");
             add("^Songs-DB_Preference");
             add("^LABELNO");
+            add("^ID3v1 Comment");
+            add("^Disc");
+            add("^Part of a set");
+            add("^ISRC");
+            add("Tool Name");
+            add("^Tool Version");
+
 
             /* private frames owners */
             add("^Google/StoreId(.*)");
@@ -204,7 +223,14 @@ public interface MP3Service {
         }
     };
 
-    public ArrayList<String> cleanupWords = new ArrayList<String>() {
+    public ArrayList<String> cleanupTIT1 = new ArrayList<String>() {
+        {
+            add("^Various Artists");
+            add("^PMEDIA");
+        }
+    };
+
+            public ArrayList<String> cleanupWords = new ArrayList<String>() {
         {
             // used for other FRAMES like PRIVATE, ENCODED BY, COMPOSER,
             // TXXX, MEDIATYPE, URL, ...
@@ -216,9 +242,15 @@ public interface MP3Service {
             add("^[0-9]{1,2}\\+?\\+?");
             add("^\\. ?\\. ?\\. ?");
             add("^0{7,7}(.*)");
+            add("^-$");
             add("^\\(Radio Edit\\)");
             add("^gortha_ii@ferialaw.com(.*)");
             add("^music never dies(.*)");
+            add("^deosoft.com(.*)");
+            add("^4UsOnly.biz"); // found on multiple tags
+
+            /* TIT1 */
+            add("^Ultimate R&B");
 
             add("^(.*)DJ Bert(.*)");
             add("(.*)www.mediahuman.com(.*)");
@@ -226,6 +258,7 @@ public interface MP3Service {
             add("^Pop$");
             add("^Fireman$");
             add("^reserved$");
+            add("^AK$");
 
             add("mSm ?. ?[0-9]{1,4} ?Productions BV");
             add("(.*)Salvatoro(.*)");
@@ -233,11 +266,25 @@ public interface MP3Service {
             add("(.*)www.SongsLover.pk");
             add("(.*)www.MzHipHop.Me");
             add("(.*)www.MustJam.com");
+            add("(.*)Www.Genc.Ws");
+            add("(.*)Www.RnBXclusive.Com(.*)");
+            add("(.*)WWW.SOUNDREGGAE.COM(.*)");
             add("(.*)www.pirates4all.com(.*)");
+            add("(.*)www.21century-mp3(.*)");
+            add("(.*)Www.Nzb-Magic.Com(.*)");
+            add("(.*)nimbusmp3.com(.*)");
+            add("^#hardbeats");
             add("(.*)RnBXclusive.se(.*)");
             add("(.*)URBANMUSiCDAiLY.NET(.*)");
             add("(.*)www.musicasparabaixar.org(.*)");
             add("(.*)www.t.me(.*)");
+            add("^Fear KTMP3 Powah(.*)");
+            add("^<<LADiES NiGHT>>(.*)");
+            add("^Patjess? Place Music(.*)");
+            add("^wallys?");
+            add("^Tsawk");
+            add("^Dungeon\\(RNS/MYTH/DVNiSO\\)");
+            add("^Deep House -");
 
             add("^Digital Media");
             add("(.*)Pirate Shovon(.*)");
@@ -257,15 +304,33 @@ public interface MP3Service {
             add("^Oz$");
             add("^Ripped by(.*)");
             add("^UNTOUCHED");
+            add("^Gti$");
+            add("^Camps Leo");
+            add("^2MB2$");
+            add("^.\\:D2H\\:.");
 
             /* TMED */
             add("^(ANA|DIG|\\(?CD/DD\\)?|CD \\(?Lossless\\)?) >> (.*)");
+            add("^CD( \\(LP\\))? >> (.*)  \\((.*)\\)(.*)"); // CD (LP) >> High  (Lossy) [mp3]
+            add("^CD$");
+            add("^our >> (.*)"); // our >> Very High  (Lossy) [mp3]
 
             /* USLT */
             add("^TRI\\.BE(.*)");
+            add("^Www.YourNewMusic.NeT(.*)");
+            add("^NoFS$");
+            add("^Proudly Powered By Use-Next.nl(.*)");
+            add("^Uploaded by Greatone");
+            add("^STaT$");
+            add("^From VA-Album Re");
+            add("(.*)Lomasrankiao.com(.*)");
 
             /* TCOP */
             add("^Òîëüêî(.*)");
+            add("^Stefwan-Team(.*)");
+            add("^Www.Past2Present(.*)");
+            add("^Catz$");
+            add("^Hanterro$");
 
             /* WXXX */
             add("^h?ttp://(.*)");
@@ -275,12 +340,16 @@ public interface MP3Service {
             add("^newzbin release");
             add("^www.fb.co(.*)");
             add("^rack:Web Page(.*)");
-            add("^(.*)http\\://(.*)");
             add("^Mnm\\.Be");
             add("^B2H(.*)");
+            add("^www.RnB4U.in");
+            add("^Www.Futuretrance.De(.*)");
+            add("^www.hear-it-first.net"); // + other frames
+            add("^www.usenet-space-cowboys.online(.*)");
+            add("^BTH  rj/snwtje");
 
-            /* TIT1 Content group description */
-            add("^PMEDIA");
+            /* TIT3 Subtitle/Description refinement */
+            add("^WWW.ViPERiAL.COM");
 
             /* Publisher */
             add("^Tv Various");
@@ -292,7 +361,13 @@ public interface MP3Service {
             add("^ExtremeReleases");
             add("^Import");
             add("^Legacy");
-
+            add("^Www.Past2Present");
+            add("^Parlophone");
+            add("^Jive");
+            add("^News$");
+            add("^541$");
+            add("^N\\.?E\\.?W\\.?S\\.?$");
+            add("^News A - F 541");
 
             /* TFLT File type */
             add("^video/mp4");
@@ -305,18 +380,29 @@ public interface MP3Service {
             add("^Audio$");
             add("^MediaMonkey(.*)");
             add("^iCORM");
+            add("^WEB$");
 
             /* composer */
             add("(.*)Janis Ian(.*)");
             add("^Batt(.*)");
             add("^Now.? [0-9]{1,3}(.*)");
             add("^islam(.*)");
+            add("^maxima fm");
+            add("^Dj Jean");
 
             /* TOWN */
             add("^(.*)drOhimself(.*)");
 
+            /* TSRN Radio Name */
+            add("^Www.Yournewmusic.Net(.*)");
+
             /* COMMENT descriptions */
             add("^00000000(.*)");
+            add("^Media Jukebox$");
+            add(".::Y::S::P::(.*)");
+            add("^Warner Music$");
+            add("^www.goldesel.to");
+            add("^LANÇAMENTO NO BRASIL(.*)");
             add("^Track(.*)");
             add("^*(.*)Mp3Friends(.*)");
             add("(.*)DJ.lexus(.*)");
@@ -340,6 +426,23 @@ public interface MP3Service {
             add("(.*)ftn2Day.Nl(.*)");
             add("^Spread The Love");
             add("^Enjoy!");
+            add("^The Greatest MP3 Collection(.*)");
+            add("^None");
+            add("^.'\\:SPLiFF\\:'.");
+            add("^Freak37");
+            add("(.*)Released by VOLDiES(.*)");
+            add("^WRZmusic");
+            add("^Artist Partner Group");
+            add("^https?\\://losslessbest.net(.*)");
+
+            /* TKEY */
+            add("^A[#| ]m$");
+            add("^B[#| ]m$");
+            add("^c[#| ]m$");
+            add("^D[#| ]m$");
+            add("^E[#| ]m$");
+            add("^F[#| ]m$");
+            add("^G[#| ]m$");
         }
     };
 
@@ -367,6 +470,8 @@ public interface MP3Service {
             add("(.*)Universal Music(.*)");
             add("^(.*)Sony Music Entertainment(.*)");
             add("^(.*)Big Machine Records(.*)"); // ex. (c) 2012 Big Machine Records, LLC)
+            add("^(.*)Power Bass Production(.*)");
+            add("^(.*)Cnr Music Belgium(.*)");
 
             /* USLT Unsychronized lyric */
             add("^I got my driver's license last week(.*)");
@@ -392,13 +497,20 @@ public interface MP3Service {
             add("(.*)Them[a|e] song(.*)"); // comment ex: Thema song TV serie  Lisa
             add("^Official(.*)"); // comment ex: Official Uefa Euro 2020 Song
             add("(.*)Liefde voor Muziek(.*)"); // comment
+            add("^1.? ?\t? ?Megara vs.? DJ Lee - Into The Future(.*)"); // comment
+            add("^1.? ?\t? ?CJ Stone - Intro(.*)");  // comment
+            add("^1.? ?\t? ?Future Trance United - Anybody Out There(.*)");  // commentµ
+            add("^1.? ?\t? ?Future Trance United - Future Trance Vol.? 88(.*)");  // commentµ
+            add("^01 Balthazar - Bunker \\(Vuurwerk Endless Summer Remix\\)(.*)");
 
             /* TOPE */
             add("^(.*)Samuel Barber(.*)");
             add("^(.*) The Knack(.*)");
 
             /* TSSE */
-            add("(.*)-b=\"[0-9]{1,3}\" -freq=\"[0-9]{1,6}\"");
+            add("(.*)-b=\"[0-9]{1,3}\"(.*)");
+            // ex. -b="320" -encoding="SLOW" -freq="48000" -channels="stereo"
+            // ex. -b="320" -q="0" -channels="stereo"
 
             /* publisher */
             add("^Now!");
@@ -418,10 +530,49 @@ public interface MP3Service {
             add("^Sony(.*)"); // Sony International // Sony Bmg
             add("^Epic(.*)");
             add("^Island(.*)"); // ex. Island (Universal)
+            add("^Mca Nashville(.*)");
+            add("^(.*)Power Bass Production(.*)");
+            add("^Big Boy(.*)");
+            add("^Ars Entertainment Belgium(.*)");
+            add("(.*)^Mosley Music Group(.*)");
+            add("^A&M$");
+            add("^ZYX$");
+            add("^Warner Sunset(.*)");
+            add("^SMI$");
+            add("^SPG$");
+            add("^Savoy Jazz");
+            add("^Rhino");
+            add("^Capitol");
+            add("^Past Perfect");
+            add("^Ultra Records");
+            add("^Airplay");
+            add("^Disky(.*)");
+            add("^3.?5.?7 Music(.*)");
+            add("(.*)Interscope Records(.*)");
+            add("(.*)Play Two(.*)");
+            add("(.*)VL Records(.*)");
+            add("(.*)VRepublic Records(.*)");
+            add("(.*)RCA Records(.*)");
+            add("^Purple Money(.*)");
+            add("^Polydor Records(.*)");
+            add("^TF1 Entertainment(.*)");
+            add("^Wagram Music(.*)");
+            add("(.*)Capitol Music France(.*)");
+            add("^Rec. 118$");
+            add("^AWA$");
+            add("^Warner Music Benelux$");
+            add("^Cheeky Records");
+            add("^Dino Music Bv");
 
-            /* encode by */
+            /* TENC encode by */
             add("^Online Media Technologies(.*)");
             add("^NetStream AudioLab(.*)");
+            add("^dBpoweramp(.*)");
+            add("^AiR$");
+
+            /* WXXX */
+            add("^Stubru.Be$");
+
        }
     };
 
@@ -432,6 +583,8 @@ public interface MP3Service {
 
             /* Composer */
             add("Antonio Stith");
+            add("Maxi Jazz");
+            add("Def Jam");
 
         }
     };

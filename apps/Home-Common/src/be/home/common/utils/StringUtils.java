@@ -8,4 +8,9 @@ public class StringUtils {
         BigInteger bi = new BigInteger(1, bytes);
         return String.format("%0" + (bytes.length << 1) + "X", bi);
     }
+
+    public static boolean isBlank(String text){
+        return org.apache.commons.lang3.StringUtils.isBlank(text.replaceAll("\0", ""));
+    }
+
 }
