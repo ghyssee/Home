@@ -13,4 +13,7 @@ public class StringUtils {
         return org.apache.commons.lang3.StringUtils.isBlank(text.replaceAll("\0", ""));
     }
 
+    public static String removeNull(String text){
+        return text.replaceAll("\0", "");
+    }
 }

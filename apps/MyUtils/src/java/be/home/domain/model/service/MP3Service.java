@@ -1,8 +1,5 @@
 package be.home.domain.model.service;
 
-import org.jaudiotagger.tag.FieldDataInvalidException;
-import org.jaudiotagger.tag.Tag;
-
 import java.util.ArrayList;
 
 public interface MP3Service {
@@ -199,7 +196,6 @@ public interface MP3Service {
             add("Tool Name");
             add("^Tool Version");
 
-
             /* private frames owners */
             add("^Google/StoreId(.*)");
             add("^Google/StoreLabelCode(.*)");
@@ -223,78 +219,63 @@ public interface MP3Service {
         }
     };
 
-    public ArrayList<String> cleanupTIT1 = new ArrayList<String>() {
+    public ArrayList<String> globalCleanupWords = new ArrayList<String>() {
         {
-            add("^Various Artists");
-            add("^PMEDIA");
-        }
-    };
+            /* checked globals */
 
-            public ArrayList<String> cleanupWords = new ArrayList<String>() {
-        {
-            // used for other FRAMES like PRIVATE, ENCODED BY, COMPOSER,
-            // TXXX, MEDIATYPE, URL, ...
-            // also used for COMMENT tags for the content (not customized comment descriptors)
-            add("^http\\://(.*)");
             add("^D?RJ/SNWTJE");
-            add("^drj");
             add("^Team B&J");
-            add("^[0-9]{1,2}\\+?\\+?");
-            add("^\\. ?\\. ?\\. ?");
-            add("^0{7,7}(.*)");
             add("^-$");
-            add("^\\(Radio Edit\\)");
-            add("^gortha_ii@ferialaw.com(.*)");
-            add("^music never dies(.*)");
-            add("^deosoft.com(.*)");
             add("^4UsOnly.biz"); // found on multiple tags
-
-            /* TIT1 */
-            add("^Ultimate R&B");
-
-            add("^(.*)DJ Bert(.*)");
-            add("(.*)www.mediahuman.com(.*)");
-            add("(.*)www.universalmusic.nl(.*)");
-            add("^Pop$");
-            add("^Fireman$");
+            add("(.*)www.MzHipHop.Me");
+            add("^gortha_ii@ferialaw.com(.*)");
             add("^reserved$");
             add("^AK$");
-
-            add("mSm ?. ?[0-9]{1,4} ?Productions BV");
-            add("(.*)Salvatoro(.*)");
-            add("(.*)Scorpio(.*)");
-            add("(.*)www.SongsLover.pk");
-            add("(.*)www.MzHipHop.Me");
             add("(.*)www.MustJam.com");
-            add("(.*)Www.Genc.Ws");
             add("(.*)Www.RnBXclusive.Com(.*)");
             add("(.*)WWW.SOUNDREGGAE.COM(.*)");
             add("(.*)www.pirates4all.com(.*)");
             add("(.*)www.21century-mp3(.*)");
             add("(.*)Www.Nzb-Magic.Com(.*)");
             add("(.*)nimbusmp3.com(.*)");
-            add("^#hardbeats");
+            add("(.*)www.t.me(.*)");
+            add("(.*)Www.Genc.Ws");
+            add("^(.*)RUnderground.ru(.*)");
             add("(.*)RnBXclusive.se(.*)");
             add("(.*)URBANMUSiCDAiLY.NET(.*)");
-            add("(.*)www.musicasparabaixar.org(.*)");
-            add("(.*)www.t.me(.*)");
+            add("^http\\://(.*)");
+            add("^https?\\://losslessbest.net(.*)");
+            add("^\\.$");
+            add("(.*)www.MustJam.com(.*)");
+            add("(.*)www.musicasparabaixar.org(.*)"); // COMMENT
+            add("(.*)www.SongsLover.pk"); // COMMENT
+            add("^Www.YourNewMusic.NeT(.*)");
+
+            /* non checked globals */
+
+            add("mSm ?. ?[0-9]{1,4} ?Productions BV"); // COMM
+
+            add("^Pop$"); // Comment
+            add("^Fireman$"); // Publisher
+            add("^Rights Reserved"); // COMPOSER
+
+            add("(.*)Salvatoro(.*)"); // TPUB + TCOP
+            add("(.*)Scorpio(.*)"); // TENC
+            add("^#hardbeats"); // COMMENT
             add("^Fear KTMP3 Powah(.*)");
             add("^<<LADiES NiGHT>>(.*)");
-            add("^Patjess? Place Music(.*)");
-            add("^wallys?");
-            add("^Tsawk");
-            add("^Dungeon\\(RNS/MYTH/DVNiSO\\)");
-            add("^Deep House -");
+            add("^Patjess? Place Music(.*)"); // COMMENT
+            add("^Dungeon\\(RNS/MYTH/DVNiSO\\)"); // COMMENT
+            add("^Deep House -"); // COMMENT
 
             add("^Digital Media");
             add("(.*)Pirate Shovon(.*)");
-            add("^Poor$");
-            add("^Good$");
-            add("^Fair$");
-            add("^Excellent$");
-            add("^Very Good$");
-            add("^AverageLevel(.*)");
-            add("^RUnderground.ru(.*)");
+            add("^Poor$");  // COMMENT
+            add("^Good$"); // COMMENT
+            add("^Fair$"); // COMMENT
+            add("^Excellent$"); // COMMENT
+            add("^Very Good$"); // COMMENT
+            add("^AverageLevel(.*)"); // COMMENT
             add("^Warner Bros(.*)");
 
             /* TENC encoded by */
@@ -317,7 +298,6 @@ public interface MP3Service {
 
             /* USLT */
             add("^TRI\\.BE(.*)");
-            add("^Www.YourNewMusic.NeT(.*)");
             add("^NoFS$");
             add("^Proudly Powered By Use-Next.nl(.*)");
             add("^Uploaded by Greatone");
@@ -390,32 +370,24 @@ public interface MP3Service {
             add("^maxima fm");
             add("^Dj Jean");
 
-            /* TOWN */
-            add("^(.*)drOhimself(.*)");
-
             /* TSRN Radio Name */
             add("^Www.Yournewmusic.Net(.*)");
 
             /* COMMENT descriptions */
-            add("^00000000(.*)");
             add("^Media Jukebox$");
             add(".::Y::S::P::(.*)");
             add("^Warner Music$");
             add("^www.goldesel.to");
             add("^LANÇAMENTO NO BRASIL(.*)");
-            add("^Track(.*)");
+
             add("^*(.*)Mp3Friends(.*)");
             add("(.*)DJ.lexus(.*)");
             add("^ejdE10");
             add("(.*)www.SongsLover.pk");
             add("(.*)www.MzHipHop.Me");
-            add("(.*)www.MustJam.com");
             add("(.*)RnBXclusive.se(.*)");
             add("(.*)URBANMUSiCDAiLY.NET(.*)");
-            add("^\\.$");
-            add("Eddie2011");
             add("^DMC$");
-            add("^Aaa$");
             add("^(.*)flacless.com(.*)");
             add("^(.*)www.israbox.com");
             add("^(.*)www.updatedmp3s.com(.*)");
@@ -433,20 +405,48 @@ public interface MP3Service {
             add("(.*)Released by VOLDiES(.*)");
             add("^WRZmusic");
             add("^Artist Partner Group");
-            add("^https?\\://losslessbest.net(.*)");
-
-            /* TKEY */
-            add("^A[#| ]m$");
-            add("^B[#| ]m$");
-            add("^c[#| ]m$");
-            add("^D[#| ]m$");
-            add("^E[#| ]m$");
-            add("^F[#| ]m$");
-            add("^G[#| ]m$");
         }
     };
 
-    public ArrayList<String> excludeWords = new ArrayList<String>() {
+    public ArrayList<MP3FramePattern> cleanupFrameWords = new ArrayList<MP3FramePattern>() {
+        {
+            add(new MP3FramePattern("COMM", "^music never dies(.*)"));
+            add(new MP3FramePattern("COMM", "^deosoft.com(.*)"));
+            add(new MP3FramePattern("COMM", "(.*)www.mediahuman.com(.*)"));
+            add(new MP3FramePattern("COMM", "^[0-9]{1,2}\\\\+?\\\\+?\""));
+            add(new MP3FramePattern("COMM", "^\\. ?\\. ?\\. ?"));
+            add(new MP3FramePattern("COMM", "^0{7,8}(.*)"));
+            add(new MP3FramePattern("COMM", "^\\(Radio Edit\\)"));
+            add(new MP3FramePattern("COMM", "^drj"));
+            add(new MP3FramePattern("COMM", "^Track(.*)"));
+            add(new MP3FramePattern("COMM", "^wallys?"));
+            add(new MP3FramePattern("COMM", "^Tsawk"));
+            add(new MP3FramePattern("COMM", "^Eddie2011"));
+            add(new MP3FramePattern("COMM", "^Aaa$"));
+
+            add(new MP3FramePattern("TIT1", "^Various Artists"));
+            add(new MP3FramePattern("TIT1", "^PMEDIA"));
+            add(new MP3FramePattern("TIT1", "^Ultimate R&B"));
+
+            add(new MP3FramePattern("TENC", "^(.*)DJ Bert(.*)"));
+
+            add(new MP3FramePattern("TKEY", "^A[#| ]m$"));
+            add(new MP3FramePattern("TKEY", "^B[#| ]m$"));
+            add(new MP3FramePattern("TKEY", "^C[#| ]m$"));
+            add(new MP3FramePattern("TKEY", "^D[#| ]m$"));
+            add(new MP3FramePattern("TKEY", "^E[#| ]m$"));
+            add(new MP3FramePattern("TKEY", "^F[#| ]m$"));
+            add(new MP3FramePattern("TKEY", "^G[#| ]m$"));
+
+            add(new MP3FramePattern("TOWN", "^(.*)drOhimself(.*)"));
+
+            add(new MP3FramePattern("WXXX", "(.*)www.universalmusic.nl(.*)"));
+
+            //add(new MP3FramePattern("COMM", ""));
+    }
+    };
+
+    public ArrayList<String> globalExcludeWords = new ArrayList<String>() {
         {
             /* when these words are found in one of the non standard tags, it's not considered as a warning */
             /* also used for comments that should not be deleted an not shown as warning */
@@ -474,7 +474,6 @@ public interface MP3Service {
             add("^(.*)Cnr Music Belgium(.*)");
 
             /* USLT Unsychronized lyric */
-            add("^I got my driver's license last week(.*)");
             add("^You have the bravest heart(.*)");
             add("^I know you told me not to ask where you have been(.*)");
             add("^I still regret I turned my back on you(.*)");
@@ -493,7 +492,6 @@ public interface MP3Service {
 
             /* end */
 
-            add("(.*)eurovision(.*)"); // comment ex: Ijsland inzending eurovision 2020
             add("(.*)Them[a|e] song(.*)"); // comment ex: Thema song TV serie  Lisa
             add("^Official(.*)"); // comment ex: Official Uefa Euro 2020 Song
             add("(.*)Liefde voor Muziek(.*)"); // comment
@@ -507,10 +505,6 @@ public interface MP3Service {
             add("^(.*)Samuel Barber(.*)");
             add("^(.*) The Knack(.*)");
 
-            /* TSSE */
-            add("(.*)-b=\"[0-9]{1,3}\"(.*)");
-            // ex. -b="320" -encoding="SLOW" -freq="48000" -channels="stereo"
-            // ex. -b="320" -q="0" -channels="stereo"
 
             /* publisher */
             add("^Now!");
@@ -542,38 +536,59 @@ public interface MP3Service {
             add("^SPG$");
             add("^Savoy Jazz");
             add("^Rhino");
-            add("^Capitol");
-            add("^Past Perfect");
-            add("^Ultra Records");
-            add("^Airplay");
-            add("^Disky(.*)");
-            add("^3.?5.?7 Music(.*)");
-            add("(.*)Interscope Records(.*)");
-            add("(.*)Play Two(.*)");
-            add("(.*)VL Records(.*)");
-            add("(.*)VRepublic Records(.*)");
-            add("(.*)RCA Records(.*)");
-            add("^Purple Money(.*)");
-            add("^Polydor Records(.*)");
-            add("^TF1 Entertainment(.*)");
-            add("^Wagram Music(.*)");
-            add("(.*)Capitol Music France(.*)");
-            add("^Rec. 118$");
-            add("^AWA$");
-            add("^Warner Music Benelux$");
-            add("^Cheeky Records");
-            add("^Dino Music Bv");
-
-            /* TENC encode by */
-            add("^Online Media Technologies(.*)");
-            add("^NetStream AudioLab(.*)");
-            add("^dBpoweramp(.*)");
-            add("^AiR$");
-
-            /* WXXX */
-            add("^Stubru.Be$");
 
        }
+    };
+
+    public ArrayList<MP3FramePattern> frameSpecificExcludedWords = new ArrayList<MP3FramePattern>() {
+        {
+            /* COMM */
+            add(new MP3FramePattern("COMM", "(.*)eurovision(.*)"));
+            //add(new MP3FramePattern("COMM", ""));
+
+            /* USLT */
+            add(new MP3FramePattern("USLT", "^I got my driver's license last week(.*)"));
+
+            // /* WXXX */
+            add(new MP3FramePattern("WXXX", "^Stubru.Be$"));
+            //add(new MP3FramePattern("COMM", ""));
+
+            /* TENC */
+            add(new MP3FramePattern("TENC", "^Online Media Technologies(.*)"));
+            add(new MP3FramePattern("TENC", "^Online Media Technologies(.*)"));
+            add(new MP3FramePattern("TENC", "^dBpoweramp(.*)"));
+            add(new MP3FramePattern("TENC", "^AiR$"));
+            add(new MP3FramePattern("TENC", "^Lame(.*)"));
+
+            /* TSSE */
+            add(new MP3FramePattern("TSSE", "(.*)-b=\"[0-9]{1,3}\"(.*)"));
+            // ex. -b="320" -encoding="SLOW" -freq="48000" -channels="stereo"
+            // ex. -b="320" -q="0" -channels="stereo"
+
+            /* TPUB */
+            add(new MP3FramePattern("TPUB", "^Dino Music Bv"));
+            add(new MP3FramePattern("TPUB", "^Cheeky Records"));
+            add(new MP3FramePattern("TPUB", "^Warner Music Benelux$"));
+            add(new MP3FramePattern("TPUB", "^AWA$"));
+            add(new MP3FramePattern("TPUB", "^Rec. 118$"));
+            add(new MP3FramePattern("TPUB", "(.*)VL Records(.*)"));
+            add(new MP3FramePattern("TPUB", "(.*)VRepublic Records(.*)"));
+            add(new MP3FramePattern("TPUB", "(.*)RCA Records(.*)"));
+            add(new MP3FramePattern("TPUB", "^Purple Money(.*)"));
+            add(new MP3FramePattern("TPUB", "^Polydor Records(.*)"));
+            add(new MP3FramePattern("TPUB", "^TF1 Entertainment(.*)"));
+            add(new MP3FramePattern("TPUB", "^Wagram Music(.*)"));
+            add(new MP3FramePattern("TPUB", "(.*)Capitol Music France(.*)"));
+            add(new MP3FramePattern("TPUB", "^Capitol"));
+            add(new MP3FramePattern("TPUB", "^Past Perfect"));
+            add(new MP3FramePattern("TPUB", "^Ultra Records"));
+            add(new MP3FramePattern("TPUB", "^Airplay"));
+            add(new MP3FramePattern("TPUB", "^Disky(.*)"));
+            add(new MP3FramePattern("TPUB", "^3.?5.?7 Music(.*)"));
+            add(new MP3FramePattern("TPUB", "(.*)Interscope Records(.*)"));
+            add(new MP3FramePattern("TPUB", "(.*)Play Two(.*)");
+
+        }
     };
 
     public static ArrayList<String> composers = new ArrayList<String>() {
@@ -610,9 +625,6 @@ public interface MP3Service {
     public void setBPM(String bpm) throws MP3Exception;
     public void cleanupTags();
     public void clearAlbumImage();
-
-    public boolean isCleanable(String value);
-
     public void commit() throws MP3Exception;
     public void cleanupTag(String frameId);
 
@@ -623,7 +635,4 @@ public interface MP3Service {
 
     public String getFile();
 
-    public Tag getTag();
-
-    public void setTag(Tag tag);
 }

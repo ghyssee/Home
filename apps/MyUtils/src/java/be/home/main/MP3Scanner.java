@@ -275,7 +275,7 @@ public class MP3Scanner extends BatchJobV2 {
             File newFile = new File(Setup.getInstance().getFullPath(Constants.Path.TMP) + File.separator + "Ultratop" + File.separator + oldFile.getName());
             Files.copy(oldFile.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
             MP3Service newMP3File = new MP3JAudioTaggerServiceImpl(newFile.getAbsolutePath(), false);
-            newMP3File.setTag(mp3File.getTag());
+            //newMP3File.setTag(mp3File.getTag());
             // set rating to WMP
             int rating = newMP3File.getRating();
             newMP3File.setRating(rating);
