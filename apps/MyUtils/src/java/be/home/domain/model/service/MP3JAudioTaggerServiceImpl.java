@@ -1144,7 +1144,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         value = be.home.common.utils.StringUtils.removeNull(value);
         for (MP3FramePattern cleanupPattern : list){
             if (frameId.equalsIgnoreCase(cleanupPattern.getFrameId()) && Pattern.matches("(?s)" + cleanupPattern.getPattern().toLowerCase(), value.toLowerCase())) {
-                addWarning("Found Match: Frame: " + frameId + " - Pattern: " + cleanupPattern.getPattern());
+                addWarning("Found Match for Frame " + frameId + " - Pattern: " + cleanupPattern.getPattern());
                 return true;
             }
         }
@@ -1365,7 +1365,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 }
             }
             else {
-                // do nothing. Original Frame does not contain the wrong Id
+                // do nothing. Destination Frame does not contain the wrong Id
             }
         }
         if (tag.hasFrame(wrongId) && tag.hasFrame(goodId)) {

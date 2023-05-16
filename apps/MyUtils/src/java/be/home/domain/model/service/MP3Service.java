@@ -544,6 +544,7 @@ public interface MP3Service {
 
             /* TSSE */
             add(new MP3FramePattern("TSSE", "^Audiograbber(.*)"));
+            add(new MP3FramePattern("TSSE", "^Lavf5(.*)"));
             add(new MP3FramePattern("TSSE", "(.*)-b=\"[0-9]{1,3}\"(.*)"));
             // ex. -b="320" -encoding="SLOW" -freq="48000" -channels="stereo"
             // ex. -b="320" -q="0" -channels="stereo"

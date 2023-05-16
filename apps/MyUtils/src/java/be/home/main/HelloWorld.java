@@ -194,7 +194,7 @@ private static void TestMovieFile(){
     private static void testJAudioTagger() throws IOException {
         //Composers composerFile = (Composers) JSONUtils.openJSONWithCode(Constants.JSON.COMPOSERS, Composers.class);
 
-        File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\TestCases\\38 Zero Disc Total.mp3");
+        File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\TestCases\\02 TLEN ID3v23.mp3");
         File newFile = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\new.mp3");
        // TagOptionSingleton.getInstance().setOriginalSavedAfterAdjustingID3v2Padding(false);
        // TagOptionSingleton.getInstance().setRemoveTrailingTerminatorOnWrite(true);
@@ -208,7 +208,6 @@ private static void TestMovieFile(){
                 System.out.println(mp3File.getComment());
                 System.out.println(mp3File.getArtist());
                 System.out.println(mp3File.getUrl());
-                System.out.println("Is Cleanable: " + mp3File.isCleanable("mSm © 2021 Productions BV"));
                 //mp3File.setArtist("Kings Of Leon");
                 //mp3File.setTitle("On The Fly");
                 //mp3File.setCompilation(true);
