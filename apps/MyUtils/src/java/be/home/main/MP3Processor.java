@@ -351,7 +351,7 @@ public class MP3Processor extends BatchJobV2 {
         Files.copy(originalFile.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
         try {
-            MP3Service mp3File = new MP3JAudioTaggerServiceImpl(newFile.getAbsolutePath(), true);
+            MP3Service mp3File = new MP3JAudioTaggerServiceImpl(newFile.getAbsolutePath(), false);
             System.out.println("Track: " + mp3File.getTrack());
             System.out.println("NEW Track: " + MP3Helper.getInstance().formatTrack(album, track.track, index));
             System.out.println(StringUtils.repeat('=', 100));
@@ -390,7 +390,6 @@ public class MP3Processor extends BatchJobV2 {
             mp3File.setTrack(MP3Helper.getInstance().formatTrack(album, track.track,index));
             mp3File.setArtist(track.artist);
             mp3File.setTitle(track.title);
-            mp3File.cleanupTags();
             mp3File.clearAlbumImage();
             if (album.total > 1) {
                 mp3File.setDisc(track.cd);
@@ -398,6 +397,7 @@ public class MP3Processor extends BatchJobV2 {
             else {
                 mp3File.setDisc(null);
             }
+            mp3File.analyze();
             mp3File.commit();
         } catch (MP3Exception e) {
             e.printStackTrace();

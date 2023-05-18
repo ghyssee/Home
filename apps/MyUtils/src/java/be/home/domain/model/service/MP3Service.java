@@ -196,6 +196,10 @@ public interface MP3Service {
             add("Tool Name");
             add("^Tool Version");
             add("^author");
+            add("^Intensity");
+            add("^COMMANDS");
+            add("^WE SUCCEED WHERE(.*)");
+            add("^BAND");
 
             /* private frames owners */
             add("^Google/StoreId(.*)");
@@ -268,6 +272,11 @@ public interface MP3Service {
             add("^(.*)www.israbox.com(.*)");
             add("^(.*)www.updatedmp3s.com(.*)");
             add("^(.*)flacless.com(.*)");
+            add("^B2H$");
+            add("^(.*)wWw.TopMuzik.info(.*)");
+            add("^(.*)skydevilshoekje.clubs.nl(.*)");
+            add("^(.*)www.usenetrevolution.info(.*)");
+            add("^(.*)va-album.com(.*)");
 
             /* non checked globals */
         }
@@ -280,7 +289,7 @@ public interface MP3Service {
             add(new MP3FramePattern("COMM", "^music never dies(.*)"));
             add(new MP3FramePattern("COMM", "^deosoft.com(.*)"));
             add(new MP3FramePattern("COMM", "(.*)www.mediahuman.com(.*)"));
-            add(new MP3FramePattern("COMM", "^[0-9]{1,2}\\\\+?\\\\+?\""));
+            add(new MP3FramePattern("COMM", "^[0-9]{1,2}\\+?\\+?"));
             add(new MP3FramePattern("COMM", "^\\. ?\\. ?\\. ?"));
             add(new MP3FramePattern("COMM", "^ ?^0{7,8}(.*)"));
             add(new MP3FramePattern("COMM", "^\\(Radio Edit\\)"));
@@ -323,6 +332,14 @@ public interface MP3Service {
             add(new MP3FramePattern("COMM", "^ejdE10"));
             add(new MP3FramePattern("COMM", "^DMC$"));
             add(new MP3FramePattern("COMM", "^^DIG$"));
+            add(new MP3FramePattern("COMM", "^Converted with ClipConverter(.*)"));
+            add(new MP3FramePattern("COMM", "^aquarius"));
+            add(new MP3FramePattern("COMM", "^Sound Of Bass"));
+            add(new MP3FramePattern("COMM", "(.*)division of Universal Music(.*)"));
+            add(new MP3FramePattern("COMM", "^orangeb"));
+            add(new MP3FramePattern("COMM", "^(.*)YEAR ?\\: ?[0-9]{2,4}(.*)"));
+            add(new MP3FramePattern("COMM", "^^MP3$"));
+            add(new MP3FramePattern("COMM", "^Arcade (.*)")); // Arcade ‎– 01 6382 6
 
             /* TIT1 */
             //add(new MP3FramePattern("TIT1", ""));
@@ -330,6 +347,19 @@ public interface MP3Service {
             add(new MP3FramePattern("TIT1", "^PMEDIA"));
             add(new MP3FramePattern("TIT1", "^Ultimate R&B"));
             add(new MP3FramePattern("TIT1", "^CD-R"));
+            add(new MP3FramePattern("TIT1", "^[0-9]{1,3}$"));
+            add(new MP3FramePattern("TIT1", "^Dance-Pop(.*)"));
+            add(new MP3FramePattern("TIT1", "(.*)Hard Rock(.*))"));
+
+            /* TIT3 Subtitle/Description refinement */
+            //add(new MP3FramePattern("TIT3", ""));
+            add(new MP3FramePattern("TIT3", "^Live"));
+            add(new MP3FramePattern("TIT3", "^WWW.ViPERiAL.COM"));
+            add(new MP3FramePattern("TIT3", "^Encoded with(.*)"));
+
+            /* TPE4 Interpreted, remixed, or otherwise modified by */
+            //add(new MP3FramePattern("TPE4", ""));
+            add(new MP3FramePattern("TPE4", "^VA$"));
 
             /* TKEY */
             //add(new MP3FramePattern("TKEY", ""));
@@ -341,6 +371,9 @@ public interface MP3Service {
             add(new MP3FramePattern("TKEY", "^F[#| ]m$"));
             add(new MP3FramePattern("TKEY", "^G[#| ]m$"));
             add(new MP3FramePattern("TKEY", "^B2Happ"));
+            add(new MP3FramePattern("TKEY", "^[0-9]{1,2}[A-Z]$"));
+            add(new MP3FramePattern("TKEY", "^ToM$"));
+            add(new MP3FramePattern("TKEY", "^B2happin$"));
 
             /* WXXX */
             //add(new MP3FramePattern("WXXX", ""));
@@ -396,6 +429,12 @@ public interface MP3Service {
             add(new MP3FramePattern("TPUB", "^News A - F 541"));
             add(new MP3FramePattern("TPUB", "^Fireman$"));
             add(new MP3FramePattern("TPUB", "^Concept$"));
+            add(new MP3FramePattern("TPUB", "^Smash The House"));
+            add(new MP3FramePattern("TPUB", "^Pump Up The 90s"));
+            add(new MP3FramePattern("TPUB", "^Dance Pool$"));
+            add(new MP3FramePattern("TPUB", "^Düff$"));
+            add(new MP3FramePattern("TPUB", "^Fergusson$"));
+            add(new MP3FramePattern("TPUB", "^100Hits"));
             //add(new MP3FramePattern("TPUB", ""));
 
             /* composer */
@@ -407,9 +446,7 @@ public interface MP3Service {
             add(new MP3FramePattern("TCOM", "^maxima fm"));
             add(new MP3FramePattern("TCOM", "^Dj Jean"));
             add(new MP3FramePattern("TCOM", "^Rights Reserved(.*)"));
-
-            /* TIT3 Subtitle/Description refinement */
-            add(new MP3FramePattern("TIT3", "^WWW.ViPERiAL.COM"));
+            add(new MP3FramePattern("TCOM", "^NRJ Hits"));
 
             /* TCOP */
             add(new MP3FramePattern("TCOP", "^Òîëüêî(.*)"));
@@ -423,6 +460,8 @@ public interface MP3Service {
             add(new MP3FramePattern("TCOP", "^Www.Past2Present(.*)"));
             add(new MP3FramePattern("TCOP", "^Catz$"));
             add(new MP3FramePattern("TCOP", "^Hanterro$"));
+            add(new MP3FramePattern("TCOP", "^NRJ France"));
+            add(new MP3FramePattern("TCOP", "^ZHK$"));
             //add(new MP3FramePattern("TCOP", ""));
 
             /* TSSE */
@@ -437,10 +476,13 @@ public interface MP3Service {
             //add(new MP3FramePattern("TMED", ""));
             add(new MP3FramePattern("TMED", "^(ANA|DIG|\\(?CD/DD\\)?|CD \\(?Lossless\\)?) >> (.*)"));
             // CD (LP) >> High  (Lossy) [mp3]
-            add(new MP3FramePattern("TMED", "^CD( \\\\(LP\\\\))? >> (.*)  \\\\((.*)\\\\)(.*)\""));
+            add(new MP3FramePattern("TMED", "^CD( \\(LP\\))? >> (.*)  \\((.*)\\)(.*)\""));
             add(new MP3FramePattern("TMED", "^CD$"));
             add(new MP3FramePattern("TMED", "^our >> (.*)")); // our >> Very High  (Lossy) [mp3]
             add(new MP3FramePattern("TMED", "^Digital Media"));
+            add(new MP3FramePattern("TMED", "^WEB Store >>(.*)")); // WEB Store >> Very High  (Lossy) [mp3] >> Very High  (Lossy) [mp3])
+            add(new MP3FramePattern("TMED", "^CDS? \\((.*)\\)")); // CDS (1-2 tracks)
+            add(new MP3FramePattern("TMED", "^CD$"));
 
             /* USLT */
             //add(new MP3FramePattern("USLT", ""));
@@ -452,6 +494,7 @@ public interface MP3Service {
             add(new MP3FramePattern("USLT", "^STaT$"));
             add(new MP3FramePattern("USLT", "^From VA-Album Re"));
             add(new MP3FramePattern("USLT", "(.*)Lomasrankiao.com(.*)"));
+            add(new MP3FramePattern("USLT", "(.*)Top Hits Progressive Lights Movers(.*)"));
 
             /* TOWN */
             //add(new MP3FramePattern("TOWN", ""));
@@ -461,6 +504,8 @@ public interface MP3Service {
             //add(new MP3FramePattern("TSRN", ""));
             add(new MP3FramePattern("TSRN", "^Www.Yournewmusic.Net(.*)"));
 
+            /* TDEN Encoding time */
+            add(new MP3FramePattern("TDEN", "(.*)"));
         }
     };
 
@@ -506,6 +551,23 @@ public interface MP3Service {
             add(new MP3FramePattern("USLT", "^All we ever hear from you is blah blah blah(.*)"));
             add(new MP3FramePattern("USLT", "^I had a dream so big and loud(.*)"));
             add(new MP3FramePattern("USLT", "^I stand here waiting for you to band the gong(.*)"));
+            add(new MP3FramePattern("USLT", "^Falling too fast to prepare for this(.*)"));
+            add(new MP3FramePattern("USLT", "^Aujourd'hui je suis fatigu(.*)"));
+            add(new MP3FramePattern("USLT", "^Say say say, hey hey now baby(.*)"));
+            add(new MP3FramePattern("USLT", "^Yeah(.*)"));
+            add(new MP3FramePattern("USLT", "^Oh, I see you, see, I see, yeah(.*)"));
+            add(new MP3FramePattern("USLT", "^Louis prend son bus, comme tous les matins(.*)"));
+            add(new MP3FramePattern("USLT", "^I like digging holes and hiding things inside them(.*)"));
+            add(new MP3FramePattern("USLT", "^A sad story, might find it boring(.*)"));
+            add(new MP3FramePattern("USLT", "^La da da da da(.*)"));
+            add(new MP3FramePattern("USLT", "^Just stop lookin' for love(.*)"));
+            add(new MP3FramePattern("USLT", "^Maman m'a dit qu'elle écoutait souvent du(.*)"));
+            add(new MP3FramePattern("USLT", "^Huncho(.*)"));
+            add(new MP3FramePattern("USLT", "^Treating you well, but I'm caught in the middle(.*)"));
+            add(new MP3FramePattern("USLT", "^Maman m'a dit qu'elle écoutait souvent du(.*)"));
+            add(new MP3FramePattern("USLT", "^Maman m'a dit qu'elle écoutait souvent du(.*)"));
+            add(new MP3FramePattern("USLT", "^Maman m'a dit qu'elle écoutait souvent du(.*)"));
+
 
 
             /* TCOP Copyright  */
@@ -521,6 +583,8 @@ public interface MP3Service {
             add(new MP3FramePattern("WXXX", "^Stubru.Be$"));
             add(new MP3FramePattern("WXXX", "^Mnm\\.Be"));
             add(new MP3FramePattern("WXXX", "^Www.Futuretrance.De(.*)"));
+            add(new MP3FramePattern("WXXX", "Www.Bravo.De"));
+            add(new MP3FramePattern("WXXX", "Www.Dreamdance.De"));
             //add(new MP3FramePattern("WXXX", ""));
 
             /* TOPE */
@@ -545,6 +609,7 @@ public interface MP3Service {
             /* TSSE */
             add(new MP3FramePattern("TSSE", "^Audiograbber(.*)"));
             add(new MP3FramePattern("TSSE", "^Lavf5(.*)"));
+            add(new MP3FramePattern("TSSE", "^LAME(.*)"));
             add(new MP3FramePattern("TSSE", "(.*)-b=\"[0-9]{1,3}\"(.*)"));
             // ex. -b="320" -encoding="SLOW" -freq="48000" -channels="stereo"
             // ex. -b="320" -q="0" -channels="stereo"
@@ -563,7 +628,7 @@ public interface MP3Service {
             add(new MP3FramePattern("TPUB", "^TF1 Entertainment(.*)"));
             add(new MP3FramePattern("TPUB", "^Wagram Music(.*)"));
             add(new MP3FramePattern("TPUB", "(.*)Capitol Music France(.*)"));
-            add(new MP3FramePattern("TPUB", "^Capitol"));
+            add(new MP3FramePattern("TPUB", "(.*)Capitol(.*)"));
             add(new MP3FramePattern("TPUB", "^Past Perfect"));
             add(new MP3FramePattern("TPUB", "^Ultra Records"));
             add(new MP3FramePattern("TPUB", "^Airplay"));
@@ -605,6 +670,16 @@ public interface MP3Service {
             add(new MP3FramePattern("TPUB", "^Polydor"));
             add(new MP3FramePattern("TPUB", "^RCA(.*)"));
             add(new MP3FramePattern("TPUB", "^Warner Bros(.*)"));
+            add(new MP3FramePattern("TPUB", "^Radio 538(.*)"));
+            add(new MP3FramePattern("TPUB", "^Jive Epic(.*)"));
+            add(new MP3FramePattern("TPUB", "^Cnr$"));
+            add(new MP3FramePattern("TPUB", "^Walt Disney(.*)"));
+            add(new MP3FramePattern("TPUB", "(.*)Universal Music Austria(.*)"));
+            add(new MP3FramePattern("TPUB", "^MCA$"));
+            add(new MP3FramePattern("TPUB", "(.*)Simco Limited(.*)"));
+            add(new MP3FramePattern("TPUB", "^Virgin(.*)"));
+            add(new MP3FramePattern("TPUB", "^Camden(.*)"));
+            add(new MP3FramePattern("TPUB", "^Armada(.*)"));
         }
     };
 
@@ -615,6 +690,7 @@ public interface MP3Service {
 
             /* Composer */
             add("Antonio Stith");
+             //add("");
 
         }
     };
