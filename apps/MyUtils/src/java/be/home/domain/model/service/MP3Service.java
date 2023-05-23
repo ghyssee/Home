@@ -308,18 +308,18 @@ public interface MP3Service {
             add("(.*)www.bananastreet.ru(.*)");
             add("(.*)www.LUXEmusic.su(.*)");
             add("^Www.Futuretrance.D$");
-            add("(.*)www.iplusfree.com(.*))");
-            add("(.*)djfeel.net(.*))");
-            add("(.*)Israbox.org(.*))");
-            add("(.*)Play.Google.Co(.*))");
-            add("(.*)Soundcloud.Com(.*))");
-            add("(.*)agrmusic.org(.*))");
-            add("^Hello Summer(.*))");
-            add("^www.AudioPremieres.org(.*))");
-            add("^(.*)www.iamlmp.com(.*))");
-            add("^(.*)thepiratebay.se(.*))");
-            add("^(.*)www.hardtunes.co(.*))");
-            add("^(.*)www.HitsMw.blogspot.co(.*))");
+            add("(.*)www.iplusfree.com(.*)");
+            add("(.*)djfeel.net(.*)");
+            add("(.*)Israbox.org(.*)");
+            add("(.*)Play.Google.Co(.*)");
+            add("(.*)Soundcloud.Com(.*)");
+            add("(.*)agrmusic.org(.*)");
+            add("^Hello Summer(.*)");
+            add("^www.AudioPremieres.org(.*)");
+            add("^(.*)www.iamlmp.com(.*)");
+            add("^(.*)thepiratebay.se(.*)");
+            add("^(.*)www.hardtunes.co(.*)");
+            add("^(.*)www.HitsMw.blogspot.co(.*)");
             add("(.*)www.MP3DDL.com(.*)");
             add("(.*)xsound.in?(.*)");
             add("(.*)kickass.to(.*)");
@@ -766,13 +766,6 @@ public interface MP3Service {
             add(new MP3FramePattern("TCOP", "(.*)Mad Decent(.*)"));
             add(new MP3FramePattern("TCOP", "(.*)RCA Records(.*)"));
             add(new MP3FramePattern("TCOP", "(.*)Polydor Ltd(.*)"));
-            add(new MP3FramePattern("TCOP", "(.*)(.*)"));
-            add(new MP3FramePattern("TCOP", "(.*)(.*)"));
-            add(new MP3FramePattern("TCOP", "(.*)(.*)"));
-            add(new MP3FramePattern("TCOP", "(.*)(.*)"));
-            add(new MP3FramePattern("TCOP", "(.*)(.*)"));
-
-
             //add(new MP3FramePattern("TCOP", "(.*)(.*)"));
 
             // /* WXXX */
@@ -973,14 +966,6 @@ public interface MP3Service {
             add(new MP3FramePattern("TPUB", "^Q\\-Dance Compilations(.*)"));
             add(new MP3FramePattern("TPUB", "^Polygram(.*)"));
             add(new MP3FramePattern("TPUB", "^Edel Records(.*)"));
-            add(new MP3FramePattern("TPUB", "^(.*)"));
-            add(new MP3FramePattern("TPUB", "^(.*)"));
-            add(new MP3FramePattern("TPUB", "^(.*)"));
-            add(new MP3FramePattern("TPUB", "^(.*)"));
-            add(new MP3FramePattern("TPUB", "^(.*)"));
-            add(new MP3FramePattern("TPUB", "^(.*)"));
-
-
             //add(new MP3FramePattern("TPUB", "^(.*)"));
 
             /* TCOM */
@@ -996,8 +981,6 @@ public interface MP3Service {
 
             /* Composer */
             add("Antonio Stith");
-            add("Fun Lovin' Criminals");
-            add("Mental Madness");
              //add("");
 
 
