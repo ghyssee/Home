@@ -56,7 +56,7 @@ public class ComposerBO {
     }
 
     public ArrayList<Composers.FramePattern> getExclusionList(String frameId){
--        return map.get(frameId);
+       return map.get(frameId);
     }
 
     private String strip(String value){
@@ -128,7 +128,7 @@ public class ComposerBO {
         return false;
     }
     public void add(String frameId, String pattern){
-        String strippedValue = strip(pattern);
+        String strippedValue = pattern;
         if (!alreadyExist(frameId, strippedValue)){
             String uuid = composerBO.getUniqueId();
             Composers.FramePattern newComposer = new Composers().new FramePattern(uuid, frameId, strippedValue);

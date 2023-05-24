@@ -827,7 +827,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
             for (TagField tagField : tagFields){
                 AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
                 FrameBodyTSRC frameBody = (FrameBodyTSRC) frame.getBody();
-                String value = frameBody.getFirstTextValue();
+                String value = frameBody.getTextWithoutTrailingNulls();
                 addWarning ("Cleanup of TSRC Frame: Value=" + value);
                 saveTag = true;
             }
@@ -906,6 +906,9 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
 
         // Chapter TOC Frame
         frameId = ID3v23Frames.FRAME_ID_V3_CHAPTER_TOC;
+        if (this.tag instanceof ID3v24Tag){
+            frameId = ID3v24Frames.FRAME_ID_CHAPTER_TOC;
+        }
         CleanupChapterFrame(frameId);
     }
 
@@ -927,7 +930,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         if (this.tag != null) {
             String frameId = ID3v23Frames.FRAME_ID_V3_CONTENT_GROUP_DESC;
             if (this.tag instanceof ID3v24Tag){
-                frameId = ID3v23Frames.FRAME_ID_V3_CONTENT_GROUP_DESC;
+                frameId = ID3v24Frames.FRAME_ID_CONTENT_GROUP_DESC;
             }
             List<TagField> tags = this.tag.getFields(frameId);
             TagField tagField = null;
@@ -936,7 +939,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 tagField = tags.get(0);
                 AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
                 FrameBodyTIT1 frameBody = (FrameBodyTIT1) frame.getBody();
-                value = frameBody.getText();
+                value = frameBody.getTextWithoutTrailingNulls();
                 if (be.home.common.utils.StringUtils.isBlank(value)) {
                     // remove empty frame
                     save = true;
@@ -1192,41 +1195,23 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         return false;
     }
 
-    private boolean isExcludedFrameWord(String frameId, String value){
-
-        value = be.home.common.utils.StringUtils.removeNull(value);
-        for (MP3FramePattern excludedPattern : frameSpecificExcludedWords){
-            if (frameId.equalsIgnoreCase(excludedPattern.getFrameId()) && Pattern.matches("(?s)" + excludedPattern.getPattern().toUpperCase(), value.toUpperCase())) {
-                log.info("Found Excluded Match: Frame: " + frameId + " - Pattern: " + excludedPattern.getPattern() +
-                        " - Value: " + value);
-                return true;
-            }
-        }
-        return false;
-    }
-    public boolean isExcludedWord(String frameId, String value){
-
-        boolean excluded = isExcludedGlobal(value);
-        if (!excluded){
-            excluded = isExcludedFrameWord(frameId, value);
-        }
-        return excluded;
-
-    }
-
     public boolean isExcludedDBValue(String frameId, String value) {
-        ComposerBO composerBO = ComposerBO.getInstance();
-        ArrayList<Composers.FramePattern> myList = composerBO.getExclusionList(frameId);
-        if (myList != null && myList.size() > 0) {
-            for (Composers.FramePattern framePattern : myList) {
-                String pattern = framePattern.getPattern();
-                if (Pattern.matches("(?s)" + pattern.toUpperCase(), value.toUpperCase())) {
-                    log.info("Rule applied: " + frameId + ": " + pattern + " - Value: " + value);
-                    return true;
+        value = be.home.common.utils.StringUtils.removeNull(value);
+        boolean excluded = isExcludedGlobal(value);
+        if (!excluded) {
+            ComposerBO composerBO = ComposerBO.getInstance();
+            ArrayList<Composers.FramePattern> myList = composerBO.getExclusionList(frameId);
+            if (myList != null && myList.size() > 0) {
+                for (Composers.FramePattern framePattern : myList) {
+                    String pattern = framePattern.getPattern();
+                    if (Pattern.matches("(?s)" + pattern.toUpperCase(), value.toUpperCase())) {
+                        log.info("Rule applied: " + frameId + ": " + pattern + " - Value: " + value);
+                        return true;
+                    }
                 }
             }
         }
-        return false;
+        return excluded;
     }
 
     public boolean isExcludedDBValue(FieldKey fieldKey, String value){
