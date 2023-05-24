@@ -523,6 +523,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 add(FieldKey.TITLE_SORT);
                 add(FieldKey.ARTIST_SORT);
                 add(FieldKey.COMPOSER);
+                add(FieldKey.RECORD_LABEL);
             }
         };
         // Exclude PRIV tags from the cleanup Procedure. There is a separate cleanup for Private Tags
@@ -983,9 +984,9 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         }
     }
 
-    private void cleanupComposer(){
+    private void cleanupDBFrame(FieldKey fieldKey, String description){
         if (this.tag != null) {
-            String frameId = getFrameIdFromFieldKey(this.tag, FieldKey.COMPOSER);
+            String frameId = getFrameIdFromFieldKey(this.tag, fieldKey);
             List<TagField> tags = this.tag.getFields(frameId);
             TagField tagField = null;
             String value = null;
@@ -993,8 +994,18 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 if (tags.size() == 1) {
                     tagField = tags.get(0);
                     AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
-                    FrameBodyTCOM frameCOM = (FrameBodyTCOM) frame.getBody();
-                    value = frame.getContent();
+                    AbstractTagFrameBody frameBody = frame.getBody();
+                    if (frameBody instanceof FrameBodyTPUB){
+                        FrameBodyTPUB frameTPUB = (FrameBodyTPUB) frame.getBody();
+                        value = frameTPUB.getTextWithoutTrailingNulls();
+                    }
+                    else if (frameBody instanceof FrameBodyTCOM) {
+                        FrameBodyTCOM frameCOM = (FrameBodyTCOM) frame.getBody();
+                        value = frameCOM.getTextWithoutTrailingNulls();
+                    }
+                    else {
+                        value = frame.getContent();
+                    }
                     if (StringUtils.isNotBlank(value)) {
                         if (isCleanable(frameId, value)) {
                             //tag.removeFrame(frameId);
@@ -1004,12 +1015,12 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                             tag.deleteField(frameId);
                         } else {
                             // show value unless it contains specific words
-                            if (!isExcludedComposer(value)) {
+                            if (!isExcludedDBValue(fieldKey, value)) {
                                 // do not show values of BPM
-                                addWarning("Value found for tag: " + frameId + " " + getDescription(this.tag, frameId) +
-                                        " (value=" + value + ")");
+                                addWarning("Value found for tag: " + frameId + " " +
+                                        getDescription(this.tag, frameId) + " (value=" + value + ")");
                             } else {
-                                log.info("Composer excluded: " + value);
+                                log.info(frameId + " " + getDescription(this.tag, frameId) + " excluded: " + value);
                             }
                         }
                     } else {
@@ -1024,7 +1035,6 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
             }
         }
     }
-
     public void cleanupTag(String frameId) {
         if (this.tag != null) {
             List<TagField> tags = this.tag.getFields(frameId);
@@ -1175,7 +1185,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         value = be.home.common.utils.StringUtils.removeNull(value);
         for (String excludedValue : globalExcludeWords){
             if ( Pattern.matches("(?s)" + excludedValue.toUpperCase(), value.toUpperCase())) {
-                log.info("Found Excluded Global Match: " + excludedValue);
+                log.info("Found Excluded Global Match: " + excludedValue + " - Value: " + value);
                 return true;
             }
         }
@@ -1187,7 +1197,8 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         value = be.home.common.utils.StringUtils.removeNull(value);
         for (MP3FramePattern excludedPattern : frameSpecificExcludedWords){
             if (frameId.equalsIgnoreCase(excludedPattern.getFrameId()) && Pattern.matches("(?s)" + excludedPattern.getPattern().toUpperCase(), value.toUpperCase())) {
-                log.info("Found Excluded Match: Frame: " + frameId + " - Pattern: " + excludedPattern.getPattern());
+                log.info("Found Excluded Match: Frame: " + frameId + " - Pattern: " + excludedPattern.getPattern() +
+                        " - Value: " + value);
                 return true;
             }
         }
@@ -1202,14 +1213,28 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         return excluded;
 
     }
-    public boolean isExcludedComposer(String value){
-        if (this.COMPOSER_EXCLUSION_LIST) {
-            ComposerBO composerBO = ComposerBO.getInstance();
-            for (Composers.Composer composer : composerBO.getComposers()) {
-                String pattern = "(.*)" + composer.getPattern() + "(.*)";
-                if (Pattern.matches("(?s)" + pattern.toUpperCase(), value.toUpperCase())) {
-                    log.info("Composer rule applied: " + pattern);
-                    return true;
+
+    public boolean isExcludedDBValue(FieldKey fieldKey, String value){
+        ComposerBO composerBO = ComposerBO.getInstance();
+        if (FieldKey.COMPOSER == fieldKey){
+            if (this.COMPOSER_EXCLUSION_LIST) {
+                for (Composers.Composer composer : composerBO.getComposers()) {
+                    String pattern = "(.*)" + composer.getPattern() + "(.*)";
+                    if (Pattern.matches("(?s)" + pattern.toUpperCase(), value.toUpperCase())) {
+                        log.info("Composer rule applied: " + pattern + " - Value: " + value);
+                        return true;
+                    }
+                }
+            }
+        }
+        else if (FieldKey.RECORD_LABEL == fieldKey){
+            if (this.PUBLISHER_EXCLUSION_LIST) {
+                for (Composers.Publisher publisher : composerBO.getPublishers()) {
+                    String pattern = publisher.getPattern();
+                    if (Pattern.matches("(?s)" + pattern.toUpperCase(), value.toUpperCase())) {
+                        log.info("Publisher rule applied: " + pattern + " - Value: " + value);
+                        return true;
+                    }
                 }
             }
         }
@@ -1731,7 +1756,8 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 }
             }
         }
-        cleanupComposer();
+        cleanupDBFrame(FieldKey.COMPOSER, "Composer");
+        cleanupDBFrame(FieldKey.RECORD_LABEL, "Publisher");
         cleanupPrivateTags();
         cleanupUFIDTags();
         cleanupMCDI();

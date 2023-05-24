@@ -41,6 +41,7 @@ public interface MP3Service {
 
     // if enabled, it will check in a composers.json file if the composer is in there, so that it's excluded
     public boolean COMPOSER_EXCLUSION_LIST = true;
+    public boolean PUBLISHER_EXCLUSION_LIST = true;
 
     // if enabled, Chapter frames will be deleted with cleanup procedure
     public boolean CLEAN_CHAPTER = true;
@@ -274,7 +275,7 @@ public interface MP3Service {
             add("^(.*)www.israbox.com(.*)");
             add("^(.*)www.updatedmp3s.com(.*)");
             add("^(.*)flacless.com(.*)");
-            add("^B2H$");
+            add("^B2H(.*)");
             add("^(.*)wWw.TopMuzik.info(.*)");
             add("^(.*)skydevilshoekje.clubs.nl(.*)");
             add("^(.*)www.usenetrevolution.info(.*)");
@@ -812,168 +813,21 @@ public interface MP3Service {
             // ex. -b="320" -encoding="SLOW" -freq="48000" -channels="stereo"
             // ex. -b="320" -q="0" -channels="stereo"
 
-            /* TPUB */
-            add(new MP3FramePattern("TPUB", "^Dino Music Bv"));
-            add(new MP3FramePattern("TPUB", "^Cheeky Records"));
-            add(new MP3FramePattern("TPUB", "^Warner Music Benelux$"));
-            add(new MP3FramePattern("TPUB", "^AWA$"));
-            add(new MP3FramePattern("TPUB", "^Rec. 118$"));
-            add(new MP3FramePattern("TPUB", "(.*)VL Records(.*)"));
-            add(new MP3FramePattern("TPUB", "(.*)VRepublic Records(.*)"));
-            add(new MP3FramePattern("TPUB", "(.*)RCA Records(.*)"));
-            add(new MP3FramePattern("TPUB", "^Purple Money(.*)"));
-            add(new MP3FramePattern("TPUB", "^Polydor Records(.*)"));
-            add(new MP3FramePattern("TPUB", "^TF1 Entertainment(.*)"));
-            add(new MP3FramePattern("TPUB", "^Wagram Music(.*)"));
-            add(new MP3FramePattern("TPUB", "(.*)Capitol Music France(.*)"));
-            add(new MP3FramePattern("TPUB", "(.*)Capitol(.*)"));
-            add(new MP3FramePattern("TPUB", "^Past Perfect"));
-            add(new MP3FramePattern("TPUB", "^Ultra Records"));
-            add(new MP3FramePattern("TPUB", "^Airplay"));
-            add(new MP3FramePattern("TPUB", "^Disky(.*)"));
-            add(new MP3FramePattern("TPUB", "^3.?5.?7 Music(.*)"));
-            add(new MP3FramePattern("TPUB", "(.*)Interscope Records(.*)"));
-            add(new MP3FramePattern("TPUB", "(.*)Play Two(.*)"));
-            add(new MP3FramePattern("TPUB", "^Now!"));
-            add(new MP3FramePattern("TPUB", "^Now!? Music(.*)"));
-            add(new MP3FramePattern("TPUB", "^EMI(.*)"));
-            add(new MP3FramePattern("TPUB", "^Photo Finish Records(.*)"));
-            add(new MP3FramePattern("TPUB", "^Cloud 9 Records(.*)"));
-            add(new MP3FramePattern("TPUB", "^Sheffield Tunes(.*)"));
-            add(new MP3FramePattern("TPUB", "^Mostiko(.*)"));
-            add(new MP3FramePattern("TPUB", "^Ars Entertainment Belgium(.*)"));
-            add(new MP3FramePattern("TPUB", "(.*)Mosley Music Group(.*)"));
-            add(new MP3FramePattern("TPUB", "^A&M$"));
-            add(new MP3FramePattern("TPUB", "^ZYX$"));
-            add(new MP3FramePattern("TPUB", "^Warner Sunset(.*)"));
-            add(new MP3FramePattern("TPUB", "^SMI$"));
-            add(new MP3FramePattern("TPUB", "^SPG$"));
-            add(new MP3FramePattern("TPUB", "^Savoy Jazz"));
-            add(new MP3FramePattern("TPUB", "^Rhino"));
-            add(new MP3FramePattern("TPUB", "^Kontor Records(.*)"));
-            add(new MP3FramePattern("TPUB", "^Interscope(.*)"));
-            add(new MP3FramePattern("TPUB", "^Syco Music (.*)"));
-            add(new MP3FramePattern("TPUB", "^Columbia(.*)"));
-            add(new MP3FramePattern("TPUB", "(.*)Regoli Music(.*)"));
-            add(new MP3FramePattern("TPUB", "^Arista(.*)"));
-            add(new MP3FramePattern("TPUB", "^Universal(.*)")); // Universal Music Group International
-            add(new MP3FramePattern("TPUB", "^Sony(.*)")); // Sony International // Sony Bmg
-            add(new MP3FramePattern("TPUB", "^Epic(.*)"));
-            add(new MP3FramePattern("TPUB", "^Island(.*)")); // ex. Island (Universal)
-            add(new MP3FramePattern("TPUB", "^Mca Nashville(.*)"));
-            add(new MP3FramePattern("TPUB", "^(.*)Power Bass Production(.*)"));
-            add(new MP3FramePattern("TPUB", "^Big Boy(.*)"));
-            add(new MP3FramePattern("TPUB", "^Atlantic(.*)"));
-            add(new MP3FramePattern("TPUB", "^Telstar"));
-            add(new MP3FramePattern("TPUB", "^Polydor"));
-            add(new MP3FramePattern("TPUB", "^RCA(.*)"));
-            add(new MP3FramePattern("TPUB", "^Warner Bros(.*)"));
-            add(new MP3FramePattern("TPUB", "^Radio 538(.*)"));
-            add(new MP3FramePattern("TPUB", "^Jive Epic(.*)"));
-            add(new MP3FramePattern("TPUB", "^Cnr$"));
-            add(new MP3FramePattern("TPUB", "^Walt Disney(.*)"));
-            add(new MP3FramePattern("TPUB", "(.*)Universal Music Austria(.*)"));
-            add(new MP3FramePattern("TPUB", "^MCA$"));
-            add(new MP3FramePattern("TPUB", "^IMS$"));
-            add(new MP3FramePattern("TPUB", "(.*)Simco Limited(.*)"));
-            add(new MP3FramePattern("TPUB", "^Virgin(.*)"));
-            add(new MP3FramePattern("TPUB", "^Camden(.*)"));
-            add(new MP3FramePattern("TPUB", "^Armada(.*)"));
-            add(new MP3FramePattern("TPUB", "^Radikal(.*)"));
-            add(new MP3FramePattern("TPUB", "^Source UK(.*)"));
-            add(new MP3FramePattern("TPUB", "^Channel Four(.*)"));
-            add(new MP3FramePattern("TPUB", "^Toptrax(.*)"));
-            add(new MP3FramePattern("TPUB", "^Ars Produktion(.*)"));
-            add(new MP3FramePattern("TPUB", "^Get Physical Music(.*)"));
-            add(new MP3FramePattern("TPUB", "^CNR Music Belgium(.*)"));
-            add(new MP3FramePattern("TPUB", "^Studio Brussel(.*)"));
-            add(new MP3FramePattern("TPUB", "(.*)Warner Music(.*)"));
-            add(new MP3FramePattern("TPUB", "^Ministry Of Sound$"));
-            add(new MP3FramePattern("TPUB", "(.*)Ministry Of Sound Recordings(.*)"));
-            add(new MP3FramePattern("TPUB", "(.*)Xl Recordings(.*)"));
-            add(new MP3FramePattern("TPUB", "(.*)Wea International(.*)"));
-            add(new MP3FramePattern("TPUB", "^Roswell"));
-            add(new MP3FramePattern("TPUB", "^Roc Nation"));
-            add(new MP3FramePattern("TPUB", "^Star Mark"));
-            add(new MP3FramePattern("TPUB", "^La Face"));
-            add(new MP3FramePattern("TPUB", "^Sbme Import"));
-            add(new MP3FramePattern("TPUB", "^Mobile Fidelity"));
-            add(new MP3FramePattern("TPUB", "^Elektra"));
-            add(new MP3FramePattern("TPUB", "^Def Jam(.*)"));
-            add(new MP3FramePattern("TPUB", "^Republic Records(.*)"));
-            add(new MP3FramePattern("TPUB", "^WM France(.*)"));
-            add(new MP3FramePattern("TPUB", "^Robbins Entertainment(.*)"));
-            add(new MP3FramePattern("TPUB", "^KNM Special Marketing(.*)"));
-            add(new MP3FramePattern("TPUB", "(.*)Beggars Group(.*)"));
-            add(new MP3FramePattern("TPUB", "(.*)Kontor Germany(.*)"));
-            add(new MP3FramePattern("TPUB", "(.*)Berkmusic(.*)"));
-            add(new MP3FramePattern("TPUB", "^Captain Jack Digital(.*)"));
-            add(new MP3FramePattern("TPUB", "^DMC(.*)"));
-            add(new MP3FramePattern("TPUB", "^Mainstage Music(.*)"));
-            add(new MP3FramePattern("TPUB", "^Sme Media(.*)"));
-            add(new MP3FramePattern("TPUB", "^Future Sound Of Egypt Excelsior(.*)"));
-            add(new MP3FramePattern("TPUB", "^b2s Records(.*)"));
-            add(new MP3FramePattern("TPUB", "^Va\\-Album Records(.*)"));
-            add(new MP3FramePattern("TPUB", "^Spinnin'? Remixes(.*)"));
-            add(new MP3FramePattern("TPUB", "^Blanco y Negro Music(.*)"));
-            add(new MP3FramePattern("TPUB", "^Cat Music(.*)"));
-            add(new MP3FramePattern("TPUB", "^Mental Madness Records(.*)"));
-            add(new MP3FramePattern("TPUB", "^Magic Island(.*)"));
-            add(new MP3FramePattern("TPUB", "^Dark Soho(.*)"));
-            add(new MP3FramePattern("TPUB", "^Mad Decent(.*)"));
-            add(new MP3FramePattern("TPUB", "^Sunflower / Ipnotika Italy(.*)"));
-            add(new MP3FramePattern("TPUB", "^Pm\\:am(.*)"));
-            add(new MP3FramePattern("TPUB", "^Remixed Records(.*)"));
-            add(new MP3FramePattern("TPUB", "^Sounds United(.*)"));
-            add(new MP3FramePattern("TPUB", "^Turbotraxx Tunes(.*)"));
-            add(new MP3FramePattern("TPUB", "^Xtreme Records(.*)"));
-            add(new MP3FramePattern("TPUB", "^Rebirth Society(.*)"));
-            add(new MP3FramePattern("TPUB", "^Gearbox Digital(.*)"));
-            add(new MP3FramePattern("TPUB", "^Theracords(.*)"));
-            add(new MP3FramePattern("TPUB", "^Spoontech Records(.*)"));
-            add(new MP3FramePattern("TPUB", "^Fresh Beats(.*)"));
-            add(new MP3FramePattern("TPUB", "^Unite Records(.*)"));
-            add(new MP3FramePattern("TPUB", "^Fusion Records(.*)"));
-            add(new MP3FramePattern("TPUB", "^Q\\-Dance presents NEXT(.*)"));
-            add(new MP3FramePattern("TPUB", "^BMG International(.*)"));
-            add(new MP3FramePattern("TPUB", "^Active Sense Records(.*)"));
-            add(new MP3FramePattern("TPUB", "^Masterworks(.*)"));
-            add(new MP3FramePattern("TPUB", "^LNG$"));
-            add(new MP3FramePattern("TPUB", "^Pumpin Records(.*)"));
-            add(new MP3FramePattern("TPUB", "^UMC$"));
-            add(new MP3FramePattern("TPUB", "^RGMusic(.*)"));
-            add(new MP3FramePattern("TPUB", "^Keep! Records(.*)"));
-            add(new MP3FramePattern("TPUB", "^High Five Records(.*)"));
-            add(new MP3FramePattern("TPUB", "^Planet Dance Music(.*)"));
-            add(new MP3FramePattern("TPUB", "^Smashed Records(.*)"));
-            add(new MP3FramePattern("TPUB", "^Netswork Records(.*)"));
-            add(new MP3FramePattern("TPUB", "^Top Act Music(.*)"));
-            add(new MP3FramePattern("TPUB", "^Kontor New Media Special Marketing(.*)"));
-            add(new MP3FramePattern("TPUB", "^Planet Dance Music(.*)"));
-            add(new MP3FramePattern("TPUB", "^Andorfine Records(.*)"));
-            add(new MP3FramePattern("TPUB", "^Lifetree Records(.*)"));
-            add(new MP3FramePattern("TPUB", "^LNG Music(.*)"));
-            add(new MP3FramePattern("TPUB", "^CNR Music(.*)"));
-            add(new MP3FramePattern("TPUB", "^Zyx Music(.*)"));
-            add(new MP3FramePattern("TPUB", "^Soundrise Records(.*)"));
-            add(new MP3FramePattern("TPUB", "^Under Town Records(.*)"));
-            add(new MP3FramePattern("TPUB", "^RNM Bundles(.*)"));
-            add(new MP3FramePattern("TPUB", "^Fusion Records(.*)"));
-            add(new MP3FramePattern("TPUB", "^Fonogram Records(.*)"));
-            add(new MP3FramePattern("TPUB", "^Aqualoop Records(.*)"));
-            add(new MP3FramePattern("TPUB", "^ARVA(.*)"));
-            add(new MP3FramePattern("TPUB", "^War Force Recordings(.*)"));add(new MP3FramePattern("TPUB", "^(.*)"));
-            add(new MP3FramePattern("TPUB", "^Q\\-Dance Compilations(.*)"));
-            add(new MP3FramePattern("TPUB", "^Polygram(.*)"));
-            add(new MP3FramePattern("TPUB", "^Edel Records(.*)"));
-            //add(new MP3FramePattern("TPUB", "^(.*)"));
-
             /* TCOM */
             add(new MP3FramePattern("TCOM", "^Lan$"));
 
         }
     };
 
+    public static ArrayList<String> publishers = new ArrayList<String>() {
+        {
+            /* when these words are found in composer tag, it's not considered as a warning
+               This is used by import procedure to insert composers to the composers.json file */
+
+            /* Publisher */
+            add("^Dino Music Bv");
+        }
+    };
     public static ArrayList<String> composers = new ArrayList<String>() {
         {
             /* when these words are found in composer tag, it's not considered as a warning

@@ -34,6 +34,7 @@ public class Helpers extends BatchJobV2 {
 
 
         importComposers();
+        importPublishers();
     }
 
     private static void testiPodDate(){
@@ -135,11 +136,20 @@ public class Helpers extends BatchJobV2 {
         ComposerBO composerBO = ComposerBO.getInstance();
 
         for (String composer : MP3Service.composers){
-            composerBO.add(composer);
+            composerBO.addComposer(composer);
         }
         composerBO.save();
     }
+    private static void importPublishers() throws IOException {
+        //composerFile.composers.
 
+        ComposerBO composerBO = ComposerBO.getInstance();
+
+        for (String publisher : MP3Service.publishers){
+            composerBO.addPublisher(publisher);
+        }
+        composerBO.save();
+    }
     public static MezzmoServiceImpl getMezzmoService(){
 
         if (mezzmoService == null) {
