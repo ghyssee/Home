@@ -8,6 +8,7 @@ import be.home.common.utils.JSONUtils;
 import be.home.common.utils.MyFileWriter;
 import be.home.domain.model.MP3TagUtils;
 import be.home.domain.model.MezzmoUtils;
+import be.home.domain.model.service.MP3FramePattern;
 import be.home.domain.model.service.MP3Service;
 import be.home.mezzmo.domain.bo.ComposerBO;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
@@ -35,6 +36,7 @@ public class Helpers extends BatchJobV2 {
 
         importComposers();
         importPublishers();
+        importLines();
     }
 
     private static void testiPodDate(){
@@ -158,6 +160,15 @@ public class Helpers extends BatchJobV2 {
         return mezzmoService;
     }
 
+    private static void importLines() throws IOException {
+
+        ComposerBO composerBO = ComposerBO.getInstance();
+
+        for (MP3FramePattern pattern : MP3Service.framePatterns){
+            composerBO.add(pattern.getFrameId(), pattern.getPattern());
+        }
+        composerBO.save();
+    }
     @Override
     public void run() {
 

@@ -7,9 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -19,12 +17,25 @@ public class ComposerBO {
     private static final Logger log = LogManager.getLogger();
     private static Map<String, Composers.Composer> mapComposers;
     private static Map<String, Composers.Publisher> mapPublishers;
+    private static Map<String, ArrayList<Composers.FramePattern>> map;
 
 
     private ComposerBO() {
         composers = (Composers) JSONUtils.openJSONWithCode(Constants.JSON.COMPOSERS, Composers.class);
         mapComposers = composers.composers.stream().collect(Collectors.toMap(Composers.Composer::getId, Function.identity()));
         mapPublishers = composers.publishers.stream().collect(Collectors.toMap(Composers.Publisher::getId, Function.identity()));
+        map = new <Composers.FramePattern> HashMap();
+        for (Composers.FramePattern pattern: composers.list) {
+            ArrayList<Composers.FramePattern> myList = map.get(pattern.getFrameId());
+            if (myList == null){
+                ArrayList<Composers.FramePattern> newList = new <Composers.FramePattern> ArrayList();
+                newList.add(pattern);
+                map.put(pattern.getFrameId(), newList );
+            }
+            else {
+                myList.add(pattern);
+            }
+        }
     }
 
     public Collection<Composers.Composer> getComposers() {
@@ -43,6 +54,11 @@ public class ComposerBO {
         Composers.Publisher publisher = mapPublishers.get(id);
         return publisher;
     }
+
+    public ArrayList<Composers.FramePattern> getExclusionList(String frameId){
+-        return map.get(frameId);
+    }
+
     private String strip(String value){
         String strippedValue = value.replaceAll("^\\^?\\(\\.\\*\\)(.*)\\(\\.\\*\\)", "$1");
         return strippedValue;
@@ -88,12 +104,49 @@ public class ComposerBO {
             log.warn("Publisher already exists: " + strippedPublisher);
         }
     }
+
+    private void addMap(Composers.FramePattern framePattern){
+        ArrayList<Composers.FramePattern> myList = map.get(framePattern.getFrameId());
+        if (myList == null){
+            ArrayList<Composers.FramePattern> newList = new <Composers.FramePattern> ArrayList();
+            newList.add(framePattern);
+            map.put(framePattern.getFrameId(), newList );
+        }
+        else {
+            myList.add(framePattern);
+        }
+
+    }
+    public boolean alreadyExist(String frameId, String pattern){
+        ArrayList<Composers.FramePattern> myList = map.get(frameId);
+        if (myList != null && myList.size() > 0) {
+            for (Composers.FramePattern framePattern : myList) {
+                if (framePattern.getPattern().equalsIgnoreCase(pattern))
+                    return true;
+            }
+        }
+        return false;
+    }
+    public void add(String frameId, String pattern){
+        String strippedValue = strip(pattern);
+        if (!alreadyExist(frameId, strippedValue)){
+            String uuid = composerBO.getUniqueId();
+            Composers.FramePattern newComposer = new Composers().new FramePattern(uuid, frameId, strippedValue);
+            addMap(newComposer);
+            composers.list.add(newComposer);
+            log.info("Adding line: " + frameId + ": " + strippedValue);
+        }
+        else {
+            log.warn("line already exists: "  + frameId + ": " + strippedValue);
+        }
+    }
+
     public String getUniqueId(){
         String uuid = null;
         do {
             uuid = UUID.randomUUID().toString();
         }
-        while (mapComposers.get(uuid) != null);
+        while (mapComposers.get(uuid) != null && mapPublishers.get(uuid) != null);
         return uuid;
     }
 

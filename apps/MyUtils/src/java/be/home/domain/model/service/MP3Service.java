@@ -819,9 +819,172 @@ public interface MP3Service {
         }
     };
 
+    public static ArrayList<MP3FramePattern> framePatterns = new ArrayList<MP3FramePattern>() {
+        {
+            /* when these words are found in publishers tag, it's not considered as a warning
+               This is used by import procedure to insert composers to the composers.json file */
+            add(new MP3FramePattern("COMM", "(.*)eurovision(.*)"));
+            add(new MP3FramePattern("COMM", "(.*)Them[a|e] song(.*)")); // comment ex: Thema song TV serie  Lisa
+            add(new MP3FramePattern("COMM", "^Official(.*)")); // comment ex: Official Uefa Euro 2020 Song
+            add(new MP3FramePattern("COMM", "(.*)Liefde voor Muziek(.*)"));
+            add(new MP3FramePattern("COMM", "^1.? ?\t? ?Megara vs.? DJ Lee - Into The Future(.*)"));
+            add(new MP3FramePattern("COMM", "^1.? ?\t? ?CJ Stone - Intro(.*)"));
+            add(new MP3FramePattern("COMM", "^1.? ?\t? ?Future Trance United - Anybody Out There(.*)"));
+            add(new MP3FramePattern("COMM", "^1.? ?\t? ?Future Trance United - Future Trance Vol.? 88(.*)"));
+            add(new MP3FramePattern("COMM", "^01 Balthazar - Bunker \\(Vuurwerk Endless Summer Remix\\)(.*)"));
+
+            /* USLT */
+            //add(new MP3FramePattern("USLT", ""));
+            add(new MP3FramePattern("USLT", "^I got my driver's license last week(.*)"));
+            add(new MP3FramePattern("USLT", "^You have the bravest heart(.*)"));
+            add(new MP3FramePattern("USLT", "^I know you told me not to ask where you have been(.*)"));
+            add(new MP3FramePattern("USLT", "^I still regret I turned my back on you(.*)"));
+            add(new MP3FramePattern("USLT", "^But somethin' 'bout it still feels strange(.*)"));
+            add(new MP3FramePattern("USLT", "^Da, da, da, da, da, da(.*)"));
+            add(new MP3FramePattern("USLT", "^Prisoner, prisoner(.*)"));
+            add(new MP3FramePattern("USLT", "^I've been going through some things(.*)"));
+            add(new MP3FramePattern("USLT", "^Good day in my mind, safe to take a step out(.*)"));
+            add(new MP3FramePattern("USLT", "^Loyalty over royalty(.*)"));
+            add(new MP3FramePattern("USLT", "^A 40 HP Johnson(.*)"));
+            add(new MP3FramePattern("USLT", "^You're just like me only happy(.*)"));
+            add(new MP3FramePattern("USLT", "^Hmm \\(If swagg did it, it's depressing\\)(.*)"));
+            add(new MP3FramePattern("USLT", "^Is there something I don’t know(.*)"));
+            add(new MP3FramePattern("USLT", "^Such a perfect day(.*)"));
+            add(new MP3FramePattern("USLT", "^All we ever hear from you is blah blah blah(.*)"));
+            add(new MP3FramePattern("USLT", "^I had a dream so big and loud(.*)"));
+            add(new MP3FramePattern("USLT", "^I stand here waiting for you to band the gong(.*)"));
+            add(new MP3FramePattern("USLT", "^Falling too fast to prepare for this(.*)"));
+            add(new MP3FramePattern("USLT", "^Aujourd'hui je suis fatigu(.*)"));
+            add(new MP3FramePattern("USLT", "^Say say say, hey hey now baby(.*)"));
+            add(new MP3FramePattern("USLT", "^Yeah(.*)"));
+            add(new MP3FramePattern("USLT", "^Oh, I see you, see, I see, yeah(.*)"));
+            add(new MP3FramePattern("USLT", "^Louis prend son bus, comme tous les matins(.*)"));
+            add(new MP3FramePattern("USLT", "^I like digging holes and hiding things inside them(.*)"));
+            add(new MP3FramePattern("USLT", "^A sad story, might find it boring(.*)"));
+            add(new MP3FramePattern("USLT", "^La da da da da(.*)"));
+            add(new MP3FramePattern("USLT", "^Just stop lookin' for love(.*)"));
+            add(new MP3FramePattern("USLT", "^Maman m'a dit qu'elle écoutait souvent du(.*)"));
+            add(new MP3FramePattern("USLT", "^Huncho(.*)"));
+            add(new MP3FramePattern("USLT", "^Treating you well, but I'm caught in the middle(.*)"));
+            add(new MP3FramePattern("USLT", "^Maman m'a dit qu'elle écoutait souvent du(.*)"));
+            add(new MP3FramePattern("USLT", "(.*)I've been here before(.*)"));
+            add(new MP3FramePattern("USLT", "(.*)We were in love with the sun(.*)"));
+            add(new MP3FramePattern("USLT", "^I woke up pissed off today(.*)"));
+            add(new MP3FramePattern("USLT", "^I just need to get it off my chest(.*)"));
+            add(new MP3FramePattern("USLT", "^I am the hunter, I am the great unknown(.*)"));
+
+            /* TCOP Copyright  */
+            add(new MP3FramePattern("TCOP", "(.*)Universal Music(.*)"));
+            add(new MP3FramePattern("TCOP", "^(.*)Sony Music Entertainment(.*)"));
+            add(new MP3FramePattern("TCOP", "^(.*)Big Machine Records(.*)")); // ex. (c) 2012 Big Machine Records, LLC)
+            add(new MP3FramePattern("TCOP", "^(.*)Power Bass Production(.*)"));
+            add(new MP3FramePattern("TCOP", "^(.*)Cnr Music Belgium(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Emi Records(.*)")); // ®&© 2006 Blue Note/Emi Records
+            add(new MP3FramePattern("TCOP", "(.*)MJJ Productions(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)UMG Recordings(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Atlantic Recording Corporation(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)WEA International(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Clock Music Sas(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Geffen Records(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Motown Record(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Tabu Records(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)The Island Def Jam Music Group(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Warner Bros.? Records(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Parlophone Records(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Capitol Records(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Arista Records(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Ace Records(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Virgin Records(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Sleeping Bag Records(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Warner Records(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Unidisc Music(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Mercury Records(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Warner Music UK(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Zoo Digital(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)WaterTower Music(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Munix Records(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Scorpio Music(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Blutonium Records(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Interscope Records(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)What A Music(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Kontor Records(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)TuneTraxx(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Cloud 9 Music(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)One Way Records(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Master Maximum Records(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Active Sense Records(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)I Love This Sound(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Kemosabe Records(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Active Sense Records(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Top Notch Music(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Smashed Records(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Hollywood Records(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)KNM Special Marketing(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Watermoon Music(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Ministry of Sound Recordings(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Effective Records(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Be Yourself Music(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Columbia Records(.*)"));
+            add(new MP3FramePattern("TCOP", "^RNM Bundles(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Wall Recordings Limited(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Armada Music(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Zhyk Group(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Mad Decent(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)RCA Records(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Polydor Ltd(.*)"));
+            //add(new MP3FramePattern("TCOP", "(.*)(.*)"));
+
+            // /* WXXX */
+            add(new MP3FramePattern("WXXX", "^Stubru.Be$"));
+            add(new MP3FramePattern("WXXX", "^Mnm\\.Be"));
+            add(new MP3FramePattern("WXXX", "^Www.Futuretrance.De(.*)"));
+            add(new MP3FramePattern("WXXX", "Www.Bravo.De"));
+            add(new MP3FramePattern("WXXX", "Www.Dreamdance.De"));
+            //add(new MP3FramePattern("WXXX", ""));
+
+            /* TOPE */
+            add(new MP3FramePattern("TOPE", "^(.*)Samuel Barber(.*)"));
+            add(new MP3FramePattern("TOPE", "^(.*) The Knack(.*)"));
+            add(new MP3FramePattern("TOPE", "^Judith"));
+            add(new MP3FramePattern("TOPE", "^Myl.ne Farmer"));
+
+            /* TPE3 */
+            add(new MP3FramePattern("TPE3", "^Larry Gold"));
+            add(new MP3FramePattern("TPE3", "^Susie Katayama"));
+
+
+            /* TENC */
+            add(new MP3FramePattern("TENC", "^Online Media Technologies(.*)"));
+            add(new MP3FramePattern("TENC", "^Online Media Technologies(.*)"));
+            add(new MP3FramePattern("TENC", "^(.*)dBpoweramp(.*)"));
+            add(new MP3FramePattern("TENC", "^AiR$"));
+            add(new MP3FramePattern("TENC", "^Lame(.*)"));
+            add(new MP3FramePattern("TENC", "^Lavf5(.*)"));
+            add(new MP3FramePattern("TENC", "^iTunes(.*)"));
+            add(new MP3FramePattern("TENC", "^Exact Audio Copy(.*)"));
+            add(new MP3FramePattern("TENC", "(.*)Ashampoo Music(.*)"));
+            add(new MP3FramePattern("TENC", "^Tag&Rename(.*)"));
+            add(new MP3FramePattern("TENC", "(.*)FreeRIP(.*)"));
+            add(new MP3FramePattern("TENC", "(.*)EAC\\+LAME(.*)"));
+            add(new MP3FramePattern("TENC", "^Winamp(.*)"));
+
+            /* TSSE */
+            add(new MP3FramePattern("TSSE", "^Audiograbber(.*)"));
+            add(new MP3FramePattern("TSSE", "^Easy CD\\-DA Extractor(.*)"));
+            add(new MP3FramePattern("TSSE", "^Lavf5(.*)"));
+            add(new MP3FramePattern("TSSE", "^LAME(.*)"));
+            add(new MP3FramePattern("TSSE", "^FLAC(.*)"));
+            add(new MP3FramePattern("TSSE", "(.*)-b=\"[0-9]{1,3}\"(.*)"));
+            // ex. -b="320" -encoding="SLOW" -freq="48000" -channels="stereo"
+            // ex. -b="320" -q="0" -channels="stereo"
+
+            /* TCOM */
+            add(new MP3FramePattern("TCOM", "^Lan$"));
+        }
+    };
     public static ArrayList<String> publishers = new ArrayList<String>() {
         {
-            /* when these words are found in composer tag, it's not considered as a warning
+            /* when these words are found in publishers tag, it's not considered as a warning
                This is used by import procedure to insert composers to the composers.json file */
 
             /* Publisher */

@@ -764,7 +764,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
                 FrameBodyWXXX frameBody = (FrameBodyWXXX) frame.getBody();
                 String urlLink = frameBody.getUrlLinkWithoutTrailingNulls().replaceAll("(\0|\f)", "");
-                if (!isExcludedWord(frameId, urlLink)) {
+                if (!isExcludedDBValue(frameId, urlLink)) {
                     if (isCleanable(frameId, urlLink)) {
                         addWarning("Cleanup of WXXX Frame: URLLink=" + urlLink);
                         saveTag = true;
@@ -1063,7 +1063,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                             tag.deleteField(frameId);
                         } else {
                             // show value unless it contains specific words
-                            if (!isExcludedWord(frameId, value)) {
+                            if (!isExcludedDBValue(frameId, value)) {
                                 // do not show values of BPM
                                     addWarning("Value found for tag: " + frameId + " " + getDescription(this.tag, frameId) +
                                             " (value=" + value + ")");
@@ -1111,7 +1111,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                             save = true;
                         }
                     } else {
-                        if (!isExcludedWord(frameBody.getIdentifier(), frameBody.getText())){
+                        if (!isExcludedDBValue(frameBody.getIdentifier(), frameBody.getText())){
                             if (isCleanable(frameBody.getIdentifier(), frameBody.getText())){
                                 saveCommentTag = true;
                                 save = true;
@@ -1212,6 +1212,21 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         }
         return excluded;
 
+    }
+
+    public boolean isExcludedDBValue(String frameId, String value) {
+        ComposerBO composerBO = ComposerBO.getInstance();
+        ArrayList<Composers.FramePattern> myList = composerBO.getExclusionList(frameId);
+        if (myList != null && myList.size() > 0) {
+            for (Composers.FramePattern framePattern : myList) {
+                String pattern = framePattern.getPattern();
+                if (Pattern.matches("(?s)" + pattern.toUpperCase(), value.toUpperCase())) {
+                    log.info("Rule applied: " + frameId + ": " + pattern + " - Value: " + value);
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public boolean isExcludedDBValue(FieldKey fieldKey, String value){
