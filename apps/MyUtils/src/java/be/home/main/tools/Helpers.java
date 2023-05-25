@@ -39,6 +39,7 @@ public class Helpers extends BatchJobV2 {
         importExclusionLines();
         importCleanupLines();
         importGlobalCleanupLines();
+        importCustomTags();
     }
 
     private static void testiPodDate(){
@@ -137,7 +138,7 @@ public class Helpers extends BatchJobV2 {
 
         ComposerBO composerBO = ComposerBO.getInstance();
 
-        for (MP3FramePattern pattern : MP3Service.framePatterns) {
+        for (MP3FramePattern pattern : MP3Service.frameExclusions) {
             if (!StringUtils.isBlank(pattern.getPattern()) && !!StringUtils.isBlank(pattern.getFrameId())) {
                 composerBO.addExclusion(pattern.getFrameId(), pattern.getPattern());
             } else {
@@ -151,7 +152,7 @@ public class Helpers extends BatchJobV2 {
 
         ComposerBO composerBO = ComposerBO.getInstance();
 
-        for (MP3FramePattern pattern : MP3Service.cleanupFrameWords) {
+        for (MP3FramePattern pattern : MP3Service.frameCleanups) {
             if (!StringUtils.isBlank(pattern.getPattern()) && !!StringUtils.isBlank(pattern.getFrameId())) {
                 composerBO.addCleanup(pattern.getFrameId(), pattern.getPattern());
             } else {
@@ -187,6 +188,22 @@ public class Helpers extends BatchJobV2 {
             }
             else {
                 log.info("Skipping empty composer line: " + composer);
+            }
+        }
+        composerBO.save();
+    }
+
+    private static void importCustomTags() throws IOException {
+        //composerFile.composers.
+
+        ComposerBO composerBO = ComposerBO.getInstance();
+
+        for (String customTag : MP3Service.customTags){
+            if (!StringUtils.isBlank(customTag)) {
+                composerBO.addCustomTag(MP3Service.GLOBAL_FRAME, customTag);
+            }
+            else {
+                log.info("Skipping empty Custom Tag line: " + customTag);
             }
         }
         composerBO.save();
