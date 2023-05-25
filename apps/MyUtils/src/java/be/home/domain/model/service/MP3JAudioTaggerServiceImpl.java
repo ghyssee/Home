@@ -30,6 +30,11 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
 
     private static final Logger log = getMainLog(MP3TagChecker.class);
 
+    enum SEARCH_TYPE {
+        CLEAN,
+        EXCLUDE
+    }
+
     final String GENRE_X = "GENRE_X";
 
     MP3File mp3File;
@@ -522,8 +527,6 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 add(FieldKey.ALBUM_ARTIST_SORT);
                 add(FieldKey.TITLE_SORT);
                 add(FieldKey.ARTIST_SORT);
-                add(FieldKey.COMPOSER);
-                add(FieldKey.RECORD_LABEL);
             }
         };
         // Exclude PRIV tags from the cleanup Procedure. There is a separate cleanup for Private Tags
@@ -562,10 +565,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         else if (frameId.equalsIgnoreCase(ID3v24Frames.FRAME_ID_CHAPTER_TOC)){
             return true;
         }
-        // Exclude TiT1 tags from the cleanup Procedure. There is a separate cleanup for TIT1 Tags
-        else if (frameId.equalsIgnoreCase(ID3v24Frames.FRAME_ID_CONTENT_GROUP_DESC)){
-            return true;
-        }        else {
+        else {
             for (FieldKey fieldKey : tagsToExcludeForCleanup) {
                 String excludedFrameId = "";
                 if (tag instanceof ID3v24Tag) {
@@ -716,7 +716,8 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
 
     private void cleanupUFIDTags() {
 
-        // Tag PRIV: no FieldKey for this tag, but code is the same for ID3v23 and ID3v24
+        // Tag UFID: no FieldKey for this tag, but code is the same for ID3v23 and ID3v24
+        // if multiple frames found, they will all be removed after displaying content
         String frameId = ID3v24Frames.FRAME_ID_UNIQUE_FILE_ID;
         List<TagField> tagFields = this.tag.getFields(frameId);
         List<TagField> tagFieldsToKeep = new ArrayList();
@@ -727,7 +728,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 FrameBodyUFID frameBody = (FrameBodyUFID) frame.getBody();
                 String owner = frameBody.getOwner();
                 byte[] data = frameBody.getUniqueIdentifier();
-                if (isCleanable(frameId, owner)){
+                if (isDBValue(SEARCH_TYPE.CLEAN, frameId, owner)){
                     addWarning ("Cleanup of UFID Frame: Owner=" + owner + " / " + "Data=" + be.home.common.utils.StringUtils.toHex(data));
                     saveTag = true;
                 }
@@ -744,7 +745,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                         this.tag.addField(tagField);
                     } catch (FieldDataInvalidException e) {
                         AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
-                        FrameBodyPRIV frameBody = (FrameBodyPRIV) frame.getBody();
+                        FrameBodyUFID frameBody = (FrameBodyUFID) frame.getBody();
                         addWarning("There was a problem saving custom tag " + frameBody.getOwner());
                     }
                 }
@@ -764,8 +765,8 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
                 FrameBodyWXXX frameBody = (FrameBodyWXXX) frame.getBody();
                 String urlLink = frameBody.getUrlLinkWithoutTrailingNulls().replaceAll("(\0|\f)", "");
-                if (!isExcludedDBValue(frameId, urlLink)) {
-                    if (isCleanable(frameId, urlLink)) {
+                if (!isDBValue(SEARCH_TYPE.EXCLUDE, frameId, urlLink)) {
+                    if (isDBValue(SEARCH_TYPE.CLEAN, frameId, urlLink)) {
                         addWarning("Cleanup of WXXX Frame: URLLink=" + urlLink);
                         saveTag = true;
                     } else {
@@ -926,42 +927,6 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         }
     }
 
-    public void cleanupTIT1() {
-        if (this.tag != null) {
-            String frameId = ID3v23Frames.FRAME_ID_V3_CONTENT_GROUP_DESC;
-            if (this.tag instanceof ID3v24Tag){
-                frameId = ID3v24Frames.FRAME_ID_CONTENT_GROUP_DESC;
-            }
-            List<TagField> tags = this.tag.getFields(frameId);
-            TagField tagField = null;
-            String value = null;
-            if (tags != null && tags.size() > 0) {
-                tagField = tags.get(0);
-                AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
-                FrameBodyTIT1 frameBody = (FrameBodyTIT1) frame.getBody();
-                value = frameBody.getTextWithoutTrailingNulls();
-                if (be.home.common.utils.StringUtils.isBlank(value)) {
-                    // remove empty frame
-                    save = true;
-                    addWarning("Remove empty frame " + frameId + " " + getDescription(this.tag, frameId));
-                    tag.deleteField(frameId);
-                }
-                else {
-                    if (isCleanable(frameId, value)) {
-                        //tag.removeFrame(frameId);
-                        save = true;
-                        addWarning("Cleaning tag " + frameId + " " + getDescription(this.tag, frameId) +
-                                " (value=" + value + ")");
-                        tag.deleteField(frameId);
-                    } else {
-                        addWarning("Value found for tag: " + frameId + " " + getDescription(this.tag, frameId) +
-                                    " (value=" + value + ")");
-                    }
-                }
-            }
-        }
-    }
-
     @Override
     public void cleanupTags() {
 
@@ -987,57 +952,6 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         }
     }
 
-    private void cleanupDBFrame(FieldKey fieldKey, String description){
-        if (this.tag != null) {
-            String frameId = getFrameIdFromFieldKey(this.tag, fieldKey);
-            List<TagField> tags = this.tag.getFields(frameId);
-            TagField tagField = null;
-            String value = null;
-            if (tags != null && tags.size() > 0) {
-                if (tags.size() == 1) {
-                    tagField = tags.get(0);
-                    AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
-                    AbstractTagFrameBody frameBody = frame.getBody();
-                    if (frameBody instanceof FrameBodyTPUB){
-                        FrameBodyTPUB frameTPUB = (FrameBodyTPUB) frame.getBody();
-                        value = frameTPUB.getTextWithoutTrailingNulls();
-                    }
-                    else if (frameBody instanceof FrameBodyTCOM) {
-                        FrameBodyTCOM frameCOM = (FrameBodyTCOM) frame.getBody();
-                        value = frameCOM.getTextWithoutTrailingNulls();
-                    }
-                    else {
-                        value = frame.getContent();
-                    }
-                    if (StringUtils.isNotBlank(value)) {
-                        if (isCleanable(frameId, value)) {
-                            //tag.removeFrame(frameId);
-                            save = true;
-                            addWarning("Cleaning tag " + frameId + " " + getDescription(this.tag, frameId) +
-                                    " (value=" + value + ")");
-                            tag.deleteField(frameId);
-                        } else {
-                            // show value unless it contains specific words
-                            if (!isExcludedDBValue(fieldKey, value)) {
-                                // do not show values of BPM
-                                addWarning("Value found for tag: " + frameId + " " +
-                                        getDescription(this.tag, frameId) + " (value=" + value + ")");
-                            } else {
-                                log.info(frameId + " " + getDescription(this.tag, frameId) + " excluded: " + value);
-                            }
-                        }
-                    } else {
-                        this.tag.deleteField(frameId);
-                        save = true;
-                        addWarning("Empty COMPOSER frame deleted!");
-                    }
-                }
-                else {
-                    addWarning("Multiple Frames found for Composer Field!");
-                }
-            }
-        }
-    }
     public void cleanupTag(String frameId) {
         if (this.tag != null) {
             List<TagField> tags = this.tag.getFields(frameId);
@@ -1058,7 +972,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                         tag.deleteField(frameId);
                     }
                     else {
-                        if (isCleanable(frameId, value)) {
+                        if (isDBValue(SEARCH_TYPE.CLEAN, frameId, value)) {
                             //tag.removeFrame(frameId);
                             save = true;
                             addWarning("Cleaning tag " + frameId + " " + getDescription(this.tag, frameId) +
@@ -1066,8 +980,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                             tag.deleteField(frameId);
                         } else {
                             // show value unless it contains specific words
-                            if (!isExcludedDBValue(frameId, value)) {
-                                // do not show values of BPM
+                            if (!isDBValue(SEARCH_TYPE.EXCLUDE, frameId, value)) {
                                     addWarning("Value found for tag: " + frameId + " " + getDescription(this.tag, frameId) +
                                             " (value=" + value + ")");
                             }
@@ -1077,14 +990,6 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 else {
                     addWarning("Binary frame found: : " + frameId + " " + getDescription(this.tag, frameId));
                 }
-            }
-        }
-    }
-
-    private void cleanEmptyComment(){
-        if (this.tag.hasField(FieldKey.COMMENT)  && this.save){
-            if (StringUtils.isBlank(getComment())){
-                addWarning("Empty Comment Tag deleted when there is something to save");
             }
         }
     }
@@ -1114,8 +1019,8 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                             save = true;
                         }
                     } else {
-                        if (!isExcludedDBValue(frameBody.getIdentifier(), frameBody.getText())){
-                            if (isCleanable(frameBody.getIdentifier(), frameBody.getText())){
+                        if (!isDBValue(SEARCH_TYPE.EXCLUDE, frameBody.getIdentifier(), frameBody.getText())){
+                            if (isDBValue(SEARCH_TYPE.CLEAN, frameBody.getIdentifier(), frameBody.getText())){
                                 saveCommentTag = true;
                                 save = true;
                                 addWarning("Comment Tag Deleted: " + description + "=" + values.toString());
@@ -1144,7 +1049,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                         AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
                         FrameBodyCOMM frameBody = (FrameBodyCOMM) frame.getBody();
                         List<String> values = frameBody.getValues();
-                        addWarning("There was a problem saving custom tag " + frameBody.getDescription() +
+                        addWarning("There was a problem saving custom Comment tag " + frameBody.getDescription() +
                                 "=" + values.toString());
                     }
                 }
@@ -1152,36 +1057,33 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         }
     }
 
-    public boolean isCleanable(ArrayList<MP3FramePattern> list, String frameId, String value){
-
+    public boolean isDBValueGlobal(SEARCH_TYPE st, String value){
+        ComposerBO composerBO = ComposerBO.getInstance();
         value = be.home.common.utils.StringUtils.removeNull(value);
-        for (MP3FramePattern cleanupPattern : list){
-            if (frameId.equalsIgnoreCase(cleanupPattern.getFrameId()) && Pattern.matches("(?s)" + cleanupPattern.getPattern().toLowerCase(), value.toLowerCase())) {
-                addWarning("Found Match for Frame " + frameId + " - Pattern: " + cleanupPattern.getPattern());
-                return true;
+        boolean found = false;
+        ArrayList<Composers.FramePattern> myList = null;
+
+        switch (st) {
+            case CLEAN:
+                myList = composerBO.getGlobalCleanupList(GLOBAL_FRAME);
+                break;
+            case EXCLUDE:
+                myList = composerBO.getGlobalExclusionList(GLOBAL_FRAME);
+                break;
+        }
+        if (myList != null && myList.size() > 0) {
+            for (Composers.FramePattern framePattern : myList) {
+                String pattern = framePattern.getPattern();
+                if (framePattern.contains) {
+                    pattern = "(.*)" + pattern + "(.*)";
+                }
+                if (Pattern.matches("(?s)" + pattern.toUpperCase(), value.toUpperCase())) {
+                    log.info(st.name() + " Global " + st.name() + " Rule applied:  " + pattern + " - Value: " + value);
+                    return true;
+                }
             }
         }
         return false;
-    }
-
-    public boolean isCleanableGlobal(ArrayList<String> list, String value){
-
-        value = be.home.common.utils.StringUtils.removeNull(value);
-        for (String cleanupPattern : list){
-            if ( Pattern.matches("(?s)" + cleanupPattern.toUpperCase(), value.toUpperCase())) {
-                addWarning("Found Global Match: " + cleanupPattern);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean isCleanable(String frameId, String value) {
-        boolean cleanable = isCleanableGlobal(globalCleanupWords, value);
-        if (!cleanable){
-            cleanable = isCleanable(cleanupFrameWords, frameId, value);
-        }
-        return cleanable;
     }
     private boolean isExcludedGlobal(String value){
 
@@ -1195,50 +1097,36 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         return false;
     }
 
-    public boolean isExcludedDBValue(String frameId, String value) {
+    public boolean isDBValue(SEARCH_TYPE st, String frameId, String value) {
+        ComposerBO composerBO = ComposerBO.getInstance();
         value = be.home.common.utils.StringUtils.removeNull(value);
-        boolean excluded = isExcludedGlobal(value);
-        if (!excluded) {
-            ComposerBO composerBO = ComposerBO.getInstance();
-            ArrayList<Composers.FramePattern> myList = composerBO.getExclusionList(frameId);
+        boolean found = false;
+        ArrayList<Composers.FramePattern> myList = null;
+        switch (st) {
+            case CLEAN:
+                found = isDBValueGlobal(SEARCH_TYPE.CLEAN, value);
+                myList = composerBO.getCleanupList(frameId);
+                break;
+            case EXCLUDE:
+                found = isDBValueGlobal(SEARCH_TYPE.EXCLUDE, value);
+                myList = composerBO.getExclusionList(frameId);
+                break;
+        }
+        if (!found) {
             if (myList != null && myList.size() > 0) {
                 for (Composers.FramePattern framePattern : myList) {
                     String pattern = framePattern.getPattern();
+                    if (framePattern.contains){
+                        pattern = "(.*)" + pattern + "(.*)";
+                    }
                     if (Pattern.matches("(?s)" + pattern.toUpperCase(), value.toUpperCase())) {
-                        log.info("Rule applied: " + frameId + ": " + pattern + " - Value: " + value);
+                        log.info(st.name() + " Rule applied: " + frameId + ": " + pattern + " - Value: " + value);
                         return true;
                     }
                 }
             }
         }
-        return excluded;
-    }
-
-    public boolean isExcludedDBValue(FieldKey fieldKey, String value){
-        ComposerBO composerBO = ComposerBO.getInstance();
-        if (FieldKey.COMPOSER == fieldKey){
-            if (this.COMPOSER_EXCLUSION_LIST) {
-                for (Composers.Composer composer : composerBO.getComposers()) {
-                    String pattern = "(.*)" + composer.getPattern() + "(.*)";
-                    if (Pattern.matches("(?s)" + pattern.toUpperCase(), value.toUpperCase())) {
-                        log.info("Composer rule applied: " + pattern + " - Value: " + value);
-                        return true;
-                    }
-                }
-            }
-        }
-        else if (FieldKey.RECORD_LABEL == fieldKey){
-            if (this.PUBLISHER_EXCLUSION_LIST) {
-                for (Composers.Publisher publisher : composerBO.getPublishers()) {
-                    String pattern = publisher.getPattern();
-                    if (Pattern.matches("(?s)" + pattern.toUpperCase(), value.toUpperCase())) {
-                        log.info("Publisher rule applied: " + pattern + " - Value: " + value);
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+        return found;
     }
 
     public void clearAlbumImage() {
@@ -1604,8 +1492,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
             if (tagFields != null && tagFields.size() > 0) {
                 for (TagField tagField : tagFields) {
                     AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
-                    AbstractTagFrameBody frameBody = (AbstractTagFrameBody) frame.getBody();
-                    //FrameBodyRVA2 frameBody = (FrameBodyRVA2) frame.getBody();
+                    AbstractTagFrameBody frameBody = frame.getBody();
                     AbstractDataType ab = frameBody.getObject("Data");
                     String data = be.home.common.utils.StringUtils.toHex((byte[]) ab.getValue());
                     addWarning("Cleanup of RVAD/RVA2 Frame:  Data=" + data);
@@ -1756,8 +1643,6 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 }
             }
         }
-        cleanupDBFrame(FieldKey.COMPOSER, "Composer");
-        cleanupDBFrame(FieldKey.RECORD_LABEL, "Publisher");
         cleanupPrivateTags();
         cleanupUFIDTags();
         cleanupMCDI();
@@ -1786,7 +1671,6 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         }
         clearLanguage();
         clearInvalidFrame();
-        cleanupTIT1();
         cleanupTags();
         if (this.mp3File.getID3v2Tag() != null && this.mp3File.getID3v2Tag().getEmptyFrameBytes() > 0){
             this.save = true;
@@ -1796,7 +1680,6 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         it is only cleared when there are changes to be saved, unless switch to clean comment is set to true
         */
         cleanCustomizedComments();
-        cleanEmptyComment();
         /*
         while(tagFieldIterator.hasNext()) {
             TagField element = tagFieldIterator.next();

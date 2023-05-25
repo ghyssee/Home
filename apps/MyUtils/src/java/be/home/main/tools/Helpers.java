@@ -6,6 +6,7 @@ import be.home.common.dao.jdbc.SQLiteUtils;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.JSONUtils;
 import be.home.common.utils.MyFileWriter;
+import be.home.common.utils.StringUtils;
 import be.home.domain.model.MP3TagUtils;
 import be.home.domain.model.MezzmoUtils;
 import be.home.domain.model.service.MP3FramePattern;
@@ -35,8 +36,9 @@ public class Helpers extends BatchJobV2 {
 
 
         importComposers();
-        importPublishers();
-        importLines();
+        importExclusionLines();
+        importCleanupLines();
+        importGlobalCleanupLines();
     }
 
     private static void testiPodDate(){
@@ -131,6 +133,48 @@ public class Helpers extends BatchJobV2 {
         }
 
     }
+    private static void importExclusionLines() throws IOException {
+
+        ComposerBO composerBO = ComposerBO.getInstance();
+
+        for (MP3FramePattern pattern : MP3Service.framePatterns) {
+            if (!StringUtils.isBlank(pattern.getPattern()) && !!StringUtils.isBlank(pattern.getFrameId())) {
+                composerBO.addExclusion(pattern.getFrameId(), pattern.getPattern());
+            } else {
+                log.info("Skipping empty exclusion line: " + pattern.getFrameId() + " - " + pattern.getPattern());
+            }
+        }
+        composerBO.save();
+    }
+
+    private static void importCleanupLines() throws IOException {
+
+        ComposerBO composerBO = ComposerBO.getInstance();
+
+        for (MP3FramePattern pattern : MP3Service.cleanupFrameWords) {
+            if (!StringUtils.isBlank(pattern.getPattern()) && !!StringUtils.isBlank(pattern.getFrameId())) {
+                composerBO.addCleanup(pattern.getFrameId(), pattern.getPattern());
+            } else {
+                log.info("Skipping empty cleanup line: " + pattern.getFrameId() + " - " + pattern.getPattern());
+            }
+            composerBO.save();
+        }
+    }
+
+    private static void importGlobalCleanupLines() throws IOException {
+
+        ComposerBO composerBO = ComposerBO.getInstance();
+
+        for (String pattern : MP3Service.globalCleanupWords){
+            if (!StringUtils.isBlank(pattern)) {
+                composerBO.addCleanup(MP3Service.GLOBAL_FRAME, pattern);
+            }
+            else {
+                log.info("Skipping empty global cleanup line: " + pattern);
+            }
+        }
+        composerBO.save();
+    }
 
     private static void importComposers() throws IOException {
         //composerFile.composers.
@@ -138,17 +182,28 @@ public class Helpers extends BatchJobV2 {
         ComposerBO composerBO = ComposerBO.getInstance();
 
         for (String composer : MP3Service.composers){
-            composerBO.addComposer(composer);
+            if (!StringUtils.isBlank(composer)) {
+                composerBO.addExclusion("TCOM", composer, true);
+            }
+            else {
+                log.info("Skipping empty composer line: " + composer);
+            }
         }
         composerBO.save();
     }
+
     private static void importPublishers() throws IOException {
         //composerFile.composers.
 
         ComposerBO composerBO = ComposerBO.getInstance();
 
         for (String publisher : MP3Service.publishers){
-            composerBO.addPublisher(publisher);
+            if (!StringUtils.isBlank(publisher)) {
+                composerBO.addExclusion("TPUB", publisher);
+            }
+            else {
+                    log.info("Skipping empty publisher line: " + publisher);
+            }
         }
         composerBO.save();
     }
@@ -160,15 +215,6 @@ public class Helpers extends BatchJobV2 {
         return mezzmoService;
     }
 
-    private static void importLines() throws IOException {
-
-        ComposerBO composerBO = ComposerBO.getInstance();
-
-        for (MP3FramePattern pattern : MP3Service.framePatterns){
-            composerBO.add(pattern.getFrameId(), pattern.getPattern());
-        }
-        composerBO.save();
-    }
     @Override
     public void run() {
 
