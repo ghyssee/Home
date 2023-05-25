@@ -58,185 +58,19 @@ public interface MP3Service {
              */
 
             add("^DISCOGS(.*)");
-            /* Music Brainz Custom tags */
-            add("^MUSICBRAINZ(.*)");
-            add("^WAVELIST(.*)");
-            add("^RECORD LABEL(.)");
-            add("^TCMP");
-            add("^Facebook");
-            add("^Skype");
-            add("^Vbox7.com");
-            add("^Youtube.com");
-            add("^ERLPYAAGNIR_FERENEECL_UONDSE");
-            add("^YMP3HASH");
-            add("^TAGGER");
-            add("^WM/MEDIAPRIMARYCLASSID");
-            add("^WM/ENCODINGTIME");
-            add("^TYER");
-            add("^GN/ExtD(.*)");
-            add("^FILEOWNER");
-            add("^WEBSITE");
-            add("^DESCRIPTION");
-            add("^SCRIPT");
-            add("^originalyear");
-            add("^Acoustid(.*)");
-
-            add("^Aan ?Geboden ?Door");
-            add("^AccurateRip(.*)");
-            add("^album(.*)");
-            add("^AMGID");
-            add("^(.*)artist(.*)");
-            add("^BARCODE");
-            add("^Catalog(.*)");
-            add("^CDDB(.*)");
-            add("^comments?");
-            add("^compatible_brands");
-            add("^Content Rating");
-            add("^COUNTRY");
-            add("^COVER(.*)");
-            add("^Credits");
-            add("^(.*)date");
-            add("DISCID");
-            add("^FeeAgency");
-            add("^fBPM(.*)");
-            add("^framerate");
-            add("^GN_ExtData");
-            add("^HISTORY");
-            add("^INFO");
-            add("^ITUNES(.*)");
-            add("^iTunMOVI");
-            add("^iTunNORM");
-            add("^iTunPGAP");
-            add("^iTunSMPB");
-            add("^major_brand");
-            add("^Media(.*)");
-            add("^minor_version");
-            add("^MusicMatch(.*)");
-            add("^NOTES");
-            add("^Overlay");
-            add("^Play Gap");
-            add("^PMEDIA");
-            add("^Provider");
-            add("^Purchase Date");
-            add("^PZTagEditor(.*)");
-            add("^RATING");
-            add("^replaygain(.*)");
-            add("^(.*)Release(.*)");
-            add("^Rip date");
-            add("^Ripping tool");
-            add("^SETSUBTITLE");
-            add("^SongRights");
-            add("^SongType");
-            add("^Source(.*)");
-            add("^Supplier");
-            add("^TOTALTRACKS");
-            add("^TPW");
-            add("^Track(.*)");
-            add("^UPC");
-            add("^UPLOADER");
-            add("^User defined text information");
-            add("^Work");
-            add("^XFade");
-            add("^ZN");
-            add("Link van(.*)");
-
-            add("^Engineer");
-            add("^Encoder");
-            add("^ENCODED?(.*)");
-            add("^WEBSTORE");
-            add("^ENCODINGTIME");
-            add("^Year");
-            add("^Language");
-            add("^Related");
-            add("^Style");
-            add("^Tagging time");
-            add("^PLine");
-            add("^CT_GAPLESS_DATA");
-            add("^last_played_timestamp");
-            add("^added_timestamp");
-            add("^play_count");
-            add("^first_played_timestamp");
-            add("^Mp3gain(.*)");
-            add("^EpisodeID");
-            add("^audiodata(.*)");
-            add("^canseekontime");
-            add("^pmsg");
-            add("^EpisodeID");
-            add("^purl");
-            add("^starttime");
-            add("^totaldata(.*)");
-            add("^totalduration");
-            add("^totaldisc(.*)");
-            add("^totaltrack(.*)");
-            add("^videodata(.*)");
-            add("^width");
-            add("^duration");
-            add("^height");
-            add("^bytelength");
-            add("^sourcedata");
-            add("^ORGANIZATION");
-            add("^T?V?EPISODE(.*)");
-            add("^Key");
-            add("^OrigDate");
-            add("^OrigTime");
-            add("^TimeReference");
-            add("^Language(.*)");
-            add("^EnergyLevel");
-            add("^PERFORMER");
-            add("^RIPPER");
-            add("^SPDY");
-            add("^LABEL");
-            add("^EXPLICIT");
-            add("^PLine");
-            add("^MUSICMATCH_MOOD");
-            add("^TITLE");
-            add("^Songs-DB_Preference");
-            add("^LABELNO");
-            add("^ID3v1 Comment");
-            add("^Disc");
-            add("^Part of a set");
-            add("^ISRC");
-            add("Tool Name");
-            add("^Tool Version");
-            add("^author");
-            add("^Intensity");
-            add("^COMMANDS");
-            add("^WE SUCCEED WHERE(.*)");
-            add("^BAND");
-            add("^DISCTOTAL");
-
-            /* private frames owners */
-            add("^Google/StoreId(.*)");
-            add("^Google/StoreLabelCode(.*)");
-            add("^Google/UITS(.*)");
-            add("^WM/Mood(.*)");
-            add("^WM/UniqueFileIdentifier(.*)");
-            add("WM/MediaClassPrimaryID(.*)");
-            add("WM/MediaClassSecondaryID(.*)");
-            add("http\\://www.cdtag.com(.*)");
-            add("^PeakValue");
-            add("^AverageLevel");
-            add("^WM/Provider(.*)");
-            add("^WM/WMContentID(.*)");
-            add("^WM/WMCollectionID(.*)");
-            add("^WM/WMCollectionGroupID(.*)");
-            add("^www.amazon.com(.*)");
-            add("^mailto:uits@7digital.com(.*)");
-            add("^mailto:uits-info@umusic.com(.*)");
-
-            /* end private frame owners */
 
         }
     };
 
     public ArrayList<String> globalCleanupWords = new ArrayList<String>() {
         {
+            add("(.*)www.cloud9music.nl(.*)");
             /* checked globals */
 
         }
     };
 
-    public ArrayList<MP3FramePattern> cleanupFrameWords = new ArrayList<MP3FramePattern>() {
+    public ArrayList<MP3FramePattern> frameCleanups = new ArrayList<MP3FramePattern>() {
         {
             /* COMM */
             //add(new MP3FramePattern("COMM", ""));
@@ -252,7 +86,6 @@ public interface MP3Service {
             //add(new MP3FramePattern("TCOP", ""));
             //add(new MP3FramePattern("TSSE", ""));
             //add(new MP3FramePattern("TMED", ""));
-            add(new MP3FramePattern("TMED", ""));
             //add(new MP3FramePattern("USLT", ""));
             //add(new MP3FramePattern("TOWN", ""));
             //add(new MP3FramePattern("TOPE", ""));
@@ -268,7 +101,7 @@ public interface MP3Service {
        }
     };
 
-    public static ArrayList<MP3FramePattern> framePatterns = new ArrayList<MP3FramePattern>() {
+    public static ArrayList<MP3FramePattern> frameExclusions = new ArrayList<MP3FramePattern>() {
         {
             /* when these words are found in publishers tag, it's not considered as a warning
                This is used by import procedure to insert composers to the composers.json file */

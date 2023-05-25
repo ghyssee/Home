@@ -8,6 +8,8 @@ public class Composers {
     public List<Composers.FramePattern> exclusionList;
     public List<Composers.FramePattern> cleanupList;
 
+    public List<Composers.FramePattern> customTagList;
+
     public class FramePattern {
         public String id;
         public String pattern;

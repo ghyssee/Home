@@ -15,6 +15,7 @@ public class ComposerBO {
     private static final Logger log = LogManager.getLogger();
     private static Map<String, ArrayList<Composers.FramePattern>> mapExclusions;
     private static Map<String, ArrayList<Composers.FramePattern>> mapCleanups;
+    private static Map<String, ArrayList<Composers.FramePattern>> mapCustomTags;
     private static Map<String, String> mapKeys;
 
 
@@ -23,6 +24,7 @@ public class ComposerBO {
         //mapComposers = composers.composers.stream().collect(Collectors.toMap(Composers.Composer::getId, Function.identity()));
         mapExclusions = new <Composers.FramePattern> HashMap();
         mapCleanups = new <Composers.FramePattern> HashMap();
+        mapCustomTags = new <Composers.FramePattern> HashMap();
         mapKeys = new <String> HashMap();
         for (Composers.FramePattern pattern : composers.exclusionList) {
             ArrayList<Composers.FramePattern> myList = mapExclusions.get(pattern.getFrameId());
@@ -46,6 +48,18 @@ public class ComposerBO {
             } else {
                 myList.add(pattern);
             }
+        }
+
+        for (Composers.FramePattern pattern : composers.customTagList) {
+            ArrayList<Composers.FramePattern> myList = mapCustomTags.get(pattern.getFrameId());
+            mapKeys.put(pattern.getId(), pattern.getId());
+            if (myList == null) {
+                ArrayList<Composers.FramePattern> newList = new <Composers.FramePattern>ArrayList();
+                newList.add(pattern);
+                mapCustomTags.put(pattern.getFrameId(), newList);
+            } else {
+                myList.add(pattern);
+            }
         }    }
 
 
@@ -57,7 +71,9 @@ public class ComposerBO {
     public ArrayList<Composers.FramePattern> getCleanupList(String frameId){
         return mapCleanups.get(frameId);
     }
-
+    public ArrayList<Composers.FramePattern> getCustomTagList(String frameId){
+        return mapCustomTags.get(frameId);
+    }
     public ArrayList<Composers.FramePattern> getGlobalExclusionList(String frameId){
 
         return mapExclusions.get(frameId);
@@ -67,6 +83,10 @@ public class ComposerBO {
         return mapCleanups.get(frameId);
     }
 
+    public ArrayList<Composers.FramePattern> getGlobalCustomTagList(String frameId){
+
+        return mapCustomTags.get(frameId);
+    }
     private String strip(String value){
         String strippedValue = value.replaceAll("^\\^?\\(\\.\\*\\)(.*)\\(\\.\\*\\)", "$1");
         return strippedValue;
@@ -95,6 +115,18 @@ public class ComposerBO {
             myList.add(framePattern);
         }
     }
+
+    private void addMapCustomTags(Composers.FramePattern framePattern){
+        ArrayList<Composers.FramePattern> myList = mapCustomTags.get(framePattern.getFrameId());
+        if (myList == null){
+            ArrayList<Composers.FramePattern> newList = new <Composers.FramePattern> ArrayList();
+            newList.add(framePattern);
+            mapCustomTags.put(framePattern.getFrameId(), newList );
+        }
+        else {
+            myList.add(framePattern);
+        }
+    }
     public boolean alreadyExistExclusion(String frameId, String pattern){
         ArrayList<Composers.FramePattern> myList = mapExclusions.get(frameId);
         if (myList != null && myList.size() > 0) {
@@ -115,7 +147,16 @@ public class ComposerBO {
         }
         return false;
     }
-
+    public boolean alreadyExistCustomTag(String frameId, String pattern){
+        ArrayList<Composers.FramePattern> myList = mapCustomTags.get(frameId);
+        if (myList != null && myList.size() > 0) {
+            for (Composers.FramePattern framePattern : myList) {
+                if (framePattern.getPattern().equalsIgnoreCase(pattern))
+                    return true;
+            }
+        }
+        return false;
+    }
     public void addExclusion(String frameId, String pattern){
         addExclusion(frameId, pattern, false);
     }
@@ -124,13 +165,16 @@ public class ComposerBO {
         addCleanup(frameId, pattern, false);
     }
 
+    public void addCustomTag(String frameId, String pattern){
+        addCustomTag(frameId, pattern, false);
+    }
     public void addExclusion(String frameId, String pattern, boolean contains){
         String strippedValue = pattern;
         if (!alreadyExistExclusion(frameId, strippedValue)){
             String uuid = composerBO.getUniqueId();
-            Composers.FramePattern newComposer = new Composers().new FramePattern(uuid, frameId, strippedValue, contains);
-            addMapExclusions(newComposer);
-            composers.exclusionList.add(newComposer);
+            Composers.FramePattern newFramePattern = new Composers().new FramePattern(uuid, frameId, strippedValue, contains);
+            addMapExclusions(newFramePattern);
+            composers.exclusionList.add(newFramePattern);
             log.info("Adding exclusion line: " + frameId + ": " + strippedValue);
         }
         else {
@@ -140,15 +184,29 @@ public class ComposerBO {
 
     public void addCleanup(String frameId, String pattern, boolean contains){
         String strippedValue = pattern;
-        if (!alreadyExistExclusion(frameId, strippedValue)){
+        if (!alreadyExistCleanup(frameId, strippedValue)){
             String uuid = composerBO.getUniqueId();
-            Composers.FramePattern newComposer = new Composers().new FramePattern(uuid, frameId, strippedValue, contains);
-            addMapExclusions(newComposer);
-            composers.cleanupList.add(newComposer);
+            Composers.FramePattern newFramePattern = new Composers().new FramePattern(uuid, frameId, strippedValue, contains);
+            addMapCleanups(newFramePattern);
+            composers.cleanupList.add(newFramePattern);
             log.info("Adding cleanup line: " + frameId + ": " + strippedValue);
         }
         else {
             log.warn("Cleanup line already exists: "  + frameId + ": " + strippedValue);
+        }
+    }
+
+    public void addCustomTag(String frameId, String pattern, boolean contains){
+        String strippedValue = pattern;
+        if (!alreadyExistCustomTag(frameId, strippedValue)){
+            String uuid = composerBO.getUniqueId();
+            Composers.FramePattern newFramePattern = new Composers().new FramePattern(uuid, frameId, strippedValue, contains);
+            addMapCustomTags(newFramePattern);
+            composers.customTagList.add(newFramePattern);
+            log.info("Adding custom tag line: " + frameId + ": " + strippedValue);
+        }
+        else {
+            log.warn("Custom Tag line already exists: "  + frameId + ": " + strippedValue);
         }
     }
     public String getUniqueId(){

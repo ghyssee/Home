@@ -32,7 +32,8 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
 
     enum SEARCH_TYPE {
         CLEAN,
-        EXCLUDE
+        EXCLUDE,
+        CUSTOM_TAG
     }
 
     final String GENRE_X = "GENRE_X";
@@ -689,7 +690,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 FrameBodyPRIV frameBody = (FrameBodyPRIV) frame.getBody();
                 String owner = frameBody.getOwner();
                 byte[] data = frameBody.getData();
-                if (isCustomTagRemovable(owner)){
+                if (isDBValue(SEARCH_TYPE.CUSTOM_TAG, frame.getId(), owner)){
                     addWarning ("Cleanup of Private Frame: Owner=" + owner + " / " + "Data=" + be.home.common.utils.StringUtils.toHex(data));
                     saveTag = true;
                 }
@@ -1005,7 +1006,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                     FrameBodyCOMM frameBody = (FrameBodyCOMM) frame.getBody();
                     String description = frameBody.getDescription();
                     List<String> values = frameBody.getValues();
-                    if (isCustomTagRemovable(description)) {
+                    if (isDBValue(SEARCH_TYPE.CUSTOM_TAG, frame.getId(), description)) {
                         addWarning("Delete Comment Tag: " + description + "=" + values.toString());
                         saveCommentTag = true;
                         save = true;
@@ -1070,6 +1071,9 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
             case EXCLUDE:
                 myList = composerBO.getGlobalExclusionList(GLOBAL_FRAME);
                 break;
+            case CUSTOM_TAG:
+                myList = composerBO.getGlobalCustomTagList(GLOBAL_FRAME);
+                break;
         }
         if (myList != null && myList.size() > 0) {
             for (Composers.FramePattern framePattern : myList) {
@@ -1078,7 +1082,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                     pattern = "(.*)" + pattern + "(.*)";
                 }
                 if (Pattern.matches("(?s)" + pattern.toUpperCase(), value.toUpperCase())) {
-                    log.info(st.name() + " Global " + st.name() + " Rule applied:  " + pattern + " - Value: " + value);
+                    log.info(st.name() + " Global Rule applied:  " + pattern + " - Value: " + value);
                     return true;
                 }
             }
@@ -1111,6 +1115,9 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 found = isDBValueGlobal(SEARCH_TYPE.EXCLUDE, value);
                 myList = composerBO.getExclusionList(frameId);
                 break;
+            case CUSTOM_TAG:
+                found = isDBValueGlobal(SEARCH_TYPE.CUSTOM_TAG, value);
+                myList = composerBO.getCustomTagList(frameId);
         }
         if (!found) {
             if (myList != null && myList.size() > 0) {
@@ -1129,7 +1136,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         return found;
     }
 
-    public void clearAlbumImage() {
+     public void clearAlbumImage() {
         this.tag.deleteArtworkField();
     }
 
@@ -1313,15 +1320,6 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         return false;
     }
 
-    private boolean isCustomTagRemovable(String value){
-
-        for (String cleanupValue : customTags){
-            if ( Pattern.matches(cleanupValue.toUpperCase(), value.toUpperCase())) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     private String getFrameIdFromFieldKey(Tag tag, FieldKey fieldKey){
         //FieldKey.valueOf(FieldKey.ALBUM_SORT);
@@ -1515,8 +1513,8 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
                 FrameBodyTXXX frameBody = (FrameBodyTXXX) frame.getBody();
                 String description = frameBody.getDescription();
-                String value = frameBody.getText();
-                if (isCustomTagRemovable(description)){
+                String value = frameBody.getTextWithoutTrailingNulls();
+                if (isDBValue(SEARCH_TYPE.CUSTOM_TAG, frame.getId(), description)){
                     addWarning("Delete Custom Tag: " + description + "=" + value);
                     saveCustomTags = true;
                     save = true;
