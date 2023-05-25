@@ -139,7 +139,7 @@ public class Helpers extends BatchJobV2 {
         ComposerBO composerBO = ComposerBO.getInstance();
 
         for (MP3FramePattern pattern : MP3Service.frameExclusions) {
-            if (!StringUtils.isBlank(pattern.getPattern()) && !!StringUtils.isBlank(pattern.getFrameId())) {
+            if (!StringUtils.isBlank(pattern.getPattern()) && !StringUtils.isBlank(pattern.getFrameId())) {
                 composerBO.addExclusion(pattern.getFrameId(), pattern.getPattern());
             } else {
                 log.info("Skipping empty exclusion line: " + pattern.getFrameId() + " - " + pattern.getPattern());
@@ -153,7 +153,7 @@ public class Helpers extends BatchJobV2 {
         ComposerBO composerBO = ComposerBO.getInstance();
 
         for (MP3FramePattern pattern : MP3Service.frameCleanups) {
-            if (!StringUtils.isBlank(pattern.getPattern()) && !!StringUtils.isBlank(pattern.getFrameId())) {
+            if (!StringUtils.isBlank(pattern.getPattern()) && !StringUtils.isBlank(pattern.getFrameId())) {
                 composerBO.addCleanup(pattern.getFrameId(), pattern.getPattern());
             } else {
                 log.info("Skipping empty cleanup line: " + pattern.getFrameId() + " - " + pattern.getPattern());

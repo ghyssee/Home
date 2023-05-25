@@ -56,16 +56,21 @@ public interface MP3Service {
             /* is used for cleanup of Custom TXXX Tags + Custom Comment Tags
                + Private Tags. ex. TXXX:MUSICBRAINZ, ...
              */
+            // add("");
 
             add("^DISCOGS(.*)");
-
+            add("^VideoKind");
+            add("^SL Comment");
         }
     };
 
     public ArrayList<String> globalCleanupWords = new ArrayList<String>() {
         {
             add("(.*)www.cloud9music.nl(.*)");
+            add("(.*)www.newmp3s.net(.*)");
             /* checked globals */
+            // add("(.*)(.*)");
+            add("(.*)www.newestmp3s.com(.*)");
 
         }
     };
@@ -90,6 +95,10 @@ public interface MP3Service {
             //add(new MP3FramePattern("TOWN", ""));
             //add(new MP3FramePattern("TOPE", ""));
             //add(new MP3FramePattern("TSRN", ""));
+            add(new MP3FramePattern("USLT", "^Adrenaline MP3s"));
+            add(new MP3FramePattern("TIT3", "^RADIO MIX"));
+            add(new MP3FramePattern("TIT1", "^Pop$"));
+            add(new MP3FramePattern("TMED", "^DIG$"));
         }
     };
 
@@ -106,6 +115,12 @@ public interface MP3Service {
             /* when these words are found in publishers tag, it's not considered as a warning
                This is used by import procedure to insert composers to the composers.json file */
             //add(new MP3FramePattern("", ""));
+            add(new MP3FramePattern("USLT", "^Many nights we prayed"));
+            add(new MP3FramePattern("USLT", "^Hands Clean"));
+            add(new MP3FramePattern("TPUB", "^J\\-Records"));
+            add(new MP3FramePattern("TPUB", "^Underground Inc"));
+            add(new MP3FramePattern("TPUB", "^A&M Records"));
+            add(new MP3FramePattern("TPUB", "^Ariola(.*)"));
 
         }
     };
@@ -123,6 +138,9 @@ public interface MP3Service {
             add("^PMP/RAL");
             add("^Razor & Tie");
             add("^Phantom Import Distribution");
+            add("^Razor & Tie");
+            add("^Fania(.*)");
+
         }
     };
     public static ArrayList<String> composers = new ArrayList<String>() {
@@ -133,8 +151,16 @@ public interface MP3Service {
             /* Composer */
             add("Antonio Stith");
              //add("");
-
-
+            add("Alexander Kronlund");
+            add("Robin Carlsson");
+            add("Asia Whiteacre");
+            add("Philip Jacobs");
+            add("John Paul Cooper");
+            add("Sophie");
+            add("Allan Pineda");
+            add("Cathy Dennis");
+            add("Steve Booker");
+            add("Rub.n Blades");
         }
     };
 
