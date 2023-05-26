@@ -47,7 +47,12 @@ public class Composers {
         public String getPattern() {
             return pattern;
         }
-
+        public String getSortPattern() {
+            String strippedValue = pattern.replaceAll("\\^", "");
+            strippedValue = strippedValue.replaceAll("\\(\\.\\*\\)", "");
+            strippedValue = strippedValue.replaceAll("\\$", "");
+            return strippedValue.toLowerCase();
+        }
         public void setPattern(String pattern) {
             this.pattern = pattern;
         }

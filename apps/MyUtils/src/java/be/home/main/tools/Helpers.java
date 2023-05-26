@@ -12,6 +12,7 @@ import be.home.domain.model.MezzmoUtils;
 import be.home.domain.model.service.MP3FramePattern;
 import be.home.domain.model.service.MP3Service;
 import be.home.mezzmo.domain.bo.ComposerBO;
+import be.home.mezzmo.domain.enums.MP3CleanupType;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.model.VersionTO;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
@@ -22,6 +23,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
 import java.io.*;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -31,16 +33,108 @@ public class Helpers extends BatchJobV2 {
 
     private static final Logger log = getMainLog(Helpers.class);
     public static MezzmoServiceImpl mezzmoService = null;
+    public static ArrayList<String> composers = new ArrayList<String>() {
+        {
+            /* when these words are found in composer tag, it's not considered as a warning
+               This is used by import procedure to insert composers to the composers.json file */
+
+            /* Composer */
+            add("Antonio Stith");
+            //add("");
+        }
+    };
+
+
+    public static ArrayList<String> customTags = new ArrayList<String>() {
+        {
+            /* is used for cleanup of Custom TXXX Tags + Custom Comment Tags
+               + Private Tags. ex. TXXX:MUSICBRAINZ, ...
+             */
+            // add("");
+
+            add("^DISCOGS(.*)");
+        }
+    };
+
+    public static ArrayList<String> globalCleanupWords = new ArrayList<String>() {
+        {
+            /* checked globals */
+            // add("(.*)(.*)");
+            add("(.*)www.newestmp3s.com(.*)");
+
+        }
+    };
+
+    public static ArrayList<MP3FramePattern> frameCleanups = new ArrayList<MP3FramePattern>() {
+        {
+            /* COMM */
+            //add(new MP3FramePattern("COMM", ""));
+            //add(new MP3FramePattern("TIT1", ""));
+            //add(new MP3FramePattern("TIT3", ""));
+            //add(new MP3FramePattern("TPE4", ""));
+            //add(new MP3FramePattern("TKEY", ""));
+            //add(new MP3FramePattern("WXXX", ""));
+            //add(new MP3FramePattern("TFLT", ""));
+            //add(new MP3FramePattern("TENC", ""));
+            //add(new MP3FramePattern("TPUB", ""));
+            //add(new MP3FramePattern("TCOM", ""));
+            //add(new MP3FramePattern("TCOP", ""));
+            //add(new MP3FramePattern("TSSE", ""));
+            //add(new MP3FramePattern("TMED", ""));
+            //add(new MP3FramePattern("USLT", ""));
+            //add(new MP3FramePattern("TOWN", ""));
+            //add(new MP3FramePattern("TOPE", ""));
+            //add(new MP3FramePattern("TSRN", ""));
+
+            add(new MP3FramePattern("TMED", "^DIG$"));
+        }
+    };
+
+    public ArrayList<String> globalExcludeWords = new ArrayList<String>() {
+        {
+            /* when these words are found in one of the non standard tags, it's not considered as a warning */
+            /* also used for comments that should not be deleted an not shown as warning */
+
+        }
+    };
+
+    public static ArrayList<MP3FramePattern> frameExclusions = new ArrayList<MP3FramePattern>() {
+        {
+            /* when these words are found in publishers tag, it's not considered as a warning
+               This is used by import procedure to insert composers to the composers.json file */
+            //add(new MP3FramePattern("", ""));
+            add(new MP3FramePattern("TPUB", "^Ariola(.*)"));
+
+        }
+    };
+    public static ArrayList<String> publishers = new ArrayList<String>() {
+        {
+            /* when these words are found in publishers tag, it's not considered as a warning
+               This is used by import procedure to insert composers to the composers.json file */
+
+            /* Publisher */
+            add("^Quality Music");
+
+
+        }
+    };
 
     public static void main(String args[]) throws IOException {
 
 
+        //SortComposerFile();
+
         importComposers();
+        importPublishers();
         importExclusionLines();
         importCleanupLines();
         importGlobalCleanupLines();
         importCustomTags();
+
     }
+
+
+
 
     private static void testiPodDate(){
         Date tmp = SQLiteUtils.convertiPodDateToDate(610643234L);
@@ -138,9 +232,9 @@ public class Helpers extends BatchJobV2 {
 
         ComposerBO composerBO = ComposerBO.getInstance();
 
-        for (MP3FramePattern pattern : MP3Service.frameExclusions) {
+        for (MP3FramePattern pattern : frameExclusions) {
             if (!StringUtils.isBlank(pattern.getPattern()) && !StringUtils.isBlank(pattern.getFrameId())) {
-                composerBO.addExclusion(pattern.getFrameId(), pattern.getPattern());
+                composerBO.add(MP3CleanupType.EXCLUDE, pattern.getFrameId(), pattern.getPattern());
             } else {
                 log.info("Skipping empty exclusion line: " + pattern.getFrameId() + " - " + pattern.getPattern());
             }
@@ -152,9 +246,9 @@ public class Helpers extends BatchJobV2 {
 
         ComposerBO composerBO = ComposerBO.getInstance();
 
-        for (MP3FramePattern pattern : MP3Service.frameCleanups) {
+        for (MP3FramePattern pattern : frameCleanups) {
             if (!StringUtils.isBlank(pattern.getPattern()) && !StringUtils.isBlank(pattern.getFrameId())) {
-                composerBO.addCleanup(pattern.getFrameId(), pattern.getPattern());
+                composerBO.add(MP3CleanupType.CLEAN, pattern.getFrameId(), pattern.getPattern());
             } else {
                 log.info("Skipping empty cleanup line: " + pattern.getFrameId() + " - " + pattern.getPattern());
             }
@@ -166,9 +260,9 @@ public class Helpers extends BatchJobV2 {
 
         ComposerBO composerBO = ComposerBO.getInstance();
 
-        for (String pattern : MP3Service.globalCleanupWords){
+        for (String pattern : globalCleanupWords){
             if (!StringUtils.isBlank(pattern)) {
-                composerBO.addCleanup(MP3Service.GLOBAL_FRAME, pattern);
+                composerBO.add(MP3CleanupType.CLEAN, MP3Service.GLOBAL_FRAME, pattern);
             }
             else {
                 log.info("Skipping empty global cleanup line: " + pattern);
@@ -182,9 +276,9 @@ public class Helpers extends BatchJobV2 {
 
         ComposerBO composerBO = ComposerBO.getInstance();
 
-        for (String composer : MP3Service.composers){
+        for (String composer : composers){
             if (!StringUtils.isBlank(composer)) {
-                composerBO.addExclusion("TCOM", composer, true);
+                composerBO.add(MP3CleanupType.EXCLUDE, "TCOM", composer, true);
             }
             else {
                 log.info("Skipping empty composer line: " + composer);
@@ -198,9 +292,9 @@ public class Helpers extends BatchJobV2 {
 
         ComposerBO composerBO = ComposerBO.getInstance();
 
-        for (String customTag : MP3Service.customTags){
+        for (String customTag : customTags){
             if (!StringUtils.isBlank(customTag)) {
-                composerBO.addCustomTag(MP3Service.GLOBAL_FRAME, customTag);
+                composerBO.add(MP3CleanupType.CUSTOM_TAG, MP3Service.GLOBAL_FRAME, customTag);
             }
             else {
                 log.info("Skipping empty Custom Tag line: " + customTag);
@@ -210,13 +304,12 @@ public class Helpers extends BatchJobV2 {
     }
 
     private static void importPublishers() throws IOException {
-        //composerFile.composers.
 
         ComposerBO composerBO = ComposerBO.getInstance();
 
-        for (String publisher : MP3Service.publishers){
+        for (String publisher : publishers){
             if (!StringUtils.isBlank(publisher)) {
-                composerBO.addExclusion("TPUB", publisher);
+                composerBO.add(MP3CleanupType.EXCLUDE, "TPUB", publisher);
             }
             else {
                     log.info("Skipping empty publisher line: " + publisher);
@@ -224,6 +317,14 @@ public class Helpers extends BatchJobV2 {
         }
         composerBO.save();
     }
+
+    private static void SortComposerFile() throws IOException {
+        ComposerBO composerBO = ComposerBO.getInstance();
+        composerBO.sort();
+        composerBO.save();
+
+    }
+
     public static MezzmoServiceImpl getMezzmoService(){
 
         if (mezzmoService == null) {

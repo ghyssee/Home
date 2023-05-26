@@ -4,6 +4,7 @@ import be.home.common.mp3.MP3Utils;
 import be.home.common.utils.FileUtils;
 import be.home.main.mezzmo.MP3TagChecker;
 import be.home.mezzmo.domain.bo.ComposerBO;
+import be.home.mezzmo.domain.enums.MP3CleanupType;
 import be.home.mezzmo.domain.model.json.Composers;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -29,12 +30,6 @@ import static be.home.common.logging.LoggingConfiguration.getMainLog;
 public class MP3JAudioTaggerServiceImpl implements MP3Service {
 
     private static final Logger log = getMainLog(MP3TagChecker.class);
-
-    enum SEARCH_TYPE {
-        CLEAN,
-        EXCLUDE,
-        CUSTOM_TAG
-    }
 
     final String GENRE_X = "GENRE_X";
 
@@ -690,7 +685,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 FrameBodyPRIV frameBody = (FrameBodyPRIV) frame.getBody();
                 String owner = frameBody.getOwner();
                 byte[] data = frameBody.getData();
-                if (isDBValue(SEARCH_TYPE.CUSTOM_TAG, frame.getId(), owner)){
+                if (isDBValue(MP3CleanupType.CUSTOM_TAG, frame.getId(), owner)){
                     addWarning ("Cleanup of Private Frame: Owner=" + owner + " / " + "Data=" + be.home.common.utils.StringUtils.toHex(data));
                     saveTag = true;
                 }
@@ -729,7 +724,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 FrameBodyUFID frameBody = (FrameBodyUFID) frame.getBody();
                 String owner = frameBody.getOwner();
                 byte[] data = frameBody.getUniqueIdentifier();
-                if (isDBValue(SEARCH_TYPE.CLEAN, frameId, owner)){
+                if (isDBValue(MP3CleanupType.CLEAN, frameId, owner)){
                     addWarning ("Cleanup of UFID Frame: Owner=" + owner + " / " + "Data=" + be.home.common.utils.StringUtils.toHex(data));
                     saveTag = true;
                 }
@@ -766,8 +761,8 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
                 FrameBodyWXXX frameBody = (FrameBodyWXXX) frame.getBody();
                 String urlLink = frameBody.getUrlLinkWithoutTrailingNulls().replaceAll("(\0|\f)", "");
-                if (!isDBValue(SEARCH_TYPE.EXCLUDE, frameId, urlLink)) {
-                    if (isDBValue(SEARCH_TYPE.CLEAN, frameId, urlLink)) {
+                if (!isDBValue(MP3CleanupType.EXCLUDE, frameId, urlLink)) {
+                    if (isDBValue(MP3CleanupType.CLEAN, frameId, urlLink)) {
                         addWarning("Cleanup of WXXX Frame: URLLink=" + urlLink);
                         saveTag = true;
                     } else {
@@ -973,7 +968,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                         tag.deleteField(frameId);
                     }
                     else {
-                        if (isDBValue(SEARCH_TYPE.CLEAN, frameId, value)) {
+                        if (isDBValue(MP3CleanupType.CLEAN, frameId, value)) {
                             //tag.removeFrame(frameId);
                             save = true;
                             addWarning("Cleaning tag " + frameId + " " + getDescription(this.tag, frameId) +
@@ -981,7 +976,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                             tag.deleteField(frameId);
                         } else {
                             // show value unless it contains specific words
-                            if (!isDBValue(SEARCH_TYPE.EXCLUDE, frameId, value)) {
+                            if (!isDBValue(MP3CleanupType.EXCLUDE, frameId, value)) {
                                     addWarning("Value found for tag: " + frameId + " " + getDescription(this.tag, frameId) +
                                             " (value=" + value + ")");
                             }
@@ -1006,7 +1001,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                     FrameBodyCOMM frameBody = (FrameBodyCOMM) frame.getBody();
                     String description = frameBody.getDescription();
                     List<String> values = frameBody.getValues();
-                    if (isDBValue(SEARCH_TYPE.CUSTOM_TAG, frame.getId(), description)) {
+                    if (isDBValue(MP3CleanupType.CUSTOM_TAG, frame.getId(), description)) {
                         addWarning("Delete Comment Tag: " + description + "=" + values.toString());
                         saveCommentTag = true;
                         save = true;
@@ -1020,8 +1015,8 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                             save = true;
                         }
                     } else {
-                        if (!isDBValue(SEARCH_TYPE.EXCLUDE, frameBody.getIdentifier(), frameBody.getText())){
-                            if (isDBValue(SEARCH_TYPE.CLEAN, frameBody.getIdentifier(), frameBody.getText())){
+                        if (!isDBValue(MP3CleanupType.EXCLUDE, frameBody.getIdentifier(), frameBody.getText())){
+                            if (isDBValue(MP3CleanupType.CLEAN, frameBody.getIdentifier(), frameBody.getText())){
                                 saveCommentTag = true;
                                 save = true;
                                 addWarning("Comment Tag Deleted: " + description + "=" + values.toString());
@@ -1058,10 +1053,9 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         }
     }
 
-    public boolean isDBValueGlobal(SEARCH_TYPE st, String value){
+    public boolean isDBValueGlobal(MP3CleanupType st, String value){
         ComposerBO composerBO = ComposerBO.getInstance();
         value = be.home.common.utils.StringUtils.removeNull(value);
-        boolean found = false;
         ArrayList<Composers.FramePattern> myList = null;
 
         switch (st) {
@@ -1089,34 +1083,23 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         }
         return false;
     }
-    private boolean isExcludedGlobal(String value){
 
-        value = be.home.common.utils.StringUtils.removeNull(value);
-        for (String excludedValue : globalExcludeWords){
-            if ( Pattern.matches("(?s)" + excludedValue.toUpperCase(), value.toUpperCase())) {
-                log.info("Found Excluded Global Match: " + excludedValue + " - Value: " + value);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean isDBValue(SEARCH_TYPE st, String frameId, String value) {
+    public boolean isDBValue(MP3CleanupType st, String frameId, String value) {
         ComposerBO composerBO = ComposerBO.getInstance();
         value = be.home.common.utils.StringUtils.removeNull(value);
         boolean found = false;
         ArrayList<Composers.FramePattern> myList = null;
         switch (st) {
             case CLEAN:
-                found = isDBValueGlobal(SEARCH_TYPE.CLEAN, value);
+                found = isDBValueGlobal(MP3CleanupType.CLEAN, value);
                 myList = composerBO.getCleanupList(frameId);
                 break;
             case EXCLUDE:
-                found = isDBValueGlobal(SEARCH_TYPE.EXCLUDE, value);
+                found = isDBValueGlobal(MP3CleanupType.EXCLUDE, value);
                 myList = composerBO.getExclusionList(frameId);
                 break;
             case CUSTOM_TAG:
-                found = isDBValueGlobal(SEARCH_TYPE.CUSTOM_TAG, value);
+                found = isDBValueGlobal(MP3CleanupType.CUSTOM_TAG, value);
                 myList = composerBO.getCustomTagList(frameId);
         }
         if (!found) {
@@ -1514,7 +1497,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 FrameBodyTXXX frameBody = (FrameBodyTXXX) frame.getBody();
                 String description = frameBody.getDescription();
                 String value = frameBody.getTextWithoutTrailingNulls();
-                if (isDBValue(SEARCH_TYPE.CUSTOM_TAG, frame.getId(), description)){
+                if (isDBValue(MP3CleanupType.CUSTOM_TAG, frame.getId(), description)){
                     addWarning("Delete Custom Tag: " + description + "=" + value);
                     saveCustomTags = true;
                     save = true;
