@@ -40,146 +40,28 @@ public class Helpers extends BatchJobV2 {
 
             /* Composer */add("Bob Seger");
             add("Clark Datchler");
-            add("Gary Clark");
-            add("Kevin Cronin");
-            add("Martin L.? Gore");
-            add("Jimmy Webb");
-            add("Marillion");
-            add("Dennis DeYoung");
-            add("David Coverdale");
-            add("Richard Scher");
-            add("M.? Vidal");
-            add("O.? Kels");
-            add("Gary Kemp");
-            add("Bryan Ferry");
-            add("Per Gessle");
-            add("Jay Rifkin");
-            add("Freddy Curci");
-            add("Peter Lord");
-            add("Warren Allen Brooks");
-            add("Anders Eljas");
-            add("Julie Gold");
-            add("Claus Lessmann");
-            add("Mick Jones");
-            add("Joey Tempest");
-            add("Robert White Johnson");
-            add("Barry Mann");
-            add("Chris Isaak");
-            add("Justin Hayward");
-            add("Alex North");
-            add("Carole King");
-            add("Tom Scholz");
-            add("Ben Margulies");
-            add("Christopher Neil");
-            add("Dani Klein");
-            add("Chris Rea");
-            add("Timmy T.?");
-            add("Alannah Myles");
-            add("Mae Moore");
-            add("Eric Kaz");
-            add("Michael Bolton");
-            add("C.? DeRouge");
-            add("Cole Porter");
-            add("Ben Margulies");
-            add("Mariah Carey");
-            add("Rod Stewart");
-            add("Carole Bayer Sager");
-            add("Per Gessle");
-            add("Curtis Stigers");
-            add("Jeff Lynne");
-            add("Linda Mccartney");
-            add("Paul Mccartney");
-            add("R.? Matuschek");
-            add("Keith Washington");
-            add("Amy Grant");
-            add("Jon Secada");
-            add("Randy Goodrum");
-            add("Clive Davis");
-            add("Alex Call");
-            add("Jimmy Page");
-            add("Bill Leverty");
-            add("Per Gessle");
-            add("Cat Stevens");
-            add("Jean Guiot");
-            add("C.? Hine");
-            add("Mick Leeson");
-            add("Don Henley");
-            add("Claus Lessmann");
-            add("Walter Afanasieff");
-            add("Scotty Wiseman");
-            add("L.? Teijo");
-            add("Darius Rucker");
-            add("Seal");
-            add("Mick Hucknall");
-            add("Bob Robert");
-            add("John Bristol");
-            add("Amanda McBroom");
-            add("Mark Batson");
-            add("Bosson");
-            add("Harley Streten");
-            add("Ansley Ford");
-            add("Matthias Richter");
-            add("Enzio Latumaelissa");
-            add("William Grigahcine");
-            add("W.? Hector");
-            add("L.? Daniels");
-            add("Nils van Zandt");
-            add("T.? Helsloot");
-            add("Dan Stein");
-            add("Hadrien Federiconi");
-            add("Florence Welch");
-            add("Danny Corten");
-            add("A.? van den Hoef");
-            add("Kiesa Rae Ellestad");
-            add("Gavin Koolman");
-            add("Mario Goossens");
-            add("Alain Macklovitch");
-            add("Jef Martens");
-            add("Tadjmc");
-            add("Salahdine Ibnou Kacemi");
-            add("Sebastien Devaud");
-            add("Malia Civetz");
-            add("Michael Di Scala");
-            add("M.? Colella");
-            add("Edith Wayne");
-            add("Sananda Maitreya");
-            add("M.? Roelandt");
-            add("Sandro Cavazza");
-            add("Henri PFR");
-            add("Thom Bell");
-            add("Paul Fisher");
-            add("Guilherme Boratto");
-            add("Aaron Sheldon Espe");
-            add("M.? D'elisio");
-            add("Dominic Matheson");
-            add("Luke Mcdermott");
-            add("U.? Ozcan");
-            add("Maxim Neslany");
-            add("Zedd");
-            add("Katy Perry");
-            add("Martijn Garritsen");
-            add("Ivan Gough");
-            add("Selena Gomez");
-            add("Alvaro Tauchert Soler");
-            add("Sean Paul");
-            add("21 Savage");
-            add("Le SIDE");
-            add("Bryan du Chatenier");
-            add("Delaney Alberto");
-            add("Iliass Takditi");
-            add("James Hetfield");
-            add("James Hetfield");
-            add("J.? Lennon");
-            add("Kendrick Duckworth");
-            add("Lana Del Rey");
-            add("Alessia Caracciolo");
-            add("Ashley Frangipane");
-            add("Rodney Clawson");
-            add("Sam Hunt");
-            add("Usher Raymond");
-            add("Brantley Gilbert");
-            add("Marcos Masis");
-
+            add("Alex Johnson");
+            add("Troels Abrahamsen");
+            add("Luca Cazal");
+            add("S.? Cutler");
+            add("Ina Wroldsen");
+            add("Anthony Hymas");
+            add("Monica Cole Pollard");
+            add("J.? Stone");
+            add("Paul Kalkbrenner");
+            add("Nneka Egbuna");
+            add("Tino Piontek");
+            add("F.? Long");
+            add("Luis Fonsi");
+            add("Guy James Robin");
+            add("Ina Wroldsen");
+            add("Fausto Amodei");
+            add("Jasmine Tomballe");
+            add("Dean Lewis");
+            add("Garritsen");
+            add("Emilie Adams");
+            add("Memru Renjaan");
+            add("Avicii");
             //add("");
 
 
@@ -195,11 +77,6 @@ public class Helpers extends BatchJobV2 {
             // add("");
 
             add("^DISCOGS(.*)");
-            add("^MTB.Backup");
-            add("^WAVEFORMATEXTENSIBLE_CHANNEL_MASK");
-            add("^HEADER");
-            add("^purchaseaccount");
-            add("^lyrics");
 
         }
     };
@@ -209,8 +86,8 @@ public class Helpers extends BatchJobV2 {
             /* checked globals */
             // add("(.*)(.*)");
             add("(.*)www.simplemp3s.com(.*)");
-            add("(.*)doornroosje@past2present(.*)");
-
+            add("(.*)Mediagrant.Com(.*)");
+            add("(.*)www.MusicDuty.Com(.*)");
 
         }
     };
@@ -236,20 +113,9 @@ public class Helpers extends BatchJobV2 {
             //add(new MP3FramePattern("TOPE", ""));
             //add(new MP3FramePattern("TSRN", ""));
             add(new MP3FramePattern("TCOM", "^Traditional$"));
-            add(new MP3FramePattern("TMED", "(.*)Unofficial Release(.*)"));
-            add(new MP3FramePattern("TCOP", "^Happy Music."));
-            add(new MP3FramePattern("TPUB", "^Copyright Control"));
-            add(new MP3FramePattern("TCOM", "^mu$"));
-            add(new MP3FramePattern("TEXT", "^Gestuurd"));
-            add(new MP3FramePattern("TPUB", "^Is Dat Belangrijk Dan"));
-            add(new MP3FramePattern("TPUB", "^Mute$"));
-            add(new MP3FramePattern("TPUB", "^SMM$"));
-            add(new MP3FramePattern("COMM", "^FLAC 1.2.1"));
-            add(new MP3FramePattern("TPUB", "^Gut$"));
-            add(new MP3FramePattern("COMM", "^Ultimate Pop Theme"));
-            add(new MP3FramePattern("USLT", "^Pop Grand Theme$"));
-
-
+            add(new MP3FramePattern("TPUB", "^Tidyboy"));
+            add(new MP3FramePattern("TPUB", "^b1$"));
+            add(new MP3FramePattern("TMED", "^Compilation"));
 
 
         }
@@ -273,48 +139,26 @@ public class Helpers extends BatchJobV2 {
             //add(new MP3FramePattern("TCOP", "^(.*)"));
             //add(new MP3FramePattern("USLT", "^(.*)"));
             add(new MP3FramePattern("TCOP", "(.*)Lost & Cie(.*)"));
-            add(new MP3FramePattern("TCOP", "(.*)Play Two(.*)"));
-            add(new MP3FramePattern("TCOP", "(.*)Defected Records(.*)"));
-            add(new MP3FramePattern("USLT", "^What are all these words(.*)"));
-            add(new MP3FramePattern("USLT", "^Got ready for the night and(.*)"));
-            add(new MP3FramePattern("USLT", "^Oh oh ah, Seysey(.*)"));
-            add(new MP3FramePattern("USLT", "^Every now and then,(.*)"));
-            add(new MP3FramePattern("USLT", "^One, one, one, one, one(.*)"));
-            add(new MP3FramePattern("USLT", "^I, I've been up all week(.*)"));
-            add(new MP3FramePattern("TCOP", "(.*)Amaterasu(.*)"));
-            add(new MP3FramePattern("TCOP", "(.*)Purple Money(.*)"));
-            add(new MP3FramePattern("TCOP", "(.*)Sound4label(.*)"));
-            add(new MP3FramePattern("TCOP", "^KYZ Records(.*)"));
-            add(new MP3FramePattern("TCOP", "^Digitraxx(.*)"));
-            add(new MP3FramePattern("USLT", "^Let me tell you 'bout a boy \\(girl\\) I know(.*)"));
-            add(new MP3FramePattern("TCOP", "^Musical Freedom Label(.*)"));
-            add(new MP3FramePattern("COMM", "^Four Weddings And A Funeral$"));
-            add(new MP3FramePattern("COMM", "^Philadelphia$"));
-            add(new MP3FramePattern("COMM", "^The Mirror Has Two Faces$"));
-            add(new MP3FramePattern("COMM", "^Free Willy$"));
-            add(new MP3FramePattern("COMM", "^Romeo & Juliet$"));
-            add(new MP3FramePattern("COMM", "^Top Gun$"));
-            add(new MP3FramePattern("COMM", "^Ghost$"));
-            add(new MP3FramePattern("COMM", "^The Mask Of Zorro$"));
-            add(new MP3FramePattern("COMM", "^Abeltje$"));
-            add(new MP3FramePattern("COMM", "^$Aladin"));
-            add(new MP3FramePattern("COMM", "^Forrest Gump$"));
-            add(new MP3FramePattern("COMM", "^The Graduate$"));
-            add(new MP3FramePattern("COMM", "^An Officer And A Gentleman$"));
-            add(new MP3FramePattern("COMM", "^Arthur$"));
-            add(new MP3FramePattern("COMM", "^Love Jones$"));
-            add(new MP3FramePattern("COMM", "^Simon Birch$"));
-            add(new MP3FramePattern("COMM", "^Hercules$"));
-            add(new MP3FramePattern("COMM", "^Titanic$"));
-            add(new MP3FramePattern("USLT", "^Ayy, I've been fuckin' hoes and poppin' pillies(.*)"));
-            add(new MP3FramePattern("USLT", "^I really need you(.*)"));
-            add(new MP3FramePattern("USLT", "^Si el ritmo te lleva a mover la cabeza ya empezamos como es(.*)"));
-            add(new MP3FramePattern("USLT", "^Sorry I ain’t got no money(.*)"));
-            add(new MP3FramePattern("USLT", "^Love you in real life(.*)"));
-            add(new MP3FramePattern("USLT", "^You ain't even missing me baby(.*)"));
-            add(new MP3FramePattern("USLT", "\\(Turn on\\)(.*)"));
-            add(new MP3FramePattern("USLT", "^When I met you in the summer(.*)"));
-            add(new MP3FramePattern("USLT", "^You don't get them girls loose loose(.*)"));
+            add(new MP3FramePattern("COMM", "^\\(Live\\)$"));
+            add(new MP3FramePattern("TCOP", "^Happy Music"));
+            add(new MP3FramePattern("TCOP", "(.*)Ang.le VL Records(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Together Publishing(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Polydor(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Cash Money Records(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Mercury Music Group(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Together Publishing(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)El Cartel Records(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Affranchis Music(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Foufoune Palace Bonjour(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Initial Artist Services(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Val Production(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Artside(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Lut.ce Music(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)RLS Productions(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)MCA$"));
+            add(new MP3FramePattern("TCOP", "(.*)Def Jam Recordings(.*)"));
+            add(new MP3FramePattern("TPUB", "(.*)UMG Recordings(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Pmedia Network(.*)"));
 
         }
     };
@@ -325,18 +169,19 @@ public class Helpers extends BatchJobV2 {
 
             /* Publisher */
              add("^RSM 22(.*)");
-            add("^Crimson");
-            add("^Top Notch(.*)");
-            add("^Polydor Group");
-            add("^Toshiba Emi(.*)");
-            add("^Hospital Records(.*)");
-            add("(.*)Entertainment One U.?S.?(.*)");
-            add("(.*)Cash Money(.*)");
-            add("(.*)Hollywood Records(.*)");
-            add("^ARS Entertainment(.*)");
+            add("(.*)Interscope(.*)");
+            add("(.*)Jonas Brothers Recording(.*)");
+            add("^Initial Artist Services(.*)");
+            add("^Vertigo Berlin(.*)");
+            add("^UMGRI Interscope(.*)");
+            add("^SPKTAQLR(.*)");
+            add("^Jo & Co$");
+            add("^Parlophone France(.*)");
+            add("^WM Germany(.*)");
+            add("^Happy Music(.*)");
+            add("^Electronic Nature(.*)");
 
-
-        }
+         }
     };
 
     public static void main(String args[]) throws IOException {
