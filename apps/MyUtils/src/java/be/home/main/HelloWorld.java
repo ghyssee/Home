@@ -4,12 +4,14 @@ import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.FileUtils;
+import be.home.common.utils.JSONUtils;
 import be.home.common.utils.MyFileWriter;
 import be.home.domain.model.ArtistSongItem;
 import be.home.domain.model.MP3Helper;
 import be.home.domain.model.service.MP3Exception;
 import be.home.domain.model.service.MP3JAudioTaggerServiceImpl;
 import be.home.domain.model.service.MP3Service;
+import be.home.mezzmo.domain.model.json.Composers;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -192,9 +194,9 @@ private static void TestMovieFile(){
         writer.write( errorHandler.getErrors() );
     }
     private static void testJAudioTagger() throws IOException {
-        //Composers composerFile = (Composers) JSONUtils.openJSONWithCode(Constants.JSON.COMPOSERS, Composers.class);
+        Composers composerFile = (Composers) JSONUtils.openJSONWithCode(Constants.JSON.COMPOSERS, Composers.class);
 
-        File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\TestCases\\02 TLEN ID3v23.mp3");
+        File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\TestCases\\19 GEOB.mp3");
         File newFile = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\new.mp3");
        // TagOptionSingleton.getInstance().setOriginalSavedAfterAdjustingID3v2Padding(false);
        // TagOptionSingleton.getInstance().setRemoveTrailingTerminatorOnWrite(true);

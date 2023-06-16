@@ -805,7 +805,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 String description = frameBody.getDescription();
                 AbstractDataType ab = frameBody.getObject("Data");
                 String data = be.home.common.utils.StringUtils.toHex((byte[]) ab.getValue());
-                addWarning ("Cleanup of GEOB Frame: Descriotion=" + description +
+                addWarning ("Cleanup of GEOB Frame: Description=" + description +
                 " value=" + data);
                 saveTag = true;
             }
