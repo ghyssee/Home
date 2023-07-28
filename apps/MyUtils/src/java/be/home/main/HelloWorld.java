@@ -31,7 +31,10 @@ import java.io.*;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 /**
  * Created by ghyssee on 20/02/2015.
@@ -54,10 +57,24 @@ public class HelloWorld extends BatchJobV2 {
         //TestMovieFile();
         //testAlbumArtist();
         //fileNotFound();
-        testJAudioTagger();
+        //testJAudioTagger();
+        testDate();
 
     }
 
+    private static void testDate(){
+        Date date = new Date(1980, 02, 20);
+        System.out.println("1: " + date);
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        System.out.println("2: " + cal.getTime());
+        // convert back to Date
+        Date newDate = cal.getTime();
+        System.out.println("3: " + newDate);
+        TimeZone.setDefault(TimeZone.getTimeZone("CET"));
+        System.out.println("4: " + newDate);
+    }
 private static void TestMovieFile(){
         /*
     try {
@@ -194,7 +211,7 @@ private static void TestMovieFile(){
     private static void testJAudioTagger() throws IOException {
         //Composers composerFile = (Composers) JSONUtils.openJSONWithCode(Constants.JSON.COMPOSERS, Composers.class);
 
-        File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\TestCases\\02 TLEN ID3v23.mp3");
+        File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\TestCases\\43 Custom Tag That Should Give A Warning.mp3");
         File newFile = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\new.mp3");
        // TagOptionSingleton.getInstance().setOriginalSavedAfterAdjustingID3v2Padding(false);
        // TagOptionSingleton.getInstance().setRemoveTrailingTerminatorOnWrite(true);
