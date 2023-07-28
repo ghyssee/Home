@@ -805,7 +805,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 String description = frameBody.getDescription();
                 AbstractDataType ab = frameBody.getObject("Data");
                 String data = be.home.common.utils.StringUtils.toHex((byte[]) ab.getValue());
-                addWarning ("Cleanup of GEOB Frame: Descriotion=" + description +
+                addWarning ("Cleanup of GEOB Frame: Description=" + description +
                 " value=" + data);
                 saveTag = true;
             }
@@ -984,7 +984,9 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                     }
                 }
                 else {
-                    addWarning("Binary frame found: : " + frameId + " " + getDescription(this.tag, frameId));
+                    if (!isDBValue(MP3CleanupType.EXCLUDE, frameId, getAlbum())) {
+                        addWarning("Binary frame found: : " + frameId + " " + getDescription(this.tag, frameId));
+                    }
                 }
             }
         }
@@ -1076,7 +1078,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                     pattern = "(.*)" + pattern + "(.*)";
                 }
                 if (Pattern.matches("(?s)" + pattern.toUpperCase(), value.toUpperCase())) {
-                    log.info(st.name() + " Global Rule applied:  " + pattern + " - Value: " + value);
+                    log(st, st.name() + " Global Rule applied:  " + pattern + " - Value: " + value);
                     return true;
                 }
             }
@@ -1110,7 +1112,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                         pattern = "(.*)" + pattern + "(.*)";
                     }
                     if (Pattern.matches("(?s)" + pattern.toUpperCase(), value.toUpperCase())) {
-                        log.info(st.name() + " Rule applied: " + frameId + ": " + pattern + " - Value: " + value);
+                        log(st, st.name() + " Rule applied: " + frameId + ": " + pattern + " - Value: " + value);
                         return true;
                     }
                 }
@@ -1413,6 +1415,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 for (TagField tagField : customTags) {
                     AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
                     AbstractTagFrameBody frameBody = frame.getBody();
+
                     if (frameBody instanceof FrameBodyTSOA){
                         FrameBodyTSOA frameBodyTSOA = (FrameBodyTSOA) frame.getBody();
                         value = frameBodyTSOA.getText();
@@ -1428,6 +1431,10 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                     else if (frameBody instanceof FrameBodyTSOP) {
                         FrameBodyTSOP frameBodyTSOP = (FrameBodyTSOP) frame.getBody();
                         value = frameBodyTSOP.getText();
+                    }
+                    else if (frameBody instanceof FrameBodyTSOC) {
+                        FrameBodyTSOC frameBodyTSO = (FrameBodyTSOC) frame.getBody();
+                        value = frameBodyTSO.getText();
                     }
                     description = frameId + " " + getDescription(this.tag, frameId) +
                             " - value = " + value;
@@ -1567,6 +1574,15 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                         deleteInvalidFrame("non id3v24 frame deleted: " , field.getId());
                     }
             }
+        }
+    }
+
+    public void log (MP3CleanupType ct, String message){
+        if (ct == MP3CleanupType.CLEAN){
+            addWarning(message);
+        }
+        else {
+            log.info(message);
         }
     }
 

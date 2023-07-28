@@ -5,8 +5,11 @@ import java.math.BigInteger;
 public class StringUtils {
 
     public static String toHex(byte[] bytes) {
-        BigInteger bi = new BigInteger(1, bytes);
-        return String.format("%0" + (bytes.length << 1) + "X", bi);
+        if (bytes != null) {
+            BigInteger bi = new BigInteger(1, bytes);
+            return String.format("%0" + (bytes.length << 1) + "X", bi);
+        }
+        return null;
     }
 
     public static boolean isBlank(String text){
