@@ -33,6 +33,8 @@ import java.io.*;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -213,7 +215,7 @@ private static void TestMovieFile(){
 
 
         File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\TestCases\\43 Custom Tag That Should Give A Warning.mp3");
-        File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\TestCases\\19 GEOB.mp3");
+        //File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\TestCases\\19 GEOB.mp3");
         File newFile = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\new.mp3");
        // TagOptionSingleton.getInstance().setOriginalSavedAfterAdjustingID3v2Padding(false);
        // TagOptionSingleton.getInstance().setRemoveTrailingTerminatorOnWrite(true);
