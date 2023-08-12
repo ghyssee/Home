@@ -41,25 +41,6 @@ public class Helpers extends BatchJobV2 {
             /* Composer */
 
             add("Bob Seger");
-            add("Clark Datchler");
-            add("Phil Cunningham");
-            add("Jimmy Pursey");
-            add("Mike Shinoda");
-            add("Concetta Kirschner");
-            add("J. Allsop");
-            add("Jamie Masefield");
-            add("Air Traffic");
-            add("Nicolette");
-            add("Antonina Armato");
-            add("Benga");
-            add("Theo Dewitte");
-            add("Brad Paisley");
-            add("Rihanna");
-            add("Madeline Noyes");
-            add("Sarah McTaggart");
-            add("Cesar Sampson");
-            add("Alex Papaconstantinou");
-            add("Stav Beger");
 
             //add("");
 
@@ -76,27 +57,6 @@ public class Helpers extends BatchJobV2 {
             // add("");
 
             add("^DISCOGS(.*)");
-            add("^SIZE");
-            add("^nos(.*)");
-            add("^XMP");
-            add("^gapless_playback");
-            add("(.*)SUVI(.*)");
-            add("^Software");
-            add("^Interpr.tes");
-            add("^Composer(.*)");
-            add("^Copyright message");
-            add("^TSO2");
-            add("^name");
-            add("^creation_time");
-            add("Originator");
-            add("OrigReference");
-            add("^WM/Track");
-            add("^WMFSDKVersion");
-            add("^WMFSDKNeeded");
-            add("^DeviceConformanceTemplate");
-            add("^IsVBR");
-            add("^Upload(.*)");
-
         }
     };
 
@@ -105,49 +65,6 @@ public class Helpers extends BatchJobV2 {
             /* checked globals */
             // add("(.*)(.*)");
             add("(.*)www.simplemp3s.com(.*)");
-            add("(.*)Patjess Place Music(.*)");
-            add("(.*)Www.Clubkings.Prv.Pl(.*)");
-            add("(.*)Www.Im1-Music.Tk(.*)");
-            add("(.*)vip4u.de.vu(.*)");
-            add("(.*)redthreat.wordpress.com(.*)");
-            add("(.*)elchikokevo.blogspot.com(.*)");
-            add("(.*)Hopsmp3thing.Com(.*)");
-            add("(.*)vip4u.de.vu(.*)");
-            add("(.*)www.Vaylo.com(.*)");
-            add("(.*)jonnyaliblog.blogspot.com(.*)");
-            add("(.*)www.dailyrnb4u.blogspot.com(.*)");
-            add("(.*)www.exclusive\\-music\\-dj.com(.*)");
-            add("(.*)DailyTunez.com(.*)");
-            add("(.*)WWW.iM1MUSIC.NET(.*)");
-            add("^NoFS$");
-            add("(.*)EkzclusiveMusikz.co.nr(.*)");
-            add("(.*)Hellboy(.*)");
-            add("(.*)GoodMusicAllDay.com(.*)");
-            add("(.*)www.beatz.bz(.*)");
-            add("(.*)jams.to(.*)");
-            add("(.*)www.NewJams.net(.*)");
-            add("(.*)www.clubomba.com(.*)");
-            add("(.*)www.dreamplace.biz(.*)");
-            add("(.*)WwW.ElVacilonMusical.CoM(.*)");
-            add("(.*)www.dvdvideosoft.com(.*)");
-            add("(.*)www.klubowamuza.eu(.*)");
-            add("(.*)DailyMusic.ru(.*)");
-            add("(.*)www.mp3-box.com(.*)");
-            add("^Ajm[0-9]{1,4}(.*)");
-            add("(.*)vrijemp3.ws(.*)");
-            add("(.*)mp3lio.com(.*)");
-            add("(.*)Kingdom-Leaks.com(.*)");
-            add("(.*)Pryda Recordings(.*)");
-            add("(.*)beatport.com(.*)");
-            add("^Prime Music(.*)");
-            add("(.*)formulenl(.*)");
-            add("(.*)myzuka.org(.*)");
-            add("(.*)www.Mr\\-Music.Info(.*)");
-            add("(.*)TakTaraneh.Com(.*)");
-            add("^IPAUTA$");
-            add("(.*)Mp3Fun.IN(.*)");
-            add("(.*)Street\\-VibezmOsiK(.*)");
-
         }
     };
 
@@ -172,56 +89,6 @@ public class Helpers extends BatchJobV2 {
             //add(new MP3FramePattern("TOPE", ""));
             //add(new MP3FramePattern("TSRN", ""));
             add(new MP3FramePattern("COMM", "^ESCAPE$"));
-            add(new MP3FramePattern("TENC", "^By Normantorres\\-Aka 47"));
-            add(new MP3FramePattern("TPUB", "^Hip\\-O$"));
-            add(new MP3FramePattern("TIT1", "^Master$"));
-            add(new MP3FramePattern("TCOM", "^\\- LiR Style(.*)"));
-            add(new MP3FramePattern("TCOM", "^TEAM OSC"));
-            add(new MP3FramePattern("TPUB", "^143$"));
-            add(new MP3FramePattern("TCOM", "^Bsaii"));
-            add(new MP3FramePattern("COMM", "^The Regulators(.*)"));
-            add(new MP3FramePattern("USLT", "^eck eck(.*)"));
-            add(new MP3FramePattern("TEXT", "^John Dahlbäck(.*)"));
-            add(new MP3FramePattern("TIT1", "^Eurovision(.*)"));
-            add(new MP3FramePattern("TENC", "^Tunebite(.*)"));
-            add(new MP3FramePattern("TIT1", "^La Face(.*)"));
-            add(new MP3FramePattern("TCOM", "^Polow Da Don(.*)"));
-            add(new MP3FramePattern("TEXT", "^Miguel Wiels(.*)"));
-            add(new MP3FramePattern("TPUB", "^Great Stuff(.*)"));
-            add(new MP3FramePattern("TENC", "^Jon$"));
-            add(new MP3FramePattern("TENC", "^320 Kpbs"));
-            add(new MP3FramePattern("USLT", "^Title\\: Foreign affair(.*)"));
-            add(new MP3FramePattern("SYLT", "(.*)"));
-            add(new MP3FramePattern("TENC", "^320 Kpbs"));
-            add(new MP3FramePattern("TSSE", "^Polish people are slaves(.*)"));
-            add(new MP3FramePattern("TIT3", "^Radio Edit"));
-            add(new MP3FramePattern("TIT3", "^HITT$"));
-            add(new MP3FramePattern("TCOM", "^Play & Win"));
-            add(new MP3FramePattern("TPUB", "^Chris Rifflen"));
-            add(new MP3FramePattern("TPUB", "^Roc-A-Fella(.*)"));
-            add(new MP3FramePattern("TKEY", "^C$"));
-            add(new MP3FramePattern("TPUB", "^Hollywood$"));
-            add(new MP3FramePattern("TPUB", "^Chartbreaker"));
-            add(new MP3FramePattern("COMM", "^\\:\\-\\)$"));
-            add(new MP3FramePattern("COMM", "^Top Radio Stars"));
-            add(new MP3FramePattern("TPUB", "^Doorn \\(?Spin?nin'?\\)?"));
-            add(new MP3FramePattern("COMM", "^Fuck The Fakers"));
-            add(new MP3FramePattern("TCOM", "^Nrj"));
-            add(new MP3FramePattern("COMM", "^Maxx"));
-            add(new MP3FramePattern("TSSE", "^MP3"));
-            add(new MP3FramePattern("TCOP", "^Frimusic"));
-            add(new MP3FramePattern("TPUB", "^[0-9]{1,2}$"));
-            add(new MP3FramePattern("TENC", "^[0-9]{1,2}$"));
-            add(new MP3FramePattern("WOAR", "^[0-9]{1,2}$"));
-            add(new MP3FramePattern("TIT3", "^[0-9]{1,2}$"));
-            add(new MP3FramePattern("TMED", "^Music"));
-            add(new MP3FramePattern("TPUB", "^Hollandse Hits"));
-            add(new MP3FramePattern("UFID", "(.*)track(.*)"));
-            add(new MP3FramePattern("TMED", "^G$"));
-            add(new MP3FramePattern("WXXX", "^ng"));
-            add(new MP3FramePattern("TCOP", "^Silverwing 2018"));
-            add(new MP3FramePattern("COMM", "^Fifa Coca cola(.*)"));
-
         }
     };
 
@@ -243,21 +110,6 @@ public class Helpers extends BatchJobV2 {
             //add(new MP3FramePattern("TCOP", "^(.*)"));
             //add(new MP3FramePattern("USLT", "^(.*)"));
             add(new MP3FramePattern("TCOP", "(.*)Lost & Cie(.*)"));
-            add(new MP3FramePattern("TCOP", "(.*)Paradise Records(.*)"));
-            add(new MP3FramePattern("TCOP", "(.*)Studio 100(.*)"));
-            add(new MP3FramePattern("TCOP", "^Mostiko Belgium(.*)"));
-            add(new MP3FramePattern("TENC", "^Mp3 To Wave Converter Plus(.*)"));
-            add(new MP3FramePattern("TENC", "^Free Mp3 Wma Converter(.*)"));
-            add(new MP3FramePattern("TENC", "^Play MPE Player(.*)"));
-            add(new MP3FramePattern("USLT", "^Can we pretend that airplanes(.*)"));
-            add(new MP3FramePattern("WXXX", "^www.eurovision.tv(.*)"));
-            add(new MP3FramePattern("WXXX", "^www.edshaeeran.com"));
-            add(new MP3FramePattern("TSSE", "^FFmbc(.*)"));
-            add(new MP3FramePattern("TSSE", "^To MP3 Converter Free(.*)"));
-            add(new MP3FramePattern("TSSE", "^Logic Pro(.*)"));
-            add(new MP3FramePattern("USLT", "^You can call me artist(.*)"));
-            add(new MP3FramePattern("COMM", "^Engelse cover van Zeil je voor het eerst(.*)"));
-
 
         }
     };
@@ -268,33 +120,7 @@ public class Helpers extends BatchJobV2 {
 
             /* Publisher */
             //add("^(.*)");
-             add("^RSM 22(.*)");
-            add("^Blue Moon(.*)");
-            add("^Poker Flat(.*)");
-            add("^K7(.*)");
-            add("^Accurate(.*)");
-            add("^Central Station(.*)");
-            add("^Superstar Recordings(.*)");
-            add("^Wagram(.*)");
-            add("^Homerun(.*)");
-            add("(.*)Studio 100(.*)");
-            add("^Bmg/Ariola(.*)");
-            add("^LaFace(.*)");
-            add("^Rebel Rock(.*)");
-            add("^Musicor(.*)");
-            add("^Homerun Records(.*)");
-            add("^Sbme Special Mkts(.*)");
-            add("^Sinuz Recordings(.*)");
-            add("^Mercury(.*)");
-            add("^Vertigo(.*)");
-            add("(.*)Universal Music)(.*)");
-            add("^Republic(.*)");
-            add("(.*)Starwatch Entertainment(.*)");
-            add("(.*)Smash The House(.*)");
-            add("^Mosaert");
-            add("^BLNK Music(.*)");
-            add("^Pias");
-            add("^Bruce Springsteen(.*)");
+            add("^RSM 22(.*)");
 
          }
     };
