@@ -64,7 +64,7 @@ public class HelloWorld extends BatchJobV2 {
 
     }
 
-    private static void testDate(){
+    private static void testDateOld(){
         Date date = new Date(1980, 02, 20);
         System.out.println("1: " + date);
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
@@ -77,7 +77,50 @@ public class HelloWorld extends BatchJobV2 {
         TimeZone.setDefault(TimeZone.getTimeZone("CET"));
         System.out.println("4: " + newDate);
     }
-private static void TestMovieFile(){
+
+
+    private static void testDate(){
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(1947, 11, 31, 9, 59, 59);
+        System.out.println("1: " + calendar.getTime());
+        Calendar utcCal = convertToUTC(calendar);
+        System.out.println("2: " + utcCal.getTime());
+        Calendar localCal = convertToLocalTime(utcCal);
+        System.out.println("3: " + localCal.getTime());
+    }
+
+    private static Calendar convertToUTC(Calendar cal) {
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        calendar.set(Calendar.YEAR, cal.get(Calendar.YEAR));
+        calendar.set(Calendar.MONTH, cal.get(Calendar.MONTH));
+        calendar.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH));
+        calendar.set(Calendar.HOUR_OF_DAY, cal.get(Calendar.HOUR_OF_DAY));
+        calendar.set(Calendar.MINUTE, cal.get(Calendar.MINUTE));
+        calendar.set(Calendar.SECOND, cal.get(Calendar.SECOND));
+        return calendar;
+    }
+
+    private static Calendar convertToLocalTime(Calendar cal) {
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("CET"));
+        calendar.set(Calendar.YEAR, cal.get(Calendar.YEAR));
+        calendar.set(Calendar.MONTH, cal.get(Calendar.MONTH));
+        calendar.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH));
+        calendar.set(Calendar.HOUR_OF_DAY, cal.get(Calendar.HOUR_OF_DAY));
+        calendar.set(Calendar.MINUTE, cal.get(Calendar.MINUTE));
+        calendar.set(Calendar.SECOND, cal.get(Calendar.SECOND));
+        Calendar calNoTimeZone = Calendar.getInstance();
+        calNoTimeZone.clear();
+        calNoTimeZone.set(Calendar.YEAR, calendar.get(Calendar.YEAR));
+        calNoTimeZone.set(Calendar.MONTH, calendar.get(Calendar.MONTH));
+        calNoTimeZone.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH));
+        calNoTimeZone.set(Calendar.HOUR_OF_DAY, calendar.get(Calendar.HOUR_OF_DAY));
+        calNoTimeZone.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE));
+        calNoTimeZone.set(Calendar.SECOND, calendar.get(Calendar.SECOND));
+        return calNoTimeZone;
+    }
+
+
+    private static void TestMovieFile(){
         /*
     try {
         List<MovieTO> listOfMoviesFromCSV = MovieBO.getListOfMoviesFromCSV("C:/My Programs/OneDrive/Movies/emdbV3.csv");
