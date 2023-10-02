@@ -4,3 +4,6 @@ logsV3
 *.pdf
 *.log.*
 **/*.iml
+/documentation/.project
+/documentation/web/.buildpath
+/documentation/web/.project

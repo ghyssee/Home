@@ -22,8 +22,10 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 import org.dom4j.util.XMLErrorHandler;
+import org.exolab.castor.types.DateTime;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -33,10 +35,12 @@ import java.io.*;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 /**
  * Created by ghyssee on 20/02/2015.
@@ -60,22 +64,234 @@ public class HelloWorld extends BatchJobV2 {
         //testAlbumArtist();
         //fileNotFound();
         //testJAudioTagger();
-        testDate();
+        //testStringToDate();
+        //testDateToString();
+        convertDates();
 
     }
 
-    private static void testDate(){
-        Date date = new Date(1980, 02, 20);
-        System.out.println("1: " + date);
-        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+    private static void convertDates(){
         Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        System.out.println("2: " + cal.getTime());
-        // convert back to Date
-        Date newDate = cal.getTime();
-        System.out.println("3: " + newDate);
-        TimeZone.setDefault(TimeZone.getTimeZone("CET"));
-        System.out.println("4: " + newDate);
+        cal.clear(Calendar.ZONE_OFFSET);
+        cal.set(Calendar.YEAR, 1937);
+        cal.set(Calendar.MONTH, Calendar.JUNE);
+        cal.set(Calendar.DAY_OF_MONTH, 02);
+        cal.set(Calendar.HOUR_OF_DAY, 12);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        System.out.println("Time Before Conversion: " + cal.getTime());
+        Calendar cetDate = convertCETToUTC(cal);
+        System.out.println("Time Conversion from UTC to CET: " + cetDate.getTime());
+        // we have a calendar in CET timezone, but time is in UTC time
+        cetDate = convertFromUTCToCET(cal);
+        System.out.println("Time Conversion from CET to UTC: " + cetDate.getTime());
+
+
+
+    }
+
+
+    private static Calendar convertCETToUTC(Calendar cal) {
+        if (cal != null){
+            // cal is in CET Timezone, but we should fill in a calendar in UTC time
+            // 01/06/2023 12:00 is actually the UTC Time for ETC Time 01/06/2023 14:00
+            Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            calendar.set(Calendar.YEAR, cal.get(Calendar.YEAR));
+            calendar.set(Calendar.MONTH, cal.get(Calendar.MONTH));
+            calendar.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH));
+            calendar.set(Calendar.HOUR_OF_DAY, cal.get(Calendar.HOUR_OF_DAY));
+            calendar.set(Calendar.MINUTE, cal.get(Calendar.MINUTE));
+            calendar.set(Calendar.SECOND, cal.get(Calendar.SECOND));
+            return calendar;
+            // returns calendar in UTC timezone, but getTime will always return the CET time
+            // no matter what time zone you set in the Calendar, the Date object will always be printed with the default system time zone
+        }
+        return null;
+    }
+
+    private static Calendar convertFromUTCToCET(Calendar cal) {
+        if (cal != null) {
+            // we have for example 12:00 in UTC time, but we want 10:00 in CET time
+            String DATE_FORMAT = "MM/dd/yyyy HH:mm:ss";
+
+            DateFormat df = new SimpleDateFormat(DATE_FORMAT);
+
+            SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
+            TimeZone tz = TimeZone.getDefault();
+            formatter.setTimeZone(tz);
+
+            String dateInString = df.format(cal.getTime()); // "06/01/2010 12:00:00M";
+            Date date = null;
+            try {
+                date = formatter.parse(dateInString);
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+
+            // To TimeZone UTC
+            SimpleDateFormat sdfUTC = new SimpleDateFormat(DATE_FORMAT);
+            TimeZone tzUTC = TimeZone.getTimeZone("UTC");
+            sdfUTC.setTimeZone(tzUTC);
+
+            String sdateInUTC = sdfUTC.format(date); // Convert to String first
+            Date dateInUTC = null; // Create a new Date object
+            Calendar utcCal = null;
+            try {
+                dateInUTC = formatter.parse(sdateInUTC);
+                cal = Calendar.getInstance();
+                cal.setTime(dateInUTC);
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+            return cal;
+        }
+        return null;
+    }
+
+
+    private static Calendar convertFromUTCToCETOld(Calendar cal) {
+        if (cal != null) {
+            // cal is in CET timezone, but time is wrongly set in UTC time
+            // meaning 01/06/2023 12:00 is in UTC time 01/06/2023 10:00
+            DateTime dateTime;
+            Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("CET"));
+            calendar.set(Calendar.YEAR, cal.get(Calendar.YEAR));
+            calendar.set(Calendar.MONTH, cal.get(Calendar.MONTH));
+            calendar.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH));
+            calendar.set(Calendar.HOUR_OF_DAY, cal.get(Calendar.HOUR_OF_DAY));
+            calendar.set(Calendar.MINUTE, cal.get(Calendar.MINUTE));
+            calendar.set(Calendar.SECOND, cal.get(Calendar.SECOND));
+            Calendar calNoTimeZone = Calendar.getInstance();
+            calNoTimeZone.clear();
+            calNoTimeZone.set(Calendar.YEAR, calendar.get(Calendar.YEAR));
+            calNoTimeZone.set(Calendar.MONTH, calendar.get(Calendar.MONTH));
+            calNoTimeZone.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH));
+            calNoTimeZone.set(Calendar.HOUR_OF_DAY, calendar.get(Calendar.HOUR_OF_DAY));
+            calNoTimeZone.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE));
+            calNoTimeZone.set(Calendar.SECOND, calendar.get(Calendar.SECOND));
+            return calNoTimeZone;
+        }
+        return null;
+    }
+
+    private static void testStringToDate(){
+        //Date date = new Date(1980, 02, 20);
+        String stringFromJson = "1995-03-01T21:59:59";
+        LocalDate localDate = LocalDate.parse(stringFromJson, DateTimeFormatter.ISO_DATE_TIME);
+        System.out.println(localDate);
+
+        LocalDateTime a = LocalDateTime.parse("2014-06-30T12:01:00", DateTimeFormatter.ISO_DATE_TIME);
+
+        System.out.println("LocalDateTime: " + a);
+
+        Calendar cal = convertLocalDateTimeToCalendar(a);
+        System.out.println("cal: " + cal.getTime());
+    }
+
+    private static void testDateToString(){
+        Calendar cal = Calendar.getInstance();
+        cal.set(1999, 2, 28);
+        cal.setTimeZone(TimeZone.getTimeZone("CET"));
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 30);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        System.out.println("cal.getTimeZone(): " + cal.getTimeZone());
+        System.out.println("Time: " + cal.getTime());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String str = dateFormat.format(cal.getTime());
+        System.out.println("str: " + str);
+        //dateFormat.setTimeZone(TimeZone.getTimeZone(ZoneOffset.UTC));
+        //SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+        //String date = dateFormatter.format(cal.getTime()) + "+00:00";
+
+        ZoneId zoneId = ZoneId.of("Europe/Brussels");
+        LocalDateTime ldt = LocalDateTime.ofInstant(cal.toInstant(), zoneId);
+
+        ZonedDateTime zdtNow = ZonedDateTime.of(ldt, zoneId);
+
+        //String date = zdtNow.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        //DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter dtf = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+        String date = zdtNow.format(dtf);
+
+        //System.out.println("dateFormatter: " + date);
+
+/*
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(cal.toInstant(), ZoneId.systemDefault());
+        //DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+        // since LocalDateTime never contain an offset, default offset +00:00 is added
+        String formatDateTime = formatter.format(localDateTime);
+        System.out.println("formatDateTime: " + formatDateTime);
+*/
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(cal.toInstant(), ZoneId.systemDefault());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        // since LocalDateTime never contain an offset, default offset +00:00 is added
+        String formatDateTime = formatter.format(localDateTime);
+        System.out.println("formatDateTime: " + formatDateTime);
+
+        LocalDateTime localDateTime2 = LocalDateTime.ofInstant(cal.toInstant(), ZoneId.systemDefault());
+        DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        // since LocalDateTime never contain an offset, default offset +00:00 is added
+        String formatDateTime2 = localDateTime2.format(formatter2);
+        System.out.println("formatDateTime2: " + formatDateTime2 + "+00:00");
+
+        /*
+        Date date = cal.getTime();
+        //Instant instant = date.toInstant();
+        ZoneOffset zoneOffset = ZoneId.systemDefault().getRules().getOffset(Instant.now());
+        //OffsetDateTime offsetDateTime = instant.atOffset(zoneOffset);
+        OffsetDateTime offsetDateTime = date.toInstant().atOffset(zoneOffset);
+        ZonedDateTime zonedDateTime = offsetDateTime.atZoneSameInstant(ZoneId.of("Europe/Amsterdam"));
+        System.out.println("cet:" + zonedDateTime.toLocalDateTime());
+
+        //DateTimeFormatter dateTimeFormatter2 = DateTimeFormatter.ofPattern("dd-MM-yyyyXXX");
+        //String offsetDateTimeString2 = offsetDateTime.format(dateTimeFormatter2);
+        DateTimeFormatter BASIC_ISO_DATE = new DateTimeFormatterBuilder()
+                .parseCaseInsensitive()
+                .appendValue(YEAR, 4)
+                .appendLiteral('-')
+                .appendValue(MONTH_OF_YEAR, 2)
+                .appendLiteral('-')
+                .appendValue(DAY_OF_MONTH, 2)
+                .optionalStart()
+                .appendOffset("+HHMMss", "+00:00")
+                .toFormatter();
+        String offsetDateTimeString15 = zonedDateTime.toLocalDateTime().format(BASIC_ISO_DATE);
+        System.out.println("Calendar: " + cal.getTime());
+        System.out.println("OffsetDateTime: " + offsetDateTimeString15);
+        */
+
+    }
+
+    private static Calendar convertLocalDateToCalendar(LocalDate localDate){
+        // 2. get system default zone
+        ZoneId zoneId = ZoneId.systemDefault();
+        System.out.println("\nDefault System Zone is :- \n" + zoneId);
+
+        // 3. convert LocalDate to java.util.Date
+        Date date = Date.from(localDate.atStartOfDay(zoneId).toInstant());
+
+        // 4. convert java.util.Date to java.util.Calendar
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return calendar;
+    }
+
+    private static Calendar convertLocalDateTimeToCalendar(LocalDateTime localDateTime){
+        // 1. get system default zone
+        ZoneId zoneId = ZoneId.systemDefault();
+        System.out.println("\nDefault System Zone is :- \n" + zoneId);
+
+        // 2. convert LocalDate to java.util.Date
+        Date date = Date.from(localDateTime.atZone(zoneId).toInstant());
+
+        // 3. convert java.util.Date to java.util.Calendar
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return calendar;
     }
 private static void TestMovieFile(){
         /*
