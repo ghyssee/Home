@@ -149,10 +149,10 @@ public class CODAProcessor extends BatchJobV2 {
                 }
                 else if (isDataLine(line)){
                     if (codaType == codaType.MC){
-                        processDataLine(line, codaMCFile);
+                        processTRCDataLine(line, codaMCFile);
                     }
                     else if (codaType == codaType.VC){
-                        processDataLine(line, codaVCFile);
+                        processTRCDataLine(line, codaVCFile);
                     }
                     System.out.println(line);
                 }
@@ -163,7 +163,7 @@ public class CODAProcessor extends BatchJobV2 {
         }
     }
 
-    private void processDataLine(String line, CODAFile codaFile){
+    private void processTRCDataLine(String line, CODAFile codaFile){
         if(line.startsWith("21")){
             String transactionCode = getTransactionCode(line);
             if (transactionCode.equalsIgnoreCase("00150000")) {

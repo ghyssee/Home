@@ -40,6 +40,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalAccessor;
 import java.util.*;
 
 /**
@@ -66,7 +70,9 @@ public class HelloWorld extends BatchJobV2 {
         //testJAudioTagger();
         //testStringToDate();
         //testDateToString();
-        convertDates();
+        //convertDates();
+        //convertStringToDate();
+        convertStringToDateTime();
 
     }
 
@@ -76,7 +82,7 @@ public class HelloWorld extends BatchJobV2 {
         cal.set(Calendar.YEAR, 1937);
         cal.set(Calendar.MONTH, Calendar.JUNE);
         cal.set(Calendar.DAY_OF_MONTH, 02);
-        cal.set(Calendar.HOUR_OF_DAY, 12);
+        cal.set(Calendar.HOUR_OF_DAY, 16);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
@@ -87,10 +93,50 @@ public class HelloWorld extends BatchJobV2 {
         cetDate = convertFromUTCToCET(cal);
         System.out.println("Time Conversion from CET to UTC: " + cetDate.getTime());
 
+        String strDate = "2023-10-30+01:00";
+        Calendar retCal = unmarshalDate(strDate);
+        System.out.println(retCal.getTime());
 
 
     }
 
+    private static void convertStringToDate(){
+
+        String strDate = "2023-10-30+01:00";
+        Calendar retCal = unmarshalDate(strDate);
+        System.out.println(retCal.getTime());
+
+        strDate = "2023-10-30";
+        retCal = unmarshalDate(strDate);
+        System.out.println(retCal.getTime());
+
+        strDate = "2023-10-30Z";
+        retCal = unmarshalDate(strDate);
+        System.out.println(retCal.getTime());
+
+
+    }
+
+    private static void convertStringToDateTime(){
+
+        String strDate = "2002-05-30T09:00:00";
+        Calendar retCal = unmarshalDateTime(strDate);
+        System.out.println(retCal.getTime());
+
+        strDate = "2002-05-30T09:30:10.5";
+        retCal = unmarshalDateTime(strDate);
+        System.out.println(retCal.getTime());
+
+        strDate = "2002-05-30T09:30:10Z";
+        retCal = unmarshalDateTime(strDate);
+        System.out.println(retCal.getTime());
+
+        strDate = "2002-05-30T09:30:10+06:00";
+        retCal = unmarshalDateTime(strDate);
+        System.out.println(retCal.getTime());
+
+
+    }
 
     private static Calendar convertCETToUTC(Calendar cal) {
         if (cal != null){
@@ -149,45 +195,112 @@ public class HelloWorld extends BatchJobV2 {
         return null;
     }
 
-
-    private static Calendar convertFromUTCToCETOld(Calendar cal) {
-        if (cal != null) {
-            // cal is in CET timezone, but time is wrongly set in UTC time
-            // meaning 01/06/2023 12:00 is in UTC time 01/06/2023 10:00
-            DateTime dateTime;
-            Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("CET"));
-            calendar.set(Calendar.YEAR, cal.get(Calendar.YEAR));
-            calendar.set(Calendar.MONTH, cal.get(Calendar.MONTH));
-            calendar.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH));
-            calendar.set(Calendar.HOUR_OF_DAY, cal.get(Calendar.HOUR_OF_DAY));
-            calendar.set(Calendar.MINUTE, cal.get(Calendar.MINUTE));
-            calendar.set(Calendar.SECOND, cal.get(Calendar.SECOND));
-            Calendar calNoTimeZone = Calendar.getInstance();
-            calNoTimeZone.clear();
-            calNoTimeZone.set(Calendar.YEAR, calendar.get(Calendar.YEAR));
-            calNoTimeZone.set(Calendar.MONTH, calendar.get(Calendar.MONTH));
-            calNoTimeZone.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH));
-            calNoTimeZone.set(Calendar.HOUR_OF_DAY, calendar.get(Calendar.HOUR_OF_DAY));
-            calNoTimeZone.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE));
-            calNoTimeZone.set(Calendar.SECOND, calendar.get(Calendar.SECOND));
-            return calNoTimeZone;
+    public static Calendar unmarshalDateTimeOld(String value) {
+        if (value == null) {
+            return null;
         }
-        return null;
+        // format: yyyy-mm-ddThh:mi:ss
+        LocalDateTime localDateTime = LocalDateTime.parse(value, DateTimeFormatter.ISO_DATE_TIME);
+        Calendar cal = convertLocalDateTimeToCalendar(localDateTime);
+        return cal;
+        //return (javax.xml.bind.DatatypeConverter.parseDateTime(value));
     }
 
-    private static void testStringToDate(){
-        //Date date = new Date(1980, 02, 20);
-        String stringFromJson = "1995-03-01T21:59:59";
-        LocalDate localDate = LocalDate.parse(stringFromJson, DateTimeFormatter.ISO_DATE_TIME);
-        System.out.println(localDate);
+    public static Calendar unmarshalDateTime(String value) {
+        if (value == null) {
+            return null;
+        }
+        // format: yyyy-mm-ddThh:mi:ss
+        // or format yyyy-mm-ddx ex. 2023-10-30+01:00"
+        try {
+            LocalDateTime localDateTime = LocalDateTime.parse(value, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            Calendar cal = convertLocalDateTimeToCalendar(localDateTime);
+            return cal;
+        }
+        catch ( DateTimeParseException ex) {
+            DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+            // parse input
+            TemporalAccessor parsed = formatter.parse(value);
+            // get data from the parsed object
+            LocalDateTime localDateTime = LocalDateTime.from(parsed);
+            ZoneId zone = ZoneId.from(parsed);
+            ZonedDateTime restored = localDateTime.atZone(zone);
+            Date date = Date.from(restored.toInstant());
+            // convert java.util.Date to java.util.Calendar
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(date);
+            return calendar;
 
-        LocalDateTime a = LocalDateTime.parse("2014-06-30T12:01:00", DateTimeFormatter.ISO_DATE_TIME);
-
-        System.out.println("LocalDateTime: " + a);
-
-        Calendar cal = convertLocalDateTimeToCalendar(a);
-        System.out.println("cal: " + cal.getTime());
+        }
+        //return (javax.xml.bind.DatatypeConverter.parseDateTime(value));
     }
+
+    public static Calendar unmarshalDate(String value) {
+        if (value == null) {
+            return null;
+        }
+        // format: yyyy-mm-ddThh:mi:ss
+        // or format yyyy-mm-ddx ex. 2023-10-30+01:00"
+        try {
+            LocalDate localDate = LocalDate.parse(value, DateTimeFormatter.ISO_DATE);
+            Calendar cal = convertLocalDateToCalendar(localDate);
+            return cal;
+        }
+        catch ( DateTimeParseException ex) {
+            DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE;
+            // parse input
+            TemporalAccessor parsed = formatter.parse(value);
+            // get data from the parsed object
+            LocalDate localDate = LocalDate.from(parsed);
+            ZoneId zone = ZoneId.from(parsed);
+            ZonedDateTime restored = localDate.atStartOfDay(zone);
+            Date date = Date.from(restored.toInstant());
+            // convert java.util.Date to java.util.Calendar
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(date);
+            return calendar;
+        }
+        //return (javax.xml.bind.DatatypeConverter.parseDateTime(value));
+    }
+    public static Calendar convertLocalDateTimeToCalendar(ZonedDateTime zonedDateTime){
+        // 1. get system default zone
+        ZoneId zoneId = ZoneId.systemDefault();
+
+        // 2. convert LocalDate to java.util.Date
+        Date date = Date.from(zonedDateTime.toInstant());
+
+        // 3. convert java.util.Date to java.util.Calendar
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return calendar;
+    }
+
+    public static Calendar convertLocalDateTimeToCalendar(LocalDateTime localDateTime){
+        // 1. get system default zone
+        ZoneId zoneId = ZoneId.systemDefault();
+
+        // 2. convert LocalDate to java.util.Date
+        Date date = Date.from(localDateTime.atZone(zoneId).toInstant());
+
+        // 3. convert java.util.Date to java.util.Calendar
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return calendar;
+    }
+
+    public static Calendar convertLocalDateToCalendar(LocalDate localDate){
+        // 1. get system default zone
+        ZoneId zoneId = ZoneId.systemDefault();
+
+        // 2. convert LocalDate to java.util.Date
+        Date date = Date.from(localDate.atStartOfDay(zoneId).toInstant());
+
+        // 3. convert java.util.Date to java.util.Calendar
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return calendar;
+    }
+
 
     private static void testDateToString(){
         Calendar cal = Calendar.getInstance();
@@ -266,33 +379,6 @@ public class HelloWorld extends BatchJobV2 {
 
     }
 
-    private static Calendar convertLocalDateToCalendar(LocalDate localDate){
-        // 2. get system default zone
-        ZoneId zoneId = ZoneId.systemDefault();
-        System.out.println("\nDefault System Zone is :- \n" + zoneId);
-
-        // 3. convert LocalDate to java.util.Date
-        Date date = Date.from(localDate.atStartOfDay(zoneId).toInstant());
-
-        // 4. convert java.util.Date to java.util.Calendar
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        return calendar;
-    }
-
-    private static Calendar convertLocalDateTimeToCalendar(LocalDateTime localDateTime){
-        // 1. get system default zone
-        ZoneId zoneId = ZoneId.systemDefault();
-        System.out.println("\nDefault System Zone is :- \n" + zoneId);
-
-        // 2. convert LocalDate to java.util.Date
-        Date date = Date.from(localDateTime.atZone(zoneId).toInstant());
-
-        // 3. convert java.util.Date to java.util.Calendar
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        return calendar;
-    }
 private static void TestMovieFile(){
         /*
     try {
