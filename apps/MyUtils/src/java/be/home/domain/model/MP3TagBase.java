@@ -22,6 +22,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.tools.generic.EscapeTool;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -98,7 +99,6 @@ public abstract class MP3TagBase extends BatchJobV2 {
     protected void flushAlbumErrors() throws IOException {
         List <AlbumError.Item> filteredAlbumErrors = new ArrayList<>();
         String logAlbum = Setup.getInstance().getFullPath(Constants.FILE.ALBUM_LOG);
-        logAlbum = logAlbum.replace("<DATE>", DateUtils.formatYYYYMMDD(new Date()));
         MyFileWriter albumLogger = new MyFileWriter(logAlbum, MyFileWriter.APPEND);
         for (AlbumError.Item item : mp3TagUtils.getErrorList()){
             if (item.isDone()) {
@@ -295,94 +295,99 @@ public abstract class MP3TagBase extends BatchJobV2 {
         MP3Service mp3File;
         try {
             mp3File = new MP3JAudioTaggerServiceImpl(file);
-        } catch (MP3Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        try {
-            boolean update = false;
-            switch (MP3Tag.valueOf(item.getType())){
-                case ALBUM:
-                    if (item.getNewValue().equals(mp3File.getAlbum())) {
-                        log.info("No Update needed for " + item.getFile());
-                        log.info("MP3 Album Info: " + mp3File.getAlbum());
-                        log.info("Update Info: " + item.getType());
-                        setDone(item);
-                    }
-                    else {
+            try {
+                boolean update = false;
+                switch (MP3Tag.valueOf(item.getType())){
+                    case ALBUM:
+                        if (item.getNewValue().equals(mp3File.getAlbum())) {
+                            log.info("No Update needed for " + item.getFile());
+                            log.info("MP3 Album Info: " + mp3File.getAlbum());
+                            log.info("Update Info: " + item.getType());
+                            setDone(item);
+                        }
+                        else {
+                            update = true;
+                            mp3File.setAlbum(item.getNewValue());
+                        }
+                        break;
+                    case ARTIST :
+                        if (item.getNewValue().equals(mp3File.getArtist())) {
+                            log.info("No Update needed for " + item.getFile());
+                            log.info("MP3 Artist Info: " + mp3File.getArtist());
+                            log.info("Update Info: " + item.getType());
+                            setDone(item);
+                        }
+                        else {
+                            update = true;
+                            mp3File.setArtist(item.getNewValue());
+                        }
+                        break;
+                    case ALBUMARTIST :
+                        if (item.getNewValue().equals(mp3File.getAlbumArtist())) {
+                            log.info("No Update needed for " + item.getFile());
+                            log.info("MP3 Album Artist Info: " + mp3File.getAlbumArtist());
+                            log.info("Update Info: " + item.getType());
+                            setDone(item);
+                        }
+                        else {
+                            update = true;
+                            mp3File.setAlbumArtist(item.getNewValue());
+                        }
+                        break;
+                    case TITLE:
+                        if (item.getNewValue().equals(mp3File.getTitle())) {
+                            log.info("No Update needed for " + item.getFile());
+                            log.info("MP3 Title Info: " + mp3File.getTitle());
+                            log.info("Update Info: " + item.getType());
+                            setDone(item);
+                        }
+                        else {
+                            mp3File.setTitle(item.getNewValue());
+                            update = true;
+                        }
+                        break;
+                    case DISC:
+                        mp3File.setDisc(item.getNewValue());
                         update = true;
-                        mp3File.setAlbum(item.getNewValue());
-                    }
-                    break;
-                case ARTIST :
-                    if (item.getNewValue().equals(mp3File.getArtist())) {
-                        log.info("No Update needed for " + item.getFile());
-                        log.info("MP3 Artist Info: " + mp3File.getArtist());
-                        log.info("Update Info: " + item.getType());
-                        setDone(item);
-                    }
-                    else {
-                        update = true;
-                        mp3File.setArtist(item.getNewValue());
-                    }
-                    break;
-                case ALBUMARTIST :
-                    if (item.getNewValue().equals(mp3File.getAlbumArtist())) {
-                        log.info("No Update needed for " + item.getFile());
-                        log.info("MP3 Album Artist Info: " + mp3File.getAlbumArtist());
-                        log.info("Update Info: " + item.getType());
-                        setDone(item);
-                    }
-                    else {
-                        update = true;
-                        mp3File.setAlbumArtist(item.getNewValue());
-                    }
-                    break;
-                case TITLE:
-                    if (item.getNewValue().equals(mp3File.getTitle())) {
-                        log.info("No Update needed for " + item.getFile());
-                        log.info("MP3 Title Info: " + mp3File.getTitle());
-                        log.info("Update Info: " + item.getType());
-                        setDone(item);
-                    }
-                    else {
-                        mp3File.setTitle(item.getNewValue());
-                        update = true;
-                    }
-                    break;
-                case DISC:
-                    mp3File.setDisc(item.getNewValue());
-                    update = true;
-                    break;
-                case DURATION:
-                    // nothing to do
-                    break;
-                case RATING:
-                    // nothing to do
-                    break;
-                case TRACK:
-                    if (item.getNewValue().equals(mp3File.getTrack())) {
-                        log.info("No Update needed for " + item.getFile());
-                        log.info("MP3 Track Info: " + mp3File.getTrack());
-                        log.info("Update Info: " + item.getType());
-                        setDone(item);
-                    }
-                    else {
-                        mp3File.setTrack(item.getNewValue());
-                        update = true;
-                    }
-                    break;
-            }
-            if (update) {
-                try {
-                    mp3File.commit();
-                    setDone(item);
-                } catch (MP3Exception ex) {
-                    LogUtils.logError(log, ex);
+                        break;
+                    case DURATION:
+                        // nothing to do
+                        break;
+                    case RATING:
+                        // nothing to do
+                        break;
+                    case TRACK:
+                        if (item.getNewValue().equals(mp3File.getTrack())) {
+                            log.info("No Update needed for " + item.getFile());
+                            log.info("MP3 Track Info: " + mp3File.getTrack());
+                            log.info("Update Info: " + item.getType());
+                            setDone(item);
+                        }
+                        else {
+                            mp3File.setTrack(item.getNewValue());
+                            update = true;
+                        }
+                        break;
                 }
+                if (update) {
+                    try {
+                        mp3File.commit();
+                        setDone(item);
+                    } catch (MP3Exception ex) {
+                        LogUtils.logError(log, ex);
+                    }
+                }
+            } catch (Exception e) {
+                LogUtils.logError(log, e);
             }
-        } catch (Exception e) {
-            LogUtils.logError(log, e);
+
+        } catch (MP3Exception e) {
+            if (e.getCause() instanceof FileNotFoundException){
+                item.setType("FILENOTFOUND");
+            }
+            else {
+                throw new RuntimeException(e);
+            }
         }
     }
 

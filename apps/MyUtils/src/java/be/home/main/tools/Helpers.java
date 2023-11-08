@@ -40,8 +40,66 @@ public class Helpers extends BatchJobV2 {
 
             /* Composer */
 
-            add("Bob Seger");
+            add("Robbie van Leeuwen");
 
+            add("Nicole Millar");
+            add("Adam Hyde");
+            add("Reuben Styles");
+            add("Sam La More");
+            add("C.? Edward Halstead");
+            add("E.? Matthews");
+            add("F.? Taylor");
+            add("Mark Knight");
+            add("Axel Hedfors");
+            add("Alex Van Den Hoef");
+            add("Patrik Berger");
+            add("J.? Allen");
+            add("Sebastian Lundberg");
+            add("E.? Simons");
+            add("Mikah Freeman");
+            add("Nick Littlemore");
+            add("Patrick Bruyndonx");
+            add("Martin Garrix");
+            add("Jay Hardway");
+            add("A.? Hynne");
+            add("Will Heard");
+            add("Ray Slijngaard");
+            add("Joel Fletcher Allen");
+            add("Will Sparks");
+            add("Kam Denny");
+            add("D.? Romers");
+            add("Paul Brandoli");
+            add("Darren Foreman");
+            add("Cara Salimando");
+            add("Luke Calleja");
+            add("N.? Pelusi");
+            add("T.? Honeywill");
+            add("Sander van Doorn");
+            add("Michael Chard");
+            add("T.? Olsen");
+            add("Zoe Johnston");
+            add("Jono Grant");
+            add("Z. Stucchi");
+            add("S.? Cogo");
+            add("Keith Richards");
+            add("Mick Jagger");
+            add("Ian Gillian");
+            add("Roger Waters");
+            add("Roger Taylor");
+            add("Fleetwood Mac");
+            add("Alex Van Halen");
+            add("Bert Russell");
+            add("Willie Mitchell");
+            add("Amanda Somerville");
+            add("Michael Gore");
+            add("Curtis Hudson");
+            add("Mick Jagger");
+            add("John Farrar");
+            add("Gavin Sutherland");
+            add("Joe Jackson");
+            add("Men At Work");
+            add("Astor Piazzolla");
+            add("");
             //add("");
 
 
@@ -57,6 +115,17 @@ public class Helpers extends BatchJobV2 {
             // add("");
 
             add("^DISCOGS(.*)");
+            add("^Google/OriginalClientId(.*)");
+            add("^ZuneCollectionID(.*)");
+            add("^ZuneMediaID(.*)");
+            add("^ZuneAlbumMediaID(.*)");
+            add("^ENSEMBLE(.*)");
+            add("^TRAKTOR4(.*)");
+            add("^GadiField(.*)");
+            add("^COMPILATION(.*)");
+            add("^PUBLISHER(.*)");
+            add("^ID3-TagIT(.*)");
+
         }
     };
 
@@ -65,6 +134,9 @@ public class Helpers extends BatchJobV2 {
             /* checked globals */
             // add("(.*)(.*)");
             add("(.*)www.simplemp3s.com(.*)");
+            add("(.*)4Z5At(.*)");
+            add("(.*)www.lyricsplugin.com(.*)");
+            add("(.*)Mp3Developments.Com(.*)");
         }
     };
 
@@ -88,7 +160,53 @@ public class Helpers extends BatchJobV2 {
             //add(new MP3FramePattern("TOWN", ""));
             //add(new MP3FramePattern("TOPE", ""));
             //add(new MP3FramePattern("TSRN", ""));
-            add(new MP3FramePattern("COMM", "^ESCAPE$"));
+
+            add(new MP3FramePattern("TIT1", "^Oldies"));
+            add(new MP3FramePattern("TSSE", "^Audiog"));
+            add(new MP3FramePattern("TPUB", "^Fiction$"));
+            add(new MP3FramePattern("TPUB", "^Wb \\(Warner\\)"));
+            add(new MP3FramePattern("TPUB", "^Demon$"));
+            add(new MP3FramePattern("USLT", "^credits:(.*)"));
+            add(new MP3FramePattern("TOFN", "^Billy Joel(.*)"));
+            add(new MP3FramePattern("TIT1", "^Help!(.*)"));
+            add(new MP3FramePattern("TIT1", "^Fleetwood Mac(.*)"));
+
+            add(new MP3FramePattern("TOFN", "^David Bowie(.*)"));
+            add(new MP3FramePattern("USLT", "^\\[00:00.00\\](.*)"));
+            add(new MP3FramePattern("TPUB", "^Col$"));
+            add(new MP3FramePattern("TPUB", "^Eva$"));
+            add(new MP3FramePattern("TPUB", "^Wea$"));
+            add(new MP3FramePattern("TPUB", "^London$"));
+            add(new MP3FramePattern("TCOM", "^Neworder$"));
+            add(new MP3FramePattern("TCOM", "^Young, Young, Scott$"));
+            add(new MP3FramePattern("TPUB", "^Wea/Warner$"));
+            add(new MP3FramePattern("TENC", "^\\(Oan\\)$"));
+            add(new MP3FramePattern("USLT", "^Soulsister - Alle 40 Goed(.*)"));
+            add(new MP3FramePattern("TPUB", "^Wea/Warner$"));
+            add(new MP3FramePattern("TPUB", "^Mgm$"));
+            add(new MP3FramePattern("TENC", "^(.*Demonoid.Me(.*)"));
+            add(new MP3FramePattern("COMM", "^=?\\[[0-9]{1,10}]\\]"));
+            add(new MP3FramePattern("TENC", "^Allmusic555"));
+            add(new MP3FramePattern("TPUB", "^Funky A$"));
+            add(new MP3FramePattern("TENC", "^Balg$"));
+            add(new MP3FramePattern("TOFN", "^Joe Cocker(.*)"));
+            add(new MP3FramePattern("TOFN", "^Stevie Wonder(.*)"));
+            add(new MP3FramePattern("TDLY", "^0$"));
+            add(new MP3FramePattern("TCOM", "^G, Moore"));
+            add(new MP3FramePattern("TKEY", "^\\*S\\*$"));
+            add(new MP3FramePattern("TMED", "^\\(CD/DD\\)$"));
+            add(new MP3FramePattern("TPUB", "^100 Hits(.*)"));
+            add(new MP3FramePattern("TPUB", "^Volcano(.*)"));
+            add(new MP3FramePattern("TPUB", "^Tiv44(.*)"));
+            add(new MP3FramePattern("TPUB", "^Ministry Of Sound Uk(.*)"));
+            add(new MP3FramePattern("TKEY", "^Kwissie$"));
+            add(new MP3FramePattern("USLT", "^xcxc$"));
+            add(new MP3FramePattern("TPUB", "^R\\.E\\.M\\.?(.*)"));
+            add(new MP3FramePattern("TPUB", "^Bmg$"));
+            add(new MP3FramePattern("TOFN", "^Robert Plant(.*)"));
+
+
+
         }
     };
 
@@ -110,6 +228,11 @@ public class Helpers extends BatchJobV2 {
             //add(new MP3FramePattern("TCOP", "^(.*)"));
             //add(new MP3FramePattern("USLT", "^(.*)"));
             add(new MP3FramePattern("TCOP", "(.*)Lost & Cie(.*)"));
+            add(new MP3FramePattern("TCOP", "(.*)Digital Distribution Ukraine(.*)"));
+            add(new MP3FramePattern("USLT", "^I want to break free(.*)"));
+            add(new MP3FramePattern("USLT", "^I was bruised and battered and I(.*)"));
+
+
 
         }
     };
@@ -120,9 +243,20 @@ public class Helpers extends BatchJobV2 {
 
             /* Publisher */
             //add("^(.*)");
-            add("^RSM 22(.*)");
+            add("^Orchard(.*)");
+            add("^Abkco(.*)");
+            add("^Madacy(.*)");
+            add("^Double Play(.*)");
+            add("^Divine Recordings(.*)");
+            add("^Frontiers Records(.*)");
+            add("^Bmg Special Product(.*)");
+            add("^Utv Records(.*)");
+            add("^Warner Elektra Atlantic Corp(.*)");
+            add("^Time Life(.*)");
+            add("^Warner Brothers(.*)");
+            add("^Cbs Records(.*)");
 
-         }
+        }
     };
 
     public static void main(String args[]) throws IOException {

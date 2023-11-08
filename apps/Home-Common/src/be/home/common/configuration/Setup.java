@@ -1,14 +1,12 @@
 package be.home.common.configuration;
 
 import be.home.common.exceptions.ApplicationException;
-import be.home.common.utils.FileUtils;
-import be.home.common.utils.JSONUtils;
-import be.home.common.utils.NetUtils;
-import be.home.common.utils.WinUtils;
+import be.home.common.utils.*;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,7 +63,6 @@ public class Setup {
         if (StringUtils.isNotBlank(path)){
             path = replaceEnvironmentVariables(path);
         }
-        FileUtils.checkDirectory(path);
         return path;
 
     }
@@ -73,6 +70,7 @@ public class Setup {
     public static String replaceEnvironmentVariables(String var){
         var = var.replace("%ONEDRIVE%", WinUtils.getOneDrivePath());
         var = var.replace("%HOST%", NetUtils.getHostName());
+        var = var.replace("%DATE%",  DateUtils.formatYYYYMMDD());
         return var;
 
     }

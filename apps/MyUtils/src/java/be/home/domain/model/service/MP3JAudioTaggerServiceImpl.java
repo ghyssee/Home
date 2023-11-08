@@ -20,6 +20,7 @@ import org.jaudiotagger.tag.id3.*;
 import org.jaudiotagger.tag.id3.framebody.*;
 import org.jaudiotagger.tag.reference.ID3V2Version;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.Year;
 import java.util.*;
@@ -59,6 +60,8 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
             FileUtils.makeFileWriteable(file);
             this.file = file;
             this.mp3File = new MP3File(file);
+        } catch (FileNotFoundException e) {
+            throw new MP3Exception(e);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (TagException e) {
