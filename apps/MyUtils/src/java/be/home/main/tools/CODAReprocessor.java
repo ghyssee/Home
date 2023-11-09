@@ -45,7 +45,7 @@ public class CODAReprocessor extends BatchJobV2 {
     public void start() {
 //        File file = new File("C:\\Temp\\atos\\check\\ABO_MUL.F0017211");
         //      processSingleFile(file);
-        File file = new File("c:\\Temp\\elavon\\done\\05\\2305\\CODA_32000695_230523015933.dat");
+        File file = new File("c:\\Temp\\elavon\\CODA_32000695_230714020604.dat");
         processCODA(file);
     }
 
