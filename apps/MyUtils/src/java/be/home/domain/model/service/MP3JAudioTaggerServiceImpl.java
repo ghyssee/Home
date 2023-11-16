@@ -617,6 +617,24 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         }
     }
 
+    private void checkAlbum() throws MP3Exception {
+        String albumArtist = getAlbumArtist();
+        if (StringUtils.isBlank(albumArtist)){
+            addWarning("ALBUMARTIST is empty");
+        }
+        else {
+            if (albumArtist.equalsIgnoreCase("VARIOUS ARTISTS")) {
+                if (!this.isCompilation()) {
+                    addWarning("ALBUMARTIST is " + albumArtist + ", but is not marked as a compilation");
+                }
+            } else {
+                if (this.isCompilation()) {
+                    addWarning("ALBUMARTIST is " + albumArtist + ", but is marked as a compilation");
+                }
+            }
+        }
+    }
+
     private void checkDisc() throws MP3Exception {
         String frameId = getFrameIdFromFieldKey(this.tag, FieldKey.DISC_NO);
         if (this.tag.hasField(frameId)) {
@@ -1665,6 +1683,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
             checkYear();
             checkDisc();
             checkBPM();
+            checkAlbum();
         } catch (MP3Exception e) {
             // this should never occur
             throw new RuntimeException(e);
