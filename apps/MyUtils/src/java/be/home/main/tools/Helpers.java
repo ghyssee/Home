@@ -40,14 +40,8 @@ public class Helpers extends BatchJobV2 {
 
             /* Composer */
 
-            add("David Stewart");
-            add("W.? Badarou");
-            add("A.? Morisod");
-            add("Badalamenti");
-            add("G.? Yared");
-            add("D.? Byrne");
-            add("Niels Wiliam");
-            add("Otis Redding");
+            add("Johan Verminnen");
+
 
             //add("");
 
@@ -62,7 +56,8 @@ public class Helpers extends BatchJobV2 {
                + Private Tags. ex. TXXX:MUSICBRAINZ, ...
              */
             // add("");
-            add("^TraktorLastPlayed");
+
+            add("^Songs-DB_Custom(.*)");
 
 
         }
@@ -72,8 +67,8 @@ public class Helpers extends BatchJobV2 {
         {
             /* checked globals */
             // add("(.*)(.*)");
-            add("(.*)bitsarah.com(.*)");
-            add("(.*)SergioMachine@hotmail.com(.*)");
+
+            add("(.*)Exystence.Net(.*)");
 
         }
     };
@@ -99,13 +94,11 @@ public class Helpers extends BatchJobV2 {
             //add(new MP3FramePattern("TOPE", ""));
             //add(new MP3FramePattern("TSRN", ""));
 
-            add(new MP3FramePattern("TIT1", "^Oldies"));
+            add(new MP3FramePattern("TOPE", "^Gilbert O'sullivan(.*)"));
+            add(new MP3FramePattern("TPUB", "^José Luis Bergantiños López(.*)"));
+            add(new MP3FramePattern("COMM", "^Rockin$"));
 
-
-            add(new MP3FramePattern("TCOM", "^Various Artists$"));
-            add(new MP3FramePattern("COMM", "^with Dido$"));
-            add(new MP3FramePattern("TENC", "^Your$"));
-       }
+        }
     };
 
     public ArrayList<String> globalExcludeWords = new ArrayList<String>() {
@@ -125,7 +118,10 @@ public class Helpers extends BatchJobV2 {
             //add(new MP3FramePattern("TCOP", "^(.*)"));
             //add(new MP3FramePattern("USLT", "^(.*)"));
             add(new MP3FramePattern("USLT", "^De, de de-de de-de(.*)"));
-     }
+            add(new MP3FramePattern("TENC", "(.*)Orlsoft(.*)"));
+            add(new MP3FramePattern("TSSE", "(.*)Orlsoft(.*)"));
+
+        }
     };
     public static ArrayList<String> publishers = new ArrayList<String>() {
         {
@@ -135,7 +131,8 @@ public class Helpers extends BatchJobV2 {
             /* Publisher */
             //add("^(.*)");
             add("^Spectrum Records(.*)");
-
+            add("^Fuel 2000 Records(.*)");
+            add("^Rhino Records(.*)");
 
          }
     };
