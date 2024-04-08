@@ -48,6 +48,7 @@ public class Helpers extends BatchJobV2 {
             add("D.? Byrne");
             add("Niels Wiliam");
             add("Otis Redding");
+            add("Dan Lacksman");
 
             //add("");
 
@@ -105,6 +106,7 @@ public class Helpers extends BatchJobV2 {
             add(new MP3FramePattern("TCOM", "^Various Artists$"));
             add(new MP3FramePattern("COMM", "^with Dido$"));
             add(new MP3FramePattern("TENC", "^Your$"));
+            add(new MP3FramePattern("COMM", "^Online-audio-converter.com"));
        }
     };
 
