@@ -22,7 +22,6 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 import org.dom4j.util.XMLErrorHandler;
-import org.exolab.castor.types.DateTime;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -40,9 +39,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
-import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
 
@@ -63,7 +60,7 @@ public class HelloWorld extends BatchJobV2 {
         //System.out.println(MP3Helper.getInstance().checkRegExpDollar("$1Text$1", 1));
         //updateMP3();
         //batchProcess();
-        //testMP3Prettifier();
+        testMP3Prettifier();
         //TestMovieFile();
         //testAlbumArtist();
         //fileNotFound();
@@ -72,8 +69,36 @@ public class HelloWorld extends BatchJobV2 {
         //testDateToString();
         //convertDates();
         //convertStringToDate();
-        convertStringToDateTime();
+        //convertStringToDateTime();
+        //testAlias();
 
+    }
+
+    private static void testAlias() {
+        HashMap<String, String> map = new HashMap<>();
+        addAlias(map, String.class .getName(), "cntCode", "countryCode");
+        if (hasAlias(map, String.class .getName(),"cntCode")){
+            System.out.println("Alias field: " + getAlias(map, String.class .getName(), "cntCode"));
+            System.out.println("Alias field: " + getAlias(map, String.class .getName(), "countryCode"));
+        }
+    }
+
+    private static boolean hasAlias(HashMap<String, String> map, String className, String key){
+        if (map != null){
+            return map.containsKey(className + "_" + key);
+        }
+        return false;
+    }
+
+    private static String getAlias(HashMap<String, String> map, String className, String key){
+        if (map != null){
+            return map.get(className + "_" + key);
+        }
+        return null;
+    }
+    private static void addAlias(HashMap<String, String> map, String className, String key, String alias) {
+        map.put(className + "_" + key, alias);
+        map.put(className + "_" + alias, key);
     }
 
     private static void convertDates(){
@@ -439,13 +464,14 @@ private static void TestMovieFile(){
         //System.out.println(mp3Helper.prettifyArtist("Dorothee Vegas & Like Maarten Feat. Sam Gooris"));
         //System.out.println("Axwell ^ Ingrosso".replaceAll("Axwell \\^ Ingrosso", "test"));
         //System.out.println(getTitleArtistException("Kontra K", "Zwischen Himmel Hlle"));
-        System.out.println(mp3Helper.prettifyArtist("Pink Sweat$"));
-        System.out.println(mp3Helper.prettifyArtist("Galantis Feat. Ship Wrek & Pink Sweat$"));
+        //System.out.println(mp3Helper.prettifyArtist("Pink Sweat$"));
+        System.out.println(mp3Helper.prettifyArtist("Mo‐Do"));
+        //System.out.println(mp3Helper.prettifyArtist("Galantis Feat. Ship Wrek & Pink Sweat$"));
         //System.out.println(mp3Helper.prettifyArtist("Ella Henderson Feat. Roger Sanchez"));
-        System.out.println(mp3Helper.prettifyAlbum("Billboard Year-End Hot 100 singles of 2022", "Various Artists"));
+        //System.out.println(mp3Helper.prettifyAlbum("Billboard Year-End Hot 100 singles of 2022", "Various Artists"));
         //System.out.println(getArtistTitleException("Galantis Feat. Ship Wrek & Pink Sweat$", "Only a Fool"));
         //System.out.println(getArtistTitleException("Reflekt ft. Delline Bass", "Need To Feel Loved (Cristoph Remix)"));
-        //System.out.println(getTitleArtistException("Taylor Swift", "Me"));
+        System.out.println(getTitleArtistException("Loud Luxury feat. Brandon", "Body (PBH & Jack Shizzle Remix)"));
         //System.out.println(getTitleArtistException("Taylor Swift", "Message in a bottle"));
         //System.out.println(getArtistTitleException("Dna", "blabla"));
         //System.out.println(getArtistTitleException("Michael Patrick Kelly", "Love Goes On (Live) [aus \"Sing meinen Song, Vol. 7\"]"));
