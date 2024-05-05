@@ -29,8 +29,10 @@ public class SQLiteUtils {
         // Apple's Cocoa framework Epoch
         // https://www.epochconverter.com/coredata
         /*
-        A Core Data timestamp is the number of seconds (or nanoseconds) since midnight, January 1, 2001, GMT (see CFAbsoluteTime).
-                The difference between a Core Data timestamp and a Unix timestamp (seconds since 1/1/1970) is 978307200 seconds.
+        A Core Data timestamp is the number of seconds (or nanoseconds) since midnight,
+        January 1, 2001, GMT (see CFAbsoluteTime).
+        The difference between a Core Data timestamp and a Unix timestamp (seconds since 1/1/1970)
+        is 978307200 seconds.
          */
         if (f != null && f.longValue() != 0) {
             Date date = new Date((f + 978307200L) * 1000);
@@ -38,28 +40,6 @@ public class SQLiteUtils {
         }
         return null;
     }
-
-    public static java.util.Date convertiPodDateToDateOld(Long f){
-        if (f != null && f.longValue() != 0) {
-            Date date = new Date(f*1000);
-            Calendar calendar = GregorianCalendar.getInstance();
-            calendar.setTime(date);
-            calendar.add(Calendar.YEAR, 31);
-            // added on 03/03/2019
-            if (f >= 699404400L) {
-                // 699404400L => 01/03/2023 00:00
-                calendar.add(Calendar.DAY_OF_MONTH, +1);
-            }
-            if (f > 573087600L && f <= 604623600L)
-            // 573087600L = Thu Feb 28 00:00:00 CET 2019
-            // 604623600L Sat Feb 29 00:00:00 CET 2020
-            {
-                calendar.add(Calendar.HOUR, +25);
-            }
-
-            return calendar.getTime();
-        }
-        return null;
 
     public static java.util.Date convertStringToDate(String strDate){
         if (strDate != null){

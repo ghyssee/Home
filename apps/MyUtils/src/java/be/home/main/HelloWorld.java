@@ -2,6 +2,7 @@ package be.home.main;
 
 import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
+import be.home.common.dao.jdbc.SQLiteUtils;
 import be.home.common.main.BatchJobV2;
 import be.home.common.utils.FileUtils;
 import be.home.common.utils.JSONUtils;
@@ -60,7 +61,7 @@ public class HelloWorld extends BatchJobV2 {
         //System.out.println(MP3Helper.getInstance().checkRegExpDollar("$1Text$1", 1));
         //updateMP3();
         //batchProcess();
-        testMP3Prettifier();
+        //testMP3Prettifier();
         //TestMovieFile();
         //testAlbumArtist();
         //fileNotFound();
@@ -71,9 +72,14 @@ public class HelloWorld extends BatchJobV2 {
         //convertStringToDate();
         //convertStringToDateTime();
         //testAlias();
+        testiPod();
 
     }
-
+    private static void testiPod() {
+        // 03/05/2024 17:38
+        Date date = SQLiteUtils.convertiPodDateToDate(736443482L);
+        System.out.println(date);
+    }
     private static void testAlias() {
         HashMap<String, String> map = new HashMap<>();
         addAlias(map, String.class .getName(), "cntCode", "countryCode");
