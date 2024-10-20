@@ -65,14 +65,14 @@ public class HelloWorld extends BatchJobV2 {
         //TestMovieFile();
         //testAlbumArtist();
         //fileNotFound();
-        //testJAudioTagger();
+        testJAudioTagger();
         //testStringToDate();
         //testDateToString();
         //convertDates();
         //convertStringToDate();
         //convertStringToDateTime();
         //testAlias();
-        testiPod();
+        //testiPod();
 
     }
     private static void testiPod() {
@@ -548,7 +548,7 @@ private static void TestMovieFile(){
         Composers composerFile = (Composers) JSONUtils.openJSONWithCode(Constants.JSON.COMPOSERS, Composers.class);
 
 
-        File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\TestCases\\43 Custom Tag That Should Give A Warning.mp3");
+        File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\Album\\New\\08 LUNA - Dat Is Het Leven.mp3");
         //File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\TestCases\\19 GEOB.mp3");
         File newFile = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\new.mp3");
        // TagOptionSingleton.getInstance().setOriginalSavedAfterAdjustingID3v2Padding(false);
@@ -575,6 +575,7 @@ private static void TestMovieFile(){
                 //mp3File.setAlbum("Test Album");
                 //mp3File.setAlbumArtist("Various ArtistsXXX");
                // mp3File.clearAlbumImage();
+                System.out.println(mp3File.getRating());
                 System.out.println(mp3File.getRatingAsString());
                 System.out.println(mp3File.getAudioSourceUrl());
                 //mp3File.cleanupTags();

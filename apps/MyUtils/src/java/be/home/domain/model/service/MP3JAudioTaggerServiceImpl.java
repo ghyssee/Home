@@ -164,6 +164,12 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
 
     @Override
     public int getRating() {
+        AbstractID3v2Frame frame = (AbstractID3v2Frame) tag.getFields(FieldKey.RATING).get(0);
+        AbstractTagFrameBody frameBody = frame.getBody();
+        FrameBodyPOPM frameBody2 = (FrameBodyPOPM) frameBody;
+        if (frameBody2.getEmailToUser().equals("Clean")){
+            System.out.println("Rating Clean found");
+        }
         String Rating = tag.getFirst(FieldKey.RATING);
         MP3Utils mp3Utils = new MP3Utils();
         return mp3Utils.convertRating(Rating);
