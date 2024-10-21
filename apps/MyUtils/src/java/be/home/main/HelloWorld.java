@@ -548,7 +548,7 @@ private static void TestMovieFile(){
         Composers composerFile = (Composers) JSONUtils.openJSONWithCode(Constants.JSON.COMPOSERS, Composers.class);
 
 
-        File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\Album\\New\\08 LUNA - Dat Is Het Leven.mp3");
+        File file = new File("C:\\My Data\\tmp\\Java\\MP3Processor\\Test\\new2.mp3");
         //File file = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\TestCases\\19 GEOB.mp3");
         File newFile = new File("c:\\My Data\\tmp\\Java\\MP3Processor\\test\\new.mp3");
        // TagOptionSingleton.getInstance().setOriginalSavedAfterAdjustingID3v2Padding(false);

@@ -107,6 +107,7 @@ public class Helpers extends BatchJobV2 {
             add(new MP3FramePattern("COMM", "^with Dido$"));
             add(new MP3FramePattern("TENC", "^Your$"));
             add(new MP3FramePattern("COMM", "^Online-audio-converter.com"));
+            add(new MP3FramePattern("WXXX", "^BTH(.*)"));
        }
     };
 

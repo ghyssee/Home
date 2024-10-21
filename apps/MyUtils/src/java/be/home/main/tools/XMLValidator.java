@@ -35,7 +35,7 @@ public class XMLValidator  extends DefaultHandler {
             public static void main(final String[] args) {
                 //
                 // System.out.println(validate(args[0]));
-                String filename = "c:\\Temp\\pst\\null.xml";
+                String filename = "C:\\Temp\\pmt\\FULL_ESH_160745.xml";
                 System.out.println(validate(filename));
             }
 

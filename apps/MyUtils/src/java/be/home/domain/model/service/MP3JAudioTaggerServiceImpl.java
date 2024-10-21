@@ -164,12 +164,6 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
 
     @Override
     public int getRating() {
-        AbstractID3v2Frame frame = (AbstractID3v2Frame) tag.getFields(FieldKey.RATING).get(0);
-        AbstractTagFrameBody frameBody = frame.getBody();
-        FrameBodyPOPM frameBody2 = (FrameBodyPOPM) frameBody;
-        if (frameBody2.getEmailToUser().equals("Clean")){
-            System.out.println("Rating Clean found");
-        }
         String Rating = tag.getFirst(FieldKey.RATING);
         MP3Utils mp3Utils = new MP3Utils();
         return mp3Utils.convertRating(Rating);
@@ -1082,6 +1076,52 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
         }
     }
 
+    private void checkRating()  throws MP3Exception {
+        String frameId = ID3v24Frames.FRAME_ID_POPULARIMETER;
+        List<TagField> ratings = this.tag.getFields(frameId);
+        String WMP_RATING = "Windows Media Player 9 Series";
+        if (ratings != null && ratings.size() > 0) {
+            if (ratings.size() == 1) {
+                TagField tagField = ratings.get(0);
+                AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
+                FrameBodyPOPM frameBody = (FrameBodyPOPM) frame.getBody();
+                if (!frameBody.getEmailToUser().equalsIgnoreCase(WMP_RATING)) {
+                    addWarning("Rating found, but is not of type " + WMP_RATING
+                            + ": " + frameBody.getEmailToUser() + " - value: " + frameBody.getRating());
+                }
+            } else if (ratings.size() > 1) {
+                List<TagField> tagFieldsToKeep = new ArrayList();
+                boolean saveTag = false;
+                for (TagField tagField : ratings) {
+                    AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
+                    FrameBodyPOPM frameBody = (FrameBodyPOPM) frame.getBody();
+                    if (!frameBody.getEmailToUser().equalsIgnoreCase(WMP_RATING)) {
+                        addWarning("Invalid Rating found: " + frameBody.getEmailToUser() + " - value: " + frameBody.getRating());
+                    } else {
+                        addWarning("Valid Rating found: " + WMP_RATING + " - value: " + frameBody.getRating());
+                        tagFieldsToKeep.add(tagField);
+                        saveTag = true;
+                    }
+                }
+                if (saveTag) {
+                    this.save = true;
+                    this.tag.deleteField(frameId);
+                    for (TagField tagField : tagFieldsToKeep) {
+                        try {
+                            this.tag.addField(tagField);
+                            addWarning("Cleanup invalid ratings done...");
+                        } catch (FieldDataInvalidException e) {
+                            AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
+                            FrameBodyPOPM frameBody = (FrameBodyPOPM) frame.getBody();
+                            addWarning("There was a problem saving custom tag " + frameBody.getEmailToUser()+
+                                    "=" + frameBody.getRating());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     public boolean isDBValueGlobal(MP3CleanupType st, String value){
         ComposerBO composerBO = ComposerBO.getInstance();
         value = be.home.common.utils.StringUtils.removeNull(value);
@@ -1690,6 +1730,7 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
             checkDisc();
             checkBPM();
             checkAlbum();
+            checkRating();
         } catch (MP3Exception e) {
             // this should never occur
             throw new RuntimeException(e);
