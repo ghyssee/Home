@@ -61,11 +61,11 @@ public class HelloWorld extends BatchJobV2 {
         //System.out.println(MP3Helper.getInstance().checkRegExpDollar("$1Text$1", 1));
         //updateMP3();
         //batchProcess();
-        //testMP3Prettifier();
+        testMP3Prettifier();
         //TestMovieFile();
         //testAlbumArtist();
         //fileNotFound();
-        testJAudioTagger();
+        //testJAudioTagger();
         //testStringToDate();
         //testDateToString();
         //convertDates();
@@ -469,9 +469,10 @@ private static void TestMovieFile(){
         */
         //System.out.println(mp3Helper.prettifyArtist("Dorothee Vegas & Like Maarten Feat. Sam Gooris"));
         //System.out.println("Axwell ^ Ingrosso".replaceAll("Axwell \\^ Ingrosso", "test"));
-        //System.out.println(getTitleArtistException("Kontra K", "Zwischen Himmel Hlle"));
+        System.out.println(getTitleArtistException("Lizzo & Ariana Grande", "Good as Hell"));
+        System.out.println(getArtistTitleException("Lizzo & Ariana Grande", "Good as Hell"));
         //System.out.println(mp3Helper.prettifyArtist("Pink Sweat$"));
-        System.out.println(mp3Helper.prettifyArtist("Mo‐Do"));
+        //System.out.println(mp3Helper.prettifyArtist("Mo‐Do"));
         //System.out.println(mp3Helper.prettifyArtist("Galantis Feat. Ship Wrek & Pink Sweat$"));
         //System.out.println(mp3Helper.prettifyArtist("Ella Henderson Feat. Roger Sanchez"));
         //System.out.println(mp3Helper.prettifyAlbum("Billboard Year-End Hot 100 singles of 2022", "Various Artists"));

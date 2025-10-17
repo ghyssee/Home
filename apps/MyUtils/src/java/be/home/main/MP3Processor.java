@@ -91,6 +91,7 @@ public class MP3Processor extends BatchJobV2 {
                     MP3Helper mp3Helper = MP3Helper.getInstance();
                     String[] featArtists = artist.split(" Feat\\. ");
                     if (featArtists.length == 2){
+                        // check if the featuring artist already is in the artist name. If not, add it
                         String[] artists = mp3Helper.splitArtist(featArtists[1].toUpperCase());
                         String[] featArtists2 = mp3Helper.splitArtist(extraArtist.extraArtist.toUpperCase());
                         Arrays.sort(artists);
@@ -98,6 +99,10 @@ public class MP3Processor extends BatchJobV2 {
                         if (!Arrays.equals(artists, featArtists2)){
                             artist = artist + addArtist;
                         }
+                    }
+                    else {
+                        // add the extra artist
+                        artist = artist + addArtist;
                     }
                     /*
                     if (!artist.toUpperCase().matches(findExtraArtist.toUpperCase())) {
