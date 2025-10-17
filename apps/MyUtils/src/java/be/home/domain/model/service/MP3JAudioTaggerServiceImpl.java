@@ -1086,8 +1086,15 @@ public class MP3JAudioTaggerServiceImpl implements MP3Service {
                 AbstractID3v2Frame frame = (AbstractID3v2Frame) tagField;
                 FrameBodyPOPM frameBody = (FrameBodyPOPM) frame.getBody();
                 if (!frameBody.getEmailToUser().equalsIgnoreCase(WMP_RATING)) {
+                    long rating = frameBody.getRating();
                     addWarning("Rating found, but is not of type " + WMP_RATING
                             + ": " + frameBody.getEmailToUser() + " - value: " + frameBody.getRating());
+                    if (rating == 0){
+                        this.save = true;
+                        this.tag.deleteField(frameId);
+                        addWarning("Removed 0 Rating value: " + frameBody.getEmailToUser());
+                    }
+
                 }
             } else if (ratings.size() > 1) {
                 List<TagField> tagFieldsToKeep = new ArrayList();
