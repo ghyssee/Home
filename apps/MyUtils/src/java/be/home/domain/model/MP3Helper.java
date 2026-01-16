@@ -451,7 +451,7 @@ public class MP3Helper {
             item.setRule(Rules.ALBUM_RELATION);
             prettifiedText = item.getSong();
         }
-        /*
+
         if (StringUtils.isNotBlank(prettifiedText)) {
             prettifiedText = prettifyString(prettifiedText) ;
             prettifiedText = prettifiedText.replaceFirst("\\[[Ee]xplicit\\]", "");
@@ -461,7 +461,7 @@ public class MP3Helper {
 
             prettifiedText = prettifiedText.trim();
         }
-        */
+
         return prettifiedText;
     }
 
