@@ -227,7 +227,9 @@ public class MP3Processor extends BatchJobV2 {
             processSingleDirectory(mp3Settings, album, listOfFiles, 1, "");
         }
         else {
-            List <Path> directories = directoryList(mp3Dir);
+            Path mp3path =  Paths.get(mp3Dir);
+            List<Path> directories = new ArrayList<>();
+            walkDirectories(directories, mp3path);
 
             // check if Nr of MP3s found correspond with Album Info
             int nrOfMP3s = 0;
@@ -485,28 +487,28 @@ public class MP3Processor extends BatchJobV2 {
         return fileNames;
     }
 
-    public static List<Path> directoryList(String directory) {
+    public static void walkDirectories( List<Path> directories, Path directory) {
 
         DirectoryStream.Filter<Path> filter = file -> Files.isDirectory(file);
 
-        List<Path> fileNames = new ArrayList<>();
-        Path path = Paths.get(directory);
-        if (Files.exists(path)) {
+        if (Files.exists(directory)) {
             try (
-                    DirectoryStream<Path> directoryStream = Files.newDirectoryStream(path, filter);
+                    DirectoryStream<Path> directoryStream = Files.newDirectoryStream(directory, filter);
             ) {
-                for (Path file : directoryStream) {
-                    fileNames.add(file);
+                for (Path entry : directoryStream) {
+                    if (Files.isDirectory(entry)) {
+                        walkDirectories(directories, entry);
+                    }
+                    directories.add(entry);
                 }
                 directoryStream.close();
             } catch (IOException ex) {
             }
-            Collections.sort(fileNames, (f1, f2) -> SortUtils.stripAccentsIgnoreCase(f1.toString()).compareTo(SortUtils.stripAccentsIgnoreCase(f2.toString())));
+            Collections.sort(directories, (f1, f2) -> SortUtils.stripAccentsIgnoreCase(f1.toString()).compareTo(SortUtils.stripAccentsIgnoreCase(f2.toString())));
         }
         else {
             throw new ApplicationException("MP3 Directory " + directory + " does not exist!");
         }
-        return fileNames;
     }
 
 }
