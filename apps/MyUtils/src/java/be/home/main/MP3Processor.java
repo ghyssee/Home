@@ -33,7 +33,6 @@ import java.util.*;
 public class MP3Processor extends BatchJobV2 {
 
     private static final String VERSION = "V1.0";
-    private static final String VARIOUS = "Various Artists";
 
     public static Log4GE log4GE;
     public static ConfigTO.Config config;
@@ -177,7 +176,7 @@ public class MP3Processor extends BatchJobV2 {
         String mp3Dir = Setup.getInstance().getFullPath(Constants.Path.ALBUM) + File.separator + mp3Settings.album;
         log.info("Album Directory: " + mp3Dir);
 
-        album.album = helper.prettifyAlbum(album.album, album.albumArtist == null ? VARIOUS: album.albumArtist);
+        album.album = helper.prettifyAlbum(album.album, album.albumArtist == null ? MP3Service.VARIOUS: album.albumArtist);
         MyFileWriter myFile = new MyFileWriter("c:\\My Data\\tmp\\Java\\MP3Processor\\Album\\test.txt", MyFileWriter.NO_APPEND);
         for (AlbumInfo.Track track: album.tracks){
             /*
@@ -308,7 +307,7 @@ public class MP3Processor extends BatchJobV2 {
         if (StringUtils.isBlank(mp3Settings.albumArtist)) {
             // compilation cd //
             id3v2Tag.setCompilation(true);
-            id3v2Tag.setAlbumArtist(VARIOUS);
+            id3v2Tag.setAlbumArtist(MP3Service.VARIOUS);
         }
         else {
             id3v2Tag.setAlbumArtist(mp3Settings.albumArtist);
@@ -386,7 +385,7 @@ public class MP3Processor extends BatchJobV2 {
                 mp3File.setAlbum(album.album);
             }
             if (StringUtils.isNotBlank(album.albumArtist)) {
-                if (album.albumArtist.equals(VARIOUS)){
+                if (album.albumArtist.equals(MP3Service.VARIOUS)){
                     mp3File.setCompilation(true);
                 }
                 else {
@@ -397,7 +396,7 @@ public class MP3Processor extends BatchJobV2 {
             else if (StringUtils.isBlank(mp3Settings.albumArtist)) {
                 // compilation cd //
                 mp3File.setCompilation(true);
-                mp3File.setAlbumArtist(VARIOUS);
+                mp3File.setAlbumArtist(MP3Service.VARIOUS);
             }
             else {
                 mp3File.setAlbumArtist(mp3Settings.albumArtist);

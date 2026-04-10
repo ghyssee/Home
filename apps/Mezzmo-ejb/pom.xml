@@ -52,7 +52,6 @@
 	</plugins>
 	
 </build>
-
         <dependencies>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -85,7 +84,4 @@
 				<artifactId>p6spy</artifactId>
 			</dependency>
 		</dependencies>
-
-	
-
 </project>

@@ -31,6 +31,8 @@ public interface MP3Service {
     public String getBPM();
     public ArrayList<String> getWarnings();
 
+    public final String VARIOUS = "Various Artists";
+
     public boolean REMOVE_LENGTH_TAG = true;
     // sometimes, a TLEN tag is added to contain the length of the song
     // But we get that duration on another way, so we remove this tag
