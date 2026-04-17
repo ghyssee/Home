@@ -159,6 +159,14 @@ public class AlbumInfo {
             this.compilation = compilation;
         }
 
+        public int getCurrentTrack() {
+            return currentTrack;
+        }
+
+        public void setCurrentTrack(int currentTrack) {
+            this.currentTrack = currentTrack;
+        }
+
         public String album;
         public String albumArtist;
         public boolean compilation;
@@ -166,6 +174,9 @@ public class AlbumInfo {
         public int total = 0;
         public boolean renum = false;
         public int trackSize;
+
+        public int currentTrack = 0;
+
         public List <Track> tracks = new ArrayList <Track>();
 
         public void Config(){};

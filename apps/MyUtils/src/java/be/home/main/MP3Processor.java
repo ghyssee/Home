@@ -39,6 +39,8 @@ public class MP3Processor extends BatchJobV2 {
     public static final String INPUT_FILE = Setup.getInstance().getFullPath(Constants.Path.PROCESS) + File.separator + "Album.json";
     private static final Logger log = getMainLog(MP3Processor.class);
 
+    private static final boolean SKIP_MIXES = true;
+
     public static void main(String args[]) {
 
         java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.OFF);
@@ -70,14 +72,14 @@ public class MP3Processor extends BatchJobV2 {
     }
 
     public boolean isType(String type, String typeToCheck){
-        boolean feat = false;
+        boolean found = false;
         if (type != null) {
             type = type.toUpperCase();
             if (type.startsWith(typeToCheck.toUpperCase())){
-                feat = true;
+                found = true;
             }
         }
-        return feat;
+        return found;
     }
 
     public String constructArtist(AlbumInfo.Track track){
@@ -118,11 +120,12 @@ public class MP3Processor extends BatchJobV2 {
         String title = track.title;
         if (track.extraArtists != null){
             for (AlbumInfo.ExtraArtist extraArtist : track.extraArtists){
-                if (isType(extraArtist.type, "MIX")){
-                    title = title + " (" + extraArtist.extraArtist + " Mix)";
-                }
-                else if (isType(extraArtist.type, "REMIX")){
-                    title = checkRemix(title, extraArtist.extraArtist );
+                if (!SKIP_MIXES) {
+                    if (isType(extraArtist.type, "MIX")) {
+                        title = title + " (" + extraArtist.extraArtist + " Mix)";
+                    } else if (isType(extraArtist.type, "REMIX")) {
+                        title = checkRemix(title, extraArtist.extraArtist);
+                    }
                 }
             }
         }

@@ -2,6 +2,7 @@ package be.home.selenium;
 
 import be.home.common.logging.LoggingConfiguration;
 
+import be.home.common.utils.StringUtils;
 import be.home.domain.model.service.MP3Service;
 import be.home.model.json.AlbumInfo;
 import org.apache.logging.log4j.Logger;
@@ -33,8 +34,8 @@ public class SeleniumDiscogs extends SeleniumService {
 
         WebDriver driver = initDriver();
 
-        driver.get("https://www.ultratop.be/nl/compilation/890f4/MNM-Big-Hits-Best-Of-2025");
-        driver.get("https://www.discogs.com/release/31149296-Various-Now-Thats-What-I-Call-A-Summer-Party");
+        //driver.get("https://www.discogs.com/release/31149296-Various-Now-Thats-What-I-Call-A-Summer-Party");
+        driver.get("https://www.discogs.com/release/33180777-Sabrina-Carpenter-Short-N-Sweet?srsltid=AfmBOooaKWRCIWLGdBVMhkWlwHHMnJbifeeBfrowOf_23BXQ5-z6bDZ0");
 
         getAlbumInfo(driver, configAlbum);
         getTracks(driver, configAlbum);
@@ -46,73 +47,71 @@ public class SeleniumDiscogs extends SeleniumService {
     }
 
     public void getAlbumInfo(WebDriver driver, AlbumInfo.Config configAlbum) {
-        WebElement element = driver.findElement(By.xpath("//div[starts-with(@class,'heading')]"));
 
-        //JavascriptExecutor js = (JavascriptExecutor) driver;
-        //js.executeScript("arguments[0].remove();", element);
+        try {
+
+            WebElement element = driver.findElement(By.xpath("//h1[contains(@class,'title')]"));
+
+            //JavascriptExecutor js = (JavascriptExecutor) driver;
+            //js.executeScript("arguments[0].remove();", element);
 
 
-        String splitter = null;
-        if (isCompilation(driver)) {
-            configAlbum.setCompilation(true);
-            configAlbum.setAlbumArtist(MP3Service.VARIOUS);
-            String albumInfo = element.getText().trim();
-            configAlbum.setAlbum(albumInfo);
-        }
-        else {
-            configAlbum.setCompilation(false);
-            try {
-                WebElement splitElement = element.findElement(By.xpath(".//span[@class='notmobile']"));
-                splitter = splitElement.getText();
-                String albumInfo = element.getText().trim();
-                String[] result = albumInfo.split(splitter);
-                if (result.length > 1){
-                    // title contains album artist + album title
-                    String albumArtist=result[0].trim();
-                    // remove \n from string
-                    albumArtist = albumArtist.replace("\n", "");
-                    configAlbum.setAlbum(result[1].trim());
-                    configAlbum.setAlbumArtist(albumArtist);
-                }
-                else {
-                    // it's probably a compilation cd. albuminfo only contains album title
-                    configAlbum.setAlbum(albumInfo);
-                }
-                log.info("Splitter: " + splitter);
+            boolean albumArtistFound = checkAlbumArtist(configAlbum, element);
+            String SPLITTER = "–";
+            String albumInfo = element.getText();
+            log.info("Splitter: " + SPLITTER);
+            log.info("albumInfo: " + albumInfo);
+            String[] result = albumInfo.split(SPLITTER);
+            if (result.length ==  1){
+                configAlbum.setCompilation(false);
+                configAlbum.setAlbumArtist(MP3Service.VARIOUS);
             }
-            catch (InvalidSelectorException ex){
-                throw new RuntimeException("Album info not found");
+            else if (result.length > 1) {
+                String album = result[1].trim();
+                configAlbum.setAlbum(album);
+                if (!albumArtistFound){
+                    // album title starts with a hyphen
+                    configAlbum.setCompilation(false);
+                    configAlbum.setAlbumArtist(MP3Service.VARIOUS);
+                }
             }
+        } catch (NoSuchElementException ex) {
+            throw new RuntimeException("Album info not found");
         }
     }
 
 
-    public boolean isCompilation(WebDriver driver){
-        WebElement element = driver.findElement(By.xpath("//div[starts-with(@class,'item_info')]"));
-        boolean compilation = false;
-        if (hasClass(element, "album")){
-            compilation = false;
+    public boolean checkAlbumArtist(AlbumInfo.Config configAlbum, WebElement element) {
+        boolean found = false;
+        try {
+            WebElement elementAlbumArtist = element.findElement(By.xpath(".//a"));
+            String albumArtist = elementAlbumArtist.getText().trim();
+            if (albumArtist.equalsIgnoreCase("VARIOUS")) {
+                configAlbum.setCompilation(true);
+                configAlbum.setAlbumArtist(MP3Service.VARIOUS);
+            } else {
+                configAlbum.setCompilation(false);
+                configAlbum.setAlbumArtist(albumArtist);
+            }
+            found = true;
+        } catch (NoSuchElementException ex) {
+            found = false;
         }
-        else if (hasClass(element, "compilatie")){
-            compilation = true;
-        }
-        else {
-            log.info("Unknown - consider it as Compilation");
-            compilation = true;
-        }
-        return compilation;
+        return found;
     }
 
-    public void getTracks(WebDriver driver, AlbumInfo.Config albumConfig){
+    public void getTracks(WebDriver driver, AlbumInfo.Config albumConfig) {
 
-        WebElement element = driver.findElement(By.xpath("//div[@class='tracklists']"));
+        List<WebElement> trackList = driver.findElements(By.xpath("//tr[@data-track-position]"));
         List<AlbumInfo.Track> tracks = albumConfig.getTracks();
-        List<WebElement> trackList = element.findElements(By.xpath(".//div[contains(@style,'table-row')]"));
         log.info("nr of tracks found: " + trackList.size());
         for (WebElement track : trackList) {
-            List<WebElement> trackInfo = track.findElements(By.xpath(".//div[contains(@style,'table-cell')]"));
-            AlbumInfo.Track trackRec = getSongInfo(trackInfo, albumConfig);
+            AlbumInfo.Track trackRec = new AlbumInfo().new Track();
             if (trackRec != null) {
+                updateTrack(track, albumConfig, trackRec);
+                updateArtist(track, albumConfig, trackRec);
+                updateTitle(track, trackRec);
+                updateExtraArtists(track, trackRec);
                 tracks.add(trackRec);
             }
         }
@@ -123,56 +122,107 @@ public class SeleniumDiscogs extends SeleniumService {
         TRACK, ARTIST_TITLE, AUDIO, LENGTH_TRACK
     }
 
-    public AlbumInfo.Track getSongInfo(List<WebElement> trackInfo, AlbumInfo.Config albumConfig){
-        // 1 = track
-        // 2 = Artist - Title
-        // 3 = Audio
-        // 4 = Length of track
+    public void updateTrack(WebElement songInfo, AlbumInfo.Config albumConfig, AlbumInfo.Track trackRec) {
 
-        AlbumInfo.Track trackRec = new AlbumInfo().new Track();
-
-        if (trackInfo.size() == 4){
-            trackRec.setTrack(trackInfo.get(SONG_TYPE.TRACK.ordinal()).getText().trim());
-            getArtistTitle(trackInfo.get(SONG_TYPE.ARTIST_TITLE.ordinal()), trackRec, albumConfig.getAlbumArtist());
-            if (albumConfig.total > 0){
-                trackRec.setCd(String.valueOf(albumConfig.total));
+        try {
+            WebElement trackElement = songInfo.findElement(By.xpath(".//td[starts-with(@class,'trackPos')]"));
+            String trackInfo = trackElement.getText();
+            String trackSplitter = "-";
+            if (trackInfo.contains(trackSplitter)) {
+                String[] result = trackInfo.split(trackSplitter);
+                if (result.length > 1) {
+                    trackRec.setCd(result[0].trim());
+                    trackRec.setTrack(result[1].trim());
+                } else {
+                    trackRec.setTrack(trackInfo);
+                }
+            }
+            else {
+                trackRec.setTrack(trackInfo);
             }
         }
-        else if (trackInfo.size() == 1){
-            // check if table cell contains cd number
-            String cdInfo = trackInfo.get(0).getText().trim();
-            Pattern pattern = Pattern.compile("(CD|LP) ([0-9]{1,2}):", Pattern.CASE_INSENSITIVE);
-            Matcher matcher = pattern.matcher(cdInfo);
-            if (matcher.find()){
-                // 0 = whole matched expression
-                // 1 = first expression from round brackets (CD/LP)
-                // 2 = second expression from round brackets ([0-9]{1,2})
-                log.info("CD Tag Found: " + matcher.group(2));
-                albumConfig.setTotal(Integer.parseInt(matcher.group(2)));
-            }
-            return null;
+        catch (NoSuchElementException ex){
+            // no track info found
+            albumConfig.setCurrentTrack(albumConfig.getCurrentTrack()+1);
+            trackRec.setTrack(String.valueOf(albumConfig.getCurrentTrack()));
         }
-        else {
-            return null;
-        }
-        return trackRec;
     }
 
-    public void getArtistTitle(WebElement element, AlbumInfo.Track trackRec, String albumArtist){
-        String artistTitle = element.getText();
-        int asciiVal = 8211;
-        String HYPHEN = new Character((char) asciiVal).toString();
-        String[] items = artistTitle.split(HYPHEN);
-        if (items.length == 2) {
-            trackRec.setArtist(items[0].trim());
-            trackRec.setTitle(items[1].trim());
+    public void updateArtist(WebElement songInfo, AlbumInfo.Config albumConfig, AlbumInfo.Track trackRec) {
+
+        try {
+            WebElement trackElement = songInfo.findElement(By.xpath(".//td[starts-with(@class,'trackTitleNoArtist_')]"));
+            // a title found with no artist
+            trackRec.setArtist(albumConfig.getAlbumArtist());
+
         }
-        else if (items.length == 1) {
-            trackRec.setTitle(artistTitle);
-            trackRec.setArtist(albumArtist);
-        }
-        else {
-            // this should never occur / artist + title will not be filled in
+        catch (NoSuchElementException ex){
+            WebElement trackElement = songInfo.findElement(By.xpath(".//td[starts-with(@class,'artist_') or starts-with(@class,'tracklist_track_artists')]"));
+            String artistInfo = trackElement.getText();
+            if (StringUtils.isBlank(artistInfo)){
+                // artist example: <td class="artist_VsG56"></td>. An album of an artist/group but with no trackTitleNoArtist class
+                trackRec.setArtist(albumConfig.getAlbumArtist());
+            }
+            else {
+                trackRec.setArtist(clearArtistTag(artistInfo));
+            }
         }
     }
+
+    public String clearArtistTag(String artist){
+        artist = artist.replaceAll("–", "");
+        artist = artist.replaceAll(" ?\\([0-9]{1,3}\\)", "");
+        artist = artist.replaceAll("\\*$", ""); // remove * at end of string
+        artist = artist.replaceAll("\\* ", " "); // replace *<space> with <space>
+        artist = artist.replaceAll("\\*, ?", ", "); // replace *, with ,
+        artist = artist.trim();
+        return artist;
+    }
+
+    public void updateTitle(WebElement songInfo, AlbumInfo.Track trackRec) {
+
+        //WebElement trackElement = songInfo.findElement(By.xpath(".//td[starts-with(@class,'trackTitle')]"));
+        WebElement trackElement = songInfo.findElement(By.xpath(".//span[starts-with(@class,'trackTitle')] | .//td[starts-with(@class,'trackTitleNoArtist')]"));
+        String artistInfo = trackElement.getText();
+        trackRec.setTitle(artistInfo);
+    }
+
+    public void updateExtraArtists(WebElement songInfo, AlbumInfo.Track trackRec) {
+
+        // ex. url: https://www.discogs.com/release/31149296-Various-Now-Thats-What-I-Call-A-Summer-Party
+        try {
+            WebElement trackElement = songInfo.findElement(By.xpath(".//div[contains(@class,'trackCredits')] | .//span[contains(class, 'tracklist_extra_artist_span')]"));
+            // get all lines that contain track credits
+            List<WebElement> extraArtistElements = trackElement.findElements(By.xpath(".//span[starts-with(@class, 'MuiTypography-root')]"));
+            for (WebElement extraArtistElement : extraArtistElements){
+                // split it up by getting all spans for current element
+                List<WebElement> extraArtistItems = extraArtistElement.findElements(By.xpath("./span"));
+                if (extraArtistItems.size() > 1) {
+                    // first item is the type
+                    log.info("Extra Information on song found...");
+                    AlbumInfo.ExtraArtist extraArtistRec = new AlbumInfo().new ExtraArtist();
+                    String extraArtist = null;
+                    List<AlbumInfo.ExtraArtist> extraArtists = trackRec.getExtraArtists();
+                    for (int i = 0; i < extraArtistItems.size(); i++) {
+                        WebElement extraArtistItem = extraArtistItems.get(i);
+                        String singleExtraArtist = clearArtistTag(extraArtistItem.getText().trim());
+                        if (i == 0) {
+                            extraArtistRec.setType(extraArtistItem.getText().trim());
+                        } else if (i == 1) {
+                            extraArtist = singleExtraArtist;
+                        } else {
+                            extraArtist += ", " + singleExtraArtist;
+                        }
+                    }
+                    extraArtistRec.setExtraArtist(extraArtist);
+                    extraArtists.add(extraArtistRec);
+                }
+            }
+        }
+        catch (NoSuchElementException ex){
+            // no extra information found
+        }
+
+    }
+
 }
