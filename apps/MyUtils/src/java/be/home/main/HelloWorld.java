@@ -469,16 +469,16 @@ private static void TestMovieFile(){
         */
         //System.out.println(mp3Helper.prettifyArtist("Dorothee Vegas & Like Maarten Feat. Sam Gooris"));
         //System.out.println("Axwell ^ Ingrosso".replaceAll("Axwell \\^ Ingrosso", "test"));
-        System.out.println(getTitleArtistException("Lizzo & Ariana Grande", "Good as Hell"));
-        System.out.println(getArtistTitleException("Lizzo & Ariana Grande", "Good as Hell"));
-        //System.out.println(mp3Helper.prettifyArtist("Pink Sweat$"));
+        System.out.println(getTitleArtistException("Roul and Doors / Axwell, Ingrosso, Steve Angello & Laidback Luke Feat. Deborah Cox", "Revelation / Leave The World Behind (Accapella)"));
+        //System.out.println(getArtistTitleException("Lizzo & Ariana Grande", "Good as Hell"));
+        //System.out.println(mp3Helper.prettifyArtist("Roul and Doors / Axwell, Ingrosso, Steve Angello & Laidback Luke Feat. Deborah Cox"));
         //System.out.println(mp3Helper.prettifyArtist("Mo‐Do"));
         //System.out.println(mp3Helper.prettifyArtist("Galantis Feat. Ship Wrek & Pink Sweat$"));
         //System.out.println(mp3Helper.prettifyArtist("Ella Henderson Feat. Roger Sanchez"));
         //System.out.println(mp3Helper.prettifyAlbum("Billboard Year-End Hot 100 singles of 2022", "Various Artists"));
         //System.out.println(getArtistTitleException("Galantis Feat. Ship Wrek & Pink Sweat$", "Only a Fool"));
         //System.out.println(getArtistTitleException("Reflekt ft. Delline Bass", "Need To Feel Loved (Cristoph Remix)"));
-        System.out.println(getTitleArtistException("Loud Luxury feat. Brandon", "Body (PBH & Jack Shizzle Remix)"));
+        //System.out.println(getTitleArtistException("Loud Luxury feat. Brandon", "Body (PBH & Jack Shizzle Remix)"));
         //System.out.println(getTitleArtistException("Taylor Swift", "Message in a bottle"));
         //System.out.println(getArtistTitleException("Dna", "blabla"));
         //System.out.println(getArtistTitleException("Michael Patrick Kelly", "Love Goes On (Live) [aus \"Sing meinen Song, Vol. 7\"]"));

@@ -35,7 +35,10 @@ public class SeleniumDiscogs extends SeleniumService {
         WebDriver driver = initDriver();
 
         //driver.get("https://www.discogs.com/release/31149296-Various-Now-Thats-What-I-Call-A-Summer-Party");
-        driver.get("https://www.discogs.com/release/33180777-Sabrina-Carpenter-Short-N-Sweet?srsltid=AfmBOooaKWRCIWLGdBVMhkWlwHHMnJbifeeBfrowOf_23BXQ5-z6bDZ0");
+        // https://www.discogs.com/release/25268908-Various-Serious-Beats-100-Anniversary-Edition-The-Ultimate-Saga-Of-House
+        //https://www.discogs.com/release/33180777-Sabrina-Carpenter-Short-N-Sweet?srsltid=AfmBOooaKWRCIWLGdBVMhkWlwHHMnJbifeeBfrowOf_23BXQ5-z6bDZ0
+        // https://www.discogs.com/release/25268908-Various-Serious-Beats-100-Anniversary-Edition-The-Ultimate-Saga-Of-House
+        driver.get("https://www.discogs.com/release/31149296-Various-Now-Thats-What-I-Call-A-Summer-Party");
 
         getAlbumInfo(driver, configAlbum);
         getTracks(driver, configAlbum);
@@ -116,12 +119,6 @@ public class SeleniumDiscogs extends SeleniumService {
             }
         }
     }
-
-    public enum SONG_TYPE {
-
-        TRACK, ARTIST_TITLE, AUDIO, LENGTH_TRACK
-    }
-
     public void updateTrack(WebElement songInfo, AlbumInfo.Config albumConfig, AlbumInfo.Track trackRec) {
 
         try {
@@ -181,7 +178,6 @@ public class SeleniumDiscogs extends SeleniumService {
 
     public void updateTitle(WebElement songInfo, AlbumInfo.Track trackRec) {
 
-        //WebElement trackElement = songInfo.findElement(By.xpath(".//td[starts-with(@class,'trackTitle')]"));
         WebElement trackElement = songInfo.findElement(By.xpath(".//span[starts-with(@class,'trackTitle')] | .//td[starts-with(@class,'trackTitleNoArtist')]"));
         String artistInfo = trackElement.getText();
         trackRec.setTitle(artistInfo);

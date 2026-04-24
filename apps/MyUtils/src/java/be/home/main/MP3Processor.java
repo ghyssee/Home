@@ -413,7 +413,7 @@ public class MP3Processor extends BatchJobV2 {
             mp3File.setArtist(track.artist);
             mp3File.setTitle(track.title);
             mp3File.clearAlbumImage();
-            if (album.total > 1) {
+            if (StringUtils.isNotBlank(track.cd)){
                 mp3File.setDisc(track.cd);
             }
             else {

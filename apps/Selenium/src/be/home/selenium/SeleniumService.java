@@ -3,6 +3,7 @@ package be.home.selenium;
 import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
 import be.home.common.utils.JSONUtils;
+import be.home.common.utils.StringUtils;
 import be.home.model.json.AlbumInfo;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -60,6 +61,17 @@ public class SeleniumService {
 
     public void writeAlbumConfiguration(AlbumInfo.Config configAlbum) throws IOException {
         JSONUtils.writeJsonFile(configAlbum, Setup.getInstance().getFullPath(Constants.Path.PROCESS) + File.separator + "Album.json");
+    }
+
+    public String getText(WebElement element){
+        String text = "";
+        if (!element.isDisplayed()){
+            text = element.getAttribute("innerText");
+        }
+        else {
+            text = element.getText();
+        }
+        return text;
     }
 
 }
