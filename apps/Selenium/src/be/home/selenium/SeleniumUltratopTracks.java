@@ -33,7 +33,7 @@ public class SeleniumUltratopTracks extends SeleniumService {
 
         WebDriver driver = initDriver();
 
-        driver.get("https://www.ultratop.be/nl/compilation/890f4/MNM-Big-Hits-Best-Of-2025");
+        driver.get("https://www.ultratop.be/fr/compilation/87465/Mega-Hits-2025-die-Zweite");
 
         getAlbumInfo(driver, configAlbum);
         getTracks(driver, configAlbum);

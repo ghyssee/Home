@@ -38,7 +38,7 @@ public class SeleniumDiscogs extends SeleniumService {
         // https://www.discogs.com/release/25268908-Various-Serious-Beats-100-Anniversary-Edition-The-Ultimate-Saga-Of-House
         //https://www.discogs.com/release/33180777-Sabrina-Carpenter-Short-N-Sweet?srsltid=AfmBOooaKWRCIWLGdBVMhkWlwHHMnJbifeeBfrowOf_23BXQ5-z6bDZ0
         // https://www.discogs.com/release/25268908-Various-Serious-Beats-100-Anniversary-Edition-The-Ultimate-Saga-Of-House
-        driver.get("https://www.discogs.com/release/31149296-Various-Now-Thats-What-I-Call-A-Summer-Party");
+        driver.get("https://www.discogs.com/release/31832654-Various-Bravo-Hits-127?");
 
         getAlbumInfo(driver, configAlbum);
         getTracks(driver, configAlbum);
