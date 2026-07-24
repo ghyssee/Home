@@ -45,6 +45,14 @@ public class AlbumInfo {
             return cd;
         }
 
+        public String getStatus() {
+            return status;
+        }
+
+        public void setStatus(String status) {
+            this.status = status;
+        }
+
         public void setCd(String cd) {
             this.cd = cd;
         }
@@ -61,6 +69,7 @@ public class AlbumInfo {
         public String artist;
         public String title;
         public String cd;
+        public String status;
         public List <ExtraArtist> extraArtists = new ArrayList <ExtraArtist>();
         public String toCustomString() {
             return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)

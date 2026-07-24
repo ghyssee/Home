@@ -48,7 +48,7 @@ public class SeleniumService {
 
     public void printAlbumInfo(org.apache.logging.log4j.Logger log, AlbumInfo.Config configAlbum) {
         log.info(configAlbum.toCustomString());
-        for (AlbumInfo.Track track:   configAlbum.getTracks()){
+        for (AlbumInfo.Track track: configAlbum.getTracks()){
             log.info(track.toCustomString());
         }
     }

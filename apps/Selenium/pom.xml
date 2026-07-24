@@ -109,6 +109,10 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
             </dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-text</artifactId>
+			</dependency>
             <dependency>
                 <groupId>commons-collections</groupId>
                 <artifactId>commons-collections</artifactId>
@@ -147,25 +151,11 @@
                 <artifactId>Home-Common</artifactId>
                 <version>1.0-SNAPSHOT</version>
             </dependency>
-			<dependency>
-				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-text</artifactId>
-			</dependency>
             <dependency>
                 <groupId>be.home</groupId>
                 <artifactId>Mezzmo-ejb</artifactId>
                 <version>1.0-SNAPSHOT</version>
             </dependency>
-        <dependency>
-            <groupId>be.home</groupId>
-            <artifactId>Home-Common</artifactId>
-            <version>1.0-SNAPSHOT</version>
-		</dependency>
-        <dependency>
-            <groupId>be.home</groupId>
-            <artifactId>Mezzmo-ejb</artifactId>
-			<version>1.0-SNAPSHOT</version>
-        </dependency>
             <dependency>
                 <groupId>be.home</groupId>
                 <artifactId>MyUtils</artifactId>

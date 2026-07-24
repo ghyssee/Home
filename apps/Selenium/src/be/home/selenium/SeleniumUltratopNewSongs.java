@@ -2,8 +2,9 @@ package be.home.selenium;
 
 import be.home.common.logging.LoggingConfiguration;
 
-import be.home.domain.model.service.MP3Service;
 import be.home.model.json.AlbumInfo;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.Select;
@@ -51,10 +52,22 @@ public class SeleniumUltratopNewSongs extends SeleniumService {
 
         getAlbumInfo(driver, configAlbum);
         getTracks(driver, configAlbum);
-        //printAlbumInfo(log, configAlbum);
+        printAlbumInfo(log, configAlbum);
 
         driver.quit();
         //writeAlbumConfiguration(configAlbum);
+
+    }
+
+    public void printAlbumInfo(Logger log, AlbumInfo.Config configAlbum) {
+        System.out.println(configAlbum.getAlbum());
+        System.out.println("-".repeat(configAlbum.getAlbum().length()));
+        StringUtils st;
+        for (AlbumInfo.Track track : configAlbum.tracks){
+            System.out.println(StringUtils.leftPad(track.getStatus(), 2)  + " " +
+                               StringUtils.leftPad(track.getTrack(), 2, '0') + " " +
+                               track.getArtist() + " - " + track.getTitle());
+        }
 
     }
 
@@ -79,7 +92,6 @@ public class SeleniumUltratopNewSongs extends SeleniumService {
         Select select = new Select(dateElement);
         String strDate = select.getFirstSelectedOption().getText();
         configAlbum.setAlbum(text + " " + strDate);
-        System.out.println(strDate);
     }
 
 
@@ -87,23 +99,57 @@ public class SeleniumUltratopNewSongs extends SeleniumService {
 
         List<WebElement> elements = driver.findElements(By.xpath("//div[@class='content chartitem']"));
         List<AlbumInfo.Track> tracks = albumConfig.getTracks();
+        Pattern artistPattern = Pattern.compile("<b>(.*)<\\/b>", Pattern.CASE_INSENSITIVE);
+        Pattern titlePattern = Pattern.compile("<br>(.*)", Pattern.CASE_INSENSITIVE);
 
         // find artist + song title
         for (WebElement element : elements){
-            WebElement track = element.findElement(By.xpath(".//div[@class='chart_title']"));
+            //WebElement track = element.findElement(By.xpath(".//div[@class='chart_title']"));
+            WebElement track = element.findElement(By.xpath(".//a[starts-with(@href,'/nl/song')]"));
+            String innerHTML = track.getAttribute("innerHTML");
+            // ex: <b>Cameron Whitcomb</b><br>Kingdom Of Fear
+            // artist is between <b> </b> tags
+            // title if after <br> tag
+            String artist = findPattern(artistPattern, innerHTML);
+            String title = findPattern(titlePattern, innerHTML);
+            String status = getStatus(element);
+            if (status != null){
+                AlbumInfo.Track trackRec = new AlbumInfo().new Track();
+                // find track number
+                WebElement trackNumberElement = element.findElement(By.xpath(".//div[@class='chart_pos']"));
+                trackRec.setTrack(trackNumberElement.getText());
+                StringEscapeUtils st;
+                trackRec.setArtist((StringEscapeUtils.unescapeHtml4(artist)));
+                trackRec.setTitle(StringEscapeUtils.unescapeHtml4(title));
+                trackRec.setStatus(StringEscapeUtils.unescapeHtml4(status));
+                tracks.add(trackRec);
+            }
+        }
+        albumConfig.setTracks(tracks);
+    }
+
+    String getStatus(WebElement track){
+        String status = null;
+        try {
+            WebElement statusOfTrack = track.findElement(By.xpath(".//div[@class='chart_neu_re']"));
+            status = statusOfTrack.getText();
+        }
+        catch (NoSuchElementException ex){
+            status = null;
         }
 
+        return status;
+    }
 
 
-        //List<WebElement> trackList = element.findElements(By.xpath(".//div[[@class='chart_title']"));
-        //log.info("nr of tracks found: " + trackList.size());
-        //for (WebElement track : trackList) {
-        //    List<WebElement> trackInfo = track.findElements(By.xpath(".//div[contains(@style,'table-cell')]"));
-        //    AlbumInfo.Track trackRec = getSongInfo(trackInfo, albumConfig);
-        //    if (trackRec != null) {
-        //        tracks.add(trackRec);
-        //    }
-        //}
+    String findPattern(Pattern pattern, String text) {
+        Matcher matcher = pattern.matcher(text);
+        if (matcher.find()){
+            return matcher.group(1);
+        }
+        return null;
+
+
     }
 
     public enum SONG_TYPE {
@@ -111,56 +157,4 @@ public class SeleniumUltratopNewSongs extends SeleniumService {
         TRACK, ARTIST_TITLE, AUDIO, LENGTH_TRACK
     }
 
-    public AlbumInfo.Track getSongInfo(List<WebElement> trackInfo, AlbumInfo.Config albumConfig){
-        // 1 = track
-        // 2 = Artist - Title
-        // 3 = Audio
-        // 4 = Length of track
-
-        AlbumInfo.Track trackRec = new AlbumInfo().new Track();
-
-        if (trackInfo.size() == 4){
-            trackRec.setTrack(trackInfo.get(SONG_TYPE.TRACK.ordinal()).getText().trim());
-            getArtistTitle(trackInfo.get(SONG_TYPE.ARTIST_TITLE.ordinal()), trackRec, albumConfig.getAlbumArtist());
-            if (albumConfig.total > 0){
-                trackRec.setCd(String.valueOf(albumConfig.total));
-            }
-        }
-        else if (trackInfo.size() == 1){
-            // check if table cell contains cd number
-            String cdInfo = trackInfo.get(0).getText().trim();
-            Pattern pattern = Pattern.compile("(CD|LP) ([0-9]{1,2}):", Pattern.CASE_INSENSITIVE);
-            Matcher matcher = pattern.matcher(cdInfo);
-            if (matcher.find()){
-                // 0 = whole matched expression
-                // 1 = first expression from round brackets (CD/LP)
-                // 2 = second expression from round brackets ([0-9]{1,2})
-                log.info("CD Tag Found: " + matcher.group(2));
-                albumConfig.setTotal(Integer.parseInt(matcher.group(2)));
-            }
-            return null;
-        }
-        else {
-            return null;
-        }
-        return trackRec;
-    }
-
-    public void getArtistTitle(WebElement element, AlbumInfo.Track trackRec, String albumArtist){
-        String artistTitle = element.getText();
-        int asciiVal = 8211;
-        String HYPHEN = new Character((char) asciiVal).toString();
-        String[] items = artistTitle.split(HYPHEN);
-        if (items.length == 2) {
-            trackRec.setArtist(items[0].trim());
-            trackRec.setTitle(items[1].trim());
-        }
-        else if (items.length == 1) {
-            trackRec.setTitle(artistTitle);
-            trackRec.setArtist(albumArtist);
-        }
-        else {
-            // this should never occur / artist + title will not be filled in
-        }
-    }
 }
