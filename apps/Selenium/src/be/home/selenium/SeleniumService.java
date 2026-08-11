@@ -21,8 +21,8 @@ public class SeleniumService {
 
     public WebDriver initDriver(){
         // Firefox
-        System.setProperty("webdriver.gecko.driver", "C:\\My Programs\\Firefox\\geckodriver.exe");
-        Path pathBinary = Paths.get("C:\\My Programs\\Firefox\\FirefoxPortable\\App\\Firefox\\firefox.exe");
+        System.setProperty("webdriver.gecko.driver", "C:\\My Programs\\Browsers\\geckodriver.exe");
+        Path pathBinary = Paths.get("C:\\My Programs\\Browsers\\FirefoxPortable\\App\\Firefox\\firefox.exe");
         if (!Files.exists(pathBinary)){
             throw new RuntimeException(("Firefox executable not found: " + pathBinary.toString()));
         }
