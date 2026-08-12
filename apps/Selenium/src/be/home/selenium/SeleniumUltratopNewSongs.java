@@ -43,25 +43,25 @@ public class SeleniumUltratopNewSongs extends SeleniumService {
     public void start() throws IOException {
 
         AlbumInfo.Config configAlbum = initConfigAlbum();
-
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("uMMdd", Locale.ENGLISH);
-
         DateTimeFormatter yearF = DateTimeFormatter.ofPattern("u", Locale.ENGLISH);
-
         WebDriver driver = initDriver();
+        //LocalDate localDate = getLastSaturday();
+        //String url = localDate.format(yearF) + "/" + localDate.format(dtf);
 
-        LocalDate localDate = getLastSaturday();
-
-        String url = localDate.format(yearF) + "/" + localDate.format(dtf);
-
-        driver.get("https://www.ultratop.be/nl/ultratop50/" + url);
+        driver.get("https://www.ultratop.be/nl/ultratop50");
 
         String date = askForInput((driver));
         if (date != null) {
             if (isCorrectDate(date, dtf)){
                 if (isSaturday(date, dtf)){
                     log.info("User entered a correct Saturday date: " + date);
+                    driver.get("https://www.ultratop.be/nl/ultratop50/" + date.substring(0,4) + "/" + date);
+                    getAlbumInfo(driver, configAlbum);
+                    getTracks(driver, configAlbum);
+                    printAlbumInfo(log, configAlbum);
 
+                    //writeAlbumConfiguration(configAlbum);
                 }
                 else {
                     log.warn("User entered a correct date, but it was not a Saturday: " + date);
@@ -70,15 +70,10 @@ public class SeleniumUltratopNewSongs extends SeleniumService {
             else {
                 log.error("User entered an invalid date: " + date);
             }
-            //getAlbumInfo(driver, configAlbum);
-            //getTracks(driver, configAlbum);
-            //printAlbumInfo(log, configAlbum);
-
-            //writeAlbumConfiguration(configAlbum);
 
         }
         else {
-            log.error("user did not enter a date");
+            log.error("User canceled it");
         }
         driver.quit();
     }
@@ -120,10 +115,7 @@ public class SeleniumUltratopNewSongs extends SeleniumService {
     }
 
     public LocalDate getLastSaturday() {
-        //LocalDate localDate = LocalDate.parse(fromDate, dtf);
-
         LocalDate localDate = LocalDate.now().with(TemporalAdjusters.previous(DayOfWeek.SATURDAY));
-
         return localDate;
 
     }
@@ -166,7 +158,6 @@ public class SeleniumUltratopNewSongs extends SeleniumService {
                 // find track number
                 WebElement trackNumberElement = element.findElement(By.xpath(".//div[@class='chart_pos']"));
                 trackRec.setTrack(trackNumberElement.getText());
-                StringEscapeUtils st;
                 trackRec.setArtist((StringEscapeUtils.unescapeHtml4(artist)));
                 trackRec.setTitle(StringEscapeUtils.unescapeHtml4(title));
                 trackRec.setStatus(StringEscapeUtils.unescapeHtml4(status));
@@ -177,7 +168,7 @@ public class SeleniumUltratopNewSongs extends SeleniumService {
     }
 
     String getStatus(WebElement track) {
-        String status = null;
+        String status;
         try {
             WebElement statusOfTrack = track.findElement(By.xpath(".//div[@class='chart_neu_re']"));
             status = statusOfTrack.getText();
@@ -204,20 +195,16 @@ public class SeleniumUltratopNewSongs extends SeleniumService {
         // https://imalittletester.com/2020/06/10/working-with-user-prompts-in-selenium/
         // https://github.com/iamalittletester/selenium-tutorial/blob/master/src/test/java/tutorialsolution/userprompts/UserPromptsTest.java
 
-        inputBox(driver, "Ultratop Date: ");
+        inputBox(driver, "Ultratop Date in format yyyymmdd: ");
 
         Wait<WebDriver> wait = new WebDriverWait(driver, Duration.ofSeconds(20));
         wait.until(ExpectedConditions.alertIsPresent());
         Alert alert = driver.switchTo().alert();
         String dateToExtract = checkforInput(driver, alert);
-        System.out.println("Date: " + dateToExtract);
         return dateToExtract;
-
-
     }
 
     public String checkforInput(WebDriver driver, Alert alert) {
-
 
         boolean exit = false;
         String code = null;
@@ -236,7 +223,7 @@ public class SeleniumUltratopNewSongs extends SeleniumService {
                         code = (String) js.executeScript("return window.promptResponse");
                         // if returned txt is null: user clicked cancel button
                         if (code == null) {
-                            System.out.println("User clicked on cancel");
+                            //System.out.println("User clicked on cancel");
                         }
                     }
                 } catch (InterruptedException e) {
@@ -245,13 +232,12 @@ public class SeleniumUltratopNewSongs extends SeleniumService {
             }
 
         }
-        while (exit == false);
+        while (!exit);
         return code;
     }
 
     public void inputBox(WebDriver driver, final String text){
         JavascriptExecutor js = (JavascriptExecutor) driver;
-        //js.executeScript("prompt('please enter your name: ');");
         js.executeScript("window.promptResponse=prompt('" + text + "')");
     }
 }
