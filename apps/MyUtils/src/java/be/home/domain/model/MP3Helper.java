@@ -60,6 +60,7 @@ public class MP3Helper {
     private static final String OPEN_BRACKET = "[\\(|\\[]";
     private static final String CLOSE_BRACKET = "[\\)|\\]]";
 
+    private static final String FEAT2 = "([F|f](?:ea)?t(?:uring)?\\.? ?|Mit )";
     private static final String FEAT = "[F|f](?:ea)?t(?:uring)?\\.? ?";
 
     public MP3Prettifier getMp3Prettifier(){
@@ -425,8 +426,8 @@ public class MP3Helper {
         // search for (Feat. xxx) or Feat. xxx or Feat xxx or (Feat xxx)
 
         if (!StringUtils.endsWith(track.title, "Edit)")) {
-            checkTrackPattern(track, "\\(" + FEAT, "\\)");
-            checkTrackPattern(track, "\\[" + FEAT, "\\]");
+            checkTrackPattern(track, "[\\(|\\[]" + FEAT, "[\\)|\\]]");
+            checkTrackPattern(track, "[\\(|\\[]" + "M[I|i][T|t] ", "[\\)|\\]]");
         }
     }
 
@@ -438,32 +439,26 @@ public class MP3Helper {
             track.title = track.title.replaceFirst(startPattern + Pattern.quote(extraArtist) + endPattern, "");
             //String extraArexactist = track.title.replaceAll(startPattern, "").replaceFirst(endPattern, "");
             extraArtist = prettifyArtist(extraArtist);
-            if (!track.artist.contains(extraArtist)) {
+            if (!track.artist.toUpperCase().contains(extraArtist.toUpperCase())) {
                 track.artist += " Feat. " + extraArtist;
             }
         }
     }
 
-    public String prettifyAlbum(String album, String albumArtist){
+    public String prettifyAlbum(String album, String albumArtist) {
         String prettifiedText = prettifySong(album);
-        if (albumArtist != null) {
-            ArtistSongItem item = prettifyRuleArtistSong(albumArtist, prettifiedText, true, SONG_ALBUM_TYPE.ALBUM);
-            item.setRule(Rules.ALBUM_RELATION);
-            prettifiedText = item.getSong();
-        }
-
         if (StringUtils.isNotBlank(prettifiedText)) {
-            prettifiedText = prettifyString(prettifiedText) ;
-            prettifiedText = prettifiedText.replaceFirst("\\[[Ee]xplicit\\]", "");
             prettifiedText = checkWords(prettifiedText, Mp3Tag.ALBUM);
-            prettifiedText = prettifiedText.replaceAll("R'n'b", "R'n'B");
-
-
             prettifiedText = prettifiedText.trim();
+            if (albumArtist != null) {
+                ArtistSongItem item = prettifyRuleArtistSong(albumArtist, prettifiedText, true, SONG_ALBUM_TYPE.ALBUM);
+                item.setRule(Rules.ALBUM_RELATION);
+                prettifiedText = item.getSong();
+            }
         }
-
         return prettifiedText;
     }
+
 
     public String formatTrack(AlbumInfo.Config albumInfo, String track, int index) {
         int trackSize = albumInfo.trackSize == 0 ? 2 : albumInfo.trackSize;

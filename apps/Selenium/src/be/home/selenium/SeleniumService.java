@@ -9,6 +9,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.firefox.FirefoxProfile;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,6 +29,23 @@ public class SeleniumService {
         }
         FirefoxOptions options = new FirefoxOptions();
         options.setBinary(pathBinary);
+        //String profilePath = "C:\\My Programs\\Browsers\\FirefoxPortable\\Data\\profile";
+        //
+        String profilePath = "C:\\Users\\ghyssee\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles\\jaq9jhkh.SeleniumUser";
+        // 1. Load the existing profile containing the DRM components
+        FirefoxProfile profile = new FirefoxProfile(new File(profilePath));
+        // 2. Set strict preferences to force DRM stability
+        profile.setPreference("media.eme.enabled", true);
+        profile.setPreference("media.gmp-widevinecdm.enabled", true);
+        profile.setPreference("media.gmp-widevinecdm.visible", true);
+        profile.setPreference("media.gmp-widevinecdm.autoupdate", true);
+
+        // Fix for headless mode or background audio playback if needed
+        profile.setPreference("media.autoplay.default", 0); // 0 = Allow autoplay
+
+        // 3. Configure Firefox Options
+        options.setProfile(profile);
+
         WebDriver driver = new FirefoxDriver(options);
         // Chrome
         //System.setProperty("webdriver.chrome.driver", "path/to/chromedriver");
