@@ -21,8 +21,11 @@
   </Appenders>
   <Loggers>
     <Logger name="org.apache.log4j.xml" level="info"/>
+	<logger name="com.opencsv" level="off"/>
+	<logger name="org.apache.commons.beanutils" level="off"/>
 	<logger name="org.springframework" level="warn"/> 
 	 <logger name="net.sf.jasperreports" level="warn"/> 
+	 
 	 <logger name="log4j.category.velocity" level="warn"/>
 	<Root level="debug">
       <AppenderRef ref="STDOUT"/>

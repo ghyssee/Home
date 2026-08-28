@@ -234,7 +234,6 @@ public class ImportPlayCountFromCSV extends BatchJobV2{
     public void listErrors(String basePath, List<MGOFileAlbumCompositeTO> updateList, CSVFormat csvFileFormat) throws Exception {
 
         if (updateList != null && updateList.size() > 0) {
-            FileWriter fileWriter = null;
             log.info("List Of ERRORS Found");
             log.info(StringUtils.repeat('=', 100));
             log.info("Total: " + updateList.size());

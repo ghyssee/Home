@@ -23,7 +23,7 @@ public class SeleniumService {
     public WebDriver initDriver(){
         // Firefox
         System.setProperty("webdriver.gecko.driver", "C:\\My Programs\\Browsers\\geckodriver.exe");
-        Path pathBinary = Paths.get("C:\\My Programs\\Browsers\\FirefoxPortable\\App\\Firefox\\firefox.exe");
+        Path pathBinary = Paths.get("C:\\My Programs\\Browsers\\FirefoxPortable\\App\\Firefox64\\firefox.exe");
         if (!Files.exists(pathBinary)){
             throw new RuntimeException(("Firefox executable not found: " + pathBinary.toString()));
         }
@@ -31,7 +31,9 @@ public class SeleniumService {
         options.setBinary(pathBinary);
         //String profilePath = "C:\\My Programs\\Browsers\\FirefoxPortable\\Data\\profile";
         //
-        String profilePath = "C:\\Users\\ghyssee\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles\\jaq9jhkh.SeleniumUser";
+        //String profilePath = "C:\\Users\\ghyssee\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles\\jaq9jhkh.SeleniumUser";
+
+        String profilePath = ("C:\\My Programs\\OneDrive\\Browsers\\Firefox\\profile\\Selenium");
         // 1. Load the existing profile containing the DRM components
         FirefoxProfile profile = new FirefoxProfile(new File(profilePath));
         // 2. Set strict preferences to force DRM stability
