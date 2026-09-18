@@ -1,10 +1,9 @@
 package be.home.selenium.to;
 
-import be.home.common.model.TransferObject;
 
-public class Role extends TransferObject {
+public class Role  {
     String role;
-    String umrRole;
+
 
     public String getRole() {
         return role;
@@ -14,11 +13,4 @@ public class Role extends TransferObject {
         this.role = role;
     }
 
-    public String getUmrRole() {
-        return umrRole;
-    }
-
-    public void setUmrRole(String umrRole) {
-        this.umrRole = umrRole;
-    }
 }

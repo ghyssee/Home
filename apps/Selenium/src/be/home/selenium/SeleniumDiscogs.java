@@ -10,6 +10,7 @@ import org.openqa.selenium.*;
 
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,7 +39,7 @@ public class SeleniumDiscogs extends SeleniumService {
         // https://www.discogs.com/release/25268908-Various-Serious-Beats-100-Anniversary-Edition-The-Ultimate-Saga-Of-House
         //https://www.discogs.com/release/33180777-Sabrina-Carpenter-Short-N-Sweet?srsltid=AfmBOooaKWRCIWLGdBVMhkWlwHHMnJbifeeBfrowOf_23BXQ5-z6bDZ0
         // https://www.discogs.com/release/25268908-Various-Serious-Beats-100-Anniversary-Edition-The-Ultimate-Saga-Of-House
-        driver.get("https://www.discogs.com/release/31832654-Various-Bravo-Hits-127?");
+        driver.get("https://www.discogs.com/release/29930779-Various-NRJ-300-Hits-2024?srsltid=AU7gw4U8h2HXB5ZONzS149Bn0CWLpvSgEvOVrQ5wn88RYdv8KPo4RHiD");
 
         getAlbumInfo(driver, configAlbum);
         getTracks(driver, configAlbum);
