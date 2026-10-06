@@ -1,10 +1,10 @@
 package be.home.selenium.to;
 
 public class CSVRole  {
-    String role;
+    String oracleRole;
     String umrRole;
-    String dataAccessSet;
 
+    String dataAccessSet;
 
     public String getDataAccessSet() {
         return dataAccessSet;
@@ -14,12 +14,12 @@ public class CSVRole  {
         this.dataAccessSet = dataAccessSet;
     }
 
-    public String getRole() {
-        return role;
+    public String getOracleRole() {
+        return oracleRole;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public void setOracleRole(String oracleRole) {
+        this.oracleRole = oracleRole;
     }
 
     public String getUmrRole() {
@@ -29,4 +29,7 @@ public class CSVRole  {
     public void setUmrRole(String umrRole) {
         this.umrRole = umrRole;
     }
+
+
+
 }

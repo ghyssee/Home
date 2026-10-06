@@ -39,14 +39,14 @@ public class SeleniumSpotify extends SeleniumService {
         WebDriver driver = initDriver();
 
         //driver.get("https://music.amazon.de/albums/B0DQ6NX41T");
+        final List<Integer> TRACKNUMBERS = Arrays.asList(20,20,20,20);
         driver.get("https://open.spotify.com/playlist/6jILXSPvAm0sSUBdoXRhud");
 
 
         getAlbumInfo(driver, configAlbum);
         getTracks(driver, configAlbum);
-        List<Integer> trackNumbers = Arrays.asList(20,20,20,20);
         for (AlbumInfo.Track track : configAlbum.getTracks()){
-            getTrackCd(trackNumbers, Integer.parseInt(track.getTrack()), track);
+            getTrackCd(TRACKNUMBERS, Integer.parseInt(track.getTrack()), track);
         }
 
         printAlbumInfo(log, configAlbum);
@@ -58,7 +58,7 @@ public class SeleniumSpotify extends SeleniumService {
 
     public void getAlbumInfo(WebDriver driver, AlbumInfo.Config configAlbum) {
 
-        WebElement element = waitForElement(driver, "div[data-testid='topbar-content-wrapper'", SELECTOR.CSS, "Track List");
+        WebElement element = waitForElement(driver, By.cssSelector("div[data-testid='topbar-content-wrapper'"), "Track List");
                 //driver.findElement(By.cssSelector("div[data-testid='topbar-content-wrapper'"));
 
         String title = getText(element);

@@ -13,6 +13,8 @@ public class UMRRequest {
 
     private List<Role> roles = new ArrayList<>();
 
+
+    private List<OracleEntity> entities = new ArrayList<>();
     private List<DataAccess> dataAccessList = new ArrayList<>();
 
     public String getUserId() {
@@ -50,7 +52,9 @@ public class UMRRequest {
     public List<Role> getRoles() {
         return roles;
     }
-
+    public List<OracleEntity> getEntities() {
+        return entities;
+    }
     public void setRoles(List<Role> roles) {
         this.roles = roles;
     }
@@ -61,7 +65,13 @@ public class UMRRequest {
 
         roles.add(newRole);
     }
+    public void addEntity(String name, String code){
+        OracleEntity newEntity = new OracleEntity();
+        newEntity.setName(name);
+        newEntity.setCode(code);
 
+        entities.add(newEntity);
+    }
     public List<DataAccess> getDataAccessList() {
         return dataAccessList;
     }

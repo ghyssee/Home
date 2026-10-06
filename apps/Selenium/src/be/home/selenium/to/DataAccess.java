@@ -6,6 +6,17 @@ public class DataAccess  {
     String securityContext;
     String securityContextValue;
 
+    public DataAccess(String role, String securityContext,  String securityContextValue){
+        this.role = role;
+        this.securityContext = securityContext;
+        this.securityContextValue = securityContextValue;
+    }
+
+    public DataAccess(){
+        this.role = null;
+        this.securityContext = null;
+        this.securityContextValue = null;
+    }
     public String getSecurityContext() {
         return securityContext;
     }

@@ -7,10 +7,10 @@ import be.home.model.json.AlbumInfo;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.*;
-import org.openqa.selenium.bidi.browsingcontext.Locator;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Wait;
@@ -28,7 +28,7 @@ import java.util.function.Function;
 import java.util.logging.Logger;
 
 public class SeleniumService {
-    public static final int WAIT = 1;
+    public static final int WAIT = 10;
 
     public WebDriver initDriver(){
         // Firefox
@@ -135,63 +135,18 @@ public class SeleniumService {
         return filename;
     }
 
-    public By getBy(String selector, SELECTOR selectorType) {
-        By byObj = null;
-        switch (selectorType){
-            case CSS:
-                byObj = By.cssSelector(selector);
-                break;
-            case XPATH:
-                byObj = By.xpath(selector);
-                break;
-            case ID:
-                byObj =By.id(selector);
-                break;
-        }
-        return byObj;
-    }
-
-
-    public WebElement waitForElement (WebDriver driver, String css, SELECTOR selectorType, String comment) {
-
-        // Wait until everything is loaded
-        WebElement elementRet = null;
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver)
-                .withTimeout(Duration.ofSeconds(20))
-                .pollingEvery(Duration.ofSeconds(WAIT))
-                .ignoring(NoSuchElementException.class);
-
-        try {
-
-            WebElement element = wait.until(new Function<WebDriver, WebElement>() {
-                public WebElement apply(WebDriver driver) {
-                    System.out.println("Waiting for " + comment + " with Anchor " + css);
-                    WebElement element = null;
-                    element = driver.findElement(getBy(css, selectorType));
-                    return element;
-                }
-            });
-            if (element == null) {
-                throw new RuntimeException(comment + "Invalid Selector type: " + selectorType.name());
-            }
-            else {
-                elementRet = element;
-            }
-
-        }
-        catch (TimeoutException ex) {
-            throw new RuntimeException(comment + ": " + "css Anchor not found: " + css);
-        }
-        return elementRet;
-    }
-
     public WebElement waitForElement (WebDriver driver, By locator, String comment) {
+        return waitForElement(driver, locator, 2, WAIT, true, comment);
+    }
+
+    public WebElement waitForElement (WebDriver driver, By locator, int polling, int timeout, boolean exitIfNotFound, String comment) {
 
         // Wait until everything is loaded
         WebElement elementRet = null;
+        boolean error = false;
         Wait<WebDriver> wait = new FluentWait<WebDriver>(driver)
-                .withTimeout(Duration.ofSeconds(20))
-                .pollingEvery(Duration.ofSeconds(WAIT))
+                .withTimeout(Duration.ofSeconds(timeout))
+                .pollingEvery(Duration.ofSeconds(polling))
                 .ignoring(NoSuchElementException.class);
 
         try {
@@ -205,7 +160,7 @@ public class SeleniumService {
                 }
             });
             if (element == null) {
-                throw new RuntimeException(comment + "Element not found with anchor: " + locator.toString());
+                error = true;
             }
             else {
                 elementRet = element;
@@ -213,25 +168,156 @@ public class SeleniumService {
 
         }
         catch (TimeoutException ex) {
-            throw new RuntimeException(comment + ": " + "css Anchor not found: " + locator.toString());
+            error = true;
+        }
+        if (error) {
+            if (exitIfNotFound) {
+                throw new RuntimeException(comment + ": " + "css Anchor not found: " + locator.toString());
+            }
         }
         return elementRet;
-    }
-
-    enum SELECTOR {
-        CSS, XPATH, ID;
     }
 
     public WebElement getNonStaleElement(WebDriver driver, By locator){
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         WebElement element = wait.until(
                 ExpectedConditions.refreshed(
-                        ExpectedConditions.visibilityOfElementLocated(locator)
+                                ExpectedConditions.elementToBeClickable(locator)
                 )
         );
         return element;
     }
 
+    public void sendKeysCheckStale(WebDriver driver, By locator, String keys){
+        boolean exit=false;
+        do {
+            try {
+                WebElement element = getNonStaleElement(driver, locator);
+                element.sendKeys(keys);
+                exit=true;
+            } catch (StaleElementReferenceException ex) {
+                System.out.println("sendKeysCheckStale. Retrying...");
+            }
+        }
+        while(!exit);
+
+    }
+
+    public void sendKeysCheckStale2(WebDriver driver, By locator, String keys){
+        boolean exit=false;
+        do {
+            try {
+                WebElement element = getNonStaleElement(driver, locator);
+                Actions actions = new Actions(driver);
+                actions.moveToElement(element)
+                        .click()
+                        .sendKeys(keys+Keys.TAB)
+                        .build()
+                        .perform();
+                exit=true;
+            } catch (StaleElementReferenceException ex) {
+                System.out.println("sendKeysCheckStale. Retrying...");
+            }
+        }
+        while(!exit);
+
+    }
+
+    public void waitForADFBackgroundProcess(WebDriver driver) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+        wait.until(wd -> {
+            try {
+                return (Boolean) ((JavascriptExecutor) wd).executeScript(
+                        "return typeof AdfPage !== 'undefined' && " +
+                                "AdfPage.PAGE !== undefined && " +
+                                "AdfPage.PAGE.getLookAndFeel() !== null && " +
+                                "AdfPage.PAGE.isSynchronizedWithServer();"
+                );
+            } catch (Exception e) {
+                // Als ADF tijdens het typen de DOM reset, kan er een tijdelijke JS-error ontstaan.
+                // Door false te returnen, blijft Selenium proberen tot de timeout.
+                return false;
+            }
+        });
+    }
+
+    public void sendKeys(WebDriver driver, By locator, String keys){
+        boolean exit = false;
+        do {
+            try {
+                WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
+                WebElement combobox = wait.until(ExpectedConditions.elementToBeClickable(locator));
+                combobox.clear();
+                combobox.click();
+                combobox.sendKeys(keys);
+                // 3. PAUSE briefly to let the Oracle ADF AJAX call register the typed text
+                try {
+                    Thread.sleep(500);
+                    // 500ms is usually the sweet spot for ADF auto-suggest drop-downs
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+
+                // 4. Use Actions class to cleanly execute the Enter hardware event
+                new Actions(driver)
+                        .moveToElement(combobox)
+                        .sendKeys(Keys.ENTER)
+                        .build()
+                        .perform();
+                wait.until(ExpectedConditions.textToBePresentInElementValue(locator, keys));
+                WebElement element = driver.findElement(locator);
+                String value = element.getAttribute("value");
+                System.out.println("Value: " + value);
+                waitForADFBackgroundProcess(driver);
+                exit = true;
+            }
+            catch (ElementClickInterceptedException ex) {
+                System.out.println("ElementClickInterceptedException while sending keys. Retrying...");
+            }
+            catch (StaleElementReferenceException ex) {
+                System.out.println("StaleElementReferenceException while sending keys. Retrying...");
+            }
+            catch (TimeoutException ex) {
+                System.out.println("TimeoutException while sending keys. Retrying...");
+            }
+        }
+        while (!exit);
+
+    }
+    public WebElement waitForNotBlank(WebDriver driver2, By locator, String attribute){
+        // multiple attribute are seperatred with semicolon
+        // wait till one of them is not blank
+        boolean exit = false;
+        String[] splitter = attribute.split(";");
+        WebElement element = null;
+        do {
+            try {
+                Wait<WebDriver> wait = new FluentWait<WebDriver>(driver2)
+                        .withTimeout(Duration.ofSeconds(2))
+                        .pollingEvery(Duration.ofSeconds(1))
+                        .ignoring(NoSuchElementException.class);
+                element = wait.until(new Function<WebDriver, WebElement>() {
+                    public WebElement apply(WebDriver driver) {
+                        WebElement elementToTest = driver.findElement(locator);
+                        for (String attribute : splitter){
+                            String value = elementToTest.getAttribute(attribute);
+                            if (StringUtils.isNotBlank(value)){
+                                System.out.println("waitForNotBlank: " + value);
+                                return elementToTest;
+                            }
+                        }
+                        return null;
+                    }
+                });
+                exit = true;
+            } catch (StaleElementReferenceException ex) {
+                System.out.println("Stale element. Retrying...");
+            }
+        }
+        while (!exit);
+        return element;
+    }
     public void getTrackCd(List<Integer> tracknumbersPerCd, int trackNr, AlbumInfo.Track track){
         int cd = 1;
         int maxRange=0;
