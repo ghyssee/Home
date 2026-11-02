@@ -274,12 +274,12 @@
 			<dependency>
 				<groupId>net.java.dev.jna</groupId>
 				<artifactId>jna</artifactId>
-				<version>4.2.2</version>
+				<version>5.13.0</version>
 			</dependency>
 			<dependency>
 				<groupId>net.java.dev.jna</groupId>
 				<artifactId>jna-platform</artifactId>
-				<version>4.2.2</version>
+				<version>5.13.0</version>
 			</dependency>
 			<dependency>
 			  <groupId>com.mpatric</groupId>
@@ -398,6 +398,12 @@
 				<groupId>com.oracle</groupId>
 				<artifactId>ojdbc14</artifactId>
 				<version>10.2.0.1.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>net.sourceforge.tess4j</groupId>
+				<artifactId>tess4j</artifactId>
+				<version>5.4.0</version>
 			</dependency>
 			</dependencies>
 			</dependencyManagement>
