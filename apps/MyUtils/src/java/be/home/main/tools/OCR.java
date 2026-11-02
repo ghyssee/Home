@@ -1,5 +1,6 @@
 package be.home.main.tools;
 
+import com.sun.jna.Pointer;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
 
@@ -20,18 +21,45 @@ import javax.imageio.ImageIO;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
+
 public class OCR {
     public static void main(String[] args) {
-        showOpenWindows();
-        System.out.println(compareImage(new File("C:\\My Data\\tessdata\\test.png"), new File("C:\\My Data\\tessdata\\test2.png")));
-        mouseClick(800,200, 340, 120);
+        //showOpenWindows();
+        HWND handle = findWindowByPartialTitle("LDPlayer");
+        Rectangle bounds = WindowAligner.getRobotCompatibleBounds(handle);
 
-        getOCRText(100, 150, 400, 200);
+        char[] windowText = new char[512];
+        // Haal de titel van het venster op
+        User32.INSTANCE.GetWindowText(handle, windowText, 512);
+        String title = Native.toString(windowText);
+        System.out.println(String.format("%-40.40s | X:%-4d Y:%-4d        | %-7d x %-7d",
+                title, bounds.x, bounds.y, bounds.width, bounds.height));
+        User32.INSTANCE.ShowWindow(handle, 9);
+        // 2. Breng het venster naar de voorgrond en geef het focus
+        User32.INSTANCE.SetForegroundWindow(handle);
+
+        try {
+            makeScreenshotWindow(bounds);
+            makeScreenshot(222, 55, 40,15);
+            // Get World Energy
+            getOCRText(222, 55, 40, 15);
+            makeScreenshot(426, 48, 28,20);
+        } catch (AWTException e) {
+            e.printStackTrace();
+        }
+
+
+
+        //System.out.println(compareImage(new File("C:\\My Data\\tessdata\\test.png"), new File("C:\\My Data\\tessdata\\test2.png")));
+        //mouseClick(800,200, 340, 120);
+
+        //getOCRText(100, 150, 400, 200);
 
 
     }
 
-    public static void getOCRText(int left, int top, int width, int height){
+    public static String getOCRText(int left, int top, int width, int height){
+        String resultText = null;
         try {
             // 1. Definieer de coördinaten en grootte van het schermgedeelte (X, Y, Breedte, Hoogte)
             Rectangle screenRect = new Rectangle(left, top, width, height);
@@ -60,7 +88,7 @@ public class OCR {
 
 
             // 4. Voer de OCR uit direct op de BufferedImage in het geheugen
-            String resultText = tesseract.doOCR(screenCapture);
+            resultText = tesseract.doOCR(screenCapture);
 
             // Output het resultaat
             System.out.println("--- Gevonden Tekst ---");
@@ -69,6 +97,7 @@ public class OCR {
         } catch (TesseractException | AWTException e) {
             System.err.println("OCR Fout: " + e.getMessage());
         }
+        return resultText;
     }
 
     public static void makeScreenshot(int left, int top, int width, int height){
@@ -84,7 +113,7 @@ public class OCR {
         BufferedImage screenCapture = robot.createScreenCapture(screenRect);
 
         // Definieer de bestandslocatie en naam
-        File outputFile = new File("c:/My Data/tessdata/test.png");
+        File outputFile = new File("c:/My Data/tessdata/test2.png");
         // Schrijf het bestand weg naar de harde schijf
         try {
             ImageIO.write(screenCapture, "png", outputFile);
@@ -93,7 +122,58 @@ public class OCR {
         }
     }
 
+    public static void makeScreenshotWindow(Rectangle bounds) throws AWTException {
+        Robot robot = new Robot();
+
+        BufferedImage screenshot = robot.createScreenCapture(bounds);
+
+
+        // Definieer de bestandslocatie en naam
+        File outputFile = new File("c:/My Data/tessdata/test.png");
+        // Schrijf het bestand weg naar de harde schijf
+        try {
+            ImageIO.write(screenshot, "png", outputFile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static HWND findWindowByPartialTitle(String partialTitle) {
+        // Shared container to hold the result window handle
+        final HWND[] foundWindow = { null };
+
+        // Define the callback function that runs for every open window
+        boolean b = User32.INSTANCE.EnumWindows(new WinUser.WNDENUMPROC() {
+            @Override
+            public boolean callback(HWND hwnd, Pointer data) {
+                // Determine the length of the window title
+                int titleLength = User32.INSTANCE.GetWindowTextLength(hwnd);
+                if (titleLength == 0) {
+                    return true; // No title, skip and continue searching
+                }
+
+                // Buffer to hold the extracted title string
+                char[] buffer = new char[titleLength + 1];
+                User32.INSTANCE.GetWindowText(hwnd, buffer, titleLength + 1);
+                String windowTitle = Native.toString(buffer);
+
+                // Perform the partial match check (case-insensitive option)
+                if (windowTitle.toLowerCase().startsWith(partialTitle.toLowerCase())) {
+                    foundWindow[0] = hwnd; // Found it! Store the handle.
+                    return false;          // Return false to stop enumerating windows
+                }
+
+                return true; // Return true to keep searching next windows
+            }
+        }, null);
+
+        return foundWindow[0];
+    }
+
     public static void showOpenWindows(){
+
+        final HWND[] foundWindow = { null };
+
         // Roep de Windows API aan om door alle open vensters te lopen
         User32.INSTANCE.EnumWindows((hwnd, ptr) -> {
             // Controleer of het venster daadwerkelijk zichtbaar is voor de gebruiker
@@ -106,24 +186,35 @@ public class OCR {
 
                 // Print de titel alleen als deze niet leeg is
                 if (!title.isEmpty()) {
-                    System.out.println("- " + title);
 
-                    WinUser.RECT rect = new WinUser.RECT();
-                    User32.INSTANCE.GetWindowRect(hwnd, rect);
+                    //WinUser.RECT rect = new WinUser.RECT();
+                    //User32.INSTANCE.GetWindowRect(hwnd, rect);
+
+                   Rectangle  bounds = WindowAligner.getRobotCompatibleBounds(hwnd);
 
                     // Bereken breedte en hoogte op basis van de randen
-                    int width = rect.right - rect.left;
-                    int height = rect.bottom - rect.top;
+                    //int width = rect.right - rect.left;
+                    //int height = rect.bottom - rect.top;
 
+                    //int javaX = (int) (externX / scaleX);
+                    //int javaY = (int) (externY / scaleY);
 
                     // Print de naam, X/Y startpositie en de dimensies
+                    //System.out.println(String.format("%-40.40s | X:%-4d Y:%-4d        | %-7d x %-7d",
+                    //        title, rect.left, rect.top, width, height));
                     System.out.println(String.format("%-40.40s | X:%-4d Y:%-4d        | %-7d x %-7d",
-                            title, rect.left, rect.top, width, height));
-                    if (title.startsWith("Total Commander")){
+                            title, bounds.x, bounds.y, bounds.width, bounds.height));
+                    if (title.startsWith("LDPlayer")){
                         User32.INSTANCE.ShowWindow(hwnd, 9);
                         // 2. Breng het venster naar de voorgrond en geef het focus
                         User32.INSTANCE.SetForegroundWindow(hwnd);
-                        makeScreenshot(rect.left, rect.top, width, height);
+                        //makeScreenshot(rect.left, rect.top, width, height);
+                        //makeScreenshot(rect.left-10, rect.top, width-150, height);
+                        try {
+                            makeScreenshotWindow(bounds);
+                        } catch (AWTException e) {
+                            e.printStackTrace();
+                        }
                     }
 
                 }
