@@ -67,6 +67,13 @@ public class UMRRequest {
     }
     public void addEntity(String name, String code){
         OracleEntity newEntity = new OracleEntity();
+        // sometimes Oracle Entities is formatted like XXX- XXXXXXX instead of XXX - XXXXXXX
+
+        name = name.replaceAll("(.{3,3}) ?- ?(.*)", "$1 - $2");
+        // UMR: 0DS - Healthlink Europe B.V
+        // Oracle: 0DS - Healthlink Europe B.V.
+        name = name.replaceAll("(.*) B\\.V\\.?", "$1 B.V.");
+
         newEntity.setName(name);
         newEntity.setCode(code);
 

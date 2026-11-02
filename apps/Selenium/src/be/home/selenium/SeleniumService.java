@@ -11,10 +11,7 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.FluentWait;
-import org.openqa.selenium.support.ui.Wait;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,7 +22,6 @@ import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-import java.util.logging.Logger;
 
 public class SeleniumService {
     public static final int WAIT = 10;
@@ -51,12 +47,15 @@ public class SeleniumService {
         profile.setPreference("media.gmp-widevinecdm.enabled", true);
         profile.setPreference("media.gmp-widevinecdm.visible", true);
         profile.setPreference("media.gmp-widevinecdm.autoupdate", true);
+        File extensionPath = new File("C:\\My Programs\\OneDrive\\Browsers\\Firefox\\extension\\eric_ext.xpi");
+        profile.addExtension(extensionPath);
 
         // Fix for headless mode or background audio playback if needed
         profile.setPreference("media.autoplay.default", 0); // 0 = Allow autoplay
 
         // 3. Configure Firefox Options
         options.setProfile(profile);
+
 
         WebDriver driver = new FirefoxDriver(options);
         // Chrome
@@ -188,41 +187,22 @@ public class SeleniumService {
         return element;
     }
 
-    public void sendKeysCheckStale(WebDriver driver, By locator, String keys){
+
+
+    public void sendKeysNoWait(WebDriver driver, By locator, String keys){
         boolean exit=false;
         do {
             try {
-                WebElement element = getNonStaleElement(driver, locator);
+                WebElement element = driver.findElement(locator);
                 element.sendKeys(keys);
                 exit=true;
             } catch (StaleElementReferenceException ex) {
-                System.out.println("sendKeysCheckStale. Retrying...");
+                System.out.println("sendKeys Stale. Retrying...");
             }
         }
         while(!exit);
 
     }
-
-    public void sendKeysCheckStale2(WebDriver driver, By locator, String keys){
-        boolean exit=false;
-        do {
-            try {
-                WebElement element = getNonStaleElement(driver, locator);
-                Actions actions = new Actions(driver);
-                actions.moveToElement(element)
-                        .click()
-                        .sendKeys(keys+Keys.TAB)
-                        .build()
-                        .perform();
-                exit=true;
-            } catch (StaleElementReferenceException ex) {
-                System.out.println("sendKeysCheckStale. Retrying...");
-            }
-        }
-        while(!exit);
-
-    }
-
     public void waitForADFBackgroundProcess(WebDriver driver) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
@@ -243,14 +223,29 @@ public class SeleniumService {
     }
 
     public void sendKeys(WebDriver driver, By locator, String keys){
+        boolean exit=false;
+        do {
+            try {
+                WebElement element = getNonStaleElement(driver, locator);
+                element.clear();
+                element.sendKeys(keys);
+                exit=true;
+            } catch (StaleElementReferenceException ex) {
+                System.out.println("sendKeys Stale. Retrying...");
+            }
+        }
+        while(!exit);
+    }
+
+    public void sendKeysADF(WebDriver driver, By locator, String keys){
         boolean exit = false;
         do {
             try {
                 WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
-                WebElement combobox = wait.until(ExpectedConditions.elementToBeClickable(locator));
-                combobox.clear();
-                combobox.click();
-                combobox.sendKeys(keys);
+                WebElement element = wait.until(ExpectedConditions.elementToBeClickable(locator));
+                element.clear();
+                element.click();
+                element.sendKeys(keys);
                 // 3. PAUSE briefly to let the Oracle ADF AJAX call register the typed text
                 try {
                     Thread.sleep(500);
@@ -261,12 +256,12 @@ public class SeleniumService {
 
                 // 4. Use Actions class to cleanly execute the Enter hardware event
                 new Actions(driver)
-                        .moveToElement(combobox)
+                        .moveToElement(element)
                         .sendKeys(Keys.ENTER)
                         .build()
                         .perform();
                 wait.until(ExpectedConditions.textToBePresentInElementValue(locator, keys));
-                WebElement element = driver.findElement(locator);
+                element = driver.findElement(locator);
                 String value = element.getAttribute("value");
                 System.out.println("Value: " + value);
                 waitForADFBackgroundProcess(driver);
@@ -285,8 +280,76 @@ public class SeleniumService {
         while (!exit);
 
     }
+
+    // Maak een JavaScript-functie die door de closed shadow-host zoekt
+    public WebElement getElementInClosedShadow(WebDriver driver) {
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+
+        // Vervang 'span.xuu' door de exacte CSS-selector van de tag die de shadow-root BEZIT (de host)
+        String script =
+                "return document.querySelector('span.xuu')" +
+                        "?.shadowRoot?.querySelector('input[id*=\\'::content\\']') || " +
+                        "document.querySelector('input[id*=\\'::content\\']');"; // Fallback
+
+        return (WebElement) js.executeScript(script);
+    }
+
+    public void sendKeysKeyboardADF(WebDriver driver, By locator, String keys){
+        boolean exit = false;
+        do {
+            try {
+                WebElement element = driver.findElement(locator);
+                // Maak het veld leeg met de Actions class
+                Actions actions = new Actions(driver);
+                actions.click(element)
+                        .keyDown(Keys.CONTROL)
+                        .sendKeys("a")
+                        .keyUp(Keys.CONTROL)
+                        .sendKeys(Keys.BACK_SPACE)
+                        .perform();
+                new Actions(driver)
+                        .moveToElement(element)
+                        .sendKeys(keys + Keys.ENTER)
+                        .build()
+                        .perform();
+                // 3. PAUSE briefly to let the Oracle ADF AJAX call register the typed text
+                try {
+                    Thread.sleep(500);
+                    // 500ms is usually the sweet spot for ADF auto-suggest drop-downs
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+
+                // 4. Use Actions class to cleanly execute the Enter hardware event
+                new Actions(driver)
+                        .moveToElement(element)
+                        .sendKeys(Keys.ENTER)
+                        .build()
+                        .perform();
+                element = driver.findElement(locator);
+                String value = element.getAttribute("value");
+                System.out.println("Value: " + value);
+                waitForADFBackgroundProcess(driver);
+                exit = true;
+            }
+            catch (ElementClickInterceptedException ex) {
+                System.out.println("ElementClickInterceptedException while sending keys. Retrying...");
+            }
+            catch (StaleElementReferenceException ex) {
+                System.out.println("StaleElementReferenceException while sending keys. Retrying...");
+            }
+            catch (TimeoutException ex) {
+                System.out.println("TimeoutException while sending keys. Retrying...");
+            }
+        }
+        while (!exit);
+
+    }
+
+
+
     public WebElement waitForNotBlank(WebDriver driver2, By locator, String attribute){
-        // multiple attribute are seperatred with semicolon
+        // multiple attributes are separated with semicolon
         // wait till one of them is not blank
         boolean exit = false;
         String[] splitter = attribute.split(";");
@@ -317,6 +380,132 @@ public class SeleniumService {
         }
         while (!exit);
         return element;
+    }
+    public void select(WebDriver driver, By locator, String visibleText){
+        boolean exit=false;
+        do {
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+            WebElement element = wait.until(
+                    ExpectedConditions.refreshed(
+                            ExpectedConditions.visibilityOfElementLocated(locator)
+                    )
+            );
+            Select dropdown = new Select(element);
+            try {
+                dropdown.selectByVisibleText(visibleText);
+                exit = true;
+            }
+            catch (ElementClickInterceptedException ex){
+                System.out.println("Select ElementClickInterceptedException. Retrying...");
+                // retry
+            }
+        }
+        while (!exit);
+    }
+
+    public WebElement waitForElementClickable(WebDriver driver, By locator, String comment){
+
+        return waitForElementClickable(driver, locator, 5, comment);
+    }
+
+
+    public WebElement waitForElementClickable(WebDriver driver, By locator, int timeout, String comment){
+        WebElement element = null;
+        boolean exit = false;
+        do {
+            try {
+                element = waitForElement(driver, locator, comment);
+                Wait<WebDriver> wait = new WebDriverWait(driver, Duration.ofSeconds(timeout));
+                wait.until(ExpectedConditions.elementToBeClickable(locator));
+                exit = true;
+            } catch (StaleElementReferenceException ex) {
+                System.err.println("Element with anchor " + locator.toString() + " is stale. Retrying...");
+            }
+        }
+        while (!exit);
+        return element;
+
+    }
+    public WebElement waitForElementInvisible(WebDriver driver, By locator, String comment){
+        WebElement element = waitForElement(driver, locator, comment);
+        Wait<WebDriver> wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("AFModalGlassPane")));
+        return element;
+
+    }
+    public WebDriver waitForFrame(WebDriver driver, String id, String xpathSelector) {
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+        WebDriver frame = wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt("fullscreen-app-host"));
+        boolean exit = false;
+        do {
+            try {
+                waitForElement(driver,By.xpath(xpathSelector), "iFrame loaded" );
+                driver.findElement(By.xpath(xpathSelector));
+                exit = true;
+                System.out.println("frame loaded");
+
+            } catch (NoSuchWindowException ex) {
+                // frame not fully loaded
+                System.out.println("frame not loaded. Retrying...");
+                driver.switchTo().defaultContent();
+                driver.switchTo().frame(id);
+
+            }
+        }
+        while (!exit);
+
+        return frame;
+
+    }
+    public WebElement waitForElementUntilValueNotEmpty (WebDriver driver, By locator, String comment) {
+        int count = 0;
+        boolean exit = false;
+        WebElement element;
+        do {
+            element = waitForElement(driver, locator, comment);
+            String value = element.getAttribute("value");
+            if (StringUtils.isNotBlank(value)){
+//            if (StringUtils.isNotBlank(value) || StringUtils.isNotBlank(getText(element))){
+                exit = true;
+                break;
+            }
+            else {
+                sleep(driver, 1, "waitForElementUntilValueNotEmpty");
+            }
+            count++;
+        }
+        while (count < 5);
+        if (!exit){
+            makeScreenshot(driver, "waitForElementUntilValueNotEmpty");
+            throw new RuntimeException(comment + " Element should not be empty with anchor: " + locator.toString() );
+        }
+        return element;
+
+    }
+
+    public WebElement waitForElementUntilTextNotEmpty (WebDriver driver, By locator, String comment) {
+        int count = 0;
+        boolean exit = false;
+        WebElement element;
+        do {
+            element = waitForElement(driver, locator, comment);
+            String value = element.getAttribute("value");
+            if (StringUtils.isNotBlank(getText(element))){
+                exit = true;
+                break;
+            }
+            else {
+                sleep(driver, 1, "waitForElementUntilValueNotEmpty");
+            }
+            count++;
+        }
+        while (count < 5);
+        if (!exit){
+            throw new RuntimeException(comment + "Element should not be empty with anchor: " + locator.toString() );
+        }
+        return element;
+
     }
     public void getTrackCd(List<Integer> tracknumbersPerCd, int trackNr, AlbumInfo.Track track){
         int cd = 1;

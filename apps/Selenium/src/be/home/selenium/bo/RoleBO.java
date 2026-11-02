@@ -1,5 +1,6 @@
 package be.home.selenium.bo;
 
+
 import be.home.selenium.to.*;
 
 import java.util.ArrayList;
@@ -64,22 +65,6 @@ public class RoleBO {
         }
     }
 
-    public List<String> getSecurityContextValues(String securityContext, OracleEntity entity){
-       List<String> values = new ArrayList<>();
-        if (securityContext.equalsIgnoreCase("BUSINESS UNIT")){
-            values.add(entity.getName());
-        }
-        else if (securityContext.equalsIgnoreCase("DATA ACCESS SET")){
-            values.add("PL "+ entity.getCode());
-            values.add("SL "+ entity.getCode());
-        }
-        else if (securityContext.equalsIgnoreCase("REFERENCE DATA SET")){
-            values.add("PL "+ entity.getCode());
-            values.add("SL "+ entity.getCode());
-        }
-        return values;
-    }
-
     enum CONTEXT_TYPE {
         BU,
         PL,
@@ -109,16 +94,21 @@ public class RoleBO {
         return values;
     }
 
-    public List<String> getSecurityContextValues(String securityContext, List<OracleEntity> oracleEntities){
+    public List<String> getSecurityContextValues(SecurityContext securityContext, List<OracleEntity> oracleEntities){
         List<String> values = new ArrayList<>();
-        if (securityContext.equalsIgnoreCase("BUSINESS UNIT")){
+        if (securityContext.getDescription().equalsIgnoreCase("BUSINESS UNIT")){
             values.addAll(getSecurityContextValues(oracleEntities, CONTEXT_TYPE.BU));
         }
-        else if (securityContext.equalsIgnoreCase("DATA ACCESS SET")){
+        else if (securityContext.getDescription().equalsIgnoreCase("DATA ACCESS SET")){
             values.addAll(getSecurityContextValues(oracleEntities, CONTEXT_TYPE.PLSL));
         }
-        else if (securityContext.equalsIgnoreCase("REFERENCE DATA SET")){
+        else if (securityContext.getDescription().equalsIgnoreCase("REFERENCE DATA SET")){
             values.addAll(getSecurityContextValues(oracleEntities, CONTEXT_TYPE.PLSL));
+        }
+        else if (securityContext.getDescription().equalsIgnoreCase("Inventory organization")){
+            for (String value : securityContext.getValues()) {
+                values.add(value);
+            }
         }
         return values;
     }
@@ -130,7 +120,7 @@ public class RoleBO {
             CSVRole role = getRoleInCSV(umrRole.getRole());
             List<SecurityContext> securityContexts = getSecurityContexts(role.getOracleRole());
             for (SecurityContext securityContext : securityContexts){
-                List<String> values = getSecurityContextValues(securityContext.getDescription(), oracleEntities);
+                List<String> values = getSecurityContextValues(securityContext, oracleEntities);
                 for (String value : values){
                     dataAccessSet.add(new DataAccess(role.getOracleRole(), securityContext.getDescription(), value));
                 }
