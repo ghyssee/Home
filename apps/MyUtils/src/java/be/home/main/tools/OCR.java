@@ -3,6 +3,10 @@ package be.home.main.tools;
 import be.home.common.model.windows.WindowAligner;
 import be.home.common.model.windows.WindowTO;
 import be.home.common.utils.WinUtils;
+import com.github.romankh3.image.comparison.ImageComparison;
+import com.github.romankh3.image.comparison.ImageComparisonUtil;
+import com.github.romankh3.image.comparison.model.ImageComparisonResult;
+import com.github.romankh3.image.comparison.model.ImageComparisonState;
 import com.sun.jna.Pointer;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
@@ -33,7 +37,7 @@ public class OCR {
 
     public static void main(String[] args) {
         //showOpenWindows();
-        if (true) {
+        if (false) {
             String title = "Total Commander";
             WindowTO window = findWindowByPartialTitle(title);
             if (window.getHandle() == null) {
@@ -53,7 +57,7 @@ public class OCR {
             }
         }
 
-        if (false) {
+        if (true) {
             try {
                 WindowTO window2 = findWindowByPartialTitle("LDPlayer");
             //Rectangle bounds = WindowAligner.getRobotCompatibleBounds(window2.getHandle());
@@ -63,12 +67,17 @@ public class OCR {
                 activateWindow(window2.getHandle());
 
                 makeScreenshot(window2.getBounds(), "CurrentWindow.png");
-                makeScreenshot(222, 55, 40, 15, "Energy.png");
-                makeScreenshotRelativeToWindow(window2.getBounds(), 42, 40, 40, 15, "EnergyRel.png");
-                // Get World Energy
-                getOCRText(222, 55, 40, 15);
-                getOCRTextRelativeToWindow(window2.getBounds(), 42, 15, 40, 15);
-                makeScreenshot(426, 48, 28, 20, "CheckStart.png");
+                // World Energy
+                makeScreenshotRelativeToWindow(window2.getBounds(), 56, 48, 45, 15, "EnergyRel.png");
+                // Replay Button
+                makeScreenshotRelativeToWindow(window2.getBounds(), 92, 722, 90, 30, "Replay.png");
+                // Double Speed Button
+                checkIfStarted(window2);
+                //checkIfNotStarted(window2);
+
+                //getOCRText(222, 55, 40, 15);
+                //getOCRTextRelativeToWindow(window2.getBounds(), 42, 15, 40, 15);
+                //makeScreenshot(426, 48, 28, 20, "CheckStart.png");
             } catch (AWTException e) {
                 e.printStackTrace();
             }
@@ -84,6 +93,20 @@ public class OCR {
 
     }
 
+    public static void checkIfStarted(WindowTO window) throws AWTException {
+        File dsButton = makeScreenshotRelativeToWindow(window.getBounds(), 347, 43, 27, 20, "DoubleSpeedBusy.bmp");
+        double percentage = compareImage2(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedBusy.bmp"));
+        System.out.println("Difference Percentage Busy: " + percentage);
+        compareImage3(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedBusy.png"));
+    }
+
+    public static void checkIfNotStarted(WindowTO window) throws AWTException {
+        File dsButton = makeScreenshotRelativeToWindow(window.getBounds(), 347, 43, 27, 20, "DoubleSpeedStart.bmp");
+        double percentage = compareImage2(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedStart.png"));
+        System.out.println("Difference Percentage Start: " + percentage);
+        compareImage3(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedStart.png"));
+
+    }
     public static void activateWindow(HWND hwnd){
         User32.INSTANCE.ShowWindow(hwnd, 9);
         User32.INSTANCE.SetForegroundWindow(hwnd);
@@ -140,16 +163,16 @@ public class OCR {
 
     }
 
-    public static void makeScreenshotRelativeToWindow(Rectangle bounds, int left, int top, int width, int height, String filename) throws AWTException{
+    public static File makeScreenshotRelativeToWindow(Rectangle bounds, int left, int top, int width, int height, String filename) throws AWTException{
         Rectangle screenRect = new Rectangle(bounds.x + left, bounds.y + top, width, height);
-        makeScreenshot(screenRect, filename);
+        return makeScreenshot(screenRect, filename);
     }
-    public static void makeScreenshot(int left, int top, int width, int height, String filename) throws AWTException{
+    public static File makeScreenshot(int left, int top, int width, int height, String filename) throws AWTException{
         Rectangle screenRect = new Rectangle(left, top, width, height);
-        makeScreenshot(screenRect, filename);
+        return makeScreenshot(screenRect, filename);
     }
 
-    public static void makeScreenshot(Rectangle bounds, String filename) throws AWTException {
+    public static File makeScreenshot(Rectangle bounds, String filename) throws AWTException {
         Robot robot = new Robot();
 
         BufferedImage screenshot = robot.createScreenCapture(bounds);
@@ -159,10 +182,11 @@ public class OCR {
         File outputFile = new File(DATA_PATH + filename);
         // Schrijf het bestand weg naar de harde schijf
         try {
-            ImageIO.write(screenshot, "png", outputFile);
+            ImageIO.write(screenshot, "bmp", outputFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        return outputFile;
     }
 
     public static WindowTO findWindowByPartialTitle(String partialTitle) {
@@ -204,54 +228,6 @@ public class OCR {
         return window;
     }
 
-    public static void showOpenWindows(){
-
-        final HWND[] foundWindow = { null };
-
-        // Roep de Windows API aan om door alle open vensters te lopen
-        User32.INSTANCE.EnumWindows((hwnd, ptr) -> {
-            // Controleer of het venster daadwerkelijk zichtbaar is voor de gebruiker
-            if (User32.INSTANCE.IsWindowVisible(hwnd)) {
-                char[] windowText = new char[512];
-
-                // Haal de titel van het venster op
-                User32.INSTANCE.GetWindowText(hwnd, windowText, 512);
-                String title = Native.toString(windowText);
-
-                // Print de titel alleen als deze niet leeg is
-                if (!title.isEmpty()) {
-
-                    //WinUser.RECT rect = new WinUser.RECT();
-                    //User32.INSTANCE.GetWindowRect(hwnd, rect);
-
-                   Rectangle  bounds = WindowAligner.getRobotCompatibleBounds(hwnd);
-
-                    // Bereken breedte en hoogte op basis van de randen
-                    //int width = rect.right - rect.left;
-                    //int height = rect.bottom - rect.top;
-
-                    //int javaX = (int) (externX / scaleX);
-                    //int javaY = (int) (externY / scaleY);
-
-                    // Print de naam, X/Y startpositie en de dimensies
-                    //System.out.println(String.format("%-40.40s | X:%-4d Y:%-4d        | %-7d x %-7d",
-                    //        title, rect.left, rect.top, width, height));
-                    System.out.println(String.format("%-40.40s | X:%-4d Y:%-4d        | %-7d x %-7d",
-                            title, bounds.x, bounds.y, bounds.width, bounds.height));
-                    if (title.startsWith("LDPlayer")){
-                        User32.INSTANCE.ShowWindow(hwnd, 9);
-                        // 2. Breng het venster naar de voorgrond en geef het focus
-                        User32.INSTANCE.SetForegroundWindow(hwnd);
-                        //makeScreenshot(rect.left, rect.top, width, height);
-                        //makeScreenshot(rect.left-10, rect.top, width-150, height);
-                    }
-
-                }
-            }
-            return true; // Ga door naar het volgende venster
-        }, null);
-    }
-
     public static float compareImage(File fileA, File fileB) {
 
         float percentage = 0;
@@ -284,6 +260,130 @@ public class OCR {
         }
         return percentage;
     }
+
+    public static double compareImage2(File fileA, File fileB) {
+
+        double percentage = 0;
+
+        // Initially assigning null
+            BufferedImage imgA = null;
+            BufferedImage imgB = null;
+
+            // Try block to check for exception
+            try {
+                // Reading files
+                imgA = ImageIO.read(fileA);
+                imgB = ImageIO.read(fileB);
+            }
+
+            // Catch block to check for exceptions
+            catch (IOException e) {
+                // Display the exceptions on console
+                System.out.println(e);
+            }
+
+            // Assigning dimensions to image
+            int width1 = imgA.getWidth();
+            int width2 = imgB.getWidth();
+            int height1 = imgA.getHeight();
+            int height2 = imgB.getHeight();
+
+            // Checking whether the images are of same size or
+            // not
+            if ((width1 != width2) || (height1 != height2))
+
+                // Display message straightaway
+                System.out.println("Error: Images dimensions"
+                        + " mismatch");
+            else {
+
+                // By now, images are of same size
+
+                long difference = 0;
+
+                // treating images likely 2D matrix
+
+                // Outer loop for rows(height)
+                for (int y = 0; y < height1; y++) {
+
+                    // Inner loop for columns(width)
+                    for (int x = 0; x < width1; x++) {
+
+                        int rgbA = imgA.getRGB(x, y);
+                        int rgbB = imgB.getRGB(x, y);
+                        int redA = (rgbA >> 16) & 0xff;
+                        int greenA = (rgbA >> 8) & 0xff;
+                        int blueA = (rgbA)&0xff;
+                        int redB = (rgbB >> 16) & 0xff;
+                        int greenB = (rgbB >> 8) & 0xff;
+                        int blueB = (rgbB)&0xff;
+
+                        difference += Math.abs(redA - redB);
+                        difference += Math.abs(greenA - greenB);
+                        difference += Math.abs(blueA - blueB);
+                    }
+                }
+
+                // Total number of red pixels = width * height
+                // Total number of blue pixels = width * height
+                // Total number of green pixels = width * height
+                // So total number of pixels = width * height *
+                // 3
+                double total_pixels = width1 * height1 * 3;
+
+                // Normalizing the value of different pixels
+                // for accuracy
+
+                // Note: Average pixels per color component
+                double avg_different_pixels
+                        = difference / total_pixels;
+
+                // There are 255 values of pixels in total
+                percentage = (avg_different_pixels / 255) * 100;
+
+                // Lastly print the difference percentage
+                System.out.println("Difference Percentage-->"
+                        + percentage);
+            }
+            return percentage;
+    }
+
+    public static void compareImage3(File fileA, File fileB) {
+
+                // 1. Laad de verwachte (baseline) en actuele afbeeldingen
+                BufferedImage expected = ImageComparisonUtil.readImageFromResources(fileA.getAbsolutePath());
+                BufferedImage actual = ImageComparisonUtil.readImageFromResources(fileB.getAbsolutePath());
+
+                // Locatie waar de visuele 'diff' (met rode vierkanten) moet worden opgeslagen bij een mismatch
+                File resultDestination = new File("c:/My Data/tessdata/visual-diff.png");
+
+                // 2. Initialiseer de vergelijking
+                ImageComparison imageComparison = new ImageComparison(expected, actual, resultDestination);
+
+                // 3. Configureer perceptuele tolerantie
+                imageComparison.setThreshold(2);
+
+                // Optioneel: Sta toe dat een klein percentage van de totale pixels compleet mag afwijken
+                // (handig voor een knipperende cursor of een dynamisch element)
+                imageComparison.setAllowingPercentOfDifferentPixels(1.0);
+
+                // Kwalificeer individuele pixels als gelijk als het kleurverschil binnen 15% valt (handig voor compressie)
+                imageComparison.setPixelToleranceLevel(0.20);
+
+                // Groepeer afwijkende pixels pas in een rode marker als de foutzone groter is dan 4x4 pixels
+                imageComparison.setMinimalRectangleSize(16);
+
+                // 4. Voer de vergelijking uit
+                ImageComparisonResult result = imageComparison.compareImages();
+
+                // 5. Assert dat de status MATCH is
+                // Als dit faalt, staat er een visuele diff klaar in de gedefinieerde bestemming met rode kaders
+        System.out.println("Match: " + result.getImageComparisonState());
+        System.out.println("Percent: " + result.getDifferencePercent());
+        //ImageComparisonState.MATCH
+
+    }
+
 
     public static void mouseClick(int left, int top, int x, int y){
 
