@@ -1,5 +1,8 @@
 package be.home.main.tools;
 
+import be.home.common.model.windows.WindowAligner;
+import be.home.common.model.windows.WindowTO;
+import be.home.common.utils.WinUtils;
 import com.sun.jna.Pointer;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
@@ -23,29 +26,52 @@ import java.util.concurrent.TimeUnit;
 
 
 public class OCR {
+
+    public static final String CONFIG_PATH = WinUtils.getOneDrivePath() +
+            File.separator + "Config" + File.separator + "Java" + File.separator + "tessdata";
+    public static final String DATA_PATH = "C:\\My Data\\tessdata\\";
+
     public static void main(String[] args) {
         //showOpenWindows();
-        HWND handle = findWindowByPartialTitle("LDPlayer");
-        Rectangle bounds = WindowAligner.getRobotCompatibleBounds(handle);
+        if (true) {
+            String title = "Total Commander";
+            WindowTO window = findWindowByPartialTitle(title);
+            if (window.getHandle() == null) {
+                System.err.println("Window " + title + " not found");
+            } else {
+                System.out.println(String.format("%-40.40s | X:%-4d Y:%-4d        | %-7d x %-7d",
+                        window.getTitle(), window.getBounds().x, window.getBounds().y, window.getBounds().width, window.getBounds().height));
+                activateWindow(window.getHandle());
+                mouseClickRelativeToWindow(window.getBounds(), 700, 200);
+                try {
+                    makeScreenshot(window.getBounds(), "TotalCommander.png");
+                    makeScreenshotRelativeToWindow(window.getBounds(), 21, 263, 131, 20, "TcmdTest.png");
+                    getOCRTextRelativeToWindow(window.getBounds(), 21, 263, 131, 20);
+                } catch (AWTException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
 
-        char[] windowText = new char[512];
-        // Haal de titel van het venster op
-        User32.INSTANCE.GetWindowText(handle, windowText, 512);
-        String title = Native.toString(windowText);
-        System.out.println(String.format("%-40.40s | X:%-4d Y:%-4d        | %-7d x %-7d",
-                title, bounds.x, bounds.y, bounds.width, bounds.height));
-        User32.INSTANCE.ShowWindow(handle, 9);
-        // 2. Breng het venster naar de voorgrond en geef het focus
-        User32.INSTANCE.SetForegroundWindow(handle);
+        if (false) {
+            try {
+                WindowTO window2 = findWindowByPartialTitle("LDPlayer");
+            //Rectangle bounds = WindowAligner.getRobotCompatibleBounds(window2.getHandle());
 
-        try {
-            makeScreenshotWindow(bounds);
-            makeScreenshot(222, 55, 40,15);
-            // Get World Energy
-            getOCRText(222, 55, 40, 15);
-            makeScreenshot(426, 48, 28,20);
-        } catch (AWTException e) {
-            e.printStackTrace();
+                System.out.println(String.format("%-40.40s | X:%-4d Y:%-4d        | %-7d x %-7d",
+                    window2.getTitle(), window2.getBounds().x, window2.getBounds().y, window2.getBounds().width, window2.getBounds().height));
+                activateWindow(window2.getHandle());
+
+                makeScreenshot(window2.getBounds(), "CurrentWindow.png");
+                makeScreenshot(222, 55, 40, 15, "Energy.png");
+                makeScreenshotRelativeToWindow(window2.getBounds(), 42, 40, 40, 15, "EnergyRel.png");
+                // Get World Energy
+                getOCRText(222, 55, 40, 15);
+                getOCRTextRelativeToWindow(window2.getBounds(), 42, 15, 40, 15);
+                makeScreenshot(426, 48, 28, 20, "CheckStart.png");
+            } catch (AWTException e) {
+                e.printStackTrace();
+            }
         }
 
 
@@ -58,15 +84,23 @@ public class OCR {
 
     }
 
-    public static String getOCRText(int left, int top, int width, int height){
+    public static void activateWindow(HWND hwnd){
+        User32.INSTANCE.ShowWindow(hwnd, 9);
+        User32.INSTANCE.SetForegroundWindow(hwnd);
+    }
+    public static String getOCRTextRelativeToWindow(Rectangle bounds, int left, int top, int width, int height){
+        Rectangle screenRect = new Rectangle(bounds.x + left, bounds.y + top, width, height);
+        return getOCRText(screenRect);
+    }
+
+    public static String getOCRText(Rectangle bounds){
         String resultText = null;
         try {
             // 1. Definieer de coördinaten en grootte van het schermgedeelte (X, Y, Breedte, Hoogte)
-            Rectangle screenRect = new Rectangle(left, top, width, height);
 
             // 2. Maak een screenshot van het gedefinieerde gebied
             Robot robot = new Robot();
-            BufferedImage screenCapture = robot.createScreenCapture(screenRect);
+            BufferedImage screenCapture = robot.createScreenCapture(bounds);
 
             // Definieer de bestandslocatie en naam
             File outputFile = new File("c:/My Data/tessdata/screenshot.png");
@@ -83,7 +117,7 @@ public class OCR {
 
             // TIP: Geef het pad op naar uw 'tessdata' map (bevat language packs zoals eng.traineddata)
             // Download deze van de officiële Tesseract GitHub indien nodig
-            tesseract.setDatapath("C:/My Data/tessdata");
+            tesseract.setDatapath(CONFIG_PATH);
             tesseract.setLanguage("nld"); // Gebruik "eng" voor Engels, "nld" voor Nederlands
 
 
@@ -99,37 +133,30 @@ public class OCR {
         }
         return resultText;
     }
+    public static String getOCRText(int left, int top, int width, int height){
+            // 1. Definieer de coördinaten en grootte van het schermgedeelte (X, Y, Breedte, Hoogte)
+            Rectangle screenRect = new Rectangle(left, top, width, height);
+            return getOCRText(screenRect);
 
-    public static void makeScreenshot(int left, int top, int width, int height){
-        Rectangle screenRect = new Rectangle(left, top, width, height);
-
-        // 2. Maak een screenshot van het gedefinieerde gebied
-        Robot robot = null;
-        try {
-            robot = new Robot();
-        } catch (AWTException e) {
-            throw new RuntimeException(e);
-        }
-        BufferedImage screenCapture = robot.createScreenCapture(screenRect);
-
-        // Definieer de bestandslocatie en naam
-        File outputFile = new File("c:/My Data/tessdata/test2.png");
-        // Schrijf het bestand weg naar de harde schijf
-        try {
-            ImageIO.write(screenCapture, "png", outputFile);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
-    public static void makeScreenshotWindow(Rectangle bounds) throws AWTException {
+    public static void makeScreenshotRelativeToWindow(Rectangle bounds, int left, int top, int width, int height, String filename) throws AWTException{
+        Rectangle screenRect = new Rectangle(bounds.x + left, bounds.y + top, width, height);
+        makeScreenshot(screenRect, filename);
+    }
+    public static void makeScreenshot(int left, int top, int width, int height, String filename) throws AWTException{
+        Rectangle screenRect = new Rectangle(left, top, width, height);
+        makeScreenshot(screenRect, filename);
+    }
+
+    public static void makeScreenshot(Rectangle bounds, String filename) throws AWTException {
         Robot robot = new Robot();
 
         BufferedImage screenshot = robot.createScreenCapture(bounds);
 
 
         // Definieer de bestandslocatie en naam
-        File outputFile = new File("c:/My Data/tessdata/test.png");
+        File outputFile = new File(DATA_PATH + filename);
         // Schrijf het bestand weg naar de harde schijf
         try {
             ImageIO.write(screenshot, "png", outputFile);
@@ -138,8 +165,9 @@ public class OCR {
         }
     }
 
-    public static HWND findWindowByPartialTitle(String partialTitle) {
+    public static WindowTO findWindowByPartialTitle(String partialTitle) {
         // Shared container to hold the result window handle
+        WindowTO window = new WindowTO();
         final HWND[] foundWindow = { null };
 
         // Define the callback function that runs for every open window
@@ -160,6 +188,12 @@ public class OCR {
                 // Perform the partial match check (case-insensitive option)
                 if (windowTitle.toLowerCase().startsWith(partialTitle.toLowerCase())) {
                     foundWindow[0] = hwnd; // Found it! Store the handle.
+                    window.setHandle(hwnd);
+                    char[] windowText = new char[512];
+                    // Haal de titel van het venster op
+                    User32.INSTANCE.GetWindowText(hwnd, windowText, 512);
+                    window.setTitle(Native.toString(windowText));
+                    window.setBounds(WindowAligner.getRobotCompatibleBounds(hwnd));
                     return false;          // Return false to stop enumerating windows
                 }
 
@@ -167,7 +201,7 @@ public class OCR {
             }
         }, null);
 
-        return foundWindow[0];
+        return window;
     }
 
     public static void showOpenWindows(){
@@ -210,11 +244,6 @@ public class OCR {
                         User32.INSTANCE.SetForegroundWindow(hwnd);
                         //makeScreenshot(rect.left, rect.top, width, height);
                         //makeScreenshot(rect.left-10, rect.top, width-150, height);
-                        try {
-                            makeScreenshotWindow(bounds);
-                        } catch (AWTException e) {
-                            e.printStackTrace();
-                        }
                     }
 
                 }
@@ -286,6 +315,38 @@ public class OCR {
         }
     }
 
+    public static void mouseClickRelativeToWindow(Rectangle bounds, int x, int y){
+
+        // left + top: coordinants of the window
+        // x + y : position relative to the window
+
+        try {
+            // Instantiate the Robot class
+            Robot robot = new Robot();
+
+            int absX = bounds.x+x;
+            int absY = bounds.y+y;
+
+
+            // Move the mouse pointer to the specific (X, Y) coordinates
+            robot.mouseMove(absX, absY);
+
+            // Press the left mouse button
+            robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+
+            // Optional delay between press and release to simulate a realistic click
+            robot.delay(getRandomNumber(40,80));
+
+            // Release the left mouse button
+            robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+
+            System.out.println("Successfully clicked at position: (" + absX + ", " + absY + ")");
+
+        } catch (AWTException e) {
+            System.err.println("The platform configuration does not allow low-level input control.");
+            e.printStackTrace();
+        }
+    }
     public static int getRandomNumber(int min, int max){
 
         // Generates a random number between 5 (inclusive) and 11 (exclusive) -> [5, 10]

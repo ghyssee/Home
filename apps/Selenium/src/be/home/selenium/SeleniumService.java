@@ -2,10 +2,12 @@ package be.home.selenium;
 
 import be.home.common.configuration.Setup;
 import be.home.common.constants.Constants;
+import be.home.common.logging.LoggingConfiguration;
 import be.home.common.utils.JSONUtils;
 import be.home.model.json.AlbumInfo;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
@@ -25,6 +27,7 @@ import java.util.function.Function;
 
 public class SeleniumService {
     public static final int WAIT = 10;
+    private static final Logger log = LoggingConfiguration.getMainLog(SeleniumService.class);
 
     public WebDriver initDriver(){
         // Firefox
@@ -235,6 +238,83 @@ public class SeleniumService {
             }
         }
         while(!exit);
+    }
+
+    public void fillADFCombobox(WebDriver driver, By locator, By optionLocator, String keys, String comment) {
+        String value = "";
+        int counter = 0;
+        do {
+            sendKeys(driver, locator, keys);
+            sleep(driver, 1, "Test");
+            clickScreen(driver, optionLocator, 10, SeleniumOracleFusion.CLICK_TYPE.ELEMENT, comment);
+            WebElement inputBox = driver.findElement(locator);
+            value = inputBox.getAttribute("value");
+            counter++;
+            if (counter > 1){
+                log.info("Retrying " + comment);
+            }
+        }
+        while (StringUtils.isBlank(value) && counter < 5);
+    }
+
+    public void clickScreen (WebDriver driver, By locator, int timeout, SeleniumOracleFusion.CLICK_TYPE clickType, String comment) {
+
+        boolean exit = false;
+        do {
+            WebElement element = waitForElementClickable(driver, locator, timeout, comment);
+            try {
+                switch (clickType) {
+                    case ACTION:
+                        Actions actions = new Actions(driver);
+                        actions.moveToElement(element).click().perform();
+                        break;
+                    default:
+                        element.click();
+                        break;
+                }
+                exit = true;
+            } catch (ElementClickInterceptedException ex) {
+                //another element is obscuring the element to be clicked
+                sleep(driver, 1, "ElementClickInterceptedException");
+                log.info("ElementClickInterceptedException: Retrying to click");
+            }
+            catch (ElementNotInteractableException ex) {
+                log.info("ElementNotInteractableException: Retrying to click");
+            }
+            catch (StaleElementReferenceException ex2) {
+                log.info("StaleElementReferenceException: Retrying to click");
+            }
+        }
+        while (!exit);
+    }
+    public void clickScreen (WebElement webElement, By locator, String comment) {
+        // Wait until everything is loaded
+        WebElement elementRet = null;
+
+        Wait<WebElement> wait = new FluentWait<WebElement>(webElement)
+                .withTimeout(Duration.ofSeconds(20))
+                .pollingEvery(Duration.ofSeconds(WAIT))
+                .ignoring(NoSuchElementException.class);
+
+        try {
+
+            WebElement element2 = wait.until(new Function<WebElement, WebElement>() {
+                public WebElement apply(WebElement element3) {
+                    System.out.println("Waiting for " + comment + " with Anchor " + locator.toString());
+                    return element3.findElement(locator);
+                }
+            });
+            if (element2 == null) {
+                throw new RuntimeException(comment + "Invalid anchor: " + locator.toString());
+            }
+            else {
+                element2.click();
+            }
+
+        }
+        catch (TimeoutException ex) {
+            throw new RuntimeException(comment + ": " + "css Anchor not found: " + locator.toString());
+        }
     }
 
     public void sendKeysADF(WebDriver driver, By locator, String keys){

@@ -27,7 +27,7 @@ public class SeleniumOracleFusion extends SeleniumService {
 
     private static final Logger log = LoggingConfiguration.getMainLog(SeleniumOracleFusion.class);
 
-    public static final String UMR = "https://apps.powerapps.com/play/e/default-1183410f-6cf0-4d82-976e-994c1ce4cfce/a/0c43e546-db86-4872-bb0a-14507d7580a1?tenantId=1183410f-6cf0-4d82-976e-994c1ce4cfce?ItemID=4682";
+    public static final String UMR = "https://apps.powerapps.com/play/e/default-1183410f-6cf0-4d82-976e-994c1ce4cfce/a/0c43e546-db86-4872-bb0a-14507d7580a1?tenantId=1183410f-6cf0-4d82-976e-994c1ce4cfce?ItemID=4684";
     public List<String> errors = new ArrayList<String>();
 
     public static void main(String[] args) {
@@ -48,9 +48,9 @@ public class SeleniumOracleFusion extends SeleniumService {
 
         if (true) {
             WebDriver driver = initDriver();
-            UMRRequest umrRequest = processUMR(driver);
-            //UMRRequest umrRequest = dummyUMR(rolesFromCSV);
-            if (false) {
+            //UMRRequest umrRequest = processUMR(driver);
+            UMRRequest umrRequest = dummyUMR(rolesFromCSV);
+            if (true) {
                 logIn(driver);
                 if (false) {
                     addRoles(driver, umrRequest, rolesFromCSV);
@@ -58,7 +58,7 @@ public class SeleniumOracleFusion extends SeleniumService {
 
                 // sometimes login is not finished yet before going to setup, resulting in the log in screen again
                 sleep(driver, 1, "test");
-                if (false) {
+                if (true) {
                     goToSetupAndMaintenance(driver, "Financials", "General Ledger");
                     goToDataAccessForUsers(driver);
                     List<DataAccess> dataAccessList = getExistingDataAcessForUsers(driver, umrRequest);
@@ -74,7 +74,7 @@ public class SeleniumOracleFusion extends SeleniumService {
                 if (false){
                     addPOAgent(driver, umrRequest);
                 }
-                if (true) {
+                if (false) {
                     manageBusinessUnits(driver);
                 }
             }
@@ -298,7 +298,7 @@ public class SeleniumOracleFusion extends SeleniumService {
             throw new RuntimeException("CSV File with roles not found: " + csvFile.getAbsolutePath());
         }
         List<String> rolesFromUMR = Arrays.asList("Procurement Application Administrator");
-        List<String> dataAccessFromUMR = Arrays.asList("002 - bpost", "062 - Radial Netherlands B.V.");
+        List<String> dataAccessFromUMR = Arrays.asList("000 - Test", "0CD - Freight 4U");
         UMRRequest umrRequest = new UMRRequest();
         umrRequest.setUserId("ghyssee"); // u619488
         //umrRequest.setUserId("u625808");
@@ -619,65 +619,7 @@ public class SeleniumOracleFusion extends SeleniumService {
         ELEMENT,
         ACTION
     }
-    public void clickScreen (WebDriver driver, By locator, int timeout, CLICK_TYPE clickType, String comment) {
 
-        boolean exit = false;
-        do {
-            WebElement element = waitForElementClickable(driver, locator, timeout, comment);
-            try {
-                switch (clickType) {
-                    case ACTION:
-                        Actions actions = new Actions(driver);
-                        actions.moveToElement(element).click().perform();
-                        break;
-                    default:
-                        element.click();
-                        break;
-                }
-                exit = true;
-            } catch (ElementClickInterceptedException ex) {
-                //another element is obscuring the element to be clicked
-                sleep(driver, 1, "ElementClickInterceptedException");
-                log.info("ElementClickInterceptedException: Retrying to click");
-            }
-            catch (ElementNotInteractableException ex) {
-                log.info("ElementNotInteractableException: Retrying to click");
-            }
-            catch (StaleElementReferenceException ex2) {
-                log.info("StaleElementReferenceException: Retrying to click");
-            }
-        }
-        while (!exit);
-    }
-    public void clickScreen (WebElement webElement, By locator, String comment) {
-        // Wait until everything is loaded
-        WebElement elementRet = null;
-
-        Wait<WebElement> wait = new FluentWait<WebElement>(webElement)
-                .withTimeout(Duration.ofSeconds(20))
-                .pollingEvery(Duration.ofSeconds(WAIT))
-                .ignoring(NoSuchElementException.class);
-
-        try {
-
-            WebElement element2 = wait.until(new Function<WebElement, WebElement>() {
-                public WebElement apply(WebElement element3) {
-                    System.out.println("Waiting for " + comment + " with Anchor " + locator.toString());
-                    return element3.findElement(locator);
-                }
-            });
-            if (element2 == null) {
-                throw new RuntimeException(comment + "Invalid anchor: " + locator.toString());
-            }
-            else {
-                element2.click();
-            }
-
-        }
-        catch (TimeoutException ex) {
-            throw new RuntimeException(comment + ": " + "css Anchor not found: " + locator.toString());
-        }
-    }
 
     public static String detectJavaScriptFramework(WebDriver driver) {
         JavascriptExecutor js = (JavascriptExecutor) driver;
@@ -1010,11 +952,25 @@ public class SeleniumOracleFusion extends SeleniumService {
         //without: pt1:r1:0:rt:1:r2:0:dynamicRegion1:0:pt1:AP2:AT2:_ATp:create::icon
         clickScreen(driver, By.xpath("//img[contains(@id,'AP2:AT1:_ATp:create::icon')]/ancestor::a"), "Screen Create Data Access for Users");
         waitForElement(driver, By.xpath("//div[text()='Create Data Access for Users']"), "Create Data Access for Users");
-        sendKeysADF(driver, By.cssSelector("input[id$='userNameId::content'"), userId);
-        sendKeysADF(driver, By.cssSelector("input[id$='roleNameCrId::content'"), role);
-        select(driver, By.cssSelector("select[id$='soc2::content']"), securityContext);
-        sendKeysADF(driver, By.cssSelector("input[id$='securityContextValueId::content'"), value);
+        //sendKeysADF(driver, By.cssSelector("input[id$='userNameId::content'"), userId);
+        sendKeys(driver, By.cssSelector("input[id$='userNameId::content'"), userId);
 
+        clickScreen(driver, By.xpath("//ul[contains(@id, 'afrautosuggestpopup')]/li[contains(@id, 'userNameId')]"), 10, CLICK_TYPE.ELEMENT, "Select User");
+        //sendKeysADF(driver, By.cssSelector("input[id$='roleNameCrId::content'"), role);
+        fillADFCombobox(driver, By.cssSelector("input[id$='roleNameCrId::content'"),
+                                By.xpath("//ul[contains(@id, 'afrautosuggestpopup')]/li[contains(@id, 'roleNameCrId')]"),
+                role, "Select Role");
+
+
+        //sendKeys(driver, By.cssSelector("input[id$='roleNameCrId::content'"), role);
+        //clickScreen(driver, By.xpath("//ul[contains(@id, 'afrautosuggestpopup')]/li[contains(@id, 'roleNameCrId')]"), 10, CLICK_TYPE.ELEMENT, "Select Role");
+        select(driver, By.cssSelector("select[id$='soc2::content']"), securityContext);
+        //sendKeysADF(driver, By.cssSelector("input[id$='securityContextValueId::content'"), value);
+        //sendKeys(driver, By.cssSelector("input[id$='securityContextValueId::content'"), value);
+        //clickScreen(driver, By.xpath("//ul[contains(@id, 'afrautosuggestpopup')]/li[contains(@id, 'securityContextValueId')]"), 10, CLICK_TYPE.ELEMENT, "Select Context Value");
+        fillADFCombobox(driver, By.cssSelector("input[id$='securityContextValueId::content'"),
+                By.xpath("//ul[contains(@id, 'afrautosuggestpopup')]/li[contains(@id, 'securityContextValueId')]"),
+                role, "Select Security Context Value");
         // click on Save Button
         boolean exit = false;
         String errorMsg = null;

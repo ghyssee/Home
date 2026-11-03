@@ -1,4 +1,4 @@
-package be.home.main.tools;
+package be.home.common.model.windows;
 
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.WinDef.HWND;
