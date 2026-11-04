@@ -77,8 +77,8 @@ public class RoleBO {
         for (OracleEntity oracleEntity : oracleEntities){
             switch (contextType){
                 case BU :
-                    //values.add(oracleEntity.getName());
-                    values.add(oracleEntity.getCode());
+                    values.add(oracleEntity.getName());
+                    //values.add(oracleEntity.getCode());
                     break;
                 case PL :
                     values.add("PL "+ oracleEntity.getCode());

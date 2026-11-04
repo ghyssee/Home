@@ -18,7 +18,6 @@ import org.openqa.selenium.support.ui.*;
 import java.io.*;
 import java.time.Duration;
 import java.util.*;
-import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -27,7 +26,7 @@ public class SeleniumOracleFusion extends SeleniumService {
 
     private static final Logger log = LoggingConfiguration.getMainLog(SeleniumOracleFusion.class);
 
-    public static final String UMR = "https://apps.powerapps.com/play/e/default-1183410f-6cf0-4d82-976e-994c1ce4cfce/a/0c43e546-db86-4872-bb0a-14507d7580a1?tenantId=1183410f-6cf0-4d82-976e-994c1ce4cfce?ItemID=4684";
+    public static final String UMR = "https://apps.powerapps.com/play/e/default-1183410f-6cf0-4d82-976e-994c1ce4cfce/a/0c43e546-db86-4872-bb0a-14507d7580a1?tenantId=1183410f-6cf0-4d82-976e-994c1ce4cfce?ItemID=4686";
     public List<String> errors = new ArrayList<String>();
 
     public static void main(String[] args) {
@@ -48,11 +47,11 @@ public class SeleniumOracleFusion extends SeleniumService {
 
         if (true) {
             WebDriver driver = initDriver();
-            //UMRRequest umrRequest = processUMR(driver);
-            UMRRequest umrRequest = dummyUMR(rolesFromCSV);
+            UMRRequest umrRequest = processUMR(driver);
+            //UMRRequest umrRequest = dummyUMR(rolesFromCSV);
             if (true) {
                 logIn(driver);
-                if (false) {
+                if (true) {
                     addRoles(driver, umrRequest, rolesFromCSV);
                 }
 
@@ -852,25 +851,7 @@ public class SeleniumOracleFusion extends SeleniumService {
 
         // qryId1 Users with Data Access
         // qryId2 Users without Data Access
-        //sendKeysADF(driver, By.cssSelector("input[id$='qryId1:value00::content]'][aria-label*='User Name']"), request.getUserId());
         sendKeysADF(driver, By.cssSelector("input[id$='AP2:qryId1:value00::content']"), request.getUserId());
-        //sendKeysKeyboardADF(driver, By.cssSelector("input[id$='value00::content']"), request.getUserId());
-
-        // 3. Vind de Shadow Host (de tag vlak BOVEN '#shadow-root')
-        // Op basis van je HTML is dit vermoedelijk de span met klasse 'xuu'
-        //WebElement shadowHost = driver.findElement(By.cssSelector("input[id$='qryId1:value00::content]'][aria-label*='User Name']"));
-
-        // 4. Haal de shadow root op (dit werkt nu omdat de extensie hem 'open' heeft gemaakt)
-        //SearchContext shadowRoot = shadowHost.getShadowRoot();
-
-        // 5. Zoek het invoerveld binnen de shadow root
-        //WebElement inputField = shadowRoot.findElement(By.cssSelector("input[id*='::content']"));
-
-        //if (inputField.isDisplayed()) {
-         //   System.out.println("Het invoerveld in Firefox is succesvol bereikt!");
-         //   inputField.sendKeys("MijnGebruikersnaam");
-        //}
-
 
         clickScreen(driver, By.cssSelector("button[id$='AP2:qryId1::search']"), 5, CLICK_TYPE.ACTION, "Search Data Access for Users");
         waitForADFBackgroundProcess(driver);
@@ -952,25 +933,23 @@ public class SeleniumOracleFusion extends SeleniumService {
         //without: pt1:r1:0:rt:1:r2:0:dynamicRegion1:0:pt1:AP2:AT2:_ATp:create::icon
         clickScreen(driver, By.xpath("//img[contains(@id,'AP2:AT1:_ATp:create::icon')]/ancestor::a"), "Screen Create Data Access for Users");
         waitForElement(driver, By.xpath("//div[text()='Create Data Access for Users']"), "Create Data Access for Users");
-        //sendKeysADF(driver, By.cssSelector("input[id$='userNameId::content'"), userId);
-        sendKeys(driver, By.cssSelector("input[id$='userNameId::content'"), userId);
+        sendKeysADF(driver, By.cssSelector("input[id$='userNameId::content'"), userId);
+        //sendKeys(driver, By.cssSelector("input[id$='userNameId::content'"), userId);
 
         clickScreen(driver, By.xpath("//ul[contains(@id, 'afrautosuggestpopup')]/li[contains(@id, 'userNameId')]"), 10, CLICK_TYPE.ELEMENT, "Select User");
-        //sendKeysADF(driver, By.cssSelector("input[id$='roleNameCrId::content'"), role);
-        fillADFCombobox(driver, By.cssSelector("input[id$='roleNameCrId::content'"),
-                                By.xpath("//ul[contains(@id, 'afrautosuggestpopup')]/li[contains(@id, 'roleNameCrId')]"),
-                role, "Select Role");
+        sendKeysADF(driver, By.cssSelector("input[id$='roleNameCrId::content'"), role);
+        //fillADFCombobox(driver, By.cssSelector("input[id$='roleNameCrId::content'"),
+         //                       By.xpath("//ul[contains(@id, 'afrautosuggestpopup')]/li[contains(@id, 'roleNameCrId')]"),
+         //       role, "Select Role");
 
 
         //sendKeys(driver, By.cssSelector("input[id$='roleNameCrId::content'"), role);
         //clickScreen(driver, By.xpath("//ul[contains(@id, 'afrautosuggestpopup')]/li[contains(@id, 'roleNameCrId')]"), 10, CLICK_TYPE.ELEMENT, "Select Role");
         select(driver, By.cssSelector("select[id$='soc2::content']"), securityContext);
-        //sendKeysADF(driver, By.cssSelector("input[id$='securityContextValueId::content'"), value);
-        //sendKeys(driver, By.cssSelector("input[id$='securityContextValueId::content'"), value);
-        //clickScreen(driver, By.xpath("//ul[contains(@id, 'afrautosuggestpopup')]/li[contains(@id, 'securityContextValueId')]"), 10, CLICK_TYPE.ELEMENT, "Select Context Value");
-        fillADFCombobox(driver, By.cssSelector("input[id$='securityContextValueId::content'"),
-                By.xpath("//ul[contains(@id, 'afrautosuggestpopup')]/li[contains(@id, 'securityContextValueId')]"),
-                role, "Select Security Context Value");
+        sendKeysADF(driver, By.cssSelector("input[id$='securityContextValueId::content'"), value);
+        //fillADFCombobox(driver, By.cssSelector("input[id$='securityContextValueId::content'"),
+        //        By.xpath("//ul[contains(@id, 'afrautosuggestpopup')]/li[contains(@id, 'securityContextValueId')]"),
+         //       role, "Select Security Context Value");
         // click on Save Button
         boolean exit = false;
         String errorMsg = null;

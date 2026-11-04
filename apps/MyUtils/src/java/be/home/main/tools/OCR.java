@@ -37,6 +37,10 @@ public class OCR {
 
     public static void main(String[] args) {
         //showOpenWindows();
+        File fileA = new File("C:\\My Programs\\OneDrive\\Config\\Java\\tessdata\\DoubleSpeedBusy.png");
+        File fileB = new File("C:\\My Programs\\OneDrive\\Config\\Java\\tessdata\\DoubleSpeedStart.png");
+        System.out.println("compare: " + compareImg(fileA, fileB));
+        compareImage3(fileA, fileB);
         if (false) {
             String title = "Total Commander";
             WindowTO window = findWindowByPartialTitle(title);
@@ -57,7 +61,7 @@ public class OCR {
             }
         }
 
-        if (true) {
+        if (false) {
             try {
                 WindowTO window2 = findWindowByPartialTitle("LDPlayer");
             //Rectangle bounds = WindowAligner.getRobotCompatibleBounds(window2.getHandle());
@@ -91,6 +95,58 @@ public class OCR {
         //getOCRText(100, 150, 400, 200);
 
 
+    }
+
+    public static boolean compareImg(File fileA, File fileB){
+        int threshold = 50;
+        try {
+            BufferedImage imgA = ImageIO.read(fileA);
+            BufferedImage imgB = ImageIO.read(fileB);
+
+            if (imgA == null || imgB == null) return false;
+            if (imgA.getWidth() != imgB.getWidth() || imgA.getHeight() != imgB.getHeight()) return false;
+
+            int width = imgA.getWidth();
+
+            int height = imgA.getHeight();
+            boolean identicalWithinTolerance = true;
+
+            // Loop door alle pixels
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    int rgbA = imgA.getRGB(x, y);
+                    int rgbB = imgB.getRGB(x, y);
+
+                    // Haal de afzonderlijke RGB-waarden op
+                    int rA = (rgbA >> 16) & 0xFF;
+                    int gA = (rgbA >> 8) & 0xFF;
+                    int bA = rgbA & 0xFF;
+
+                    int rB = (rgbB >> 16) & 0xFF;
+                    int gB = (rgbB >> 8) & 0xFF;
+                    int bB = rgbB & 0xFF;
+
+                    // Bereken het absolute verschil per kanaal
+                    int diffR = Math.abs(rA - rB);
+                    int diffG = Math.abs(gA - gB);
+                    int diffB = Math.abs(bA - bB);
+
+                    // Als het verschil op een kanaal groter is dan de drempel, zijn ze écht anders
+                    if (diffR > threshold || diffG > threshold || diffB > threshold) {
+                        identicalWithinTolerance = false;
+                        // Je kunt hier eventueel direct 'return false;' doen voor maximale snelheid,
+                        // tenzij je de hele afbeelding wilt scannen (bijv. om te highlighten).
+                        return false;
+                    }
+                }
+            }
+
+            return identicalWithinTolerance;
+
+        } catch (Exception e) {
+            System.err.println("Fout bij vergelijken: " + e.getMessage());
+            return false;
+        }
     }
 
     public static void checkIfStarted(WindowTO window) throws AWTException {
@@ -361,17 +417,17 @@ public class OCR {
                 ImageComparison imageComparison = new ImageComparison(expected, actual, resultDestination);
 
                 // 3. Configureer perceptuele tolerantie
-                imageComparison.setThreshold(2);
+                //imageComparison.setThreshold(2);
 
                 // Optioneel: Sta toe dat een klein percentage van de totale pixels compleet mag afwijken
                 // (handig voor een knipperende cursor of een dynamisch element)
-                imageComparison.setAllowingPercentOfDifferentPixels(1.0);
+                //imageComparison.setAllowingPercentOfDifferentPixels(1.0);
 
                 // Kwalificeer individuele pixels als gelijk als het kleurverschil binnen 15% valt (handig voor compressie)
-                imageComparison.setPixelToleranceLevel(0.20);
+                imageComparison.setPixelToleranceLevel(0.40);
 
                 // Groepeer afwijkende pixels pas in een rode marker als de foutzone groter is dan 4x4 pixels
-                imageComparison.setMinimalRectangleSize(16);
+                //imageComparison.setMinimalRectangleSize(16);
 
                 // 4. Voer de vergelijking uit
                 ImageComparisonResult result = imageComparison.compareImages();
