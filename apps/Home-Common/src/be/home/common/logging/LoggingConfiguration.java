@@ -33,7 +33,7 @@ public class LoggingConfiguration {
         java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(java.util.logging.Level.OFF);
 
         Logger log = LogManager.getLogger(BatchJobV2.class);
-        log.info("Setting Log4J Log file to:" + logDir + File.separator + name);
+        System.out.println("Setting Log4J Log file to:" + logDir + File.separator + name);
         return log;
     }
 

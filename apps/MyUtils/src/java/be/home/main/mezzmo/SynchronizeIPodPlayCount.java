@@ -32,22 +32,12 @@ public class SynchronizeIPodPlayCount extends BatchJobV2{
     public static MediaMonkeyServiceImpl mediaMonkeyService = null;
 
     public static Log4GE log4GE;
-    public static ConfigTO.Config config;
     private static final Logger log = getMainLog(SynchronizeIPodPlayCount.class);
 
     public static void main(String args[]) {
 
         SynchronizeIPodPlayCount instance = new SynchronizeIPodPlayCount();
-        try {
-            config = instance.init();
-            instance.run();
-        }
-        catch (FileNotFoundException e){
-            LogUtils.logError(log, e);
-        } catch (IOException e) {
-            LogUtils.logError(log, e);
-        }
-
+        instance.run();
     }
 
     @Override

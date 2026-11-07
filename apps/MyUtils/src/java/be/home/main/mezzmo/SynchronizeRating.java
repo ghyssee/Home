@@ -42,7 +42,6 @@ public class SynchronizeRating extends BatchJobV2 {
     public static MezzmoServiceImpl mezzmoService = null;
 
     public static Log4GE log4GE;
-    public static ConfigTO.Config config;
     private static final Logger log = getMainLog(SynchronizeRating.class);
 
     public static void main(String args[]) {
@@ -52,7 +51,6 @@ public class SynchronizeRating extends BatchJobV2 {
         SynchronizeRating instance = new SynchronizeRating();
         instance.printHeader("SynchronizeRatings " + VERSION, "=");
         try {
-            config = instance.init();
             instance.start();
         } catch (IOException e) {
             e.printStackTrace();

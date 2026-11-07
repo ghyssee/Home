@@ -34,15 +34,7 @@ public class ExportPlayCount extends BatchJobV2{
     public static void main(String args[]) {
 
         ExportPlayCount instance = new ExportPlayCount();
-        try {
-            config = instance.init();
-            instance.run();
-        }
-        catch (FileNotFoundException e){
-            LogUtils.logError(log, e);
-        } catch (IOException e) {
-            LogUtils.logError(log, e);
-        }
+        instance.run();
 
     }
 
@@ -59,11 +51,11 @@ public class ExportPlayCount extends BatchJobV2{
         log.info("OneDrive Path: " + base);
         base += "\\Muziek\\Export\\";
 
-        export(base, "MezzmoDB.PlayCount.V12.csv");
+        export(base);
 
     }
 
-    public void export(String base, String fileName){
+    public void export(String base){
         TransferObject to = new TransferObject();
 
         CSVUtils csvUtils = new CSVUtils();

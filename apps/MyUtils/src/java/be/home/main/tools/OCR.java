@@ -1,5 +1,6 @@
 package be.home.main.tools;
 
+import be.home.common.enums.ImageFormat;
 import be.home.common.model.windows.WindowAligner;
 import be.home.common.model.windows.WindowTO;
 import be.home.common.utils.WinUtils;
@@ -25,6 +26,7 @@ import com.sun.jna.platform.win32.WinUser;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.imageio.ImageIO;
+import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
@@ -52,8 +54,8 @@ public class OCR {
                 activateWindow(window.getHandle());
                 mouseClickRelativeToWindow(window.getBounds(), 700, 200);
                 try {
-                    makeScreenshot(window.getBounds(), "TotalCommander.png");
-                    makeScreenshotRelativeToWindow(window.getBounds(), 21, 263, 131, 20, "TcmdTest.png");
+                    makeScreenshot(window.getBounds(), "TotalCommander.png", ImageFormat.PNG);
+                    makeScreenshotRelativeToWindow(window.getBounds(), 21, 263, 131, 20, "TcmdTest.png", ImageFormat.PNG);
                     getOCRTextRelativeToWindow(window.getBounds(), 21, 263, 131, 20);
                 } catch (AWTException e) {
                     throw new RuntimeException(e);
@@ -61,7 +63,7 @@ public class OCR {
             }
         }
 
-        if (false) {
+        if (true) {
             try {
                 WindowTO window2 = findWindowByPartialTitle("LDPlayer");
             //Rectangle bounds = WindowAligner.getRobotCompatibleBounds(window2.getHandle());
@@ -70,11 +72,11 @@ public class OCR {
                     window2.getTitle(), window2.getBounds().x, window2.getBounds().y, window2.getBounds().width, window2.getBounds().height));
                 activateWindow(window2.getHandle());
 
-                makeScreenshot(window2.getBounds(), "CurrentWindow.png");
+                makeScreenshot(window2.getBounds(), "CurrentWindow.png", ImageFormat.PNG);
                 // World Energy
-                makeScreenshotRelativeToWindow(window2.getBounds(), 56, 48, 45, 15, "EnergyRel.png");
+                makeScreenshotRelativeToWindow(window2.getBounds(), 56, 48, 45, 15, "EnergyRel.png", ImageFormat.PNG);
                 // Replay Button
-                makeScreenshotRelativeToWindow(window2.getBounds(), 92, 722, 90, 30, "Replay.png");
+                makeScreenshotRelativeToWindow(window2.getBounds(), 92, 722, 90, 30, "Replay.png", ImageFormat.PNG);
                 // Double Speed Button
                 checkIfStarted(window2);
                 //checkIfNotStarted(window2);
@@ -150,14 +152,14 @@ public class OCR {
     }
 
     public static void checkIfStarted(WindowTO window) throws AWTException {
-        File dsButton = makeScreenshotRelativeToWindow(window.getBounds(), 347, 43, 27, 20, "DoubleSpeedBusy.bmp");
+        File dsButton = makeScreenshotRelativeToWindow(window.getBounds(), 347, 43, 27, 20, "DoubleSpeedBusy.bmp", ImageFormat.BMP);
         double percentage = compareImage2(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedBusy.bmp"));
         System.out.println("Difference Percentage Busy: " + percentage);
         compareImage3(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedBusy.png"));
     }
 
     public static void checkIfNotStarted(WindowTO window) throws AWTException {
-        File dsButton = makeScreenshotRelativeToWindow(window.getBounds(), 347, 43, 27, 20, "DoubleSpeedStart.bmp");
+        File dsButton = makeScreenshotRelativeToWindow(window.getBounds(), 347, 43, 27, 20, "DoubleSpeedStart.bmp", ImageFormat.BMP);
         double percentage = compareImage2(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedStart.png"));
         System.out.println("Difference Percentage Start: " + percentage);
         compareImage3(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedStart.png"));
@@ -219,16 +221,16 @@ public class OCR {
 
     }
 
-    public static File makeScreenshotRelativeToWindow(Rectangle bounds, int left, int top, int width, int height, String filename) throws AWTException{
+    public static File makeScreenshotRelativeToWindow(Rectangle bounds, int left, int top, int width, int height, String filename, ImageFormat format) throws AWTException{
         Rectangle screenRect = new Rectangle(bounds.x + left, bounds.y + top, width, height);
-        return makeScreenshot(screenRect, filename);
+        return makeScreenshot(screenRect, filename, format);
     }
-    public static File makeScreenshot(int left, int top, int width, int height, String filename) throws AWTException{
+    public static File makeScreenshot(int left, int top, int width, int height, String filename, ImageFormat format) throws AWTException{
         Rectangle screenRect = new Rectangle(left, top, width, height);
-        return makeScreenshot(screenRect, filename);
+        return makeScreenshot(screenRect, filename, format);
     }
 
-    public static File makeScreenshot(Rectangle bounds, String filename) throws AWTException {
+    public static File makeScreenshot(Rectangle bounds, String filename, ImageFormat format) throws AWTException {
         Robot robot = new Robot();
 
         BufferedImage screenshot = robot.createScreenCapture(bounds);
@@ -238,7 +240,7 @@ public class OCR {
         File outputFile = new File(DATA_PATH + filename);
         // Schrijf het bestand weg naar de harde schijf
         try {
-            ImageIO.write(screenshot, "bmp", outputFile);
+            ImageIO.write(screenshot, format.name(), outputFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

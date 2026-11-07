@@ -29,24 +29,13 @@ import java.util.List;
 
 public class MP3TagChecker extends MP3TagBase {
 
-
-    public static ConfigTO.Config config;
     private static final Logger log = getMainLog(MP3TagChecker.class);
     private final boolean UPDATE = true;
 
     public static void main(String args[]) {
 
         MP3TagChecker instance = new MP3TagChecker();
-        try {
-            config = instance.init();
-            instance.run();
-        }
-        catch (FileNotFoundException e){
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        instance.run();
     }
 
     @Override
