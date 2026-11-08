@@ -7,7 +7,6 @@ import be.home.common.utils.WinUtils;
 import com.github.romankh3.image.comparison.ImageComparison;
 import com.github.romankh3.image.comparison.ImageComparisonUtil;
 import com.github.romankh3.image.comparison.model.ImageComparisonResult;
-import com.github.romankh3.image.comparison.model.ImageComparisonState;
 import com.sun.jna.Pointer;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
@@ -26,7 +25,6 @@ import com.sun.jna.platform.win32.WinUser;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.imageio.ImageIO;
-import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
@@ -42,7 +40,7 @@ public class OCR {
         File fileA = new File("C:\\My Programs\\OneDrive\\Config\\Java\\tessdata\\DoubleSpeedBusy.png");
         File fileB = new File("C:\\My Programs\\OneDrive\\Config\\Java\\tessdata\\DoubleSpeedStart.png");
         System.out.println("compare: " + compareImg(fileA, fileB));
-        compareImage3(fileA, fileB);
+        //compareImage3(fileA, fileB);
         if (false) {
             String title = "Total Commander";
             WindowTO window = findWindowByPartialTitle(title);
@@ -78,14 +76,21 @@ public class OCR {
                 // Replay Button
                 makeScreenshotRelativeToWindow(window2.getBounds(), 92, 722, 90, 30, "Replay.png", ImageFormat.PNG);
                 // Double Speed Button
-                checkIfStarted(window2);
-                //checkIfNotStarted(window2);
+                File dsFile = makeScreenshotRelativeToWindow(window2.getBounds(), 350, 42, 25, 22, "DoubleSpeed.bmp", ImageFormat.BMP);
+                //checkIfStarted(window2);
+                checkIfNotStarted(window2, dsFile);
+                for (int i=1; i<=5; i++){
+                    TimeUnit.MILLISECONDS.sleep(100);
+                    makeScreenshotRelativeToWindow(window2.getBounds(), 350, 42, 25, 22, "DoubleSpeedStart" + String.valueOf(i) + ").bmp", ImageFormat.BMP);
+                }
 
                 //getOCRText(222, 55, 40, 15);
                 //getOCRTextRelativeToWindow(window2.getBounds(), 42, 15, 40, 15);
                 //makeScreenshot(426, 48, 28, 20, "CheckStart.png");
             } catch (AWTException e) {
                 e.printStackTrace();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
         }
 
@@ -133,16 +138,20 @@ public class OCR {
                     int diffG = Math.abs(gA - gB);
                     int diffB = Math.abs(bA - bB);
 
+
                     // Als het verschil op een kanaal groter is dan de drempel, zijn ze écht anders
                     if (diffR > threshold || diffG > threshold || diffB > threshold) {
+                        System.out.println("diffR: " + diffR);
+                        System.out.println("threshold: " + threshold);
                         identicalWithinTolerance = false;
                         // Je kunt hier eventueel direct 'return false;' doen voor maximale snelheid,
                         // tenzij je de hele afbeelding wilt scannen (bijv. om te highlighten).
+                        System.out.println("Different Images");
                         return false;
                     }
                 }
             }
-
+            System.out.println("Images are the same");
             return identicalWithinTolerance;
 
         } catch (Exception e) {
@@ -153,16 +162,14 @@ public class OCR {
 
     public static void checkIfStarted(WindowTO window) throws AWTException {
         File dsButton = makeScreenshotRelativeToWindow(window.getBounds(), 347, 43, 27, 20, "DoubleSpeedBusy.bmp", ImageFormat.BMP);
-        double percentage = compareImage2(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedBusy.bmp"));
-        System.out.println("Difference Percentage Busy: " + percentage);
-        compareImage3(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedBusy.png"));
+        compareImg(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedBusy.bmp"));
+        compareImageLib(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedBusy.png"));
     }
 
-    public static void checkIfNotStarted(WindowTO window) throws AWTException {
-        File dsButton = makeScreenshotRelativeToWindow(window.getBounds(), 347, 43, 27, 20, "DoubleSpeedStart.bmp", ImageFormat.BMP);
-        double percentage = compareImage2(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedStart.png"));
-        System.out.println("Difference Percentage Start: " + percentage);
-        compareImage3(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedStart.png"));
+    public static void checkIfNotStarted(WindowTO window, File dsButton) throws AWTException {
+        //File dsButton = makeScreenshotRelativeToWindow(window.getBounds(), 347, 43, 27, 20, "DoubleSpeedStart.bmp", ImageFormat.BMP);
+        compareImg(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedStart.bmp"));
+        compareImageLib(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedStart.bmp"));
 
     }
     public static void activateWindow(HWND hwnd){
@@ -286,127 +293,7 @@ public class OCR {
         return window;
     }
 
-    public static float compareImage(File fileA, File fileB) {
-
-        float percentage = 0;
-        try {
-            // take buffer data from both image files //
-            BufferedImage biA = ImageIO.read(fileA);
-            DataBuffer dbA = biA.getData().getDataBuffer();
-            int sizeA = dbA.getSize();
-            BufferedImage biB = ImageIO.read(fileB);
-            DataBuffer dbB = biB.getData().getDataBuffer();
-            int sizeB = dbB.getSize();
-            int count = 0;
-            // compare data-buffer objects //
-            if (sizeA == sizeB) {
-
-                for (int i = 0; i < sizeA; i++) {
-
-                    if (dbA.getElem(i) == dbB.getElem(i)) {
-                        count = count + 1;
-                    }
-
-                }
-                percentage = (count * 100) / sizeA;
-            } else {
-                System.out.println("Both the images are not of same size");
-            }
-
-        } catch (Exception e) {
-            System.out.println("Failed to compare image files ...");
-        }
-        return percentage;
-    }
-
-    public static double compareImage2(File fileA, File fileB) {
-
-        double percentage = 0;
-
-        // Initially assigning null
-            BufferedImage imgA = null;
-            BufferedImage imgB = null;
-
-            // Try block to check for exception
-            try {
-                // Reading files
-                imgA = ImageIO.read(fileA);
-                imgB = ImageIO.read(fileB);
-            }
-
-            // Catch block to check for exceptions
-            catch (IOException e) {
-                // Display the exceptions on console
-                System.out.println(e);
-            }
-
-            // Assigning dimensions to image
-            int width1 = imgA.getWidth();
-            int width2 = imgB.getWidth();
-            int height1 = imgA.getHeight();
-            int height2 = imgB.getHeight();
-
-            // Checking whether the images are of same size or
-            // not
-            if ((width1 != width2) || (height1 != height2))
-
-                // Display message straightaway
-                System.out.println("Error: Images dimensions"
-                        + " mismatch");
-            else {
-
-                // By now, images are of same size
-
-                long difference = 0;
-
-                // treating images likely 2D matrix
-
-                // Outer loop for rows(height)
-                for (int y = 0; y < height1; y++) {
-
-                    // Inner loop for columns(width)
-                    for (int x = 0; x < width1; x++) {
-
-                        int rgbA = imgA.getRGB(x, y);
-                        int rgbB = imgB.getRGB(x, y);
-                        int redA = (rgbA >> 16) & 0xff;
-                        int greenA = (rgbA >> 8) & 0xff;
-                        int blueA = (rgbA)&0xff;
-                        int redB = (rgbB >> 16) & 0xff;
-                        int greenB = (rgbB >> 8) & 0xff;
-                        int blueB = (rgbB)&0xff;
-
-                        difference += Math.abs(redA - redB);
-                        difference += Math.abs(greenA - greenB);
-                        difference += Math.abs(blueA - blueB);
-                    }
-                }
-
-                // Total number of red pixels = width * height
-                // Total number of blue pixels = width * height
-                // Total number of green pixels = width * height
-                // So total number of pixels = width * height *
-                // 3
-                double total_pixels = width1 * height1 * 3;
-
-                // Normalizing the value of different pixels
-                // for accuracy
-
-                // Note: Average pixels per color component
-                double avg_different_pixels
-                        = difference / total_pixels;
-
-                // There are 255 values of pixels in total
-                percentage = (avg_different_pixels / 255) * 100;
-
-                // Lastly print the difference percentage
-                System.out.println("Difference Percentage-->"
-                        + percentage);
-            }
-            return percentage;
-    }
-
-    public static void compareImage3(File fileA, File fileB) {
+    public static void compareImageLib(File fileA, File fileB) {
 
                 // 1. Laad de verwachte (baseline) en actuele afbeeldingen
                 BufferedImage expected = ImageComparisonUtil.readImageFromResources(fileA.getAbsolutePath());
@@ -426,7 +313,7 @@ public class OCR {
                 //imageComparison.setAllowingPercentOfDifferentPixels(1.0);
 
                 // Kwalificeer individuele pixels als gelijk als het kleurverschil binnen 15% valt (handig voor compressie)
-                imageComparison.setPixelToleranceLevel(0.40);
+                imageComparison.setPixelToleranceLevel(0.10);
 
                 // Groepeer afwijkende pixels pas in een rode marker als de foutzone groter is dan 4x4 pixels
                 //imageComparison.setMinimalRectangleSize(16);

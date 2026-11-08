@@ -49,34 +49,4 @@ public class ZipUtils {
             e.printStackTrace();
         }
     }
-
-    /*
-
-    private void zip(String nameOfZipFile, String zipFolder, String folderOrFile, ZipType zipType) throws ZipException {
-        ZipFile zipFile = new ZipFile(nameOfZipFile);
-
-        // Initiate Zip Parameters which define various properties such
-        // as compression method, etc.
-        ZipParameters parameters = new ZipParameters();
-
-        // set compression method to store compression
-        parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
-
-        // Set the compression level
-        parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_MAXIMUM);
-        zipFolder = zipFolder.startsWith("/") ? zipFolder : "/" + zipFolder;
-        parameters.setRootFolderInZip(zipFolder);
-
-        switch (zipType){
-            case FILE :
-                zipFile.addFile(new File(folderOrFile), parameters);
-                break;
-            case FOLDER :
-                parameters.setIncludeRootFolder(false);
-                zipFile.addFolder(new File(folderOrFile), parameters);
-                break;
-        }
-    }
-    */
-
 }
