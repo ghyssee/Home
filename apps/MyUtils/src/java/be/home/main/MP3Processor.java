@@ -18,7 +18,6 @@ import be.home.common.main.BatchJobV2;
 import be.home.common.utils.JSONUtils;
 import be.home.domain.model.MP3Helper;
 import be.home.model.json.MP3Settings;
-import com.mpatric.mp3agic.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -278,12 +277,6 @@ public class MP3Processor extends BatchJobV2 {
                 AlbumInfo.Track track = findMP3File(album, index);
                readMP3File(album, mp3Settings, track, path.toString(), prefix, index);
                 index++;
-            }  catch (NotSupportedException e) {
-                e.printStackTrace();
-            } catch (InvalidDataException e) {
-                e.printStackTrace();
-            } catch (UnsupportedTagException e) {
-                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -291,73 +284,7 @@ public class MP3Processor extends BatchJobV2 {
         log.info("Finished processing MP3s");
     }
 
-    private void readMP3FileOld(AlbumInfo.Config album, MP3Settings mp3Settings, AlbumInfo.Track track, String fileName, String prefixFileName) throws InvalidDataException, IOException, UnsupportedTagException, NotSupportedException {
-        Mp3File mp3file = new Mp3File(fileName);
-        ID3v2 id3v2Tag = MP3Utils.getId3v2Tag(mp3file);
-
-        System.out.println("Track: " + id3v2Tag.getTrack());
-        System.out.println("NEW Track: " + MP3Helper.getInstance().formatTrack(album, track.track,0));
-        System.out.println(StringUtils.repeat('=', 100));
-        System.out.println("Artist: " + id3v2Tag.getArtist());
-        System.out.println("NEW Artist: " + track.artist);
-        System.out.println(StringUtils.repeat('=', 100));
-        System.out.println("Title: " + id3v2Tag.getTitle());
-        System.out.println("NEW Title: " + track.title);
-        System.out.println(StringUtils.repeat('=', 100));
-        if (StringUtils.isNotBlank(album.album)){
-            id3v2Tag.setAlbum(album.album);
-        }
-        if (StringUtils.isBlank(mp3Settings.albumArtist)) {
-            // compilation cd //
-            id3v2Tag.setCompilation(true);
-            id3v2Tag.setAlbumArtist(MP3Service.VARIOUS);
-        }
-        else {
-            id3v2Tag.setAlbumArtist(mp3Settings.albumArtist);
-        }
-        if (StringUtils.isNotBlank(mp3Settings.albumYear)) {
-            id3v2Tag.setYear(mp3Settings.albumYear);
-        }
-        id3v2Tag.setTrack(MP3Helper.getInstance().formatTrack(album, track.track, 0));
-        id3v2Tag.setArtist(track.artist);
-        id3v2Tag.setTitle(track.title);
-        cleanUpTag(id3v2Tag, id3v2Tag.getComment(), AbstractID3v2Tag.ID_COMMENT);
-        cleanUpTag(id3v2Tag, id3v2Tag.getUrl(), AbstractID3v2Tag.ID_URL);
-        cleanUpTag(id3v2Tag, id3v2Tag.getEncoder(), AbstractID3v2Tag.ID_ENCODER);
-        cleanUpTag(id3v2Tag, id3v2Tag.getKey(), AbstractID3v2Tag.ID_KEY);
-        cleanUpTag(id3v2Tag, id3v2Tag.getLyrics(), AbstractID3v2Tag.ID_TEXT_LYRICS);
-        cleanUpTag(id3v2Tag, id3v2Tag.getAudioSourceUrl(), AbstractID3v2Tag.ID_AUDIOSOURCE_URL);
-        cleanUpTag(id3v2Tag, id3v2Tag.getAudiofileUrl(), AbstractID3v2Tag.ID_AUDIOFILE_URL);
-        cleanUpTag(id3v2Tag, id3v2Tag.getArtistUrl(), AbstractID3v2Tag.ID_ARTIST_URL);
-        cleanUpTag(id3v2Tag, id3v2Tag.getCommercialUrl(), AbstractID3v2Tag.ID_COMMERCIAL_URL);
-        cleanUpTag(id3v2Tag, id3v2Tag.getPaymentUrl(), AbstractID3v2Tag.ID_PAYMENT_URL);
-        cleanUpTag(id3v2Tag, id3v2Tag.getPublisherUrl(), AbstractID3v2Tag.ID_PUBLISHER_URL);
-        cleanUpTag(id3v2Tag, id3v2Tag.getRadiostationUrl(), AbstractID3v2Tag.ID_RADIOSTATION_URL);
-        id3v2Tag.clearAlbumImage();
-        if (album.total > 1) {
-            id3v2Tag.setPartOfSet(track.cd);
-        }
-        else {
-            id3v2Tag.clearFrameSet(AbstractID3v2Tag.ID_PART_OF_SET);
-        }
-
-        mp3file.setId3v2Tag(id3v2Tag);
-
-        File newFile;
-        if (mp3Settings.filename.renameEnabled){
-            String newFilename = constructFilename(mp3Settings, album, track, FilenameUtils.getExtension(fileName));
-            newFile = new File(Setup.getInstance().getFullPath(Constants.Path.NEW) + File.separator  + newFilename);
-        }
-        else {
-            File originalFile = new File(fileName);
-            newFile = new File(Setup.getInstance().getFullPath(Constants.Path.NEW) + File.separator + prefixFileName + originalFile.getName());
-        }
-        System.out.println("New File " + newFile);
-        mp3file.save(newFile.getAbsolutePath());
-    }
-
-
-    private void readMP3File(AlbumInfo.Config album, MP3Settings mp3Settings, AlbumInfo.Track track, String fileName, String prefixFileName, int index) throws InvalidDataException, IOException, UnsupportedTagException, NotSupportedException {
+    private void readMP3File(AlbumInfo.Config album, MP3Settings mp3Settings, AlbumInfo.Track track, String fileName, String prefixFileName, int index) throws IOException {
 
         File newFile;
         File originalFile = new File(fileName);
@@ -436,12 +363,6 @@ public class MP3Processor extends BatchJobV2 {
 
     }
 
-    private void cleanUpTag(ID3v2 id3v2Tag, String tagToCheck, String Key){
-        final String TAG_TO_DELETE = "RJ/SNWTJE";
-        if (tagToCheck != null && tagToCheck.compareToIgnoreCase(TAG_TO_DELETE) == 0){
-            id3v2Tag.clearFrameSet(Key);
-        }
-    }
 
     private String constructFilename(MP3Settings mp3Settings, AlbumInfo.Config album, AlbumInfo.Track track, String ext){
         int lengthDisc = album.total > 0 ? String.valueOf(album.total).length() : 0;

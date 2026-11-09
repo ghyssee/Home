@@ -14,8 +14,6 @@ import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.mezzmo.domain.service.MezzmoServiceImpl;
 import be.home.model.json.AlbumError;
 import be.home.model.json.SongCorrections;
-import com.mpatric.mp3agic.ID3v2;
-import com.mpatric.mp3agic.Mp3File;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 
@@ -24,12 +22,9 @@ import org.apache.velocity.tools.generic.EscapeTool;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -391,107 +386,6 @@ public abstract class MP3TagBase extends BatchJobV2 {
         }
     }
 
-    private void updateMP3Old(AlbumError.Item item) {
-        String file = this.mp3TagUtils.relativizeFile(item.getFile());
-        Mp3File mp3file = null;
-        try {
-            mp3file = new Mp3File(file);
-            ID3v2 id3v2Tag = MP3Utils.getId3v2Tag(mp3file);
-
-            boolean update = false;
-            switch (MP3Tag.valueOf(item.getType())){
-                case ALBUM:
-                    if (item.getNewValue().equals(id3v2Tag.getAlbum())) {
-                        log.info("No Update needed for " + item.getFile());
-                        log.info("MP3 Album Info: " + id3v2Tag.getAlbum());
-                        log.info("Update Info: " + item.getType());
-                        setDone(item);
-                    }
-                    else {
-                        update = true;
-                        id3v2Tag.setAlbum(item.getNewValue());
-                    }
-                    break;
-                case ARTIST :
-                    if (item.getNewValue().equals(id3v2Tag.getArtist())) {
-                        log.info("No Update needed for " + item.getFile());
-                        log.info("MP3 Artist Info: " + id3v2Tag.getArtist());
-                        log.info("Update Info: " + item.getType());
-                        setDone(item);
-                    }
-                    else {
-                        update = true;
-                        id3v2Tag.setArtist(item.getNewValue());
-                    }
-                    break;
-                case ALBUMARTIST :
-                    if (item.getNewValue().equals(id3v2Tag.getAlbumArtist())) {
-                        log.info("No Update needed for " + item.getFile());
-                        log.info("MP3 Album Artist Info: " + id3v2Tag.getAlbumArtist());
-                        log.info("Update Info: " + item.getType());
-                        setDone(item);
-                    }
-                    else {
-                        update = true;
-                        id3v2Tag.setAlbumArtist(item.getNewValue());
-                    }
-                    break;
-                case TITLE:
-                    if (item.getNewValue().equals(id3v2Tag.getTitle())) {
-                        log.info("No Update needed for " + item.getFile());
-                        log.info("MP3 Title Info: " + id3v2Tag.getTitle());
-                        log.info("Update Info: " + item.getType());
-                        setDone(item);
-                    }
-                    else {
-                        id3v2Tag.setTitle(item.getNewValue());
-                        update = true;
-                    }
-                    break;
-                case DISC:
-                    id3v2Tag.setPartOfSet(item.getNewValue());
-                    update = true;
-                    break;
-                case DURATION:
-                    // nothing to do
-                    break;
-                case RATING:
-                    // nothing to do
-                    break;
-                case TRACK:
-                    if (item.getNewValue().equals(id3v2Tag.getTrack())) {
-                        log.info("No Update needed for " + item.getFile());
-                        log.info("MP3 Track Info: " + id3v2Tag.getTrack());
-                        log.info("Update Info: " + item.getType());
-                        setDone(item);
-                    }
-                    else {
-                        id3v2Tag.setTrack(item.getNewValue());
-                        update = true;
-                    }
-                    break;
-            }
-            if (update) {
-                mp3file.setId3v2Tag(id3v2Tag);
-                String originalFile = file;
-                String newFile = originalFile + ".NEW";
-                mp3file.save(newFile);
-                Path path = Paths.get(newFile);
-                if (Files.exists(path)) {
-                    path = Paths.get(originalFile);
-                    Files.delete(path);
-                    FileUtils.renameFile(newFile, originalFile);
-                    setDone(item);
-                }
-                else {
-                    String errorMsg = "There was a problem when updating file " + originalFile;
-                    log.error(errorMsg);
-                }
-            }
-        } catch (Exception e) {
-            LogUtils.logError(log, e);
-        }
-    }
 
     protected void setDone(AlbumError.Item item) throws IOException {
         item.setDone(true);

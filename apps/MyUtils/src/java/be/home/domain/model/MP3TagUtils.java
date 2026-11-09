@@ -15,7 +15,6 @@ import be.home.mezzmo.domain.dao.definition.TablesEnum;
 import be.home.model.json.AlbumError;
 import be.home.mezzmo.domain.model.MGOFileAlbumCompositeTO;
 import be.home.model.json.MP3Settings;
-import com.mpatric.mp3agic.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;

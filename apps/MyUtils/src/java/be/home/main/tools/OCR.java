@@ -37,6 +37,7 @@ public class OCR {
 
     public static void main(String[] args) {
         //showOpenWindows();
+
         File fileA = new File("C:\\My Programs\\OneDrive\\Config\\Java\\tessdata\\DoubleSpeedBusy.png");
         File fileB = new File("C:\\My Programs\\OneDrive\\Config\\Java\\tessdata\\DoubleSpeedStart.png");
         System.out.println("compare: " + compareImg(fileA, fileB));
@@ -61,7 +62,7 @@ public class OCR {
             }
         }
 
-        if (true) {
+        if (false) {
             try {
                 WindowTO window2 = findWindowByPartialTitle("LDPlayer");
             //Rectangle bounds = WindowAligner.getRobotCompatibleBounds(window2.getHandle());
@@ -221,6 +222,7 @@ public class OCR {
         }
         return resultText;
     }
+
     public static String getOCRText(int left, int top, int width, int height){
             // 1. Definieer de coördinaten en grootte van het schermgedeelte (X, Y, Breedte, Hoogte)
             Rectangle screenRect = new Rectangle(left, top, width, height);
@@ -392,6 +394,7 @@ public class OCR {
             e.printStackTrace();
         }
     }
+
     public static int getRandomNumber(int min, int max){
 
         // Generates a random number between 5 (inclusive) and 11 (exclusive) -> [5, 10]
