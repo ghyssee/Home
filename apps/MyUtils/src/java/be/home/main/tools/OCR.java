@@ -62,7 +62,7 @@ public class OCR {
             }
         }
 
-        if (false) {
+        if (true) {
             try {
                 WindowTO window2 = findWindowByPartialTitle("LDPlayer");
             //Rectangle bounds = WindowAligner.getRobotCompatibleBounds(window2.getHandle());
@@ -78,20 +78,18 @@ public class OCR {
                 makeScreenshotRelativeToWindow(window2.getBounds(), 92, 722, 90, 30, "Replay.png", ImageFormat.PNG);
                 // Double Speed Button
                 File dsFile = makeScreenshotRelativeToWindow(window2.getBounds(), 350, 42, 25, 22, "DoubleSpeed.bmp", ImageFormat.BMP);
-                //checkIfStarted(window2);
-                checkIfNotStarted(window2, dsFile);
-                for (int i=1; i<=5; i++){
-                    TimeUnit.MILLISECONDS.sleep(100);
-                    makeScreenshotRelativeToWindow(window2.getBounds(), 350, 42, 25, 22, "DoubleSpeedStart" + String.valueOf(i) + ").bmp", ImageFormat.BMP);
-                }
+                checkIfStarted(window2, dsFile);
+                //checkIfNotStarted(window2, dsFile);
+                //for (int i=1; i<=5; i++){
+                //    sleep(TimeUnit.MILLISECONDS, 300);
+                //    makeScreenshotRelativeToWindow(window2.getBounds(), 350, 42, 25, 22, "DoubleSpeedStart" + String.valueOf(i) + ").bmp", ImageFormat.BMP);
+               // }
 
                 //getOCRText(222, 55, 40, 15);
                 //getOCRTextRelativeToWindow(window2.getBounds(), 42, 15, 40, 15);
                 //makeScreenshot(426, 48, 28, 20, "CheckStart.png");
             } catch (AWTException e) {
                 e.printStackTrace();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
             }
         }
 
@@ -161,10 +159,25 @@ public class OCR {
         }
     }
 
-    public static void checkIfStarted(WindowTO window) throws AWTException {
-        File dsButton = makeScreenshotRelativeToWindow(window.getBounds(), 347, 43, 27, 20, "DoubleSpeedBusy.bmp", ImageFormat.BMP);
-        compareImg(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedBusy.bmp"));
-        compareImageLib(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedBusy.png"));
+    public static void checkIfStarted(WindowTO window, File dsButton) throws AWTException {
+        System.out.println("Test 1");
+        compareImg(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedStart1.bmp"));
+        compareImageLib(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedStart1.bmp"));
+        System.out.println("Test 2");
+        compareImg(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedStart2.bmp"));
+        compareImageLib(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedStart2.bmp"));
+        System.out.println("Test 3");
+        compareImg(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedStart3.bmp"));
+        compareImageLib(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedStart3.bmp"));
+        System.out.println("Test 4");
+        compareImg(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedStart4.bmp"));
+        compareImageLib(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedStart4.bmp"));
+        System.out.println("Test 5");
+        compareImg(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedStart5.bmp"));
+        compareImageLib(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedStart5.bmp"));
+        System.out.println("Test 6");
+        compareImg(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedStart6.bmp"));
+        compareImageLib(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedStart6.bmp"));
     }
 
     public static void checkIfNotStarted(WindowTO window, File dsButton) throws AWTException {
@@ -406,9 +419,9 @@ public class OCR {
         return randomNumInclusive;
     }
 
-    public static void sleep(int seconds){
+    public static void sleep(TimeUnit timeUnit, int value){
         try {
-            TimeUnit.SECONDS.sleep(seconds);
+            timeUnit.sleep(value);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // Restore interrupted status
             System.err.println("Thread was interrupted!");
