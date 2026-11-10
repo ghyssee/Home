@@ -26,7 +26,7 @@ public class SeleniumOracleFusion extends SeleniumService {
 
     private static final Logger log = LoggingConfiguration.getMainLog(SeleniumOracleFusion.class);
 
-    public static final String UMR = "https://apps.powerapps.com/play/e/default-1183410f-6cf0-4d82-976e-994c1ce4cfce/a/0c43e546-db86-4872-bb0a-14507d7580a1?tenantId=1183410f-6cf0-4d82-976e-994c1ce4cfce?ItemID=4686";
+    public static final String UMR = "https://apps.powerapps.com/play/e/default-1183410f-6cf0-4d82-976e-994c1ce4cfce/a/0c43e546-db86-4872-bb0a-14507d7580a1?tenantId=1183410f-6cf0-4d82-976e-994c1ce4cfce?ItemID=4692";
     public List<String> errors = new ArrayList<String>();
 
     public static void main(String[] args) {
@@ -297,7 +297,7 @@ public class SeleniumOracleFusion extends SeleniumService {
             throw new RuntimeException("CSV File with roles not found: " + csvFile.getAbsolutePath());
         }
         List<String> rolesFromUMR = Arrays.asList("Procurement Application Administrator");
-        List<String> dataAccessFromUMR = Arrays.asList("000 - Test", "0CD - Freight 4U");
+        List<String> dataAccessFromUMR = Arrays.asList("062 - Radial Netherlands B.V.", "0CD - Freight 4U");
         UMRRequest umrRequest = new UMRRequest();
         umrRequest.setUserId("ghyssee"); // u619488
         //umrRequest.setUserId("u625808");
@@ -937,19 +937,27 @@ public class SeleniumOracleFusion extends SeleniumService {
         //sendKeys(driver, By.cssSelector("input[id$='userNameId::content'"), userId);
 
         clickScreen(driver, By.xpath("//ul[contains(@id, 'afrautosuggestpopup')]/li[contains(@id, 'userNameId')]"), 10, CLICK_TYPE.ELEMENT, "Select User");
-        sendKeysADF(driver, By.cssSelector("input[id$='roleNameCrId::content'"), role);
-        //fillADFCombobox(driver, By.cssSelector("input[id$='roleNameCrId::content'"),
-         //                       By.xpath("//ul[contains(@id, 'afrautosuggestpopup')]/li[contains(@id, 'roleNameCrId')]"),
-         //       role, "Select Role");
+        //sendKeysADF(driver, By.cssSelector("input[id$='roleNameCrId::content'"), role);
+        boolean valueFound = fillADFCombobox(driver, By.cssSelector("input[id$='roleNameCrId::content'"),
+                                By.xpath("//ul[contains(@id, 'afrautosuggestpopup')]/li[contains(@id, 'roleNameCrId')]"),
+                                role, "Select Role");
+        if (!valueFound){
+            log.info("Role Not Found: " + role);
+            return;
+        }
 
 
         //sendKeys(driver, By.cssSelector("input[id$='roleNameCrId::content'"), role);
         //clickScreen(driver, By.xpath("//ul[contains(@id, 'afrautosuggestpopup')]/li[contains(@id, 'roleNameCrId')]"), 10, CLICK_TYPE.ELEMENT, "Select Role");
         select(driver, By.cssSelector("select[id$='soc2::content']"), securityContext);
-        sendKeysADF(driver, By.cssSelector("input[id$='securityContextValueId::content'"), value);
-        //fillADFCombobox(driver, By.cssSelector("input[id$='securityContextValueId::content'"),
-        //        By.xpath("//ul[contains(@id, 'afrautosuggestpopup')]/li[contains(@id, 'securityContextValueId')]"),
-         //       role, "Select Security Context Value");
+        //sendKeysADF(driver, By.cssSelector("input[id$='securityContextValueId::content'"), value);
+        valueFound = fillADFCombobox(driver, By.cssSelector("input[id$='securityContextValueId::content'"),
+                By.xpath("//ul[contains(@id, 'afrautosuggestpopup')]/li[contains(@id, 'securityContextValueId')]"),
+                value, "Select Security Context Value");
+        if (!valueFound){
+            log.info("Security Context Value Not Found: " + value);
+            return;
+        }
         // click on Save Button
         boolean exit = false;
         String errorMsg = null;

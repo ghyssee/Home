@@ -240,21 +240,98 @@ public class SeleniumService {
         while(!exit);
     }
 
-    public void fillADFCombobox(WebDriver driver, By locator, By optionLocator, String keys, String comment) {
-        String value = "";
-        int counter = 0;
+    public void sendKeysADF(WebDriver driver, By locator, String keys){
+        sendKeysADF(driver, locator, keys, true);
+
+    }
+
+    public void sendKeysADF(WebDriver driver, By locator, String keys, boolean validateInput){
+        boolean exit = false;
         do {
-            sendKeys(driver, locator, keys);
-            sleep(driver, 1, "Test");
-            clickScreen(driver, optionLocator, 10, SeleniumOracleFusion.CLICK_TYPE.ELEMENT, comment);
-            WebElement inputBox = driver.findElement(locator);
-            value = inputBox.getAttribute("value");
-            counter++;
-            if (counter > 1){
-                log.info("Retrying " + comment);
+            try {
+                WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
+                WebElement element = wait.until(ExpectedConditions.elementToBeClickable(locator));
+                element.clear();
+                element.click();
+                element.sendKeys(keys);
+
+                // 3. PAUSE briefly to let the Oracle ADF AJAX call register the typed text
+                try {
+                    Thread.sleep(500);
+                    // 500ms is usually the sweet spot for ADF auto-suggest drop-downs
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+                if (validateInput) {
+                    // 4. Use Actions class to cleanly execute the Enter hardware event
+                    new Actions(driver)
+                            .moveToElement(element)
+                            .sendKeys(Keys.ENTER)
+                            .build()
+                            .perform();
+                    wait.until(ExpectedConditions.textToBePresentInElementValue(locator, keys));
+                    element = driver.findElement(locator);
+                    String value = element.getAttribute("value");
+                    System.out.println("Value: " + value);
+                }
+
+                waitForADFBackgroundProcess(driver);
+                exit = true;
+            }
+            catch (ElementClickInterceptedException ex) {
+                System.out.println("ElementClickInterceptedException while sending keys. Retrying...");
+            }
+            catch (StaleElementReferenceException ex) {
+                System.out.println("StaleElementReferenceException while sending keys. Retrying...");
+            }
+            catch (TimeoutException ex) {
+                System.out.println("TimeoutException while sending keys. Retrying...");
             }
         }
-        while (StringUtils.isBlank(value) && counter < 5);
+        while (!exit);
+
+    }
+
+    public boolean fillADFCombobox(WebDriver driver, By locator, By optionLocator, String keys, String comment) {
+        String value = "";
+        boolean valueFound = false;
+        int counter = 0;
+        do {
+            try {
+                sendKeysADF(driver, locator, keys, false);
+                makeScreenshot(driver, "fillADFCombobox.AfterSendKeysADF");
+                WebElement element = driver.findElement(optionLocator);
+                String optionValue = element.getAttribute("value");
+                if (optionValue.equalsIgnoreCase("No Results Found.")){
+                    valueFound = false;
+                    break;
+                }
+                element.click();
+                sleep(driver, 1, "Test");
+                //clickScreen(driver, optionLocator, 1, SeleniumOracleFusion.CLICK_TYPE.ELEMENT, comment);
+                WebElement inputBox = driver.findElement(locator);
+                value = inputBox.getAttribute("value");
+                System.out.println("fillADFCombobox value" + value);
+                if (StringUtils.isNotBlank(value)){
+                    valueFound = true;
+                }
+                counter++;
+                if (counter > 1){
+                    log.info("Retrying " + comment);
+                }
+            }
+            catch(NoSuchElementException ex){
+                log.info("NoSuchElementException. Retrying...");
+            }
+            catch(StaleElementReferenceException ex){
+                log.info("StaleElementReferenceException. Retrying...");
+            }
+            catch (TimeoutException ex) {
+                log.info("Timeout waiting for autosuggest popup. Retrying...");
+            }
+        }
+        while (StringUtils.isBlank(value) && counter < 10);
+        return valueFound;
     }
 
     public void clickScreen (WebDriver driver, By locator, int timeout, SeleniumOracleFusion.CLICK_TYPE clickType, String comment) {
@@ -315,50 +392,6 @@ public class SeleniumService {
         catch (TimeoutException ex) {
             throw new RuntimeException(comment + ": " + "css Anchor not found: " + locator.toString());
         }
-    }
-
-    public void sendKeysADF(WebDriver driver, By locator, String keys){
-        boolean exit = false;
-        do {
-            try {
-                WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
-                WebElement element = wait.until(ExpectedConditions.elementToBeClickable(locator));
-                element.clear();
-                element.click();
-                element.sendKeys(keys);
-                // 3. PAUSE briefly to let the Oracle ADF AJAX call register the typed text
-                try {
-                    Thread.sleep(500);
-                    // 500ms is usually the sweet spot for ADF auto-suggest drop-downs
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-
-                // 4. Use Actions class to cleanly execute the Enter hardware event
-                new Actions(driver)
-                        .moveToElement(element)
-                        .sendKeys(Keys.ENTER)
-                        .build()
-                        .perform();
-                wait.until(ExpectedConditions.textToBePresentInElementValue(locator, keys));
-                element = driver.findElement(locator);
-                String value = element.getAttribute("value");
-                System.out.println("Value: " + value);
-                waitForADFBackgroundProcess(driver);
-                exit = true;
-            }
-            catch (ElementClickInterceptedException ex) {
-                System.out.println("ElementClickInterceptedException while sending keys. Retrying...");
-            }
-            catch (StaleElementReferenceException ex) {
-                System.out.println("StaleElementReferenceException while sending keys. Retrying...");
-            }
-            catch (TimeoutException ex) {
-                System.out.println("TimeoutException while sending keys. Retrying...");
-            }
-        }
-        while (!exit);
-
     }
 
     // Maak een JavaScript-functie die door de closed shadow-host zoekt

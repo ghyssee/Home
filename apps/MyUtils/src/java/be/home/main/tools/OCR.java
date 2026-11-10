@@ -7,6 +7,7 @@ import be.home.common.utils.WinUtils;
 import com.github.romankh3.image.comparison.ImageComparison;
 import com.github.romankh3.image.comparison.ImageComparisonUtil;
 import com.github.romankh3.image.comparison.model.ImageComparisonResult;
+import com.github.romankh3.image.comparison.model.ImageComparisonState;
 import com.sun.jna.Pointer;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
@@ -14,7 +15,6 @@ import net.sourceforge.tess4j.TesseractException;
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBuffer;
 import java.io.File;
 import java.io.IOException;
 
@@ -35,13 +35,14 @@ public class OCR {
             File.separator + "Config" + File.separator + "Java" + File.separator + "tessdata";
     public static final String DATA_PATH = "C:\\My Data\\tessdata\\";
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws AWTException {
         //showOpenWindows();
 
-        File fileA = new File("C:\\My Programs\\OneDrive\\Config\\Java\\tessdata\\DoubleSpeedBusy.png");
-        File fileB = new File("C:\\My Programs\\OneDrive\\Config\\Java\\tessdata\\DoubleSpeedStart.png");
-        System.out.println("compare: " + compareImg(fileA, fileB));
-        //compareImage3(fileA, fileB);
+        File fileA = new File("C:\\My Programs\\OneDrive\\Config\\Java\\tessdata\\DoubleSpeed.bmp");
+        System.out.println("Busy: " + checkIfStarted(fileA));
+        System.out.println("Start: " + checkIfNotStarted(fileA));
+
+
         if (false) {
             String title = "Total Commander";
             WindowTO window = findWindowByPartialTitle(title);
@@ -62,44 +63,42 @@ public class OCR {
             }
         }
 
-        if (true) {
-            try {
-                WindowTO window2 = findWindowByPartialTitle("LDPlayer");
-            //Rectangle bounds = WindowAligner.getRobotCompatibleBounds(window2.getHandle());
+        if (false) {
+            WindowTO window2 = findWindowByPartialTitle("LDPlayer");
+        //Rectangle bounds = WindowAligner.getRobotCompatibleBounds(window2.getHandle());
 
-                System.out.println(String.format("%-40.40s | X:%-4d Y:%-4d        | %-7d x %-7d",
-                    window2.getTitle(), window2.getBounds().x, window2.getBounds().y, window2.getBounds().width, window2.getBounds().height));
-                activateWindow(window2.getHandle());
+            System.out.println(String.format("%-40.40s | X:%-4d Y:%-4d        | %-7d x %-7d",
+                window2.getTitle(), window2.getBounds().x, window2.getBounds().y, window2.getBounds().width, window2.getBounds().height));
+            activateWindow(window2.getHandle());
 
-                makeScreenshot(window2.getBounds(), "CurrentWindow.png", ImageFormat.PNG);
-                // World Energy
-                makeScreenshotRelativeToWindow(window2.getBounds(), 56, 48, 45, 15, "EnergyRel.png", ImageFormat.PNG);
-                // Replay Button
-                makeScreenshotRelativeToWindow(window2.getBounds(), 92, 722, 90, 30, "Replay.png", ImageFormat.PNG);
-                // Double Speed Button
-                File dsFile = makeScreenshotRelativeToWindow(window2.getBounds(), 350, 42, 25, 22, "DoubleSpeed.bmp", ImageFormat.BMP);
-                checkIfStarted(window2, dsFile);
-                //checkIfNotStarted(window2, dsFile);
-                //for (int i=1; i<=5; i++){
-                //    sleep(TimeUnit.MILLISECONDS, 300);
-                //    makeScreenshotRelativeToWindow(window2.getBounds(), 350, 42, 25, 22, "DoubleSpeedStart" + String.valueOf(i) + ").bmp", ImageFormat.BMP);
-               // }
+            makeScreenshot(window2.getBounds(), "CurrentWindow.png", ImageFormat.PNG);
 
-                //getOCRText(222, 55, 40, 15);
-                //getOCRTextRelativeToWindow(window2.getBounds(), 42, 15, 40, 15);
-                //makeScreenshot(426, 48, 28, 20, "CheckStart.png");
-            } catch (AWTException e) {
-                e.printStackTrace();
-            }
+            processWindow(window2);
         }
 
+    }
 
+    public static void processWindow (WindowTO window) throws AWTException {
+        // Double Speed Button
+        File dsFile = makeScreenshotRelativeToWindow(window.getBounds(), 350, 42, 25, 22, "DoubleSpeed.bmp", ImageFormat.BMP);
+        boolean busy = checkIfStarted(dsFile);
+        System.out.println("Busy: " + busy);
+        if (!busy){
 
-        //System.out.println(compareImage(new File("C:\\My Data\\tessdata\\test.png"), new File("C:\\My Data\\tessdata\\test2.png")));
-        //mouseClick(800,200, 340, 120);
+            boolean readyToStart = checkIfNotStarted(dsFile);
+            System.out.println("Ready to start: " + readyToStart);
+            if (readyToStart){
+                System.out.println("Clicking on double speed button...");
+                mouseClickRelativeToWindow(window.getBounds(), 5, 5);
+            }
+            else {
+                // World Energy
+                makeScreenshotRelativeToWindow(window.getBounds(), 56, 48, 45, 15, "EnergyRel.png", ImageFormat.PNG);
+                // Replay Button
+                makeScreenshotRelativeToWindow(window.getBounds(), 92, 722, 90, 30, "Replay.png", ImageFormat.PNG);
 
-        //getOCRText(100, 150, 400, 200);
-
+            }
+        }
 
     }
 
@@ -159,31 +158,15 @@ public class OCR {
         }
     }
 
-    public static void checkIfStarted(WindowTO window, File dsButton) throws AWTException {
-        System.out.println("Test 1");
-        compareImg(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedStart1.bmp"));
-        compareImageLib(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedStart1.bmp"));
-        System.out.println("Test 2");
-        compareImg(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedStart2.bmp"));
-        compareImageLib(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedStart2.bmp"));
-        System.out.println("Test 3");
-        compareImg(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedStart3.bmp"));
-        compareImageLib(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedStart3.bmp"));
-        System.out.println("Test 4");
-        compareImg(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedStart4.bmp"));
-        compareImageLib(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedStart4.bmp"));
-        System.out.println("Test 5");
-        compareImg(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedStart5.bmp"));
-        compareImageLib(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedStart5.bmp"));
-        System.out.println("Test 6");
-        compareImg(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedStart6.bmp"));
-        compareImageLib(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedStart6.bmp"));
+    public static boolean checkIfStarted(File dsButton)  {
+        return compareImageSequence(dsButton, "DoubleSpeedBusy", 6);
     }
 
-    public static void checkIfNotStarted(WindowTO window, File dsButton) throws AWTException {
+    public static boolean  checkIfNotStarted(File dsButton)  {
         //File dsButton = makeScreenshotRelativeToWindow(window.getBounds(), 347, 43, 27, 20, "DoubleSpeedStart.bmp", ImageFormat.BMP);
-        compareImg(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedStart.bmp"));
-        compareImageLib(dsButton, new File(CONFIG_PATH + File.separator + "DoubleSpeedStart.bmp"));
+        File fileA = new File(CONFIG_PATH + File.separator + "DoubleSpeedStart.bmp");
+        //compareImg(dsButton, fileA);
+        return compareImageLib(dsButton, fileA);
 
     }
     public static void activateWindow(HWND hwnd){
@@ -308,40 +291,63 @@ public class OCR {
         return window;
     }
 
-    public static void compareImageLib(File fileA, File fileB) {
+    public static boolean compareImageLib(File fileA, File fileB) {
 
-                // 1. Laad de verwachte (baseline) en actuele afbeeldingen
-                BufferedImage expected = ImageComparisonUtil.readImageFromResources(fileA.getAbsolutePath());
-                BufferedImage actual = ImageComparisonUtil.readImageFromResources(fileB.getAbsolutePath());
+        boolean compare = false;
+        // 1. Laad de verwachte (baseline) en actuele afbeeldingen
+        BufferedImage expected = ImageComparisonUtil.readImageFromResources(fileA.getAbsolutePath());
+        BufferedImage actual = ImageComparisonUtil.readImageFromResources(fileB.getAbsolutePath());
 
-                // Locatie waar de visuele 'diff' (met rode vierkanten) moet worden opgeslagen bij een mismatch
-                File resultDestination = new File("c:/My Data/tessdata/visual-diff.png");
+        // Locatie waar de visuele 'diff' (met rode vierkanten) moet worden opgeslagen bij een mismatch
+        File resultDestination = new File("c:/My Data/tessdata/visual-diff.png");
 
-                // 2. Initialiseer de vergelijking
-                ImageComparison imageComparison = new ImageComparison(expected, actual, resultDestination);
+        // 2. Initialiseer de vergelijking
+        ImageComparison imageComparison = new ImageComparison(expected, actual, resultDestination);
 
-                // 3. Configureer perceptuele tolerantie
-                //imageComparison.setThreshold(2);
+        // 3. Configureer perceptuele tolerantie
+        //imageComparison.setThreshold(2);
 
-                // Optioneel: Sta toe dat een klein percentage van de totale pixels compleet mag afwijken
-                // (handig voor een knipperende cursor of een dynamisch element)
-                //imageComparison.setAllowingPercentOfDifferentPixels(1.0);
+        // Optioneel: Sta toe dat een klein percentage van de totale pixels compleet mag afwijken
+        // (handig voor een knipperende cursor of een dynamisch element)
+        //imageComparison.setAllowingPercentOfDifferentPixels(1.0);
 
-                // Kwalificeer individuele pixels als gelijk als het kleurverschil binnen 15% valt (handig voor compressie)
-                imageComparison.setPixelToleranceLevel(0.10);
+        // Kwalificeer individuele pixels als gelijk als het kleurverschil binnen 15% valt (handig voor compressie)
+        imageComparison.setPixelToleranceLevel(0.10);
 
-                // Groepeer afwijkende pixels pas in een rode marker als de foutzone groter is dan 4x4 pixels
-                //imageComparison.setMinimalRectangleSize(16);
+        // Groepeer afwijkende pixels pas in een rode marker als de foutzone groter is dan 4x4 pixels
+        //imageComparison.setMinimalRectangleSize(16);
 
-                // 4. Voer de vergelijking uit
-                ImageComparisonResult result = imageComparison.compareImages();
+        // 4. Voer de vergelijking uit
+        ImageComparisonResult result = imageComparison.compareImages();
 
-                // 5. Assert dat de status MATCH is
-                // Als dit faalt, staat er een visuele diff klaar in de gedefinieerde bestemming met rode kaders
+        // 5. Assert dat de status MATCH is
+        // Als dit faalt, staat er een visuele diff klaar in de gedefinieerde bestemming met rode kaders
         System.out.println("Match: " + result.getImageComparisonState());
         System.out.println("Percent: " + result.getDifferencePercent());
-        //ImageComparisonState.MATCH
+        if (result.getImageComparisonState().equals(ImageComparisonState.MATCH)){
+            compare = true;
+        }
+        return compare;
 
+    }
+
+    public static boolean compareImageSequence(File fileA, String fileName, int limit) {
+
+        boolean compare = false;
+        for (int i=1; i <= limit; i++){
+            File fileB = new File(CONFIG_PATH + File.separator + fileName + String.valueOf(i) + ".bmp");
+            if (fileB.exists()) {
+                compare = compareImageLib(fileA, fileB);
+                if (compare) {
+                    System.out.println("Match found with " + fileB.getName());
+                    break;
+                }
+            }
+            else {
+                System.err.println("File to compare with not found: 0" + fileB.getAbsolutePath());
+            }
+        }
+        return compare;
     }
 
 
