@@ -9,12 +9,15 @@ import com.github.romankh3.image.comparison.ImageComparisonUtil;
 import com.github.romankh3.image.comparison.model.ImageComparisonResult;
 import com.github.romankh3.image.comparison.model.ImageComparisonState;
 import com.sun.jna.Pointer;
+import com.sun.jna.platform.win32.WinDef;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
 
 import java.awt.*;
 import java.awt.event.InputEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.awt.image.MultiResolutionImage;
 import java.io.File;
 import java.io.IOException;
 
@@ -25,8 +28,13 @@ import com.sun.jna.platform.win32.WinUser;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.imageio.ImageIO;
+import java.rmi.RemoteException;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
+
+import static com.sun.jna.platform.win32.WinUser.SWP_NOSIZE;
+import static com.sun.jna.platform.win32.WinUser.SWP_NOZORDER;
 
 
 public class OCR {
@@ -35,12 +43,12 @@ public class OCR {
             File.separator + "Config" + File.separator + "Java" + File.separator + "tessdata";
     public static final String DATA_PATH = "C:\\My Data\\tessdata\\";
 
-    public static void main(String[] args) throws AWTException {
+    public static void main(String[] args) throws AWTException, IOException {
         //showOpenWindows();
 
         File fileA = new File("C:\\My Programs\\OneDrive\\Config\\Java\\tessdata\\DoubleSpeed.bmp");
-        System.out.println("Busy: " + checkIfStarted(fileA));
-        System.out.println("Start: " + checkIfNotStarted(fileA));
+        //System.out.println("Busy: " + checkIfStarted(fileA));
+        //System.out.println("Start: " + checkIfNotStarted(fileA));
 
 
         if (false) {
@@ -52,53 +60,141 @@ public class OCR {
                 System.out.println(String.format("%-40.40s | X:%-4d Y:%-4d        | %-7d x %-7d",
                         window.getTitle(), window.getBounds().x, window.getBounds().y, window.getBounds().width, window.getBounds().height));
                 activateWindow(window.getHandle());
-                mouseClickRelativeToWindow(window.getBounds(), 700, 200);
+                //mouseClickRelativeToWindow(window.getBounds(), 700, 200);
                 try {
                     makeScreenshot(window.getBounds(), "TotalCommander.png", ImageFormat.PNG);
                     makeScreenshotRelativeToWindow(window.getBounds(), 21, 263, 131, 20, "TcmdTest.png", ImageFormat.PNG);
-                    getOCRTextRelativeToWindow(window.getBounds(), 21, 263, 131, 20);
                 } catch (AWTException e) {
                     throw new RuntimeException(e);
                 }
             }
         }
 
-        if (false) {
+        if (true) {
             WindowTO window2 = findWindowByPartialTitle("LDPlayer");
         //Rectangle bounds = WindowAligner.getRobotCompatibleBounds(window2.getHandle());
 
             System.out.println(String.format("%-40.40s | X:%-4d Y:%-4d        | %-7d x %-7d",
                 window2.getTitle(), window2.getBounds().x, window2.getBounds().y, window2.getBounds().width, window2.getBounds().height));
             activateWindow(window2.getHandle());
+            Rectangle windowBounds = new Rectangle(110, 6, 473, 812);
+            moveVisibleWindow(window2.getHandle(), 110, 6);
+            window2 = findWindowByPartialTitle("LDPlayer");
+            System.out.println(String.format("%-40.40s | X:%-4d Y:%-4d        | %-7d x %-7d",
+                    window2.getTitle(), window2.getBounds().x, window2.getBounds().y, window2.getBounds().width, window2.getBounds().height));
 
-            makeScreenshot(window2.getBounds(), "CurrentWindow.png", ImageFormat.PNG);
+            //makeScreenshot(window2.getBounds(), "CurrentWindow.png", ImageFormat.PNG);
+            //makeScreenshot2(window2, "PlayStart.bmp", 437, 52, 32, 26);
+            //makeScreenshot2(window2, "PlayStart2.bmp", 349, 41, 25, 22);
+            //for (int i= 1; i <= 5; i++){
+             //   makeScreenshot2(window2, "PlayBusy" + String.valueOf(i) + ".bmp", 437, 52, 32, 26);
+             //   sleep(TimeUnit.MILLISECONDS, 200);
+            //}
 
-            processWindow(window2);
+            //Rectangle playButton1 = new Rectangle(437, 52, 32, 26);
+            Rectangle playButton2 = new Rectangle(441, 56, 24, 22);
+
+
+            //makeScreenshot2(window2, "PlayStart.bmp", playButton2);
+            //for (int i=1; i <= 5; i++){
+            //    makeScreenshot2(window2, "PlayBusy" + String.valueOf(i) + ".bmp", playButton2);
+            //    sleep(TimeUnit.MILLISECONDS, 200);
+
+            //}
+            //for (int i=1; i <= 10; i++){
+            Rectangle replayButton = new Rectangle(120, 900, 100, 40);
+            Rectangle fightButton = new Rectangle(345, 940, 85, 40);
+            makeScreenshot2(window2, "Fight.bmp", fightButton);
+            String text = getOCRText(window2, fightButton);
+            System.out.println(text);
+            boolean cont = processWindow(window2, playButton2, replayButton, fightButton);
+             //   if (!cont) break;
+             //   sleep(TimeUnit.SECONDS, 2);
+            //}
         }
 
     }
 
-    public static void processWindow (WindowTO window) throws AWTException {
-        // Double Speed Button
-        File dsFile = makeScreenshotRelativeToWindow(window.getBounds(), 350, 42, 25, 22, "DoubleSpeed.bmp", ImageFormat.BMP);
+    public static void moveVisibleWindow(HWND window2, int robotTargetX, int robotTargetY) {
+
+        final int DWMWA_EXTENDED_FRAME_BOUNDS = 9;
+
+        // 1. Convert Robot (DPI-scaled) coordinates back to physical screen pixels
+        GraphicsConfiguration gc = GraphicsEnvironment
+                .getLocalGraphicsEnvironment()
+                .getDefaultScreenDevice()
+                .getDefaultConfiguration();
+        double scaleX = gc.getDefaultTransform().getScaleX();
+        double scaleY = gc.getDefaultTransform().getScaleY();
+
+        int physicalTargetX = (int) Math.round(robotTargetX * scaleX);
+        int physicalTargetY = (int) Math.round(robotTargetY * scaleY);
+
+        // 2. Measure the invisible Windows 11 shadow border on this specific window
+        WinDef.RECT windowRect = new WinDef.RECT();
+        WinDef.RECT visibleRect = new WinDef.RECT();
+
+        User32.INSTANCE.GetWindowRect(window2, windowRect);
+        WindowAligner.Dwmapi.INSTANCE.DwmGetWindowAttribute(
+                window2,
+                DWMWA_EXTENDED_FRAME_BOUNDS,
+                visibleRect,
+                visibleRect.size()
+        );
+        visibleRect.read();
+
+        // Calculate the exact invisible border thickness (usually ~7px on left, 0px on top)
+        int borderOffsetX = visibleRect.left - windowRect.left;
+        int borderOffsetY = visibleRect.top - windowRect.top;
+
+        // 3. Move the window so its visible top-left corner lands at (110, 6)
+        User32.INSTANCE.SetWindowPos(
+                window2,
+                null,
+                physicalTargetX - borderOffsetX,
+                physicalTargetY - borderOffsetY,
+                0,
+                0,
+                User32.SWP_NOSIZE | User32.SWP_NOZORDER
+        );
+    }
+
+    public static boolean processWindow (WindowTO window, Rectangle playButton, Rectangle replayButton, Rectangle fightButton) throws AWTException, IOException {
+
+        File dsFile = makeScreenshot2(window, "Play.bmp", playButton);
+        //File dsFile = makeScreenshotRelativeToWindow(window.getBounds(), 350, 42, 25, 22, "DoubleSpeed.bmp", ImageFormat.BMP);
         boolean busy = checkIfStarted(dsFile);
         System.out.println("Busy: " + busy);
         if (!busy){
 
             boolean readyToStart = checkIfNotStarted(dsFile);
             System.out.println("Ready to start: " + readyToStart);
-            if (readyToStart){
+            if (readyToStart) {
                 System.out.println("Clicking on double speed button...");
-                mouseClickRelativeToWindow(window.getBounds(), 5, 5);
-            }
-            else {
+                mouseClickRelativeToWindow(window.getBounds(), playButton);
+            } else {
                 // World Energy
-                makeScreenshotRelativeToWindow(window.getBounds(), 56, 48, 45, 15, "EnergyRel.png", ImageFormat.PNG);
+                //makeScreenshotRelativeToWindow(window.getBounds(), 56, 48, 45, 15, "EnergyRel.png", ImageFormat.PNG);
                 // Replay Button
-                makeScreenshotRelativeToWindow(window.getBounds(), 92, 722, 90, 30, "Replay.png", ImageFormat.PNG);
-
+                //makeScreenshotRelativeToWindow(window.getBounds(), 92, 722, 90, 30, "Replay.png", ImageFormat.PNG);
+                String text = getOCRText(window, replayButton);
+                if (StringUtils.isNotBlank(text)){
+                    if (text.trim().equalsIgnoreCase("REPLAY")){
+                            System.out.println("Press the replay button");
+                        mouseClickRelativeToWindow(window.getBounds(), replayButton);
+                    }
+                    else {
+                        text = getOCRText(window, fightButton);
+                        if (text.trim().equalsIgnoreCase("FIGHT!")){
+                            System.out.println("Press the fight button");
+                            mouseClickRelativeToWindow(window.getBounds(), fightButton);
+                        }
+                    }
+                }
             }
+
         }
+        return busy;
 
     }
 
@@ -159,36 +255,33 @@ public class OCR {
     }
 
     public static boolean checkIfStarted(File dsButton)  {
-        return compareImageSequence(dsButton, "DoubleSpeedBusy", 6);
+        return compareImageSequence(dsButton, "PlayBusy", 5);
     }
 
     public static boolean  checkIfNotStarted(File dsButton)  {
         //File dsButton = makeScreenshotRelativeToWindow(window.getBounds(), 347, 43, 27, 20, "DoubleSpeedStart.bmp", ImageFormat.BMP);
-        File fileA = new File(CONFIG_PATH + File.separator + "DoubleSpeedStart.bmp");
+        //File fileA = new File(CONFIG_PATH + File.separator + "DoubleSpeedStart.bmp");
         //compareImg(dsButton, fileA);
-        return compareImageLib(dsButton, fileA);
+       // return compareImageLib(dsButton, fileA);
+        return compareImageSequence(dsButton, "PlayStart", 1);
 
     }
     public static void activateWindow(HWND hwnd){
         User32.INSTANCE.ShowWindow(hwnd, 9);
         User32.INSTANCE.SetForegroundWindow(hwnd);
     }
-    public static String getOCRTextRelativeToWindow(Rectangle bounds, int left, int top, int width, int height){
-        Rectangle screenRect = new Rectangle(bounds.x + left, bounds.y + top, width, height);
-        return getOCRText(screenRect);
-    }
 
-    public static String getOCRText(Rectangle bounds){
+    public static String getOCRText(WindowTO window, Rectangle bounds) throws IOException {
         String resultText = null;
         try {
             // 1. Definieer de coördinaten en grootte van het schermgedeelte (X, Y, Breedte, Hoogte)
 
             // 2. Maak een screenshot van het gedefinieerde gebied
             Robot robot = new Robot();
-            BufferedImage screenCapture = robot.createScreenCapture(bounds);
+            BufferedImage screenCapture = getBufferedImage(window, bounds);
 
             // Definieer de bestandslocatie en naam
-            File outputFile = new File("c:/My Data/tessdata/screenshot.png");
+            File outputFile = new File("c:/My Data/tessdata/ocr.png");
 
             // Schrijf het bestand weg naar de harde schijf
             try {
@@ -210,20 +303,13 @@ public class OCR {
             resultText = tesseract.doOCR(screenCapture);
 
             // Output het resultaat
-            System.out.println("--- Gevonden Tekst ---");
-            System.out.println(resultText.trim());
+            //System.out.println("--- Gevonden Tekst ---");
+            //System.out.println(resultText.trim());
 
         } catch (TesseractException | AWTException e) {
             System.err.println("OCR Fout: " + e.getMessage());
         }
         return resultText;
-    }
-
-    public static String getOCRText(int left, int top, int width, int height){
-            // 1. Definieer de coördinaten en grootte van het schermgedeelte (X, Y, Breedte, Hoogte)
-            Rectangle screenRect = new Rectangle(left, top, width, height);
-            return getOCRText(screenRect);
-
     }
 
     public static File makeScreenshotRelativeToWindow(Rectangle bounds, int left, int top, int width, int height, String filename, ImageFormat format) throws AWTException{
@@ -234,6 +320,7 @@ public class OCR {
         Rectangle screenRect = new Rectangle(left, top, width, height);
         return makeScreenshot(screenRect, filename, format);
     }
+
 
     public static File makeScreenshot(Rectangle bounds, String filename, ImageFormat format) throws AWTException {
         Robot robot = new Robot();
@@ -252,6 +339,48 @@ public class OCR {
         return outputFile;
     }
 
+    public static BufferedImage capturePhysicalScreen(Robot robot, Rectangle logicalRect) {
+        // 1. Capture both the scaled (logical) and unscaled (physical) image variants
+        MultiResolutionImage mrImage = robot.createMultiResolutionScreenCapture(logicalRect);
+
+        // 2. Get all resolution variants (index 0 = scaled logical, last index = native physical)
+        List<Image> variants = mrImage.getResolutionVariants();
+        Image highestRes = variants.get(variants.size() - 1);
+
+        // 3. Return as BufferedImage (already a BufferedImage in OpenJDK/Oracle JDK on Windows)
+        if (highestRes instanceof BufferedImage) {
+            return (BufferedImage) highestRes;
+        }
+
+        // Fallback conversion if a custom GraphicsEnvironment returns a generic Image
+        BufferedImage buffered = new BufferedImage(
+                highestRes.getWidth(null),
+                highestRes.getHeight(null),
+                BufferedImage.TYPE_INT_RGB
+        );
+        buffered.getGraphics().drawImage(highestRes, 0, 0, null);
+        return buffered;
+    }
+
+    public static File makeScreenshot2(WindowTO window, String filename, Rectangle bounds) throws AWTException, IOException {
+        Robot robot = new Robot();
+        File outputFile = new File(DATA_PATH + filename);
+        File test = new File(DATA_PATH + "test.BMP");
+        BufferedImage fullPhysicalWindow = capturePhysicalScreen(robot, window.getBounds());
+        ImageIO.write(fullPhysicalWindow, "BMP", test);
+        BufferedImage actualCrop = fullPhysicalWindow.getSubimage(bounds.x, bounds.y, bounds.width, bounds.height);
+        ImageIO.write(actualCrop, "BMP", outputFile);
+        return outputFile;
+
+    }
+
+    public static BufferedImage getBufferedImage(WindowTO window,  Rectangle bounds) throws AWTException, IOException {
+        Robot robot = new Robot();
+        BufferedImage fullPhysicalWindow = capturePhysicalScreen(robot, window.getBounds());
+        BufferedImage actualCrop = fullPhysicalWindow.getSubimage(bounds.x, bounds.y, bounds.width, bounds.height);
+        return actualCrop;
+
+    }
     public static WindowTO findWindowByPartialTitle(String partialTitle) {
         // Shared container to hold the result window handle
         WindowTO window = new WindowTO();
@@ -309,22 +438,23 @@ public class OCR {
 
         // Optioneel: Sta toe dat een klein percentage van de totale pixels compleet mag afwijken
         // (handig voor een knipperende cursor of een dynamisch element)
-        //imageComparison.setAllowingPercentOfDifferentPixels(1.0);
+        imageComparison.setAllowingPercentOfDifferentPixels(4);
 
         // Kwalificeer individuele pixels als gelijk als het kleurverschil binnen 15% valt (handig voor compressie)
         imageComparison.setPixelToleranceLevel(0.10);
 
         // Groepeer afwijkende pixels pas in een rode marker als de foutzone groter is dan 4x4 pixels
-        //imageComparison.setMinimalRectangleSize(16);
+        imageComparison.setMinimalRectangleSize(4);
 
         // 4. Voer de vergelijking uit
         ImageComparisonResult result = imageComparison.compareImages();
 
         // 5. Assert dat de status MATCH is
         // Als dit faalt, staat er een visuele diff klaar in de gedefinieerde bestemming met rode kaders
-        System.out.println("Match: " + result.getImageComparisonState());
-        System.out.println("Percent: " + result.getDifferencePercent());
-        if (result.getImageComparisonState().equals(ImageComparisonState.MATCH)){
+        //System.out.println("Match: " + result.getImageComparisonState());
+        //System.out.println("Percent: " + result.getDifferencePercent());
+        if (result.getImageComparisonState().equals(ImageComparisonState.MATCH)
+        ){
             compare = true;
         }
         return compare;
@@ -381,7 +511,7 @@ public class OCR {
         }
     }
 
-    public static void mouseClickRelativeToWindow(Rectangle bounds, int x, int y){
+    public static void mouseClickRelativeToWindow(Rectangle bounds, Rectangle button){
 
         // left + top: coordinants of the window
         // x + y : position relative to the window
@@ -390,12 +520,24 @@ public class OCR {
             // Instantiate the Robot class
             Robot robot = new Robot();
 
-            int absX = bounds.x+x;
-            int absY = bounds.y+y;
+            // 1. Get the physical center
+            double physicalX = bounds.x + button.x + (button.width / 2.0);   // 563.0
+            double physicalY = bounds.y + button.y + (button.height / 2.0);  // 73.0
 
+            // 2. Get Windows 11 scaling factor (1.25 on your system)
+            GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+            AffineTransform transform = gd.getDefaultConfiguration().getDefaultTransform();
+            double scaleX = transform.getScaleX();
+            double scaleY = transform.getScaleY();
+
+            // 3. Convert to Java Robot coordinates
+            int robotX = (int) Math.round(physicalX / scaleX); // 450
+            int robotY = (int) Math.round(physicalY / scaleY); // 58
+            robotX = getRandomNumber(robotX, robotX+10);
+            robotY = getRandomNumber(robotY-2, robotY+2);
 
             // Move the mouse pointer to the specific (X, Y) coordinates
-            robot.mouseMove(absX, absY);
+            robot.mouseMove(robotX, robotY);
 
             // Press the left mouse button
             robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
@@ -406,7 +548,7 @@ public class OCR {
             // Release the left mouse button
             robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
 
-            System.out.println("Successfully clicked at position: (" + absX + ", " + absY + ")");
+            System.out.println("Successfully clicked at position: (" + robotX + ", " + robotY + ")");
 
         } catch (AWTException e) {
             System.err.println("The platform configuration does not allow low-level input control.");
@@ -447,6 +589,23 @@ public class OCR {
         }
         while (!exit);
         return filename;
+    }
+
+    public void mouseDrag() throws AWTException, InterruptedException {
+        Robot robot = new Robot();
+
+        // Move to start position (x=200, y=200)
+        robot.mouseMove(200, 200);
+        robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+
+        // Move smoothly to end position (x=500, y=200)
+        for (int x = 200; x <= 500; x += 5) {
+            robot.mouseMove(x, 200);
+            Thread.sleep(10); // Small delay ensures apps register the drag
+        }
+
+        // Release mouse button
+        robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
     }
 
 }
