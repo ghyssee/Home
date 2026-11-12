@@ -591,20 +591,26 @@ public class OCR {
         return filename;
     }
 
-    public void mouseDrag() throws AWTException, InterruptedException {
+    public void mouseDrag(int startX, int startY, int endX, int endY) throws AWTException, InterruptedException {
         Robot robot = new Robot();
 
-        // Move to start position (x=200, y=200)
-        robot.mouseMove(200, 200);
-        robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+        robot.mouseMove(startX, startY);
+        robot.delay(200);
 
-        // Move smoothly to end position (x=500, y=200)
-        for (int x = 200; x <= 500; x += 5) {
-            robot.mouseMove(x, 200);
-            Thread.sleep(10); // Small delay ensures apps register the drag
+        // 2. Houd de linkermuisknop ingedrukt
+        robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+        robot.delay(100);
+
+        // 3. Sleep de muis in kleine stapjes naar het eindpunt
+        int steps = 50;
+        for (int i = 1; i <= steps; i++) {
+            int currentX = startX + ((endX - startX) * i) / steps;
+            int currentY = startY + ((endY - startY) * i) / steps;
+            robot.mouseMove(currentX, currentY);
+            robot.delay(10); // Korte pauze voor een vloeiende beweging
         }
 
-        // Release mouse button
+        // 4. Laat de linkermuisknop weer los
         robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
     }
 
