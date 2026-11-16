@@ -26,7 +26,7 @@ public class SeleniumOracleFusion extends SeleniumService {
 
     private static final Logger log = LoggingConfiguration.getMainLog(SeleniumOracleFusion.class);
 
-    public static final String UMR = "https://apps.powerapps.com/play/e/default-1183410f-6cf0-4d82-976e-994c1ce4cfce/a/0c43e546-db86-4872-bb0a-14507d7580a1?tenantId=1183410f-6cf0-4d82-976e-994c1ce4cfce?ItemID=4692";
+    public static final String UMR = "https://apps.powerapps.com/play/e/default-1183410f-6cf0-4d82-976e-994c1ce4cfce/a/0c43e546-db86-4872-bb0a-14507d7580a1?tenantId=1183410f-6cf0-4d82-976e-994c1ce4cfce?ItemID=4696";
     public List<String> errors = new ArrayList<String>();
 
     public static void main(String[] args) {
