@@ -3,6 +3,7 @@ package be.home.main.tools;
 import be.home.common.enums.ImageFormat;
 import be.home.common.model.windows.WindowAligner;
 import be.home.common.model.windows.WindowTO;
+import be.home.common.utils.DateUtils;
 import be.home.common.utils.WinUtils;
 import com.github.romankh3.image.comparison.ImageComparison;
 import com.github.romankh3.image.comparison.ImageComparisonUtil;
@@ -28,13 +29,11 @@ import com.sun.jna.platform.win32.WinUser;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.imageio.ImageIO;
-import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
-
-import static com.sun.jna.platform.win32.WinUser.SWP_NOSIZE;
-import static com.sun.jna.platform.win32.WinUser.SWP_NOZORDER;
 
 
 public class OCR {
@@ -43,32 +42,13 @@ public class OCR {
             File.separator + "Config" + File.separator + "Java" + File.separator + "tessdata";
     public static final String DATA_PATH = "C:\\My Data\\tessdata\\";
 
-    public static void main(String[] args) throws AWTException, IOException {
+    public static void main(String[] args) throws AWTException, IOException, InterruptedException {
         //showOpenWindows();
 
         File fileA = new File("C:\\My Programs\\OneDrive\\Config\\Java\\tessdata\\DoubleSpeed.bmp");
         //System.out.println("Busy: " + checkIfStarted(fileA));
         //System.out.println("Start: " + checkIfNotStarted(fileA));
 
-
-        if (false) {
-            String title = "Total Commander";
-            WindowTO window = findWindowByPartialTitle(title);
-            if (window.getHandle() == null) {
-                System.err.println("Window " + title + " not found");
-            } else {
-                System.out.println(String.format("%-40.40s | X:%-4d Y:%-4d        | %-7d x %-7d",
-                        window.getTitle(), window.getBounds().x, window.getBounds().y, window.getBounds().width, window.getBounds().height));
-                activateWindow(window.getHandle());
-                //mouseClickRelativeToWindow(window.getBounds(), 700, 200);
-                try {
-                    makeScreenshot(window.getBounds(), "TotalCommander.png", ImageFormat.PNG);
-                    makeScreenshotRelativeToWindow(window.getBounds(), 21, 263, 131, 20, "TcmdTest.png", ImageFormat.PNG);
-                } catch (AWTException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
 
         if (true) {
             WindowTO window2 = findWindowByPartialTitle("LDPlayer");
@@ -91,8 +71,7 @@ public class OCR {
              //   sleep(TimeUnit.MILLISECONDS, 200);
             //}
 
-            //Rectangle playButton1 = new Rectangle(437, 52, 32, 26);
-            Rectangle playButton2 = new Rectangle(441, 56, 24, 22);
+            Rectangle startButton = new Rectangle(441, 56, 24, 22);
 
 
             //makeScreenshot2(window2, "PlayStart.bmp", playButton2);
@@ -104,13 +83,24 @@ public class OCR {
             //for (int i=1; i <= 10; i++){
             Rectangle replayButton = new Rectangle(120, 900, 100, 40);
             Rectangle fightButton = new Rectangle(345, 940, 85, 40);
-            makeScreenshot2(window2, "Fight.bmp", fightButton);
-            String text = getOCRText(window2, fightButton);
-            System.out.println(text);
-            boolean cont = processWindow(window2, playButton2, replayButton, fightButton);
-             //   if (!cont) break;
-             //   sleep(TimeUnit.SECONDS, 2);
-            //}
+            Rectangle energyButton = new Rectangle(68, 56, 60, 30);
+            Rectangle heroecapButton = new Rectangle(145, 360, 270, 35);
+            //makeScreenshot2(window2, "heroecap.bmp", heroecapButton);
+            int wait = 1;
+
+            if (true) {
+                do {
+                    mouseMoveRelativeToWindow(window2.getBounds(), 0, 0);
+                    wait = processWindow(window2, startButton, replayButton, fightButton, energyButton, heroecapButton);
+                    if (wait == -1){
+                        break;
+                    }
+                    sleep(TimeUnit.SECONDS, wait);
+                }
+                while (true);
+            }
+
+
         }
 
     }
@@ -159,45 +149,122 @@ public class OCR {
         );
     }
 
-    public static boolean processWindow (WindowTO window, Rectangle playButton, Rectangle replayButton, Rectangle fightButton) throws AWTException, IOException {
+    public static int processWindow (WindowTO window, Rectangle startButton, Rectangle replayButton, Rectangle fightButton, Rectangle energyButton, Rectangle heroecapButton) throws AWTException, IOException, InterruptedException {
 
-        File dsFile = makeScreenshot2(window, "Play.bmp", playButton);
+        File dsFile = makeScreenshot2(window, "Start.bmp", startButton);
         //File dsFile = makeScreenshotRelativeToWindow(window.getBounds(), 350, 42, 25, 22, "DoubleSpeed.bmp", ImageFormat.BMP);
-        boolean busy = checkIfStarted(dsFile);
-        System.out.println("Busy: " + busy);
-        if (!busy){
+        int wait = 5;
+        if (checkIfStarted(dsFile)){
+            System.out.println("Busy");
+            return 20;
+        }
+        else if (checkIfNotStarted(dsFile)) {
+            System.out.println("Ready to start");
+            System.out.println("Clicking on play button...");
+            mouseClickRelativeToWindow(window.getBounds(), startButton);
+            return 10;
+        }
+        else if (checkButton(window, replayButton, "REPLAY")) {
 
-            boolean readyToStart = checkIfNotStarted(dsFile);
-            System.out.println("Ready to start: " + readyToStart);
-            if (readyToStart) {
-                System.out.println("Clicking on double speed button...");
-                mouseClickRelativeToWindow(window.getBounds(), playButton);
-            } else {
-                // World Energy
-                //makeScreenshotRelativeToWindow(window.getBounds(), 56, 48, 45, 15, "EnergyRel.png", ImageFormat.PNG);
-                // Replay Button
-                //makeScreenshotRelativeToWindow(window.getBounds(), 92, 722, 90, 30, "Replay.png", ImageFormat.PNG);
-                String text = getOCRText(window, replayButton);
-                if (StringUtils.isNotBlank(text)){
-                    if (text.trim().equalsIgnoreCase("REPLAY")){
-                            System.out.println("Press the replay button");
-                        mouseClickRelativeToWindow(window.getBounds(), replayButton);
+            System.out.println("Wait till all loot is loaded on the screen");
+            sleep(TimeUnit.SECONDS, 10);
+            Rectangle lootRect = new Rectangle(50, 400, 460, 250);
+            int startX = lootRect.x + 50;
+            int startY = lootRect.y + lootRect.height/2;
+            int i=1;
+            List<BufferedImage> images = new ArrayList<>();
+            //mouseMoveRelativeToWindow(window.getBounds(), startX, startY);
+            boolean compare = false;
+            for (i=1; i <= 6; i++) {
+                System.out.println("Dragging mouse to see all loot");
+                //makeScreenshot2(window, "Loot"+ String.valueOf(i) + ".bmp", lootRect);
+                BufferedImage image = getBufferedImage(window, lootRect);
+                if (i > 1){
+                    compare = compareImageLib(images.get(images.size()-1), image);
+                    System.out.println("compare " + i + ": " + compare);
+                    if (compare){
+                        break;
                     }
                     else {
-                        text = getOCRText(window, fightButton);
-                        if (text.trim().equalsIgnoreCase("FIGHT!")){
-                            System.out.println("Press the fight button");
-                            mouseClickRelativeToWindow(window.getBounds(), fightButton);
-                        }
+                        images.add(image);
                     }
+                }
+                else {
+                    images.add(image);
+                }
+                mouseDrag(window.getBounds(), startX, startY, startX + 220, startY);
+                //sleep(TimeUnit.SECONDS, 1);
+
+            }
+            String heroesTroopsFile = "HeroesTroops.bmp";
+            Rectangle heroesRect = new Rectangle(50, 650, 480, 250);
+            //File heroesFile = makeScreenshot2(window, heroesTroopsFile, heroesRect);
+            BufferedImage heroesImage = getBufferedImage(window, heroesRect);
+            images.add(heroesImage);
+            File combinedLootFile = new File(DATA_PATH + "LootCombined. " + DateUtils.formatDate(new Date(), DateUtils.YYYYMMDDHHMMSS) + ".png");
+            combineVertically(images, combinedLootFile);
+            System.out.println("Loot file: " + combinedLootFile.getAbsolutePath());
+
+            System.out.println("Press the replay button");
+            mouseClickRelativeToWindow(window.getBounds(), replayButton);
+            return 1;
+        }
+        else if (checkButton(window, heroecapButton, "HERO CAP REACHED!")) {
+            System.out.println("HERO CAP REACHED");
+            return -1;
+        }
+            else if (checkButton(window, fightButton, "FIGHT!")) {
+            System.out.println("Press the fight button");
+            String energy = getOCRText(window, energyButton);
+            System.out.println("Energy: " + energy);
+            int intEnergy = getEnergy(energy);
+            System.out.println("Converted Energy: " + intEnergy);
+            mouseClickRelativeToWindow(window.getBounds(), fightButton);
+            return 5;
+        }
+        return wait;
+
+    }
+
+    public static int getEnergy(String energyText){
+        int energy = -1;
+        if (StringUtils.isNotBlank(energyText)){
+            String energyArr[] = energyText.split("/");
+            if (energyArr.length >= 2){
+                try {
+                    energy = Integer.valueOf(energyArr[0]);
+                }
+                catch (NumberFormatException ex){
+                    System.err.println("Inccorect number: " + energyArr[0]);
                 }
             }
 
         }
-        return busy;
-
+        return energy;
     }
 
+    public static boolean checkAndClickButton(WindowTO window, Rectangle bounds, String buttonText) throws IOException {
+        String text = getOCRText(window, bounds);
+        boolean buttonFound = false;
+        if (StringUtils.isNotBlank(text)) {
+            if (text.trim().equalsIgnoreCase(buttonText)) {
+                mouseClickRelativeToWindow(window.getBounds(), bounds);
+                buttonFound = true;
+            }
+        }
+        return buttonFound;
+    }
+
+    public static boolean checkButton(WindowTO window, Rectangle bounds, String buttonText) throws IOException {
+        String text = getOCRText(window, bounds);
+        boolean buttonFound = false;
+        if (StringUtils.isNotBlank(text)) {
+            if (text.trim().equalsIgnoreCase(buttonText)) {
+                buttonFound = true;
+            }
+        }
+        return buttonFound;
+    }
     public static boolean compareImg(File fileA, File fileB){
         int threshold = 50;
         try {
@@ -461,6 +528,38 @@ public class OCR {
 
     }
 
+    public static boolean compareImageLib(BufferedImage imageA, BufferedImage imageB) {
+
+        boolean compare = false;
+
+
+        // 2. Initialiseer de vergelijking
+        ImageComparison imageComparison = new ImageComparison(imageA, imageB);
+
+        // 3. Configureer perceptuele tolerantie
+        //imageComparison.setThreshold(2);
+
+        // Optioneel: Sta toe dat een klein percentage van de totale pixels compleet mag afwijken
+        // (handig voor een knipperende cursor of een dynamisch element)
+        imageComparison.setAllowingPercentOfDifferentPixels(4);
+
+        // Kwalificeer individuele pixels als gelijk als het kleurverschil binnen 15% valt (handig voor compressie)
+        imageComparison.setPixelToleranceLevel(0.10);
+
+        // Groepeer afwijkende pixels pas in een rode marker als de foutzone groter is dan 4x4 pixels
+        imageComparison.setMinimalRectangleSize(4);
+
+        // 4. Voer de vergelijking uit
+        ImageComparisonResult result = imageComparison.compareImages();
+
+        if (result.getImageComparisonState().equals(ImageComparisonState.MATCH)
+        ){
+            compare = true;
+        }
+        return compare;
+
+    }
+
     public static boolean compareImageSequence(File fileA, String fileName, int limit) {
 
         boolean compare = false;
@@ -556,6 +655,11 @@ public class OCR {
         }
     }
 
+    enum MOUSE {
+        MOVE,
+        CLICK
+    }
+
     public static int getRandomNumber(int min, int max){
 
         // Generates a random number between 5 (inclusive) and 11 (exclusive) -> [5, 10]
@@ -591,10 +695,85 @@ public class OCR {
         return filename;
     }
 
-    public void mouseDrag(int startX, int startY, int endX, int endY) throws AWTException, InterruptedException {
+    public static void mouseMoveRelativeToWindow(Rectangle windowBounds, int x, int y) {
+        mouseRelativeToWindow(windowBounds, MOUSE.MOVE, x, y);
+    }
+
+    public static void mouseClickRelativeToWindow(Rectangle windowBounds, int x, int y) {
+        mouseRelativeToWindow(windowBounds, MOUSE.CLICK, x, y);
+    }
+
+    public static void mouseRelativeToWindow(Rectangle windowBounds, MOUSE mouse, int x, int y){
+
+        // left + top: coordinants of the window
+        // x + y : position relative to the window
+
+        try {
+            // Instantiate the Robot class
+            Robot robot = new Robot();
+
+            // 1. Get the physical center
+            double physicalX = windowBounds.x + x;
+            double physicalY = windowBounds.y + y;
+
+            // 2. Get Windows 11 scaling factor (1.25 on your system)
+            GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+            AffineTransform transform = gd.getDefaultConfiguration().getDefaultTransform();
+            double scaleX = transform.getScaleX();
+            double scaleY = transform.getScaleY();
+
+            // 3. Convert to Java Robot coordinates
+            int robotX = (int) Math.round(physicalX / scaleX);
+            int robotY = (int) Math.round(physicalY / scaleY);
+
+            // Move the mouse pointer to the specific (X, Y) coordinates
+            robot.mouseMove(robotX, robotY);
+
+            if (mouse.equals(MOUSE.CLICK)){
+                // Press the left mouse button
+                robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+
+                // Optional delay between press and release to simulate a realistic click
+                robot.delay(getRandomNumber(40,80));
+
+                // Release the left mouse button
+                robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+            }
+
+            System.out.println("Successfully clicked/moved at position: (" + robotX + ", " + robotY + ")");
+
+        } catch (AWTException e) {
+            System.err.println("The platform configuration does not allow low-level input control.");
+            e.printStackTrace();
+        }
+    }
+
+    public static void mouseDrag(Rectangle windowBounds, int startX, int startY, int endX, int endY) throws AWTException, InterruptedException {
+
+        // Instantiate the Robot class
         Robot robot = new Robot();
 
-        robot.mouseMove(startX, startY);
+        // 1. Get the physical center
+        double physicalX = windowBounds.x + startX;
+        double physicalY = windowBounds.y + startY;
+
+        double physicalEndX = windowBounds.x + endX;
+        double physicalEndY = windowBounds.y + endY;
+
+        // 2. Get Windows 11 scaling factor (1.25 on your system)
+        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        AffineTransform transform = gd.getDefaultConfiguration().getDefaultTransform();
+        double scaleX = transform.getScaleX();
+        double scaleY = transform.getScaleY();
+
+        // 3. Convert to Java Robot coordinates
+        int robotX = (int) Math.round(physicalX / scaleX);
+        int robotY = (int) Math.round(physicalY / scaleY);
+        int robotEndX = (int) Math.round(physicalEndX / scaleX);
+        int robotEndY = (int) Math.round(physicalEndY / scaleY);
+        //robot.mouseMove(startX, startY);
+        robot.mouseMove(robotX, robotY);
+
         robot.delay(200);
 
         // 2. Houd de linkermuisknop ingedrukt
@@ -604,14 +783,50 @@ public class OCR {
         // 3. Sleep de muis in kleine stapjes naar het eindpunt
         int steps = 50;
         for (int i = 1; i <= steps; i++) {
-            int currentX = startX + ((endX - startX) * i) / steps;
-            int currentY = startY + ((endY - startY) * i) / steps;
+            int currentX = robotX + ((robotEndX - robotX) * i) / steps;
+            int currentY = robotY + ((robotEndY - robotY) * i) / steps;
             robot.mouseMove(currentX, currentY);
             robot.delay(10); // Korte pauze voor een vloeiende beweging
         }
+        System.out.println("Drag Mouse start position: (" + robotX + ", " + robotY + ")");
+        System.out.println("Drag Mouse End position: (" + robotEndX + ", " + robotEndY + ")");
 
         // 4. Laat de linkermuisknop weer los
         robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
     }
+    public static void combineHorizontally(List<BufferedImage> images, File outputFile) throws IOException {
+        if (images == null || images.isEmpty()) return;
 
+        int singleWidth = images.get(0).getWidth();
+        int singleHeight = images.get(0).getHeight();
+        int totalWidth = singleWidth * images.size();
+
+        // Create the canvas (use TYPE_INT_ARGB to support transparency)
+        BufferedImage combined = new BufferedImage(totalWidth, singleHeight, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = combined.createGraphics();
+
+        for (int i = 0; i < images.size(); i++) {
+            g.drawImage(images.get(i), i * singleWidth, 0, null);
+        }
+        g.dispose();
+
+        ImageIO.write(combined, "PNG", outputFile);
+    }
+    public static void combineVertically(List<BufferedImage> images, File outputFile) throws IOException {
+        if (images == null || images.isEmpty()) return;
+
+        int singleWidth = images.get(0).getWidth();
+        int singleHeight = images.get(0).getHeight();
+        int totalHeight = singleHeight * images.size();
+
+        BufferedImage combined = new BufferedImage(singleWidth, totalHeight, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = combined.createGraphics();
+
+        for (int i = 0; i < images.size(); i++) {
+            g.drawImage(images.get(i), 0, i * singleHeight, null);
+        }
+        g.dispose();
+
+        ImageIO.write(combined, "PNG", outputFile);
+    }
 }
