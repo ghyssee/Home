@@ -197,57 +197,53 @@ public class AutomationUtil{
             return randomNumInclusive;
         }
 
-        public void mouseMoveRelativeToWindow(Rectangle windowBounds, int x, int y) {
+        public void mouseMoveRelativeToWindow(Rectangle windowBounds, int x, int y) throws AWTException {
             mouseRelativeToWindow(windowBounds, MOUSE_TYPE.MOVE, x, y);
         }
 
-        public void mouseClickRelativeToWindow(Rectangle windowBounds, int x, int y) {
+        public void mouseClickRelativeToWindow(Rectangle windowBounds, int x, int y) throws AWTException {
             mouseRelativeToWindow(windowBounds, MOUSE_TYPE.CLICK, x, y);
         }
 
-        public void mouseRelativeToWindow(Rectangle windowBounds, MOUSE_TYPE mouse, int x, int y){
+        public void mouseRelativeToWindow(Rectangle windowBounds, MOUSE_TYPE mouse, int x, int y) throws AWTException {
 
             // left + top: coordinants of the window
             // x + y : position relative to the window
 
-            try {
-                // Instantiate the Robot class
-                Robot robot = new Robot();
 
-                // 1. Get the physical center
-                double physicalX = windowBounds.x + x;
-                double physicalY = windowBounds.y + y;
+            // Instantiate the Robot class
+            Robot robot = new Robot();
 
-                // 2. Get Windows 11 scaling factor (1.25 on your system)
-                GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-                AffineTransform transform = gd.getDefaultConfiguration().getDefaultTransform();
-                double scaleX = transform.getScaleX();
-                double scaleY = transform.getScaleY();
+            // 1. Get the physical center
+            double physicalX = windowBounds.x + x;
+            double physicalY = windowBounds.y + y;
 
-                // 3. Convert to Java Robot coordinates
-                int robotX = (int) Math.round(physicalX / scaleX);
-                int robotY = (int) Math.round(physicalY / scaleY);
+            // 2. Get Windows 11 scaling factor (1.25 on your system)
+            GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+            AffineTransform transform = gd.getDefaultConfiguration().getDefaultTransform();
+            double scaleX = transform.getScaleX();
+            double scaleY = transform.getScaleY();
 
-                // Move the mouse pointer to the specific (X, Y) coordinates
-                robot.mouseMove(robotX, robotY);
+            // 3. Convert to Java Robot coordinates
+            int robotX = (int) Math.round(physicalX / scaleX);
+            int robotY = (int) Math.round(physicalY / scaleY);
 
-                if (mouse.equals(MOUSE_TYPE.CLICK)){
-                    // Press the left mouse button
-                    robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+            // Move the mouse pointer to the specific (X, Y) coordinates
+            robot.mouseMove(robotX, robotY);
 
-                    // Optional delay between press and release to simulate a realistic click
-                    robot.delay(getRandomNumber(40,80));
+            if (mouse.equals(MOUSE_TYPE.CLICK)){
+                // Press the left mouse button
+                robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
 
-                    // Release the left mouse button
-                    robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
-                }
+                // Optional delay between press and release to simulate a realistic click
+                robot.delay(getRandomNumber(40,80));
 
-                System.out.println("Successfully clicked/moved at position: (" + robotX + ", " + robotY + ")");
-
-            } catch (AWTException e) {
-                System.err.println("The platform configuration does not allow low-level input control.");
-                e.printStackTrace();
+                // Release the left mouse button
+                robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
             }
+
+            System.out.println("Successfully clicked/moved at position: (" + robotX + ", " + robotY + ")");
+
         }
 
         public void mouseDrag(Rectangle windowBounds, int startX, int startY, int endX, int endY) throws AWTException, InterruptedException {

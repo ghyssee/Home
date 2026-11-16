@@ -1,22 +1,15 @@
 package be.home.main.tools;
 
-import be.home.common.enums.ImageFormat;
 import be.home.common.model.windows.AutomationUtil;
-import be.home.common.model.windows.MOUSE_TYPE;
 import be.home.common.model.windows.WindowTO;
 import be.home.common.utils.DateUtils;
 import be.home.common.utils.WinUtils;
-import be.home.test.main.A;
-import com.github.romankh3.image.comparison.ImageComparison;
-import com.github.romankh3.image.comparison.ImageComparisonUtil;
-import com.github.romankh3.image.comparison.model.ImageComparisonResult;
-import com.github.romankh3.image.comparison.model.ImageComparisonState;
+
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
 
 import java.awt.*;
 import java.awt.event.InputEvent;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -27,14 +20,15 @@ import javax.imageio.ImageIO;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class OCR {
 
     public static final String CONFIG_PATH = WinUtils.getOneDrivePath() +
             File.separator + "Config" + File.separator + "Java" + File.separator + "tessdata";
+    public static AtomicInteger TOTAL_RECRUITS = new AtomicInteger(0);
 
     public static void main(String[] args) throws AWTException, IOException, InterruptedException {
         //showOpenWindows();
@@ -46,8 +40,7 @@ public class OCR {
 
 
         if (true) {
-            //WindowTO window2 = au.findWindowByPartialTitle("LDPlayer");
-            WindowTO window2 = au.findWindowByPartialTitle("test");
+            WindowTO window2 = au.findWindowByPartialTitle("LDPlayer");
         //Rectangle bounds = WindowAligner.getRobotCompatibleBounds(window2.getHandle());
 
             System.out.println(String.format("%-40.40s | X:%-4d Y:%-4d        | %-7d x %-7d",
@@ -68,9 +61,6 @@ public class OCR {
             //}
 
             Rectangle startButton = new Rectangle(441, 56, 24, 22);
-
-
-            //makeScreenshot2(window2, "PlayStart.bmp", playButton2);
             //for (int i=1; i <= 5; i++){
             //    makeScreenshot2(window2, "PlayBusy" + String.valueOf(i) + ".bmp", playButton2);
             //    sleep(TimeUnit.MILLISECONDS, 200);
@@ -81,17 +71,21 @@ public class OCR {
             Rectangle fightButton = new Rectangle(345, 940, 85, 40);
             Rectangle energyButton = new Rectangle(68, 56, 60, 30);
             Rectangle heroecapButton = new Rectangle(145, 360, 270, 35);
+            Rectangle recruitButton = new Rectangle(390, 310, 40, 20);
+            //System.out.println(getOCRText(window2, recruitButton));
+
+            au.makeScreenshotWithinWindow(window2, "recruitRect.bmp", recruitButton);
             //makeScreenshot2(window2, "heroecap.bmp", heroecapButton);
             int wait = 1;
 
             if (true) {
                 do {
                     au.mouseMoveRelativeToWindow(window2.getBounds(), 0, 0);
-                    wait = processWindow(window2, startButton, replayButton, fightButton, energyButton, heroecapButton);
+                    wait = processWindow(window2, startButton, replayButton, fightButton, energyButton, heroecapButton, recruitButton);
                     if (wait == -1){
                         break;
                     }
-                    sleep(TimeUnit.SECONDS, wait);
+                   sleep(TimeUnit.SECONDS, wait);
                 }
                 while (true);
             }
@@ -102,7 +96,7 @@ public class OCR {
     }
 
 
-    public static int processWindow (WindowTO window, Rectangle startButton, Rectangle replayButton, Rectangle fightButton, Rectangle energyButton, Rectangle heroecapButton) throws AWTException, IOException, InterruptedException {
+    public static int processWindow (WindowTO window, Rectangle startButton, Rectangle replayButton, Rectangle fightButton, Rectangle energyButton, Rectangle heroecapButton, Rectangle recruitButton) throws AWTException, IOException, InterruptedException {
 
         AutomationUtil au = new AutomationUtil();
         File dsFile = au.makeScreenshotWithinWindow(window, "Start.bmp", startButton);
@@ -119,7 +113,8 @@ public class OCR {
             return 10;
         }
         else if (checkButton(window, replayButton, "REPLAY")) {
-
+            TOTAL_RECRUITS.addAndGet(processRecruits(window, recruitButton));
+            System.out.println("Total recruits: " + TOTAL_RECRUITS.get());
             System.out.println("Wait till all loot is loaded on the screen");
             sleep(TimeUnit.SECONDS, 10);
             Rectangle lootRect = new Rectangle(50, 400, 460, 250);
@@ -178,6 +173,24 @@ public class OCR {
         }
         return wait;
 
+    }
+
+    public static int processRecruits(WindowTO window, Rectangle recruitRect) throws IOException {
+        String recruits = getOCRText(window, recruitRect);
+        System.out.println("Getting number of recruits: " + recruits);
+        int totalRecruits = 0;
+        if (StringUtils.isNotBlank(recruits)){
+            // replace all chars except 0-9
+            recruits = recruits.replaceAll("[^0-9 ]", "");
+            try {
+                totalRecruits = Integer.valueOf(recruits);
+                System.out.println("recruits: " + totalRecruits);
+            }
+            catch (NumberFormatException ex){
+                System.out.println("Recruits conversion problem: " + recruits);
+            }
+        }
+        return totalRecruits;
     }
 
     public static int getEnergy(String energyText){
