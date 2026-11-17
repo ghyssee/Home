@@ -10,6 +10,8 @@ import net.sourceforge.tess4j.TesseractException;
 
 import java.awt.*;
 import java.awt.event.InputEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -18,8 +20,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.io.RandomAccessFile;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -30,34 +30,28 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class OCR {
 
     public static JFrame frame;
+    private static boolean isRunning = true;
     public static JTextArea textArea = new JTextArea();;
     public static final String CONFIG_PATH = WinUtils.getOneDrivePath() +
             File.separator + "Config" + File.separator + "Java" + File.separator + "tessdata";
     public static AtomicInteger TOTAL_RECRUITS = new AtomicInteger(0);
 
     public static void main(String[] args) throws AWTException, IOException, InterruptedException {
-        //showOpenWindows();
 
-        File fileA = new File("C:\\My Programs\\OneDrive\\Config\\Java\\tessdata\\DoubleSpeed.bmp");
-        //System.out.println("Busy: " + checkIfStarted(fileA));
-        //System.out.println("Start: " + checkIfNotStarted(fileA));
+        startBatch();
+    }
+
+    public static void startBatch() throws AWTException, IOException, InterruptedException {
+
         AutomationUtil au = new AutomationUtil();
-        //au.alertBox("E&P", "Recruits are full", JOptionPane.INFORMATION_MESSAGE);
-        showFeed("Line 1");
-        showFeed("Line 2");
-        showFeed("Line 3");
-        closeFeed();
 
-
-
-
-
-        if (false) {
+        if (true) {
+            showFeed("Started at " + DateUtils.formatDate(new Date(), DateUtils.DD_MM_YYYY_HH_MM_SS));
             WindowTO window2 = au.findWindowByPartialTitle("LDPlayer");
-        //Rectangle bounds = WindowAligner.getRobotCompatibleBounds(window2.getHandle());
+            //Rectangle bounds = WindowAligner.getRobotCompatibleBounds(window2.getHandle());
 
             System.out.println(String.format("%-40.40s | X:%-4d Y:%-4d        | %-7d x %-7d",
-                window2.getTitle(), window2.getBounds().x, window2.getBounds().y, window2.getBounds().width, window2.getBounds().height));
+                    window2.getTitle(), window2.getBounds().x, window2.getBounds().y, window2.getBounds().width, window2.getBounds().height));
             au.activateWindow(window2.getHandle());
             Rectangle windowBounds = new Rectangle(110, 6, 473, 812);
             au.moveVisibleWindow(window2.getHandle(), 110, 6);
@@ -69,8 +63,8 @@ public class OCR {
             //makeScreenshot2(window2, "PlayStart.bmp", 437, 52, 32, 26);
             //makeScreenshot2(window2, "PlayStart2.bmp", 349, 41, 25, 22);
             //for (int i= 1; i <= 5; i++){
-             //   makeScreenshot2(window2, "PlayBusy" + String.valueOf(i) + ".bmp", 437, 52, 32, 26);
-             //   sleep(TimeUnit.MILLISECONDS, 200);
+            //   makeScreenshot2(window2, "PlayBusy" + String.valueOf(i) + ".bmp", 437, 52, 32, 26);
+            //   sleep(TimeUnit.MILLISECONDS, 200);
             //}
 
             Rectangle startButton = new Rectangle(441, 56, 24, 22);
@@ -95,16 +89,17 @@ public class OCR {
                 do {
                     au.mouseMoveRelativeToWindow(window2.getBounds(), 0, 0);
                     wait = processWindow(window2, startButton, replayButton, fightButton, energyButton, heroecapButton, recruitButton);
-                    if (wait == -1){
+                    if (wait == -1 || !isRunning){
                         break;
                     }
-                   sleep(TimeUnit.SECONDS, wait);
+                    sleep(TimeUnit.SECONDS, wait);
                 }
-                while (true);
+                while (isRunning);
             }
 
 
         }
+        closeFeed();
 
     }
 
@@ -167,7 +162,7 @@ public class OCR {
             au.combineVertically(images, combinedLootFile);
             logInfo("Loot file: " + combinedLootFile.getAbsolutePath());
 
-            if (TOTAL_RECRUITS.get() > 350){
+            if (TOTAL_RECRUITS.get() > 330){
                 au.alertBox("E&P", "Recruits are full", JOptionPane.INFORMATION_MESSAGE);
                 return -1;
             }
@@ -457,7 +452,7 @@ public class OCR {
 
     public static void logInfo(String message){
         System.out.println(message);
-        showFeed(message + "\n");
+        showFeed(message);
 
     }
 
@@ -466,8 +461,30 @@ public class OCR {
             // 1. Only create the window and textArea if they don't exist yet
             if (frame == null) {
                 frame = new JFrame("Log Viewer");
-                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+
                 frame.setSize(600, 400);
+
+
+                frame.addWindowListener(new WindowAdapter() {
+                    @Override
+                    public void windowClosing(WindowEvent e) {
+                        int choice = JOptionPane.showConfirmDialog(
+                                frame,
+                                "Are you sure you want to exit? Unsaved changes will be lost.",
+                                "Confirm Exit",
+                                JOptionPane.YES_NO_OPTION,
+                                JOptionPane.WARNING_MESSAGE
+                        );
+
+                        if (choice == JOptionPane.YES_OPTION) {
+                            isRunning = false;
+                            frame.dispose();
+                        }
+                        // If NO_OPTION or CLOSED_OPTION (clicking 'X' on dialog), do nothing
+                    }
+                });
 
 
                 textArea = new JTextArea();
