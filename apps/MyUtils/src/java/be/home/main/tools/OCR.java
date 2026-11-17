@@ -17,6 +17,9 @@ import java.io.IOException;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.io.RandomAccessFile;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -26,6 +29,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class OCR {
 
+    public static JFrame frame;
+    public static JTextArea textArea = new JTextArea();;
     public static final String CONFIG_PATH = WinUtils.getOneDrivePath() +
             File.separator + "Config" + File.separator + "Java" + File.separator + "tessdata";
     public static AtomicInteger TOTAL_RECRUITS = new AtomicInteger(0);
@@ -37,9 +42,17 @@ public class OCR {
         //System.out.println("Busy: " + checkIfStarted(fileA));
         //System.out.println("Start: " + checkIfNotStarted(fileA));
         AutomationUtil au = new AutomationUtil();
+        //au.alertBox("E&P", "Recruits are full", JOptionPane.INFORMATION_MESSAGE);
+        showFeed("Line 1");
+        showFeed("Line 2");
+        showFeed("Line 3");
+        closeFeed();
 
 
-        if (true) {
+
+
+
+        if (false) {
             WindowTO window2 = au.findWindowByPartialTitle("LDPlayer");
         //Rectangle bounds = WindowAligner.getRobotCompatibleBounds(window2.getHandle());
 
@@ -103,19 +116,19 @@ public class OCR {
         //File dsFile = makeScreenshotRelativeToWindow(window.getBounds(), 350, 42, 25, 22, "DoubleSpeed.bmp", ImageFormat.BMP);
         int wait = 5;
         if (checkIfStarted(dsFile)){
-            System.out.println("Busy");
+            logInfo("Busy");
             return 20;
         }
         else if (checkIfNotStarted(dsFile)) {
-            System.out.println("Ready to start");
-            System.out.println("Clicking on play button...");
+            logInfo("Ready to start");
+            logInfo("Clicking on play button...");
             au.mouseClickRelativeToWindow(window.getBounds(), startButton);
             return 10;
         }
         else if (checkButton(window, replayButton, "REPLAY")) {
             TOTAL_RECRUITS.addAndGet(processRecruits(window, recruitButton));
-            System.out.println("Total recruits: " + TOTAL_RECRUITS.get());
-            System.out.println("Wait till all loot is loaded on the screen");
+            logInfo("Total recruits: " + TOTAL_RECRUITS.get());
+            logInfo("Wait till all loot is loaded on the screen");
             sleep(TimeUnit.SECONDS, 10);
             Rectangle lootRect = new Rectangle(50, 400, 460, 250);
             int startX = lootRect.x + 50;
@@ -125,12 +138,12 @@ public class OCR {
             //mouseMoveRelativeToWindow(window.getBounds(), startX, startY);
             boolean compare = false;
             for (i=1; i <= 6; i++) {
-                System.out.println("Dragging mouse to see all loot");
+                logInfo("Dragging mouse to see all loot");
                 //makeScreenshot2(window, "Loot"+ String.valueOf(i) + ".bmp", lootRect);
                 BufferedImage image = au.getBufferedImage(window, lootRect);
                 if (i > 1){
                     compare = au.compareImageLib(images.get(images.size()-1), image);
-                    System.out.println("compare " + i + ": " + compare);
+                    logInfo("compare " + i + ": " + compare);
                     if (compare){
                         break;
                     }
@@ -152,22 +165,45 @@ public class OCR {
             images.add(heroesImage);
             File combinedLootFile = new File(au.getDatapath() + "LootCombined. " + DateUtils.formatDate(new Date(), DateUtils.YYYYMMDDHHMMSS) + ".png");
             au.combineVertically(images, combinedLootFile);
-            System.out.println("Loot file: " + combinedLootFile.getAbsolutePath());
+            logInfo("Loot file: " + combinedLootFile.getAbsolutePath());
+
+            if (TOTAL_RECRUITS.get() > 350){
+                au.alertBox("E&P", "Recruits are full", JOptionPane.INFORMATION_MESSAGE);
+                return -1;
+            }
 
             System.out.println("Press the replay button");
             au.mouseClickRelativeToWindow(window.getBounds(), replayButton);
             return 1;
         }
         else if (checkButton(window, heroecapButton, "HERO CAP REACHED!")) {
-            System.out.println("HERO CAP REACHED");
+            logInfo("HERO CAP REACHED");
+            au.alertBox("E&P", "Hero Cap Reached", JOptionPane.INFORMATION_MESSAGE);
             return -1;
         }
-            else if (checkButton(window, fightButton, "FIGHT!")) {
-            System.out.println("Press the fight button");
+        else if (checkButton(window, fightButton, "FIGHT!")) {
+            logInfo("Press the fight button");
             String energy = getOCRText(window, energyButton);
-            System.out.println("OCR Energy: " + energy);
-            int intEnergy = getEnergy(energy);
-            System.out.println("Converted Energy: " + intEnergy);
+            logInfo("OCR Energy: " + energy);
+            if (StringUtils.isNotBlank(energy)){
+                int intEnergy = getEnergy(energy);
+                if (intEnergy == -1){
+                    logInfo("There was a problem getting the energy amount!");
+                }
+                else {
+                    logInfo("Converted Energy: " + intEnergy);
+                    if (intEnergy < 3) {
+                        wait = 120;
+                        logInfo("Not Enough Energy: " + intEnergy + ". Waiting " + wait + " seconds");
+                        // force mouseclick so that game keeps running
+                        au.mouseClickRelativeToWindow(window.getBounds(), new Rectangle(1, 1, 0, 0));
+                        return wait;
+                    }
+                }
+            }
+            else {
+                logInfo("There was a problem getting the energy amount!!!");
+            }
             au.mouseClickRelativeToWindow(window.getBounds(), fightButton);
             return 5;
         }
@@ -177,17 +213,17 @@ public class OCR {
 
     public static int processRecruits(WindowTO window, Rectangle recruitRect) throws IOException {
         String recruits = getOCRText(window, recruitRect);
-        System.out.println("Getting number of recruits: " + recruits);
+        logInfo("Getting number of recruits: " + recruits);
         int totalRecruits = 0;
         if (StringUtils.isNotBlank(recruits)){
             // replace all chars except 0-9
             recruits = recruits.replaceAll("[^0-9 ]", "");
             try {
                 totalRecruits = Integer.valueOf(recruits);
-                System.out.println("recruits: " + totalRecruits);
+                logInfo("recruits: " + totalRecruits);
             }
             catch (NumberFormatException ex){
-                System.out.println("Recruits conversion problem: " + recruits);
+                logInfo("Recruits conversion problem: " + recruits);
             }
         }
         return totalRecruits;
@@ -202,7 +238,7 @@ public class OCR {
                     energy = Integer.valueOf(energyArr[0]);
                 }
                 catch (NumberFormatException ex){
-                    System.err.println("Incorrect number: " + energyArr[0]);
+                    logInfo("Incorrect number: " + energyArr[0]);
                 }
             }
 
@@ -349,12 +385,12 @@ public class OCR {
             if (fileB.exists()) {
                 compare = au.compareImageLib(fileA, fileB);
                 if (compare) {
-                    System.out.println("Match found with " + fileB.getName());
+                    logInfo("Match found with " + fileB.getName());
                     break;
                 }
             }
             else {
-                System.err.println("File to compare with not found: 0" + fileB.getAbsolutePath());
+                logInfo("File to compare with not found: " + fileB.getAbsolutePath());
             }
         }
         return compare;
@@ -383,7 +419,7 @@ public class OCR {
             // Release the left mouse button
             robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
 
-            System.out.println("Successfully clicked at position: (" + x + ", " + y + ")");
+            logInfo("Successfully clicked at position: (" + x + ", " + y + ")");
 
         } catch (AWTException e) {
             System.err.println("The platform configuration does not allow low-level input control.");
@@ -419,5 +455,53 @@ public class OCR {
         return filename;
     }
 
+    public static void logInfo(String message){
+        System.out.println(message);
+        showFeed(message + "\n");
+
+    }
+
+    public static void showFeed(String message) {
+        SwingUtilities.invokeLater(() -> {
+            // 1. Only create the window and textArea if they don't exist yet
+            if (frame == null) {
+                frame = new JFrame("Log Viewer");
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setSize(600, 400);
+
+
+                textArea = new JTextArea();
+                textArea.setEditable(false);
+
+                JScrollPane scrollPane = new JScrollPane(textArea);
+                frame.add(scrollPane, BorderLayout.CENTER);
+
+                // Calculate the right edge of the usable screen area
+                Rectangle screenBounds = GraphicsEnvironment
+                        .getLocalGraphicsEnvironment()
+                        .getMaximumWindowBounds();
+
+                int x = screenBounds.x + screenBounds.width - frame.getWidth();
+                int y = screenBounds.y + (screenBounds.height - frame.getHeight()) / 2; // Vertically centered
+
+                frame.setLocation(x, y);
+                frame.setVisible(true);
+            }
+
+            // 2. Append the incoming message every time showFeed is called
+            textArea.append(message + "\n");
+            textArea.setCaretPosition(textArea.getDocument().getLength());
+        });
+    }
+
+    public static void closeFeed() {
+        SwingUtilities.invokeLater(() -> {
+            if (frame != null) {
+                frame.dispose();   // Closes the window and releases UI resources
+                frame = null;      // Reset so showFeed() can create a fresh one later
+                textArea = null;
+            }
+        });
+    }
 
 }

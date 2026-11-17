@@ -12,6 +12,7 @@ import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinUser;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.geom.AffineTransform;
@@ -193,7 +194,6 @@ public class AutomationUtil{
 
             // Generates a random number where BOTH min and max are inclusive
             int randomNumInclusive = ThreadLocalRandom.current().nextInt(min, max + 1);
-            System.out.println("randomNum:" + randomNumInclusive);
             return randomNumInclusive;
         }
 
@@ -424,6 +424,23 @@ public class AutomationUtil{
         g.dispose();
 
         ImageIO.write(combined, "PNG", outputFile);
+    }
+
+    public void alertBox(String title, String message, int messageType){
+        /* message types:
+            JOptionPane.INFORMATION_MESSAGE
+        JOptionPane.WARNING_MESSAGE
+        JOptionPane.ERROR_MESSAGE
+        JOptionPane.QUESTION_MESSAGE
+        JOptionPane.PLAIN_MESSAGE
+         */
+        JOptionPane.showMessageDialog(
+                null,                                 // Parent component (null centers it on screen)
+                message, // Message body
+                title,                 // Window title
+                messageType           // Icon type
+        );
+
     }
 
     }
