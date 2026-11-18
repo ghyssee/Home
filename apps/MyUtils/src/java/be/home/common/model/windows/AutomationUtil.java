@@ -205,6 +205,18 @@ public class AutomationUtil{
             mouseRelativeToWindow(windowBounds, MOUSE_TYPE.CLICK, x, y);
         }
 
+        public void mouseMoveRelativeToWindow(Rectangle windowBounds, Rectangle bounds) throws AWTException {
+            double physicalX = bounds.x + (bounds.width / 2.0);
+            double physicalY = bounds.y + (bounds.height / 2.0);
+            mouseMoveRelativeToWindow(windowBounds, (int) Math.round(physicalX), (int) Math.round(physicalY));
+        }
+
+        public void mouseClickRelativeToWindow(Rectangle windowBounds, Rectangle bounds) throws AWTException {
+            double physicalX = bounds.x + (bounds.width / 2.0);
+            double physicalY = bounds.y + (bounds.height / 2.0);
+            mouseClickRelativeToWindow(windowBounds, (int) Math.round(physicalX), (int) Math.round(physicalY));
+        }
+
         public void mouseRelativeToWindow(Rectangle windowBounds, MOUSE_TYPE mouse, int x, int y) throws AWTException {
 
             // left + top: coordinants of the window
@@ -293,6 +305,7 @@ public class AutomationUtil{
             robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
         }
 
+        /*
         public void mouseClickRelativeToWindow(Rectangle bounds, Rectangle button) throws AWTException {
 
             // left + top: coordinants of the window
@@ -332,6 +345,7 @@ public class AutomationUtil{
 
             System.out.println("Successfully clicked at position: (" + robotX + ", " + robotY + ")");
         }
+        */
 
     public boolean compareImageLib(File fileA, File fileB) {
 
