@@ -217,10 +217,11 @@ public class AutomationUtil{
             mouseClickRelativeToWindow(windowBounds, (int) Math.round(physicalX), (int) Math.round(physicalY));
         }
 
-        public void mouseRelativeToWindow(Rectangle windowBounds, MOUSE_TYPE mouse, int x, int y) throws AWTException {
+        public Rectangle mouseRelativeToWindow(Rectangle windowBounds, MOUSE_TYPE mouse, int x, int y) throws AWTException {
 
             // left + top: coordinants of the window
             // x + y : position relative to the window
+            Rectangle dragRect = new Rectangle();
 
 
             // Instantiate the Robot class
@@ -237,11 +238,11 @@ public class AutomationUtil{
             double scaleY = transform.getScaleY();
 
             // 3. Convert to Java Robot coordinates
-            int robotX = (int) Math.round(physicalX / scaleX);
-            int robotY = (int) Math.round(physicalY / scaleY);
+            dragRect.x = (int) Math.round(physicalX / scaleX);
+            dragRect.y = (int) Math.round(physicalY / scaleY);
 
             // Move the mouse pointer to the specific (X, Y) coordinates
-            robot.mouseMove(robotX, robotY);
+            robot.mouseMove(dragRect.x, dragRect.y);
 
             if (mouse.equals(MOUSE_TYPE.CLICK)){
                 // Press the left mouse button
@@ -252,16 +253,17 @@ public class AutomationUtil{
 
                 // Release the left mouse button
                 robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+                System.out.println("Successfully clicked/moved at position: (" + dragRect.x + ", " + dragRect.y + ")");
             }
-
-            System.out.println("Successfully clicked/moved at position: (" + robotX + ", " + robotY + ")");
+            return dragRect;
 
         }
 
-        public void mouseDrag(Rectangle windowBounds, int startX, int startY, int endX, int endY) throws AWTException, InterruptedException {
+        public Rectangle mouseDrag(Rectangle windowBounds, int startX, int startY, int endX, int endY) throws AWTException, InterruptedException {
 
             // Instantiate the Robot class
             Robot robot = new Robot();
+            Rectangle dragRect = new Rectangle();
 
             // 1. Get the physical center
             double physicalX = windowBounds.x + startX;
@@ -277,12 +279,12 @@ public class AutomationUtil{
             double scaleY = transform.getScaleY();
 
             // 3. Convert to Java Robot coordinates
-            int robotX = (int) Math.round(physicalX / scaleX);
-            int robotY = (int) Math.round(physicalY / scaleY);
-            int robotEndX = (int) Math.round(physicalEndX / scaleX);
-            int robotEndY = (int) Math.round(physicalEndY / scaleY);
+            dragRect.x = (int) Math.round(physicalX / scaleX);
+            dragRect.y = (int) Math.round(physicalY / scaleY);
+            dragRect.width = (int) Math.round(physicalEndX / scaleX);
+            dragRect.height = (int) Math.round(physicalEndY / scaleY);
             //robot.mouseMove(startX, startY);
-            robot.mouseMove(robotX, robotY);
+            robot.mouseMove(dragRect.x, dragRect.y);
 
             robot.delay(200);
 
@@ -293,16 +295,15 @@ public class AutomationUtil{
             // 3. Sleep de muis in kleine stapjes naar het eindpunt
             int steps = 50;
             for (int i = 1; i <= steps; i++) {
-                int currentX = robotX + ((robotEndX - robotX) * i) / steps;
-                int currentY = robotY + ((robotEndY - robotY) * i) / steps;
+                int currentX = dragRect.x + ((dragRect.width - dragRect.x) * i) / steps;
+                int currentY = dragRect.y + ((dragRect.height - dragRect.y) * i) / steps;
                 robot.mouseMove(currentX, currentY);
                 robot.delay(10); // Korte pauze voor een vloeiende beweging
             }
-            System.out.println("Drag Mouse start position: (" + robotX + ", " + robotY + ")");
-            System.out.println("Drag Mouse End position: (" + robotEndX + ", " + robotEndY + ")");
 
             // 4. Laat de linkermuisknop weer los
             robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+            return dragRect;
         }
 
         /*

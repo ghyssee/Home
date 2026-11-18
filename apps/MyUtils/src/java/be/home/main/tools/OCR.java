@@ -21,8 +21,6 @@ import org.apache.commons.lang3.StringUtils;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import java.net.URL;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -51,7 +49,7 @@ public class OCR {
         initializeFrame();
         addPostToFeed(new Post("", "", "C:\\My Programs\\OneDrive\\Config\\Java\\tessdata\\tesststart.png"), true);
         sleep(TimeUnit.SECONDS, 2);
-        //startBatch();
+        startBatch();
     }
 
     static class Post {
@@ -184,7 +182,10 @@ public class OCR {
                 else {
                     images.add(image);
                 }
-                au.mouseDrag(window.getBounds(), startX, startY, startX + 220, startY);
+                Rectangle dragRect = au.mouseDrag(window.getBounds(), startX, startY, startX + 220, startY);
+
+                addPostToFeed(new Post("MouseDrag", "Drag Mouse start position: (" + dragRect.x + ", " + dragRect.y + ")" , ""), true);
+                addPostToFeed(new Post("MouseDrag", "Drag Mouse End position: (" + dragRect.width + ", " + dragRect.height + ")" , ""), true);
                 //sleep(TimeUnit.SECONDS, 1);
 
             }
@@ -203,7 +204,8 @@ public class OCR {
                 return -1;
             }
 
-            System.out.println("Press the replay button");
+            //System.out.println("Press the replay button");
+            addPostToFeed(new Post("Start", "Press the replay button", ""), true);
             au.mouseClickRelativeToWindow(window.getBounds(), replayButton);
             return 1;
         }
@@ -505,7 +507,6 @@ public class OCR {
     }
 
     public static void initializeFrame(){
-        SwingUtilities.invokeLater(() -> {
             // 1. Only create the window and textArea if they don't exist yet
             if (frame == null) {
                 frame = new JFrame("Log Viewer");
@@ -570,7 +571,6 @@ public class OCR {
                 frame.setLocation(x, y);
                 frame.setVisible(true);
             }
-        });
     }
 
     private static JPanel createPostCard(Post post) {
