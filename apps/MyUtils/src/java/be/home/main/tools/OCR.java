@@ -141,7 +141,7 @@ public class OCR {
         if (checkIfStarted(dsFile)){
             //logInfo("Busy");
             addPostToFeed(new Post("Busy", "Fight is still ongoing...", ""), true);
-            return 20;
+            return 10;
         }
         else if (checkIfNotStarted(dsFile)) {
             //logInfo("Ready to start");
@@ -155,7 +155,7 @@ public class OCR {
             //logInfo("Total recruits: " + TOTAL_RECRUITS.get());
             //logInfo("Wait till all loot is loaded on the screen");
             addPostToFeed(new Post("Recruits", "Wait till all loot is loaded on the screen. Total recruits: " + TOTAL_RECRUITS.get(), ""), true);
-            sleep(TimeUnit.SECONDS, 10);
+            sleep(TimeUnit.SECONDS, 8);
             Rectangle lootRect = new Rectangle(50, 400, 460, 250);
             int startX = lootRect.x + 50;
             int startY = lootRect.y + lootRect.height/2;
