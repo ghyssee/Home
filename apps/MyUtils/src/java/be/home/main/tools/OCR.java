@@ -1,5 +1,6 @@
 package be.home.main.tools;
 
+import be.home.common.logging.LoggingConfiguration;
 import be.home.common.model.windows.AutomationUtil;
 import be.home.common.model.windows.WindowTO;
 import be.home.common.utils.DateUtils;
@@ -17,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Logger;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -30,7 +32,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class OCR {
 
+    private static final Logger log = LoggingConfiguration.getMainLog(OCR.class);
+
     public static JFrame frame;
+    public static Thread worker;
     public static JPanel feedPanel;
     public static JScrollPane scrollPane;
     private static boolean isRunning = true;
@@ -46,10 +51,9 @@ public class OCR {
         //au.activateWindow(window.getHandle());
         //au.mouseMoveRelativeToWindow(window.getBounds(), 0, 0);
         //au.mouseClickRelativeToWindow(window.getBounds(), new Rectangle(1, 1, 0, 0));
-        initializeFrame();
-        addPostToFeed(new Post("", "", "C:\\My Programs\\OneDrive\\Config\\Java\\tessdata\\tesststart.png"), true);
-        sleep(TimeUnit.SECONDS, 2);
-        startBatch();
+        SwingUtilities.invokeLater(OCR::initializeFrame);
+
+        //startBatch();
     }
 
     static class Post {
@@ -68,66 +72,77 @@ public class OCR {
         public String getImageUrl() { return imageUrl; }
     }
 
-    public static void startBatch() throws AWTException, IOException, InterruptedException {
+    public static void start(){
+        new Thread(OCR::startBatch).start();
+    }
+
+    public static void startBatch()  {
 
         AutomationUtil au = new AutomationUtil();
 
         if (true) {
-            //showFeed("Started at " + DateUtils.formatDate(new Date(), DateUtils.DD_MM_YYYY_HH_MM_SS));
-            addPostToFeed(new Post("Start", "Start time: " + DateUtils.formatDate(new Date(), DateUtils.DD_MM_YYYY_HH_MM_SS), ""), true);
-            WindowTO window2 = au.findWindowByPartialTitle("LDPlayer");
-            //Rectangle bounds = WindowAligner.getRobotCompatibleBounds(window2.getHandle());
+            try {
+                //showFeed("Started at " + DateUtils.formatDate(new Date(), DateUtils.DD_MM_YYYY_HH_MM_SS));
+                addPostToFeed(new Post("Start", "Start time: " + DateUtils.formatDate(new Date(), DateUtils.DD_MM_YYYY_HH_MM_SS), ""), true);
+                WindowTO window2 = au.findWindowByPartialTitle("LDPlayer");
+                //Rectangle bounds = WindowAligner.getRobotCompatibleBounds(window2.getHandle());
 
-            System.out.println(String.format("%-40.40s | X:%-4d Y:%-4d        | %-7d x %-7d",
-                    window2.getTitle(), window2.getBounds().x, window2.getBounds().y, window2.getBounds().width, window2.getBounds().height));
-            au.activateWindow(window2.getHandle());
-            Rectangle windowBounds = new Rectangle(110, 6, 473, 812);
-            au.moveVisibleWindow(window2.getHandle(), 110, 6);
-            window2 = au.findWindowByPartialTitle("LDPlayer");
-            System.out.println(String.format("%-40.40s | X:%-4d Y:%-4d        | %-7d x %-7d",
-                    window2.getTitle(), window2.getBounds().x, window2.getBounds().y, window2.getBounds().width, window2.getBounds().height));
+                log.info(String.format("%-40.40s | X:%-4d Y:%-4d        | %-7d x %-7d",
+                        window2.getTitle(), window2.getBounds().x, window2.getBounds().y, window2.getBounds().width, window2.getBounds().height));
+                au.activateWindow(window2.getHandle());
+                Rectangle windowBounds = new Rectangle(110, 6, 473, 812);
+                au.moveVisibleWindow(window2.getHandle(), 110, 6);
+                window2 = au.findWindowByPartialTitle("LDPlayer");
+                log.info(String.format("%-40.40s | X:%-4d Y:%-4d        | %-7d x %-7d",
+                        window2.getTitle(), window2.getBounds().x, window2.getBounds().y, window2.getBounds().width, window2.getBounds().height));
 
-            //makeScreenshot(window2.getBounds(), "CurrentWindow.png", ImageFormat.PNG);
-            //makeScreenshot2(window2, "PlayStart.bmp", 437, 52, 32, 26);
-            //makeScreenshot2(window2, "PlayStart2.bmp", 349, 41, 25, 22);
-            //for (int i= 1; i <= 5; i++){
-            //   makeScreenshot2(window2, "PlayBusy" + String.valueOf(i) + ".bmp", 437, 52, 32, 26);
-            //   sleep(TimeUnit.MILLISECONDS, 200);
-            //}
+                //makeScreenshot(window2.getBounds(), "CurrentWindow.png", ImageFormat.PNG);
+                //makeScreenshot2(window2, "PlayStart.bmp", 437, 52, 32, 26);
+                //makeScreenshot2(window2, "PlayStart2.bmp", 349, 41, 25, 22);
+                //for (int i= 1; i <= 5; i++){
+                //   makeScreenshot2(window2, "PlayBusy" + String.valueOf(i) + ".bmp", 437, 52, 32, 26);
+                //   sleep(TimeUnit.MILLISECONDS, 200);
+                //}
 
-            Rectangle startButton = new Rectangle(441, 56, 24, 22);
-            //for (int i=1; i <= 5; i++){
-            //    makeScreenshot2(window2, "PlayBusy" + String.valueOf(i) + ".bmp", playButton2);
-            //    sleep(TimeUnit.MILLISECONDS, 200);
+                Rectangle startButton = new Rectangle(441, 56, 24, 22);
+                //for (int i=1; i <= 5; i++){
+                //    makeScreenshot2(window2, "PlayBusy" + String.valueOf(i) + ".bmp", playButton2);
+                //    sleep(TimeUnit.MILLISECONDS, 200);
 
-            //}
-            //for (int i=1; i <= 10; i++){
-            Rectangle replayButton = new Rectangle(120, 900, 100, 40);
-            Rectangle fightButton = new Rectangle(345, 940, 85, 40);
-            Rectangle energyButton = new Rectangle(68, 56, 60, 30);
-            Rectangle heroCapButton = new Rectangle(145, 360, 270, 35);
-            Rectangle recruitButton = new Rectangle(390, 310, 40, 20);
-            //System.out.println(getOCRText(window2, recruitButton));
+                //}
+                //for (int i=1; i <= 10; i++){
+                Rectangle replayButton = new Rectangle(120, 900, 100, 40);
+                Rectangle fightButton = new Rectangle(345, 940, 85, 40);
+                Rectangle energyButton = new Rectangle(68, 56, 60, 30);
+                Rectangle heroCapButton = new Rectangle(145, 360, 270, 35);
+                Rectangle recruitButton = new Rectangle(390, 310, 40, 20);
+                //System.out.println(getOCRText(window2, recruitButton));
 
-            au.makeScreenshotWithinWindow(window2, "recruitRect.bmp", recruitButton);
-            //makeScreenshot2(window2, "heroecap.bmp", heroecapButton);
-            int wait = 1;
+                au.makeScreenshotWithinWindow(window2, "recruitRect.bmp", recruitButton);
+                //makeScreenshot2(window2, "heroecap.bmp", heroecapButton);
+                int wait = 1;
 
-            if (true) {
-                do {
-                    au.mouseMoveRelativeToWindow(window2.getBounds(), 0, 0);
-                    wait = processWindow(window2, startButton, replayButton, fightButton, energyButton, heroCapButton, recruitButton);
-                    if (wait == -1 || !isRunning){
-                        break;
+                if (true) {
+                    do {
+                        au.mouseMoveRelativeToWindow(window2.getBounds(), 0, 0);
+                        wait = processWindow(window2, startButton, replayButton, fightButton, energyButton, heroCapButton, recruitButton);
+                        if (wait == -1 || !isRunning) {
+                            break;
+                        }
+                        sleep(TimeUnit.SECONDS, wait);
+                        log.info("After sleep");
                     }
-                    sleep(TimeUnit.SECONDS, wait);
+                    while (isRunning);
                 }
-                while (isRunning);
+                closeFeed();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            } catch (AWTException ex) {
+                throw new RuntimeException(ex);
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
             }
-
-
         }
-        closeFeed();
 
     }
 
@@ -137,7 +152,7 @@ public class OCR {
         AutomationUtil au = new AutomationUtil();
         File dsFile = au.makeScreenshotWithinWindow(window, "Start.bmp", startButton);
         //File dsFile = makeScreenshotRelativeToWindow(window.getBounds(), 350, 42, 25, 22, "DoubleSpeed.bmp", ImageFormat.BMP);
-        int wait = 5;
+        int wait = 1;
         if (checkIfStarted(dsFile)){
             //logInfo("Busy");
             addPostToFeed(new Post("Busy", "Fight is still ongoing...", ""), true);
@@ -148,7 +163,7 @@ public class OCR {
             //logInfo("Clicking on play button...");
             addPostToFeed(new Post("Start", "Clicking on play button..", ""), true);
             au.mouseClickRelativeToWindow(window.getBounds(), startButton);
-            return 10;
+            return 1;
         }
         else if (checkButton(window, replayButton, "REPLAY")) {
             TOTAL_RECRUITS.addAndGet(processRecruits(window, recruitButton));
@@ -245,8 +260,10 @@ public class OCR {
                 addPostToFeed(new Post("Energy", "There was a problem getting the energy amount!!!", ""), true);
                 //logInfo("There was a problem getting the energy amount!!!");
             }
+            log.info("Clicking on fight button");
             au.mouseClickRelativeToWindow(window.getBounds(), fightButton);
-            return 5;
+            log.info("After Clicking on fight button");
+            return 3;
         }
         return wait;
 
@@ -352,17 +369,17 @@ public class OCR {
 
                     // Als het verschil op een kanaal groter is dan de drempel, zijn ze écht anders
                     if (diffR > threshold || diffG > threshold || diffB > threshold) {
-                        System.out.println("diffR: " + diffR);
-                        System.out.println("threshold: " + threshold);
+                        log.info("diffR: " + diffR);
+                        log.info("threshold: " + threshold);
                         identicalWithinTolerance = false;
                         // Je kunt hier eventueel direct 'return false;' doen voor maximale snelheid,
                         // tenzij je de hele afbeelding wilt scannen (bijv. om te highlighten).
-                        System.out.println("Different Images");
+                        log.info("Different Images");
                         return false;
                     }
                 }
             }
-            System.out.println("Images are the same");
+            log.info("Images are the same");
             return identicalWithinTolerance;
 
         } catch (Exception e) {
@@ -472,16 +489,45 @@ public class OCR {
 
     }
 
-
+    public static void cancelSleep(){
+        if (worker != null && worker.isAlive()){
+            log.info("Cancel Sleep");
+            worker.interrupt();
+            worker = null;
+        }
+    }
 
 
 
     public static void sleep(TimeUnit timeUnit, int value){
+        worker = new Thread(() -> {
+            try {
+                log.info("Sleeping for " + value + " seconds...");
+                TimeUnit.SECONDS.sleep(value);
+                log.info("Woke up naturally.");
+            } catch (InterruptedException e) {
+                // Restore the interrupted status
+                Thread.currentThread().interrupt();
+                log.info("Sleep was cancelled!");
+            }
+        });
+
+        worker.start();
+
         try {
+            worker.join(); // Forces the calling thread to wait until 'worker' finishes or is interrupted
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    public static void sleepOld(TimeUnit timeUnit, int value){
+        try {
+            log.info("Sleeping for " + value + " " + timeUnit.name());
             timeUnit.sleep(value);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // Restore interrupted status
-            System.err.println("Thread was interrupted!");
+            log.error("Thread was interrupted!");
         }
     }
 
@@ -501,7 +547,7 @@ public class OCR {
     }
 
     public static void logInfoOld(String message){
-        System.out.println(message);
+        log.info(message);
         showFeedOld(message);
 
     }
@@ -514,6 +560,20 @@ public class OCR {
                 frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
                 frame.setSize(600, 400);
+
+                //
+                JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+                JButton button = new JButton("Cancel Sleep");
+                button.addActionListener(e -> {
+                    cancelSleep();
+                });
+                topPanel.add(button);
+                JButton startButton = new JButton("Start");
+                startButton.addActionListener(e -> {
+                    start();
+                });
+                topPanel.add(startButton);
+                frame.add(topPanel, BorderLayout.NORTH);
 
                 // Main vertical feed container
                 feedPanel = new JPanel();
@@ -651,25 +711,38 @@ public class OCR {
     }
 
     private static void addPostToFeed(Post post, boolean addToTop) {
-        JPanel card = createPostCard(post);
-        Component spacer = Box.createRigidArea(new Dimension(0, 12));
-
-        if (addToTop) {
-            feedPanel.add(spacer, 0);
-            feedPanel.add(card, 0); // Insert at index 0 (top of the feed)
-        } else {
-            feedPanel.add(card);    // Append to the bottom of the feed
-            feedPanel.add(spacer);
+        String logMessage = "";
+        if (StringUtils.isNotBlank(post.getAuthor())){
+            logMessage += post.getAuthor();
         }
-
-        // Tell Swing to recalculate layout and redraw the new components
-        feedPanel.revalidate();
-        feedPanel.repaint();
-
-        // Scroll to the top if added at the top, or bottom if appended
+        if (StringUtils.isNotBlank(post.getAuthor())){
+            logMessage += " - " + post.getContent();
+        }
+        if (StringUtils.isNotBlank(post.getImageUrl())){
+            logMessage += " - " + post.getImageUrl();
+        }
+        log.info(logMessage);
         SwingUtilities.invokeLater(() -> {
-            JScrollBar vertical = scrollPane.getVerticalScrollBar();
-            vertical.setValue(addToTop ? 0 : vertical.getMaximum());
+            JPanel card = createPostCard(post);
+            Component spacer = Box.createRigidArea(new Dimension(0, 12));
+
+            if (addToTop) {
+                feedPanel.add(spacer, 0);
+                feedPanel.add(card, 0); // Insert at index 0 (top of the feed)
+            } else {
+                feedPanel.add(card);    // Append to the bottom of the feed
+                feedPanel.add(spacer);
+            }
+
+            // Tell Swing to recalculate layout and redraw the new components
+            feedPanel.revalidate();
+            feedPanel.repaint();
+
+            // Scroll to the top if added at the top, or bottom if appended
+            SwingUtilities.invokeLater(() -> {
+                JScrollBar vertical = scrollPane.getVerticalScrollBar();
+                vertical.setValue(addToTop ? 0 : vertical.getMaximum());
+            });
         });
     }
 }
